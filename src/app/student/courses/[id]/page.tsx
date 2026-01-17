@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -148,16 +148,14 @@ export default function StudentCoursePage({ params }: { params: { id: string } }
           />
         );
       case '3d':
-        return (
-          <model-viewer
-            src={lesson.content_url}
-            alt={lesson.title}
-            auto-rotate
-            camera-controls
-            style={{ width: '100%', height: '600px' }}
-            className="rounded-lg"
-          ></model-viewer>
-        );
+        return React.createElement('model-viewer', {
+          src: lesson.content_url,
+          alt: lesson.title,
+          'auto-rotate': true,
+          'camera-controls': true,
+          style: { width: '100%', height: '600px' },
+          className: 'rounded-lg'
+        });
       default:
         return <p>Unsupported content type</p>;
     }

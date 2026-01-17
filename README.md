@@ -1,33 +1,126 @@
-# Modern LMS - Learning Management System
+# 🎓 Modern Learning Management System (LMS)
 
-A modern, visually pleasing Learning Management System built with Next.js 14, TypeScript, Tailwind CSS, Shadcn UI, and Supabase.
+A beautiful, full-featured Learning Management System built with the latest web technologies. Features a modern UI with dark mode, comprehensive course management, progress tracking, quizzes, certificates, discussions, and more.
 
-## Features
+## ✨ Features
 
-### Admin Panel
-- **Course Creator**: Create and manage courses with support for:
-  - Video content
-  - PDF documents
-  - iFrame embeds
-  - 3D models (using `<model-viewer>`)
-- **Quiz Builder**: Create assessments with:
-  - Multiple Choice Questions (MCQ)
+### 🎯 For Students
+- **Course Learning**
+  - Browse and enroll in courses with categories
+  - Multiple content types: Video, PDF, iFrame, 3D Models
+  - Interactive lesson player with completion tracking
+  - Take quizzes with instant feedback
+  - View detailed progress dashboard with charts
+  - Earn and download certificates
+  - Leave reviews and ratings on courses
+  - Participate in lesson discussions
+
+- **User Profile Management**
+  - Customizable profile with avatar upload
+  - Bio and personal information
+  - View learning statistics and achievements
+
+- **Progress Tracking**
+  - Visual progress bars for each course
+  - Quiz attempt history with scores
+  - Completed lessons timeline
+  - Average performance metrics
+  - Achievement badges
+
+- **Certificates**
+  - Automatic certificate generation on completion
+  - Download as PDF
+  - Share on social media
+  - Professional certificate design
+
+### 👨‍🏫 For Admins/Instructors
+- **Course Management**
+  - Create and edit courses with rich descriptions
+  - Organize courses by categories
+  - Add lessons with multiple content types
+  - Upload thumbnails and cover images
+  - Publish/unpublish courses
+  - Search and filter courses
+
+- **Category Management**
+  - Create course categories
+  - Organize courses for better navigation
+  - Category descriptions and metadata
+
+- **Lesson Builder**
+  - Support for Video, PDF, iFrame, and 3D content
+  - Drag-and-drop lesson ordering
+  - Rich text descriptions
+  - Embed external content
+
+- **Quiz Builder**
+  - Multiple choice questions
   - Fill-in-the-blank questions
-- **Analytics Dashboard**: View user progress, quiz scores, and enrollment statistics
+  - Automatic grading system
+  - Question ordering and management
+  - Detailed quiz analytics
 
-### Student Portal
-- **Dashboard**: Access assigned courses and browse available courses
-- **Interactive Media Player**: View course content in various formats
-- **Quiz Interface**: Take quizzes and see immediate results
-- **Progress Tracking**: Track completion percentage and learning history
+- **Analytics Dashboard**
+  - Total student and course statistics
+  - Enrollment trends with charts
+  - Quiz performance metrics
+  - Recent activity feed
+  - Visual data representation with Recharts
+  - Export analytics data
 
-## Tech Stack
+- **Student Management**
+  - View all enrolled students
+  - Track individual progress
+  - Monitor quiz attempts
+  - Issue certificates
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Shadcn UI
-- **Authentication & Database**: Supabase
+### 🎨 Modern UI/UX Features
+- **Beautiful Design**
+  - Clean, professional interface
+  - Gradient backgrounds and glass morphism
+  - Smooth animations and transitions
+  - Custom scrollbars
+  - Responsive design for all devices
+
+- **Dark Mode**
+  - System preference detection
+  - Manual toggle with smooth transitions
+  - Optimized color schemes
+  - Persistent preference
+
+- **Interactive Components**
+  - Toast notifications (Sonner)
+  - Loading skeletons
+  - Progress indicators
+  - Modal dialogs
+  - Tabbed interfaces
+
+- **Form Validation**
+  - Zod schema validation
+  - Real-time error feedback
+  - Password strength indicator
+  - Field-level validation
+
+- **Enhanced Navigation**
+  - Active route highlighting
+  - User avatars in navbar
+  - Theme toggle in header
+  - Breadcrumb navigation
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16.1.2 (App Router)
+- **Language**: TypeScript 5.9.3
+- **UI Library**: React 19.2.3
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth with RLS
+- **Styling**: Tailwind CSS 4.1.18
+- **Component Library**: Shadcn UI (custom components)
+- **Icons**: Lucide React
+- **Form Validation**: Zod
+- **Charts**: Recharts
+- **Notifications**: Sonner
+- **Theme**: next-themes
 - **3D Models**: Google Model Viewer
 
 ## Setup Instructions
@@ -101,18 +194,43 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 4. Take quizzes to test your knowledge
 5. Track your progress and quiz scores
 
-## Database Schema
+## 📊 Database Schema
 
-The application uses the following main tables:
+### Core Tables
+- **users** - User profiles with roles, avatars, and bios
+- **categories** - Course categories for organization
+- **courses** - Course information with thumbnails and status
+- **lessons** - Lesson content with multiple media types
+- **quizzes** - Quiz metadata linked to lessons
+- **questions** - Quiz questions (MCQ and fill-blank)
 
-- `users` - User accounts with roles (admin/student)
-- `courses` - Course information
-- `lessons` - Lesson content within courses
-- `quizzes` - Quizzes associated with lessons
-- `questions` - Quiz questions (MCQ or fill-in-the-blank)
-- `course_enrollments` - Student course enrollments
-- `progress` - Lesson completion tracking
-- `quiz_attempts` - Quiz attempt history and scores
+### Activity Tables
+- **course_enrollments** - Student course enrollments with timestamps
+- **progress** - Lesson completion tracking with dates
+- **quiz_attempts** - Quiz results and scoring history
+- **course_reviews** - Course ratings (1-5 stars) and reviews
+- **lesson_comments** - Discussion system with nested replies
+- **certificates** - Generated certificates with URLs
+
+### Security
+- Row Level Security (RLS) enabled on all tables
+- Role-based policies for admin and student access
+- Secure authentication with Supabase Auth
+- Protected routes with Next.js middleware
+
+## 🎨 UI Components
+
+### Shadcn UI Components
+- **Forms**: Button, Input, Label, Textarea, Select, Switch
+- **Layout**: Card, Dialog, Tabs, Alert
+- **Feedback**: Toast, Skeleton, Progress, Badge
+- **Media**: Avatar with fallback
+- **Navigation**: Custom NavBar with theme toggle
+
+### Custom Components
+- **NavBar** - Responsive navigation with active states
+- **ThemeToggle** - Dark mode switcher
+- **ThemeProvider** - Theme context wrapper
 
 ## Building for Production
 

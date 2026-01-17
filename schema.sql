@@ -3,6 +3,18 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin', 'student')),
+  full_name TEXT,
+  avatar_url TEXT,
+  bio TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create categories table
+CREATE TABLE IF NOT EXISTS categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL UNIQUE,
+  description TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -11,7 +23,10 @@ CREATE TABLE IF NOT EXISTS courses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT,
+  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  thumbnail_url TEXT,
   created_by UUID REFERENCES users(id) ON DELETE CASCADE,
+  is_published BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -76,8 +91,42 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
   completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create course_reviews table
+CREATE TABLE IF NOT EXISTS course_reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  review_text TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(course_id, user_id)
+);
+
+-- Create lesson_comments table
+CREATE TABLE IF NOT EXISTS lesson_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lesson_id UUID REFERENCES lessons(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  comment_text TEXT NOT NULL,
+  parent_id UUID REFERENCES lesson_comments(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create certificates table
+CREATE TABLE IF NOT EXISTS certificates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+  issued_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  certificate_url TEXT,
+  UNIQUE(user_id, course_id)
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quizzes ENABLE ROW LEVEL SECURITY;
@@ -85,11 +134,26 @@ ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_enrollments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quiz_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE course_reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lesson_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users table
-CREATE POLICY "Users can read their own data" ON users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Anyone can read user profiles" ON users FOR SELECT USING (true);
 CREATE POLICY "Users can update their own data" ON users FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Anyone can insert their own user record" ON users FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- RLS Policies for categories table
+CREATE POLICY "Anyone can read categories" ON categories FOR SELECT USING (true);
+CREATE POLICY "Admins can create categories" ON categories FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Admins can update categories" ON categories FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Admins can delete categories" ON categories FOR DELETE USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
 
 -- RLS Policies for courses table
 CREATE POLICY "Anyone can read courses" ON courses FOR SELECT USING (true);
@@ -161,7 +225,29 @@ CREATE POLICY "Admins can read all quiz attempts" ON quiz_attempts FOR SELECT US
   EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
 );
 
+-- RLS Policies for course_reviews table
+CREATE POLICY "Anyone can read reviews" ON course_reviews FOR SELECT USING (true);
+CREATE POLICY "Users can create their own reviews" ON course_reviews FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own reviews" ON course_reviews FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own reviews" ON course_reviews FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies for lesson_comments table
+CREATE POLICY "Anyone can read comments" ON lesson_comments FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can create comments" ON lesson_comments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own comments" ON lesson_comments FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own comments" ON lesson_comments FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies for certificates table
+CREATE POLICY "Users can read their own certificates" ON certificates FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Admins can read all certificates" ON certificates FOR SELECT USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Admins can create certificates" ON certificates FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+
 -- Create indexes for better performance
+CREATE INDEX idx_courses_category_id ON courses(category_id);
 CREATE INDEX idx_lessons_course_id ON lessons(course_id);
 CREATE INDEX idx_questions_quiz_id ON questions(quiz_id);
 CREATE INDEX idx_enrollments_user_id ON course_enrollments(user_id);
@@ -170,3 +256,9 @@ CREATE INDEX idx_progress_user_id ON progress(user_id);
 CREATE INDEX idx_progress_lesson_id ON progress(lesson_id);
 CREATE INDEX idx_quiz_attempts_user_id ON quiz_attempts(user_id);
 CREATE INDEX idx_quiz_attempts_quiz_id ON quiz_attempts(quiz_id);
+CREATE INDEX idx_reviews_course_id ON course_reviews(course_id);
+CREATE INDEX idx_reviews_user_id ON course_reviews(user_id);
+CREATE INDEX idx_comments_lesson_id ON lesson_comments(lesson_id);
+CREATE INDEX idx_comments_user_id ON lesson_comments(user_id);
+CREATE INDEX idx_certificates_user_id ON certificates(user_id);
+CREATE INDEX idx_certificates_course_id ON certificates(course_id);
