@@ -8,25 +8,39 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Video, FileText, Globe, Box, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Course, Lesson, Quiz } from '@/types';
 
 export default function CoursePage({ params }: { params: { id: string } }) {
   const [course, setCourse] = useState<Course | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [showLessonForm, setShowLessonForm] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [editData, setEditData] = useState({
+    title: '',
+    description: '',
+    category_id: '',
+    thumbnail_url: '',
+    is_published: true,
+  });
   const [lessonData, setLessonData] = useState({
     title: '',
     description: '',
     content_type: 'video' as 'video' | 'pdf' | 'iframe' | '3d',
     content_url: '',
   });
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
     fetchCourse();
     fetchLessons();
+    fetchCategories();
   }, [params.id]);
 
   const fetchCourse = async () => {
@@ -35,8 +49,26 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       .select('*')
       .eq('id', params.id)
       .single();
-    
-    if (data) setCourse(data);
+
+    if (data) {
+      setCourse(data);
+      setEditData({
+        title: data.title,
+        description: data.description || '',
+        category_id: data.category_id || '',
+        thumbnail_url: data.thumbnail_url || '',
+        is_published: data.is_published ?? true,
+      });
+    }
+  };
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name');
+
+    if (data) setCategories(data);
   };
 
   const fetchLessons = async () => {
@@ -65,6 +97,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
       if (error) throw error;
 
+      toast.success('Lesson created successfully!');
       setLessonData({
         title: '',
         description: '',
@@ -74,13 +107,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       setShowLessonForm(false);
       fetchLessons();
     } catch (error: any) {
-      alert('Error creating lesson: ' + error.message);
+      toast.error('Failed to create lesson', {
+        description: error.message,
+      });
     }
   };
 
   const handleDeleteLesson = async (lessonId: string) => {
-    if (!confirm('Are you sure you want to delete this lesson?')) return;
-
     try {
       const { error } = await supabase
         .from('lessons')
@@ -88,9 +121,65 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         .eq('id', lessonId);
 
       if (error) throw error;
+
+      toast.success('Lesson deleted successfully');
       fetchLessons();
     } catch (error: any) {
-      alert('Error deleting lesson: ' + error.message);
+      toast.error('Failed to delete lesson', {
+        description: error.message,
+      });
+    }
+  };
+
+  const handleUpdateCourse = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .update({
+          title: editData.title,
+          description: editData.description,
+          category_id: editData.category_id || null,
+          thumbnail_url: editData.thumbnail_url || null,
+          is_published: editData.is_published,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', params.id);
+
+      if (error) throw error;
+
+      toast.success('Course updated successfully!');
+      setShowEditDialog(false);
+      fetchCourse();
+    } catch (error: any) {
+      toast.error('Failed to update course', {
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCourse = async () => {
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .delete()
+        .eq('id', params.id);
+
+      if (error) throw error;
+
+      toast.success('Course deleted successfully');
+      router.push('/admin');
+    } catch (error: any) {
+      toast.error('Failed to delete course', {
+        description: error.message,
+      });
+      setLoading(false);
     }
   };
 
@@ -108,9 +197,21 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="px-4 sm:px-0">
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold">{course.title}</h2>
-        <p className="text-muted-foreground mt-2">{course.description}</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div className="flex-1">
+          <h2 className="text-3xl font-bold">{course.title}</h2>
+          <p className="text-muted-foreground mt-2">{course.description}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowEditDialog(true)}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Course
+          </Button>
+          <Button variant="destructive" onClick={() => setShowDeleteDialog(true)}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6">
@@ -215,6 +316,105 @@ export default function CoursePage({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Course Dialog */}
+      <Dialog open={showEditDialog} onValueChange={setShowEditDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Course</DialogTitle>
+            <DialogDescription>
+              Update course information and settings
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleUpdateCourse} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-title">Course Title</Label>
+              <Input
+                id="edit-title"
+                value={editData.title}
+                onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                value={editData.description}
+                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                rows={4}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-category">Category</Label>
+              <select
+                id="edit-category"
+                value={editData.category_id}
+                onChange={(e) => setEditData({ ...editData, category_id: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">No Category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-thumbnail">Thumbnail URL</Label>
+              <Input
+                id="edit-thumbnail"
+                value={editData.thumbnail_url}
+                onChange={(e) => setEditData({ ...editData, thumbnail_url: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+                type="url"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="edit-published"
+                checked={editData.is_published}
+                onChange={(e) => setEditData({ ...editData, is_published: e.target.checked })}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="edit-published">Published (visible to students)</Label>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Course Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Course</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this course? This action cannot be undone.
+              All lessons, quizzes, and student progress will be permanently deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteCourse} disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete Course
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

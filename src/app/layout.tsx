@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toast";
 
 export const metadata: Metadata = {
   title: "LMS - Learning Management System",
@@ -15,14 +14,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           type="module"
           src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"
         ></script>
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className="font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

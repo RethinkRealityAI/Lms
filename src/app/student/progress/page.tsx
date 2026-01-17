@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Trophy, Target } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, Trophy, Target, BookOpen } from 'lucide-react';
 
 export default async function StudentProgressPage() {
   const supabase = await createClient();
@@ -8,16 +9,23 @@ export default async function StudentProgressPage() {
 
   if (!user) return null;
 
-  // Get enrollments
+  // Get enrollments with course details
   const { data: enrollments } = await supabase
     .from('course_enrollments')
     .select('*, courses(*)')
     .eq('user_id', user.id);
 
+  // Get all lessons for enrolled courses
+  const courseIds = enrollments?.map(e => e.course_id) || [];
+  const { data: allLessons } = await supabase
+    .from('lessons')
+    .select('*')
+    .in('course_id', courseIds);
+
   // Get completed lessons
   const { data: completedLessons } = await supabase
     .from('progress')
-    .select('*, lessons(*, courses(title))')
+    .select('*, lessons(*, courses(id, title))')
     .eq('user_id', user.id)
     .eq('completed', true)
     .order('completed_at', { ascending: false });
@@ -86,25 +94,33 @@ export default async function StudentProgressPage() {
           <div className="space-y-4">
             {enrollments && enrollments.length > 0 ? (
               enrollments.map((enrollment: any) => {
-                // Get lessons for this course
-                const courseLessons = completedLessons?.filter(
-                  (cl: any) => cl.lessons?.courses?.title === enrollment.courses.title
+                // Get all lessons for this course
+                const totalCourseLessons = allLessons?.filter(
+                  (lesson: any) => lesson.course_id === enrollment.course_id
                 ) || [];
 
+                // Get completed lessons for this course
+                const completedCourseLessons = completedLessons?.filter(
+                  (cl: any) => cl.lessons?.courses?.id === enrollment.course_id
+                ) || [];
+
+                const progress = totalCourseLessons.length > 0
+                  ? Math.round((completedCourseLessons.length / totalCourseLessons.length) * 100)
+                  : 0;
+
                 return (
-                  <div key={enrollment.id} className="p-4 border rounded-lg">
-                    <h4 className="font-semibold mb-2">{enrollment.courses.title}</h4>
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full"
-                          style={{ width: `${courseLessons.length > 0 ? 50 : 0}%` }}
-                        />
+                  <div key={enrollment.id} className="p-4 border rounded-lg hover:border-primary/50 transition-colors">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h4 className="font-semibold mb-1">{enrollment.courses.title}</h4>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <BookOpen className="h-3 w-3" />
+                          {completedCourseLessons.length} of {totalCourseLessons.length} lessons
+                        </p>
                       </div>
-                      <span className="text-sm text-muted-foreground">
-                        {courseLessons.length} lessons completed
-                      </span>
+                      <span className="text-2xl font-bold text-primary">{progress}%</span>
                     </div>
+                    <Progress value={progress} className="h-2" />
                   </div>
                 );
               })
