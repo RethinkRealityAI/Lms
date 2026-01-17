@@ -56,7 +56,7 @@ export default async function StudentLayout({
         userEmail={user.email!}
         userName={userData?.full_name}
         avatarUrl={userData?.avatar_url}
-        title="My Learning"
+        title="GANSID Learning"
       />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {children}

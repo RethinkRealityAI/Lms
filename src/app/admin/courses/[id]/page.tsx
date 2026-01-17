@@ -77,7 +77,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       .select('*')
       .eq('course_id', params.id)
       .order('order_index', { ascending: true });
-    
+
     if (data) setLessons(data);
   };
 
@@ -318,7 +318,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Edit Course Dialog */}
-      <Dialog open={showEditDialog} onValueChange={setShowEditDialog}>
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Course</DialogTitle>

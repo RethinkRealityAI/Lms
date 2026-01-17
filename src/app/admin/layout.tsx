@@ -51,7 +51,7 @@ export default async function AdminLayout({
         userEmail={user.email!}
         userName={userData?.full_name}
         avatarUrl={userData?.avatar_url}
-        title="LMS Admin"
+        title="GANSID Admin"
       />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {children}

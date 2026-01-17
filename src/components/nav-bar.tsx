@@ -48,7 +48,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <BookOpen className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                <h1 className="text-xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent tracking-tighter">
                   {title}
                 </h1>
               </div>

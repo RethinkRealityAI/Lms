@@ -9,6 +9,8 @@ interface SelectContextValue {
   onValueChange: (value: string) => void
   open: boolean
   setOpen: (open: boolean) => void
+  items: Array<{ value: string; label: React.ReactNode }>
+  registerItem: (value: string, label: React.ReactNode) => void
 }
 
 const SelectContext = React.createContext<SelectContextValue | undefined>(undefined)
@@ -27,12 +29,22 @@ interface SelectProps {
   children: React.ReactNode
 }
 
-const Select = ({ value = "", onValueChange = () => {}, children }: SelectProps) => {
+const Select = ({ value = "", onValueChange = () => { }, children }: SelectProps) => {
   const [open, setOpen] = React.useState(false)
+  const [items, setItems] = React.useState<Array<{ value: string; label: React.ReactNode }>>([])
+
+  const registerItem = React.useCallback((val: string, label: React.ReactNode) => {
+    setItems(prev => {
+      if (prev.some(item => item.value === val)) return prev
+      return [...prev, { value: val, label }]
+    })
+  }, [])
 
   return (
-    <SelectContext.Provider value={{ value, onValueChange, open, setOpen }}>
-      {children}
+    <SelectContext.Provider value={{ value, onValueChange, open, setOpen, items, registerItem }}>
+      <div className="relative w-full">
+        {children}
+      </div>
     </SelectContext.Provider>
   )
 }
@@ -49,76 +61,68 @@ const SelectTrigger = React.forwardRef<
       type="button"
       onClick={() => setOpen(!open)}
       className={cn(
-        "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all active:scale-[0.99]",
         className
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="h-4 w-4 opacity-50" />
+      <ChevronDown className={cn("h-4 w-4 opacity-50 transition-transform duration-200", open && "rotate-180")} />
     </button>
   )
 })
 SelectTrigger.displayName = "SelectTrigger"
 
 const SelectValue = ({ placeholder }: { placeholder?: string }) => {
-  const { value } = useSelect()
-  const selectContent = React.useContext(SelectContentContext)
+  const { value, items } = useSelect()
+  const selectedItem = items.find(item => item.value === value)
 
-  const selectedItem = selectContent?.items.find(item => item.value === value)
-
-  return <span>{selectedItem?.children || placeholder}</span>
+  return <span className="block truncate">{selectedItem ? selectedItem.label : placeholder}</span>
 }
-
-interface SelectContentContextValue {
-  items: Array<{ value: string; children: React.ReactNode }>
-}
-
-const SelectContentContext = React.createContext<SelectContentContextValue | undefined>(undefined)
 
 const SelectContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
   const { open, setOpen } = useSelect()
-  const [items, setItems] = React.useState<Array<{ value: string; children: React.ReactNode }>>([])
 
   React.useEffect(() => {
+    if (!open) return
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false)
     }
 
-    if (open) {
-      document.addEventListener("keydown", handleEscape)
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref && "current" in ref && ref.current && !ref.current.contains(e.target as Node)) {
+        // Delay closing slightly to allow Trigger click to register first if it was the click target
+        setTimeout(() => setOpen(false), 10)
+      }
     }
 
-    return () => document.removeEventListener("keydown", handleEscape)
-  }, [open, setOpen])
+    document.addEventListener("keydown", handleEscape)
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [open, setOpen, ref])
 
   if (!open) return null
 
   return (
-    <SelectContentContext.Provider value={{ items }}>
-      <div
-        ref={ref}
-        className={cn(
-          "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-80",
-          className
-        )}
-        {...props}
-      >
-        {React.Children.map(children, child => {
-          if (React.isValidElement<SelectItemProps>(child) && child.type === SelectItem) {
-            const value = child.props.value
-            const itemChildren = child.props.children
-            if (!items.find(item => item.value === value)) {
-              setItems(prev => [...prev, { value, children: itemChildren }])
-            }
-          }
-          return child
-        })}
+    <div
+      ref={ref}
+      className={cn(
+        "absolute top-full z-50 mt-2 min-w-[8rem] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 duration-100",
+        className
+      )}
+      {...props}
+    >
+      <div className="p-1">
+        {children}
       </div>
-    </SelectContentContext.Provider>
+    </div>
   )
 })
 SelectContent.displayName = "SelectContent"
@@ -129,18 +133,23 @@ interface SelectItemProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   ({ className, children, value, ...props }, ref) => {
-    const { value: selectedValue, onValueChange, setOpen } = useSelect()
+    const { value: selectedValue, onValueChange, setOpen, registerItem } = useSelect()
+
+    React.useEffect(() => {
+      registerItem(value, children)
+    }, [value, children, registerItem])
 
     return (
       <div
         ref={ref}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation()
           onValueChange(value)
           setOpen(false)
         }}
         className={cn(
-          "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-          selectedValue === value && "bg-accent",
+          "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground transition-colors",
+          selectedValue === value && "bg-accent text-accent-foreground",
           className
         )}
         {...props}
@@ -158,3 +167,4 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
 SelectItem.displayName = "SelectItem"
 
 export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem }
+

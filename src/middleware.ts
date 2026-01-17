@@ -35,10 +35,28 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protect admin routes
+  // Handle admin login page - allow access but redirect if already authenticated as admin
+  if (request.nextUrl.pathname === "/admin/login") {
+    if (user) {
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (userData?.role === "admin") {
+        // Already authenticated as admin, redirect to dashboard
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      // If user is not admin, allow them to see the login page (they'll be signed out client-side)
+    }
+    return response;
+  }
+
+  // Protect admin routes (excluding /admin/login)
   if (request.nextUrl.pathname.startsWith("/admin")) {
     if (!user) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
 
     const { data: userData } = await supabase
@@ -48,6 +66,7 @@ export async function middleware(request: NextRequest) {
       .single();
 
     if (userData?.role !== "admin") {
+      // Not an admin, redirect to student dashboard or login
       return NextResponse.redirect(new URL("/student", request.url));
     }
   }
@@ -69,7 +88,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect authenticated users away from login
+  // Allow reset password page (handled by the page itself)
+  if (request.nextUrl.pathname === "/reset-password") {
+    return response;
+  }
+
+  // Redirect authenticated users away from login page
   if (request.nextUrl.pathname === "/login" && user) {
     const { data: userData } = await supabase
       .from("users")
@@ -79,14 +103,15 @@ export async function middleware(request: NextRequest) {
 
     if (userData?.role === "admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
-    } else {
+    } else if (userData?.role === "student") {
       return NextResponse.redirect(new URL("/student", request.url));
     }
+    // If role is not found, allow access to login (user might need to complete profile)
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/student/:path*", "/login"],
+  matcher: ["/admin/:path*", "/student/:path*", "/login", "/reset-password"],
 };
