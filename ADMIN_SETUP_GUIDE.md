@@ -27,7 +27,7 @@ This guide will help you create an admin user account for the GANSID Learning Ma
 ```sql
 DO $$
 DECLARE
-  v_admin_email TEXT := 'admin@gansid.org';  -- Change to your admin email
+  v_admin_email TEXT := 'dapo@rethinkreality.ai';  -- Change to your admin email
   v_admin_name TEXT := 'GANSID Administrator';  -- Change to admin name
   v_user_id UUID;
 BEGIN
