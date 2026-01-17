@@ -198,11 +198,11 @@ export default function ResetPasswordPage() {
                 <div className="px-1 pt-2">
                   <div className="flex gap-1 h-1.5">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className={`h-full flex-1 rounded-full transition-all duration-500 ${i < passwordStrength.strength ? passwordStrength.color : 'bg-slate-200 dark:bg-slate-700'}`} />
+                      <div key={i} className={`h-full flex-1 rounded-full transition-all duration-500 ${i < (passwordStrength.strength || 0) ? (passwordStrength.color || 'bg-slate-200') : 'bg-slate-200 dark:bg-slate-700'}`} />
                     ))}
                   </div>
                   {passwordStrength.label && (
-                    <p className={`text-xs mt-1.5 font-medium ${passwordStrength.textColor}`}>
+                    <p className={`text-xs mt-1.5 font-medium ${passwordStrength.textColor || 'text-slate-600'}`}>
                       Password strength: {passwordStrength.label}
                     </p>
                   )}

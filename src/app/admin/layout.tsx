@@ -48,7 +48,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       <NavBar
         links={navLinks}
-        userEmail={user.email!}
+        userEmail={user.email || ''}
         userName={userData?.full_name}
         avatarUrl={userData?.avatar_url}
         title="GANSID Admin"

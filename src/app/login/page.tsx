@@ -235,7 +235,7 @@ export default function LoginPage() {
         .from('users')
         .insert([{
           id: data.user.id,
-          email: data.user.email!,
+          email: data.user.email || formData.email.trim().toLowerCase(),
           role: formData.role,
           full_name: formData.fullName.trim(),
         }]);
@@ -274,7 +274,7 @@ export default function LoginPage() {
   };
 
   const getPasswordStrength = (password: string) => {
-    if (!password) return { strength: 0, label: '', color: '' };
+    if (!password) return { strength: 0, label: '', color: '', textColor: 'text-slate-600' };
     let strength = 0;
     if (password.length >= 8) strength++;
     if (password.length >= 12) strength++;
@@ -289,7 +289,7 @@ export default function LoginPage() {
     return {
       strength,
       label: labels[strength - 1] || '',
-      color: colors[strength - 1] || '',
+      color: colors[strength - 1] || 'bg-slate-200',
       textColor: textColors[strength - 1] || 'text-slate-600',
     };
   };
@@ -663,11 +663,11 @@ export default function LoginPage() {
                     <div className="px-1 pt-2">
                       <div className="flex gap-1 h-1.5">
                         {[...Array(5)].map((_, i) => (
-                          <div key={i} className={`h-full flex-1 rounded-full transition-all duration-500 ${i < passwordStrength.strength ? passwordStrength.color : 'bg-slate-200 dark:bg-slate-700'}`} />
+                          <div key={i} className={`h-full flex-1 rounded-full transition-all duration-500 ${i < (passwordStrength.strength || 0) ? (passwordStrength.color || 'bg-slate-200') : 'bg-slate-200 dark:bg-slate-700'}`} />
                         ))}
                       </div>
                       {passwordStrength.label && (
-                        <p className={`text-xs mt-1.5 font-medium ${passwordStrength.textColor} dark:text-${passwordStrength.textColor.replace('text-', '')}`}>
+                        <p className={`text-xs mt-1.5 font-medium ${passwordStrength.textColor || 'text-slate-600 dark:text-slate-400'}`}>
                           Password strength: {passwordStrength.label}
                         </p>
                       )}
