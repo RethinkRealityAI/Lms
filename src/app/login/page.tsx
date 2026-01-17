@@ -133,7 +133,10 @@ export default function LoginPage() {
           }]);
 
         if (dbError) {
-          console.error('Error creating user record:', dbError);
+          toast.error('Account created but profile setup failed', {
+            description: 'Please contact support if this issue persists.',
+          });
+          return;
         }
 
         toast.success('Account created!', {

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Circle, Play } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Course, Lesson, Progress as ProgressType } from '@/types';
 
 export default function StudentCoursePage({ params }: { params: { id: string } }) {
@@ -85,9 +86,16 @@ export default function StudentCoursePage({ params }: { params: { id: string } }
         .insert([{ user_id: user.id, course_id: params.id }]);
 
       if (error) throw error;
+
+      toast.success('Enrolled successfully!', {
+        description: 'You can now access all course lessons',
+      });
       setIsEnrolled(true);
+      fetchData();
     } catch (error: any) {
-      alert('Error enrolling: ' + error.message);
+      toast.error('Failed to enroll', {
+        description: error.message,
+      });
     }
   };
 
@@ -110,9 +118,15 @@ export default function StudentCoursePage({ params }: { params: { id: string } }
         ]);
 
       if (error) throw error;
+
+      toast.success('Lesson completed!', {
+        description: 'Great job! Keep learning.',
+      });
       fetchData();
     } catch (error: any) {
-      alert('Error marking complete: ' + error.message);
+      toast.error('Failed to mark lesson as complete', {
+        description: error.message,
+      });
     }
   };
 

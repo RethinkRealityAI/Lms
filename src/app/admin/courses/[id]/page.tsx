@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Video, FileText, Globe, Box, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Course, Lesson, Quiz } from '@/types';
 
 export default function CoursePage({ params }: { params: { id: string } }) {
@@ -65,6 +67,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
       if (error) throw error;
 
+      toast.success('Lesson created successfully!');
       setLessonData({
         title: '',
         description: '',
@@ -74,13 +77,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       setShowLessonForm(false);
       fetchLessons();
     } catch (error: any) {
-      alert('Error creating lesson: ' + error.message);
+      toast.error('Failed to create lesson', {
+        description: error.message,
+      });
     }
   };
 
   const handleDeleteLesson = async (lessonId: string) => {
-    if (!confirm('Are you sure you want to delete this lesson?')) return;
-
     try {
       const { error } = await supabase
         .from('lessons')
@@ -88,9 +91,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         .eq('id', lessonId);
 
       if (error) throw error;
+
+      toast.success('Lesson deleted successfully');
       fetchLessons();
     } catch (error: any) {
-      alert('Error deleting lesson: ' + error.message);
+      toast.error('Failed to delete lesson', {
+        description: error.message,
+      });
     }
   };
 
