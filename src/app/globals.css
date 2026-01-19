@@ -5,12 +5,12 @@
 @theme {
   --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-primary: #B21F24;
+  --color-primary: #DC2626;
   /* GANSID Red */
   --color-primary-foreground: #FFFFFF;
 
   --color-secondary: #0099CA;
-  /* GANSID Teal */
+  /* GANSID Blue */
   --color-secondary-foreground: #FFFFFF;
 
   --color-accent: #FF5C35;
@@ -64,9 +64,9 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 358 70% 41%;
+    --primary: 0 72% 51%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 194 100% 40%;
+    --secondary: 221 83% 53%;
     --secondary-foreground: 210 40% 98%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -87,9 +87,9 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 358 75% 55%;
+    --primary: 0 72% 51%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 194 100% 44%;
+    --secondary: 221 83% 53%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;

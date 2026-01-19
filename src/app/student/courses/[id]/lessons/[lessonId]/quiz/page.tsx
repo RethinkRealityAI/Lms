@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, AlertCircle } from 'lucide-react';
 import type { Quiz, Question } from '@/types';
 
 export default function StudentQuizPage({ 
@@ -18,32 +19,69 @@ export default function StudentQuizPage({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
-    fetchQuiz();
-  }, [params.lessonId]);
+    checkEnrollmentAndFetchQuiz();
+  }, [params.id, params.lessonId]);
 
-  const fetchQuiz = async () => {
-    const { data: quizData } = await supabase
-      .from('quizzes')
-      .select('*')
-      .eq('lesson_id', params.lessonId)
-      .single();
+  const checkEnrollmentAndFetchQuiz = async () => {
+    setLoading(true);
+    setError(null);
 
-    if (quizData) {
-      setQuiz(quizData);
-      
-      const { data: questionsData } = await supabase
-        .from('questions')
-        .select('*')
-        .eq('quiz_id', quizData.id)
-        .order('order_index', { ascending: true });
-      
-      if (questionsData) {
-        setQuestions(questionsData);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setError('You must be logged in to take quizzes.');
+        setLoading(false);
+        return;
       }
+
+      // Check enrollment
+      const { data: enrollment } = await supabase
+        .from('course_enrollments')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('course_id', params.id)
+        .single();
+
+      if (!enrollment) {
+        setError('You must be enrolled in this course to take quizzes.');
+        setIsEnrolled(false);
+        setLoading(false);
+        return;
+      }
+
+      setIsEnrolled(true);
+
+      // Fetch quiz
+      const { data: quizData } = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('lesson_id', params.lessonId)
+        .single();
+
+      if (quizData) {
+        setQuiz(quizData);
+        
+        const { data: questionsData } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('quiz_id', quizData.id)
+          .order('order_index', { ascending: true });
+        
+        if (questionsData) {
+          setQuestions(questionsData);
+        }
+      }
+    } catch (err) {
+      setError('An error occurred while loading the quiz.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,6 +119,33 @@ export default function StudentQuizPage({
     setSubmitted(false);
     setScore(0);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error || !isEnrolled) {
+    return (
+      <div className="px-4 sm:px-0">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <p className="text-destructive font-medium mb-4">{error || 'Access denied'}</p>
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/student/courses/${params.id}`)}
+            >
+              Back to Course
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!quiz || questions.length === 0) {
     return (

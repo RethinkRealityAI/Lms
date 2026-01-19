@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2 } from 'lucide-react';
+import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, Quiz } from '@/types';
 
@@ -19,6 +19,8 @@ export default function CoursePage({ params }: { params: { id: string } }) {
   const [showLessonForm, setShowLessonForm] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showLessonEditDialog, setShowLessonEditDialog] = useState(false);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [editData, setEditData] = useState({
     title: '',
@@ -33,7 +35,14 @@ export default function CoursePage({ params }: { params: { id: string } }) {
     content_type: 'video' as 'video' | 'pdf' | 'iframe' | '3d',
     content_url: '',
   });
+  const [lessonEditData, setLessonEditData] = useState({
+    title: '',
+    description: '',
+    content_type: 'video' as 'video' | 'pdf' | 'iframe' | '3d',
+    content_url: '',
+  });
   const [loading, setLoading] = useState(false);
+  const [lessonLoading, setLessonLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -131,6 +140,49 @@ export default function CoursePage({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleEditLesson = (lesson: Lesson) => {
+    setEditingLesson(lesson);
+    setLessonEditData({
+      title: lesson.title,
+      description: lesson.description || '',
+      content_type: lesson.content_type,
+      content_url: lesson.content_url,
+    });
+    setShowLessonEditDialog(true);
+  };
+
+  const handleUpdateLesson = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLesson) return;
+
+    setLessonLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('lessons')
+        .update({
+          title: lessonEditData.title,
+          description: lessonEditData.description,
+          content_type: lessonEditData.content_type,
+          content_url: lessonEditData.content_url,
+        })
+        .eq('id', editingLesson.id);
+
+      if (error) throw error;
+
+      toast.success('Lesson updated successfully');
+      setShowLessonEditDialog(false);
+      setEditingLesson(null);
+      fetchLessons();
+    } catch (error: any) {
+      toast.error('Failed to update lesson', {
+        description: error.message,
+      });
+    } finally {
+      setLessonLoading(false);
+    }
+  };
+
   const handleUpdateCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -193,7 +245,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
     }
   };
 
-  if (!course) return <div>Loading...</div>;
+  if (!course) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-0">
@@ -277,12 +335,15 @@ export default function CoursePage({ params }: { params: { id: string } }) {
             )}
 
             <div className="space-y-3">
-              {lessons.map((lesson) => (
+              {lessons.map((lesson, index) => (
                 <div
                   key={lesson.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent"
                 >
                   <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-muted-foreground w-6">
+                      {index + 1}.
+                    </span>
                     {getContentIcon(lesson.content_type)}
                     <div>
                       <h4 className="font-medium">{lesson.title}</h4>
@@ -290,6 +351,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditLesson(lesson)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -413,6 +481,71 @@ export default function CoursePage({ params }: { params: { id: string } }) {
               Delete Course
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Lesson Dialog */}
+      <Dialog open={showLessonEditDialog} onOpenChange={setShowLessonEditDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Lesson</DialogTitle>
+            <DialogDescription>
+              Update the lesson details
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleUpdateLesson} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-lesson-title">Lesson Title</Label>
+              <Input
+                id="edit-lesson-title"
+                value={lessonEditData.title}
+                onChange={(e) => setLessonEditData({ ...lessonEditData, title: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-lesson-description">Description</Label>
+              <Textarea
+                id="edit-lesson-description"
+                value={lessonEditData.description}
+                onChange={(e) => setLessonEditData({ ...lessonEditData, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-content-type">Content Type</Label>
+              <select
+                id="edit-content-type"
+                value={lessonEditData.content_type}
+                onChange={(e) => setLessonEditData({ ...lessonEditData, content_type: e.target.value as any })}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="video">Video</option>
+                <option value="pdf">PDF</option>
+                <option value="iframe">iFrame (Embed)</option>
+                <option value="3d">3D Model</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-content-url">Content URL</Label>
+              <Input
+                id="edit-content-url"
+                value={lessonEditData.content_url}
+                onChange={(e) => setLessonEditData({ ...lessonEditData, content_url: e.target.value })}
+                placeholder="https://..."
+                required
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowLessonEditDialog(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={lessonLoading}>
+                {lessonLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

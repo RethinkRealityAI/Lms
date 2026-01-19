@@ -83,7 +83,6 @@ export default function ProfilePage() {
         .upload(filePath, file);
 
       if (uploadError) {
-        // If bucket doesn't exist, we might need to tell them or handle it
         if (uploadError.message.includes('bucket not found')) {
           throw new Error('Avatar storage bucket not found. Please contact an administrator.');
         }
@@ -181,15 +180,15 @@ export default function ProfilePage() {
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-white mb-2">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-2">
             {user?.full_name ? `${user.full_name} Profile` : 'My Profile'}
           </h1>
-          <p className="text-slate-400 font-medium">
+          <p className="text-slate-500 font-medium">
             Manage your personal details and account preferences.
           </p>
         </div>
         <Badge className="w-fit bg-[#0099CA] hover:bg-[#007EA0] text-white border-none font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">
-          {user?.role === 'admin' ? 'Instructor' : 'Student'} Account
+          Instructor Account
         </Badge>
       </div>
 

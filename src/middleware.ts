@@ -1,6 +1,53 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Helper function to get user role from database or metadata
+async function getUserRole(supabase: any, user: any): Promise<string | null> {
+  // First try to get from database by id
+  const { data: userData, error } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (userData?.role) {
+    return typeof userData.role === 'string'
+      ? userData.role.trim().toLowerCase()
+      : userData.role;
+  }
+
+  // Fallback: try lookup by email if id match isn't present
+  if (user.email) {
+    const { data: emailUserData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("email", user.email)
+      .maybeSingle();
+
+    if (emailUserData?.role) {
+      return typeof emailUserData.role === 'string'
+        ? emailUserData.role.trim().toLowerCase()
+        : emailUserData.role;
+    }
+  }
+
+  // Fallback to user metadata if profile doesn't exist
+  if (user.user_metadata?.role) {
+    return typeof user.user_metadata.role === 'string'
+      ? user.user_metadata.role.trim().toLowerCase()
+      : user.user_metadata.role;
+  }
+
+  if (user.app_metadata?.role) {
+    return typeof user.app_metadata.role === 'string'
+      ? user.app_metadata.role.trim().toLowerCase()
+      : user.app_metadata.role;
+  }
+
+  // Default to student if nothing found
+  return error ? null : 'student';
+}
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -36,15 +83,10 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Handle admin login page - allow access but redirect if already authenticated as admin
-  if (request.nextUrl.pathname === "/admin/login") {
+  if (request.nextUrl.pathname.startsWith("/admin/login")) {
     if (user) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (userData?.role === "admin") {
+      const role = await getUserRole(supabase, user);
+      if (role === "admin") {
         // Already authenticated as admin, redirect to dashboard
         return NextResponse.redirect(new URL("/admin", request.url));
       }
@@ -54,19 +96,17 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protect admin routes (excluding /admin/login)
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  if (
+    request.nextUrl.pathname.startsWith("/admin") &&
+    !request.nextUrl.pathname.startsWith("/admin/login")
+  ) {
     if (!user) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (userData?.role !== "admin") {
-      // Not an admin, redirect to student dashboard or login
+    const role = await getUserRole(supabase, user);
+    if (role !== "admin") {
+      // Not an admin, redirect to student dashboard
       return NextResponse.redirect(new URL("/student", request.url));
     }
   }
@@ -77,13 +117,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (userData?.role !== "student") {
+    const role = await getUserRole(supabase, user);
+    // Allow students and anyone who isn't explicitly an admin
+    if (role === "admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
   }
@@ -95,23 +131,20 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from login page
   if (request.nextUrl.pathname === "/login" && user) {
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (userData?.role === "admin") {
+    const role = await getUserRole(supabase, user);
+    
+    if (role === "admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
-    } else if (userData?.role === "student") {
+    } else if (role) {
+      // Any other role goes to student
       return NextResponse.redirect(new URL("/student", request.url));
     }
-    // If role is not found, allow access to login (user might need to complete profile)
+    // If role is not found at all, allow access to login (rare edge case)
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/student/:path*", "/login", "/reset-password"],
+  matcher: ["/admin/:path*", "/student/:path*", "/login", "/reset-password", "/admin/login"],
 };

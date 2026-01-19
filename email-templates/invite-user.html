@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited! - GANSID E-learning </title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc; line-height: 1.6;">
+    <!-- Email Container -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8fafc; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <!-- Main Content -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden;">
+                    
+                    <!-- Header with Brand -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%); padding: 40px 40px 30px; text-align: center;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <!-- Logo/Icon -->
+                                        <div style="width: 56px; height: 56px; background-color: rgba(255, 255, 255, 0.15); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.2);">
+                                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="8.5" cy="7" r="4"></circle>
+                                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                                            </svg>
+                                        </div>
+                                        <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">GANSID</h1>
+                                        <p style="margin: 4px 0 0; font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, 0.9); letter-spacing: 0.5px;">E-learning </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content Body -->
+                    <tr>
+                        <td style="padding: 48px 40px;">
+                            <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #0f172a; line-height: 1.3;">You're Invited! 🎉</h2>
+                            
+                            <p style="margin: 0 0 24px; font-size: 16px; color: #475569; line-height: 1.6;">
+                                Hello!
+                            </p>
+                            
+                            <p style="margin: 0 0 24px; font-size: 16px; color: #475569; line-height: 1.6;">
+                                You've been invited to join <strong style="color: #0f172a;">GANSID Learning Management System</strong> - a premier platform dedicated to advancing healthcare education and research in sickle cell disorders.
+                            </p>
+
+                            <!-- Invite Details -->
+                            <div style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 12px; padding: 24px; margin-bottom: 32px; border: 1px solid #93C5FD;">
+                                <p style="margin: 0 0 16px; font-size: 14px; font-weight: 600; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;">Your Invitation Details</p>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b; width: 140px;">Invited as:</td>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #0f172a; font-weight: 600;">{{ .Role }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b;">Email:</td>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #0f172a; font-weight: 600;">{{ .Email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b;">Invitation Code:</td>
+                                        <td style="padding: 8px 0;">
+                                            <div style="display: inline-block; background-color: #ffffff; border: 2px dashed #2563EB; padding: 8px 16px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 16px; font-weight: 700; color: #1D4ED8; letter-spacing: 1px;">
+                                                {{ .InviteCode }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <p style="margin: 0 0 32px; font-size: 16px; color: #475569; line-height: 1.6;">
+                                Click the button below to accept your invitation and create your account:
+                            </p>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding: 0 0 32px;">
+                                        <a href="{{ .InviteURL }}" style="display: inline-block; background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+                                            Accept Invitation
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Expiration Notice -->
+                            <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 8px; margin-bottom: 32px;">
+                                <p style="margin: 0; font-size: 14px; color: #92400e; line-height: 1.6;">
+                                    <strong style="color: #78350f;">⏰ Time Sensitive:</strong> This invitation expires in 7 days. Please create your account before {{ .ExpiryDate }}.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Benefits Section -->
+                    <tr>
+                        <td style="padding: 0 40px 40px;">
+                            <div style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 12px; padding: 32px; border: 1px solid #93C5FD;">
+                                <h3 style="margin: 0 0 20px; font-size: 18px; font-weight: 700; color: #0f172a;">As a member, you'll get:</h3>
+                                
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="padding-bottom: 16px;">
+                                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                                <tr>
+                                                    <td style="padding-right: 12px; vertical-align: top;">
+                                                        <div style="width: 24px; height: 24px; background-color: #2563EB; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                                            <span style="color: white; font-size: 16px;">✓</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 600;">Access to expert-led courses</p>
+                                                        <p style="margin: 4px 0 0; font-size: 14px; color: #475569;">Learn from leading hematologists and researchers</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-bottom: 16px;">
+                                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                                <tr>
+                                                    <td style="padding-right: 12px; vertical-align: top;">
+                                                        <div style="width: 24px; height: 24px; background-color: #2563EB; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                                            <span style="color: white; font-size: 16px;">✓</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 600;">Globally recognized certifications</p>
+                                                        <p style="margin: 4px 0 0; font-size: 14px; color: #475569;">Earn credentials accepted by medical institutions</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                                <tr>
+                                                    <td style="padding-right: 12px; vertical-align: top;">
+                                                        <div style="width: 24px; height: 24px; background-color: #2563EB; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                                            <span style="color: white; font-size: 16px;">✓</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 600;">Collaborative community</p>
+                                                        <p style="margin: 4px 0 0; font-size: 14px; color: #475569;">Connect with peers and experts worldwide</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 32px 40px; text-align: center; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0 0 16px; font-size: 14px; color: #475569; line-height: 1.6;">
+                                Questions about your invitation? <a href="https://gansid-lms.netlify.app" style="color: #2563EB; text-decoration: none; font-weight: 600;">Contact us</a>
+                            </p>
+                            
+                            <div style="margin-bottom: 16px;">
+                                <p style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: #0f172a;">GANSID</p>
+                                <p style="margin: 0; font-size: 12px; color: #64748b;">Global Action Network for Sickle Cell and Other Inherited Blood Disorders</p>
+                            </div>
+
+                            <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+                                © 2026 GANSID. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

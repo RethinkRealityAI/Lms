@@ -51,159 +51,182 @@ export default async function StudentProgressPage() {
     : 0;
 
   return (
-    <div className="px-4 sm:px-0">
-      <h2 className="text-3xl font-bold mb-6">My Progress</h2>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-3xl font-black tracking-tight text-white mb-2">My Progress</h2>
+        <p className="text-slate-400 font-medium">Track your learning journey and achievements.</p>
+      </div>
 
       {/* Stats Overview */}
-      <div className="grid gap-6 md:grid-cols-3 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Enrolled Courses</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="bg-white border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
+            <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">Enrolled Courses</CardTitle>
+            <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center">
+              <Target className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalEnrollments}</div>
+          <CardContent className="relative">
+            <div className="text-3xl font-black text-slate-900">{totalEnrollments}</div>
+            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">Active Learning Paths</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Completed Lessons</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+
+        <Card className="bg-white border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
+            <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">Completed Lessons</CardTitle>
+            <div className="h-8 w-8 bg-green-50 rounded-lg flex items-center justify-center">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalCompletedLessons}</div>
+          <CardContent className="relative">
+            <div className="text-3xl font-black text-slate-900">{totalCompletedLessons}</div>
+            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">Knowledge Milestones</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Average Quiz Score</CardTitle>
-            <Trophy className="h-4 w-4 text-muted-foreground" />
+
+        <Card className="bg-white border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
+            <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">Average Quiz Score</CardTitle>
+            <div className="h-8 w-8 bg-orange-50 rounded-lg flex items-center justify-center">
+              <Trophy className="h-4 w-4 text-orange-600" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageScore}%</div>
+          <CardContent className="relative">
+            <div className="text-3xl font-black text-slate-900">{averageScore}%</div>
+            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">Academic Performance</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Course Progress */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Course Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {enrollments && enrollments.length > 0 ? (
-              enrollments.map((enrollment: any) => {
-                // Get all lessons for this course
-                const totalCourseLessons = allLessons?.filter(
-                  (lesson: any) => lesson.course_id === enrollment.course_id
-                ) || [];
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Course Progress */}
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white">
+          <CardHeader className="border-b border-slate-50">
+            <CardTitle className="text-lg font-black text-slate-900">Course Progress</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="space-y-6">
+              {enrollments && enrollments.length > 0 ? (
+                enrollments.map((enrollment: any) => {
+                  const totalCourseLessons = allLessons?.filter(
+                    (lesson: any) => lesson.course_id === enrollment.course_id
+                  ) || [];
+                  const completedCourseLessons = completedLessons?.filter(
+                    (cl: any) => cl.lessons?.courses?.id === enrollment.course_id
+                  ) || [];
+                  const progressValue = totalCourseLessons.length > 0
+                    ? Math.round((completedCourseLessons.length / totalCourseLessons.length) * 100)
+                    : 0;
 
-                // Get completed lessons for this course
-                const completedCourseLessons = completedLessons?.filter(
-                  (cl: any) => cl.lessons?.courses?.id === enrollment.course_id
-                ) || [];
+                  return (
+                    <div key={enrollment.id} className="group">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-bold text-slate-900 group-hover:text-[#2563EB] transition-colors line-clamp-1">{enrollment.courses.title}</h4>
+                          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                            <BookOpen className="h-3 w-3" />
+                            {completedCourseLessons.length} / {totalCourseLessons.length} Modules
+                          </p>
+                        </div>
+                        <span className="text-lg font-black text-[#2563EB]">{progressValue}%</span>
+                      </div>
+                      <Progress value={progressValue} className="h-2 bg-slate-100" />
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="h-8 w-8 text-slate-300" />
+                  </div>
+                  <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No Active Enrollments</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-                const progress = totalCourseLessons.length > 0
-                  ? Math.round((completedCourseLessons.length / totalCourseLessons.length) * 100)
-                  : 0;
-
-                return (
-                  <div key={enrollment.id} className="p-4 border rounded-lg hover:border-primary/50 transition-colors">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h4 className="font-semibold mb-1">{enrollment.courses.title}</h4>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
-                          <BookOpen className="h-3 w-3" />
-                          {completedCourseLessons.length} of {totalCourseLessons.length} lessons
+        <div className="space-y-8">
+          {/* Recent Quiz Attempts */}
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+            <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+              <CardTitle className="text-lg font-black text-slate-900">Recent Assessments</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y divide-slate-50">
+                {quizAttempts && quizAttempts.length > 0 ? (
+                  quizAttempts.slice(0, 5).map((attempt: any) => (
+                    <div key={attempt.id} className="flex justify-between items-center p-5 hover:bg-slate-50/50 transition-colors">
+                      <div className="max-w-[70%]">
+                        <p className="font-bold text-slate-900 line-clamp-1">{attempt.quizzes?.title}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
+                          {attempt.quizzes?.lessons?.courses?.title}
                         </p>
                       </div>
-                      <span className="text-2xl font-bold text-primary">{progress}%</span>
+                      <div className="text-right">
+                        <div className={cn(
+                          "px-3 py-1 rounded-full text-xs font-black",
+                          (attempt.score / attempt.total_questions) >= 0.7 
+                            ? "bg-green-100 text-green-700" 
+                            : "bg-orange-100 text-orange-700"
+                        )}>
+                          {Math.round((attempt.score / attempt.total_questions) * 100)}%
+                        </div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
+                          {new Date(attempt.completed_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <Progress value={progress} className="h-2" />
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No Quiz History</p>
                   </div>
-                );
-              })
-            ) : (
-              <p className="text-center text-muted-foreground py-4">
-                No enrollments yet. Enroll in courses to see your progress.
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Recent Quiz Attempts */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Recent Quiz Attempts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {quizAttempts && quizAttempts.length > 0 ? (
-              quizAttempts.slice(0, 10).map((attempt: any) => (
-                <div key={attempt.id} className="flex justify-between items-center p-4 border rounded-lg">
-                  <div>
-                    <p className="font-medium">{attempt.quizzes?.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {attempt.quizzes?.lessons?.courses?.title} - {attempt.quizzes?.lessons?.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(attempt.completed_at).toLocaleDateString()} at{' '}
-                      {new Date(attempt.completed_at).toLocaleTimeString()}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-lg">
-                      {attempt.score}/{attempt.total_questions}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {Math.round((attempt.score / attempt.total_questions) * 100)}%
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-muted-foreground py-4">
-                No quiz attempts yet. Take quizzes to see your results here.
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Completed Lessons History */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Completed Lessons</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {completedLessons && completedLessons.length > 0 ? (
-              completedLessons.slice(0, 10).map((progress: any) => (
-                <div key={progress.id} className="flex justify-between items-center p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                    <div>
-                      <p className="font-medium">{progress.lessons?.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {progress.lessons?.courses?.title}
+          {/* Completed Lessons History */}
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+            <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+              <CardTitle className="text-lg font-black text-slate-900">Recent Completion</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y divide-slate-50">
+                {completedLessons && completedLessons.length > 0 ? (
+                  completedLessons.slice(0, 5).map((progress: any) => (
+                    <div key={progress.id} className="flex justify-between items-center p-5 hover:bg-slate-50/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 line-clamp-1">{progress.lessons?.title}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            {progress.lessons?.courses?.title}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        {new Date(progress.completed_at).toLocaleDateString()}
                       </p>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No Completed Lessons</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(progress.completed_at).toLocaleDateString()}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-muted-foreground py-4">
-                No completed lessons yet. Complete lessons to see your history here.
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

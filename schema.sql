@@ -124,6 +124,20 @@ CREATE TABLE IF NOT EXISTS certificates (
   UNIQUE(user_id, course_id)
 );
 
+-- Create verification_codes table for admin signup
+CREATE TABLE IF NOT EXISTS verification_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL CHECK (role IN ('admin', 'student')) DEFAULT 'admin',
+  description TEXT,
+  max_uses INTEGER NOT NULL DEFAULT 1,
+  current_uses INTEGER NOT NULL DEFAULT 0,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  is_active BOOLEAN DEFAULT TRUE
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
@@ -137,6 +151,7 @@ ALTER TABLE quiz_attempts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lesson_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE verification_codes ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users table
 CREATE POLICY "Anyone can read user profiles" ON users FOR SELECT USING (true);
@@ -246,6 +261,19 @@ CREATE POLICY "Admins can create certificates" ON certificates FOR INSERT WITH C
   EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
 );
 
+-- RLS Policies for verification_codes table
+CREATE POLICY "Anyone can read active verification codes for validation" ON verification_codes 
+  FOR SELECT USING (is_active = true);
+CREATE POLICY "Admins can create verification codes" ON verification_codes FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Admins can update verification codes" ON verification_codes FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Admins can delete verification codes" ON verification_codes FOR DELETE USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_courses_category_id ON courses(category_id);
 CREATE INDEX idx_lessons_course_id ON lessons(course_id);
@@ -262,3 +290,64 @@ CREATE INDEX idx_comments_lesson_id ON lesson_comments(lesson_id);
 CREATE INDEX idx_comments_user_id ON lesson_comments(user_id);
 CREATE INDEX idx_certificates_user_id ON certificates(user_id);
 CREATE INDEX idx_certificates_course_id ON certificates(course_id);
+CREATE INDEX idx_verification_codes_code ON verification_codes(code);
+
+-- ============================================
+-- Verification Code Usage Increment Function
+-- ============================================
+-- This function increments the usage count of a verification code
+CREATE OR REPLACE FUNCTION public.increment_code_usage(p_code TEXT)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE public.verification_codes
+  SET current_uses = current_uses + 1
+  WHERE code = p_code AND is_active = true;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION public.increment_code_usage(TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.increment_code_usage(TEXT) TO anon;
+
+-- ============================================
+-- Database Trigger for Automatic Profile Creation
+-- ============================================
+-- This trigger automatically creates a user profile in the users table
+-- whenever a new user signs up through Supabase Auth
+
+-- Create function to handle new user signups
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Insert a new row into the users table
+  -- using the metadata from auth.users
+  INSERT INTO public.users (id, email, role, full_name, created_at, updated_at)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+    NOW(),
+    NOW()
+  );
+  
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Log the error but don't prevent user creation
+    RAISE WARNING 'Error creating user profile: %', SQLERRM;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Drop the trigger if it exists
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Create trigger on auth.users table
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
+
+-- Grant necessary permissions
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
