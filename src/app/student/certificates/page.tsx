@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Award, Download, Calendar, ExternalLink } from 'lucide-react';
+import { Award, Download, Calendar, ExternalLink, Loader2 } from 'lucide-react';
 import type { Certificate } from '@/types';
 
 interface CertificateWithCourse extends Omit<Certificate, 'course'> {
