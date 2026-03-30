@@ -1,0 +1,577 @@
+{
+  "module": {
+    "title": "Module 2",
+    "slug": "module-2"
+  },
+  "lessons": [
+    {
+      "edappId": "666991a9262fa232d9a912ac",
+      "title": "Introduction",
+      "order_index": 0,
+      "blocks": [
+        {
+          "edapp_slide_id": "08f1d005-c9af-ff25-9fa8-f2d28173f2f3",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Introduction to the Fundraising Strategies that Drive Results Module ",
+          "data": {
+            "html": "<p>In this module, learners will learn how to creatively and effectively find ways to raise funds for their organization. </p>\n<img src=\"fit_content_assets/0001-1234417221942330153_vix2hh.png\" alt=\"\" />\n<p>Author: Lanre Tunji-Ajayi M.S.M </p><p>Image credits: <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://www.freepik.com\">www.freepik.com</a> and Canva</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/0001-1234417221942330153_vix2hh.png"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "9c65a745-e9c5-4ca7-a5fd-512e51c93d3a",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66524596a5367ff1395027b9",
+      "title": "Lesson 1: Disclaimer",
+      "order_index": 0,
+      "blocks": [
+        {
+          "edapp_slide_id": "d0ec622c-b508-44c9-b45e-0211ccf8b4b9",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "scrollable"
+          }
+        },
+        {
+          "edapp_slide_id": "0adfa8b1-2f4a-42e2-918c-3518fa9da7d5",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66524596a5367ff1395027ba",
+      "title": "Lesson 2: Learning Objectives",
+      "order_index": 0,
+      "blocks": [
+        {
+          "edapp_slide_id": "08f4ac74-7770-4d9e-b4a4-b5216a8f63a5",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "list"
+          }
+        },
+        {
+          "edapp_slide_id": "a32e6640-5072-46bd-99d7-ee6affbcf0dd",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66524596a5367ff1395027b7",
+      "title": "Lesson 3: Fundraising",
+      "order_index": 0,
+      "blocks": [
+        {
+          "edapp_slide_id": "d37829b8-1a8a-4456-ab44-0a55113d22ec",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Fundraising",
+          "data": {
+            "html": "<p>Fundraising is the act of engaging in the organized activity of raising funds to support a cause, campaign, etc. </p>\n<img src=\"fit_content_assets/pikaso_texttoimage_35mm-film-photography-A-person-of-mixed-racial-des_m55wxj.jpg\" alt=\"\" />\n<p>There are many types of fundraising: <strong>Grants, Corporate Partnership, Peer-to-Peer, Capital Campaigns, Crowdfunding, Planned Giving, Direct Solicitation, </strong>and <strong>Events.</strong></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/pikaso_texttoimage_35mm-film-photography-A-person-of-mixed-racial-des_m55wxj.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "4213797a-5074-4199-a716-52c601b105b8",
+          "block_type": "image_gallery",
+          "order_index": 1,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/pikaso_reimagine_An-elderly-Caucasian-man-and-woman-in-formal-attir_ci0fg0.jpg",
+                "caption": "<p>Grants are a major source of funding for nonprofit organizations.</p>"
+              },
+              {
+                "url": "fit_content_assets/pikaso_texttoimage_35mm-film-photography-Upbeat-volunteers-with-broad_dugzvb.jpg",
+                "caption": "<p>Fundable Programs are programs targeting awareness around a cause, the arts, educational initiatives, environmental protection, and much more (e.g. TASKOP Global Consulting provides ABC charitable organization with $50k in restricted grant to support their youth program).</p>"
+              },
+              {
+                "url": "fit_content_assets/pikaso_reimagine_A-middleaged-Black-man-with-short-dark-hair-and-gl_uxeoht.jpg",
+                "caption": "<p><strong>Steps to Secure Grant Funding</strong></p><ol><li><p>Identify opportunities through grant-giving foundations, corporations, and government</p></li><li><p>Write and submit the grant proposals</p><p>Examples of Funding Platforms: Grant Connect &amp; Canada Grant Watch</p></li></ol>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "44b1c43b-52f3-40e3-8802-2e1467f92b79",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "title": "Corporate Partnership",
+          "data": {
+            "html": "<p>A corporate partnership is where a charity forms a relationship with a business. It usually involves a charity receiving funds, goods or services in exchange for something the corporate partner sees as beneficial.</p>\n<img src=\"fit_content_assets/0001-5801065320622793044_oamp4v.png\" alt=\"\" />\n<p><strong>Benefits of Corporate Partnership</strong></p><ul><li><p>A source of increased volunteer and operating funds for charities</p></li></ul><ul><li><p>Improving the corporation's community-wide reputation and trust</p></li></ul><p><strong>Tips on Success</strong></p><ul><li><p>Partner with corporations whose values align</p></li><li><p>Communication must be transparent and open between partners</p></li></ul>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/0001-5801065320622793044_oamp4v.png"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "cacae741-760e-410b-a3a6-585b73e7f563",
+          "block_type": "image_gallery",
+          "order_index": 3,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/pikaso_texttoimage_35mm-film-photography-Volunteers-with-bright-expre_obidgo.jpg",
+                "caption": "<p>Crowdfunding is the practice of raising money from a large number of people to fund a project or goal.</p><p>In 2015, over US$34B were raised worldwide by crowdfunding.</p>"
+              },
+              {
+                "url": "fit_content_assets/pikaso_texttoimage_a-computer-screen-that-shows-a-progress-bar-with-t_paje5k.jpg",
+                "caption": "<p>Crowdfunding allows you to put out a call for donations that can quickly and easily attract donors that may give gifts of all sizes. If done well, crowdfunding has the opportunity to be viral.</p><p>Examples of crowdfunding online platforms include <strong>Kickstarter,\nGoFundMe, IndieGoGo etc.</strong></p>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "7c4ae24a-f1fe-4762-9028-808917db4783",
+          "block_type": "image_gallery",
+          "order_index": 4,
+          "data": {
+            "images": [],
+            "mode": "gallery"
+          }
+        },
+        {
+          "edapp_slide_id": "8788ccd9-7c0a-4283-b5d4-dd60bff663b7",
+          "block_type": "rich_text",
+          "order_index": 5,
+          "data": {
+            "segments": [],
+            "mode": "sequence"
+          }
+        },
+        {
+          "edapp_slide_id": "dc78ae03-155c-460e-aa46-97aa696da064",
+          "block_type": "rich_text",
+          "order_index": 6,
+          "title": "Earned Income",
+          "data": {
+            "html": "<p>Earned income is the&nbsp;revenue generated from the sale of goods, services rendered, or work performed (e.g. the Girl Scouts' cookie sales)</p>\n<img src=\"fit_content_assets/0001-6428191568335440976_pnzqxe.png\" alt=\"\" />\n<p>Earned income is gaining popularity among nonprofits especially with increasing competition for donor funds is causing income from grants and individual donations to level off. </p><p></p><p>Key–<strong>be creative!</strong></p><p></p><p>It provides organizations the opportunity to diversify or expand their base of funds to meet growing needs and to better sustain their operations over the long term.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/0001-6428191568335440976_pnzqxe.png"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "9ceeffc5-ca83-4b7d-9865-7ee0b9539b60",
+          "block_type": "image_gallery",
+          "order_index": 7,
+          "data": {
+            "images": [],
+            "mode": "gallery"
+          }
+        },
+        {
+          "edapp_slide_id": "719b1558-8d54-4800-b0fa-6710a03d51cf",
+          "block_type": "image_gallery",
+          "order_index": 8,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/0001-8016836338790529676_ea0jhz.png",
+                "caption": "<p>Direct Mail Solicitation is the process of designing, writing, printing, and distributing hard copy requests for funds to your donors and/or prospective donors and this may be more effective in settings with reliable postage system.</p>"
+              },
+              {
+                "url": "",
+                "caption": "<p><strong>Benefits of DMS</strong></p><ul><li><p>Direct mail builds trust more easily than online marketing</p></li><li><p>Direct mail has a higher response rate than email</p></li><li><p>Direct mail is more likely to get read or scanned in some parts of the world, limited people have access to the internet.</p></li></ul>"
+              },
+              {
+                "url": "",
+                "caption": "<p><strong>Ways to Ensure Success of your Direct Mail Solicitation</strong></p><p>1. Know your audience</p><p>2. Tell a story that resonates with your audience.</p><p>3. Use varied media forms, set goals, and track progress</p>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "011b1fcc-38de-48be-a595-ecc4d8495704",
+          "block_type": "rich_text",
+          "order_index": 9,
+          "title": "Capital Campaigns",
+          "data": {
+            "html": "<p>A capital campaign is a fundraising effort for concrete projects\nsuch as new construction, acquisition or renovation of a building\nover a specific time period.</p>\n<img src=\"fit_content_assets/0001-1996649538205733740_hdxhde.png\" alt=\"\" />\n<p>Sometimes capital campaigns are used to build an endowment for the future or to purchase an extraordinary and expensive piece of equipment.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/0001-1996649538205733740_hdxhde.png"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "13be9d6f-5477-40cd-8573-59aa2dc3ecb2",
+          "block_type": "image_gallery",
+          "order_index": 10,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/pikaso_texttoimage_an-organization-meeting-with-donors-and-shaking-ha_lqnv5e.jpg",
+                "caption": "<p>A fundraising event is usually designed to raise awareness and support for an organization's mission.</p>"
+              },
+              {
+                "url": "fit_content_assets/0001-5600655136922303785_r1ti7i.png",
+                "caption": "<p>Any events including concerts, galas, live or silent auctions, half marathons, neighborhood cookouts, birthdays and anniversaries can be turned into fundraising events, or an opportunity to raise money.</p>"
+              },
+              {
+                "url": "",
+                "caption": "<p><strong>Benefits of Fundraising Events</strong></p><p>Events allow the organizations to get face-to-face with donors, allowing them to reiterate their mission and discuss ways people can get more involved in their work.</p>"
+              },
+              {
+                "url": "",
+                "caption": "<p><strong>Drawback of Fundraising Events</strong></p><p>Many special events often raise a small amount of net proceeds and require a large amount of time and energy to plan and implement.</p>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "4ff75873-abf9-4581-a7b5-78f56f052417",
+          "block_type": "rich_text",
+          "order_index": 11,
+          "data": {
+            "segments": [],
+            "mode": "sequence"
+          }
+        },
+        {
+          "edapp_slide_id": "19ece589-0bee-47f4-b708-d437e4afda5c",
+          "block_type": "hotspot",
+          "order_index": 12,
+          "data": {
+            "image_url": "",
+            "regions": []
+          }
+        },
+        {
+          "edapp_slide_id": "e7ca4979-bb89-41d6-83f1-342019f7353b",
+          "block_type": "quiz_inline",
+          "order_index": 13,
+          "data": {
+            "question_type": "categorize",
+            "categories": [
+              {
+                "text": "True",
+                "correct": false
+              },
+              {
+                "text": "False",
+                "correct": true
+              }
+            ],
+            "instructions": "Drag to the correct category"
+          }
+        },
+        {
+          "edapp_slide_id": "170920d9-6d55-4078-9c01-7d7c8374fbfb",
+          "block_type": "quiz_inline",
+          "order_index": 14,
+          "data": {
+            "question_type": "categorize",
+            "categories": [
+              {
+                "text": "True",
+                "correct": true
+              },
+              {
+                "text": "False",
+                "correct": false
+              }
+            ],
+            "instructions": "Drag to the correct category"
+          }
+        },
+        {
+          "edapp_slide_id": "4134bb78-c9ab-4c36-8f10-0979d22e4e1e",
+          "block_type": "quiz_inline",
+          "order_index": 15,
+          "data": {
+            "question_type": "categorize",
+            "categories": [
+              {
+                "text": "True",
+                "correct": true
+              },
+              {
+                "text": "False",
+                "correct": false
+              }
+            ],
+            "instructions": "Drag to the correct category"
+          }
+        },
+        {
+          "edapp_slide_id": "f9e93720-a4d3-41e7-a49d-36545cc21cf4",
+          "block_type": "quiz_inline",
+          "order_index": 16,
+          "data": {
+            "question_type": "categorize",
+            "categories": [
+              {
+                "text": "True",
+                "correct": true
+              },
+              {
+                "text": "False",
+                "correct": false
+              }
+            ],
+            "instructions": "Drag to the correct category"
+          }
+        },
+        {
+          "edapp_slide_id": "cf0b6636-d0e6-427d-83fd-7eab923ccfbb",
+          "block_type": "cta",
+          "order_index": 17,
+          "data": {
+            "action": "complete_lesson",
+            "text": "<p>You have completed the Fundraising Strategies that Drive Results module!</p>",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "69a3707b9131b7ed8faa0004",
+      "title": "Untitled lesson",
+      "order_index": 0,
+      "blocks": [
+        {
+          "edapp_slide_id": "e5820ef2-cb19-e119-0a3e-2bf8dd018107",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Introduction to the Effective Advocacy Module",
+          "data": {
+            "html": "<p>In this module, learners will learn the fundamentals of becoming effective patient advocates; how to advocate with hospitals and governments, and how to personalize the knowledge to their region and country.</p>\n<img src=\"fit_content_assets/advocacy_images_p3z2nc.jpg\" alt=\"\" />\n<p><strong>Author: </strong>Lanre Tunji-Ajayi MSM</p><p><strong>Recognition</strong>: We recognize the video contributions of Ekawat Suwantaroj, Nehal Dhingra, and Eunice Owino.</p><p><strong>Image credits: </strong><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://www.freepic\">www.freep</a>ik.com</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/advocacy_images_p3z2nc.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "be769e52-5eda-e8f7-11b8-182203d7a006",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "title": "Lesson 1: Disclaimer",
+          "data": {
+            "html": "<p>The Capacity Building Curriculum (\"Curriculum\") may be used strictly for educational, non-commercial purposes. By permitting such use, the Global Action Network for Sickle Cell &amp; Other Inherited Blood Disorders (GANSID) does not grant any broader license or waive any of its or any contributor's rights under copyright or otherwise at law.</p>\n<img src=\"fit_content_assets/an_eduation_trainer_mo2lt7_s4udnl.jpg\" alt=\"\" />\n<p></p>\n<p>This Curriculum has been developed as an educational tool for patient organizations and advocates.  The GANSID assumes no liability for any inaccurate or incomplete information contained in this Curriculum, nor any actions taken in reliance thereon. You assume full responsibility for the use of any information provided. The information contained herein has been supplied by individual subject matter contributors without verification by us. </p>\n<p>The information is provided \"AS IS\" and GANSID assumes no obligation to update the information or advise on further developments concerning the topics mentioned. GANSID will not be responsible or liable in any way for the accuracy, relevancy, or copyright compliance of the material contained in this Curriculum. </p>\n<p>By viewing and using any information derived from the Curriculum, you hereby waive any claims, causes of action, and demands, whether in tort or contract, against GANSID (including its content creators, staff, directors, officers, and agents) and contributors, in any way related to use of the Curriculum or the information derived from it.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/an_eduation_trainer_mo2lt7_s4udnl.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "61b08524-6809-b7d5-fcb6-1d34d8b19f3b",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "title": "Lesson 2: Learning Objectives",
+          "data": {
+            "html": "<p>Following completion of this module, learners will be able to:</p><ul><li><p>Improve their advocacy work with their hospitals, health systems, and government</p></li><li><p>Support patients and families they serve to become better self-advocates</p></li><li><p>Better understand ethical considerations in advocacy</p></li><li><p>Apply critical thinking skills from the knowledge gained in this course module to their locality or country.</p></li></ul>\n<img src=\"fit_content_assets/Group_work_whd5ix.jpg\" alt=\"\" />\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/Group_work_whd5ix.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "01bb9431-9bbe-140d-9221-ebf74e14dbd9",
+          "block_type": "rich_text",
+          "order_index": 3,
+          "title": " Context to the Fundamentals of Advocacy ",
+          "data": {
+            "html": "<p>Context to the Fundamentals of Advocacy Module</p>\n<p>Whether operating in a low, medium, or high-resource environment, most advocates and organizations supporting individuals and families affected by inherited blood disorders are typically motivated by a personal connection to the disease. This ensures a passionate commitment, but may not provide access to the opportunities or resources needed for effective advocacy.</p>\n<img src=\"fit_content_assets/advocacy_image-4_nxaum3.jpg\" alt=\"\" />\n<p></p>\n<p>With the GANSID's capacity-building initiative, we hope to strengthen the advocacy skill sets of the patient organizations serving the inherited blood disorders communities through training, mentorship, and cross-disease collaborations. </p>\n<p>Through this program, the GANSID will empower its member organizations to be able to work with their health systems and governments to advance care, treatment, research, capacity building, and education in regions of the world facing acute challenges due to underdeveloped healthcare systems, poverty, and a lack of disease awareness among patient population.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/advocacy_image-4_nxaum3.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "23f8a651-725f-ccd4-c103-7b672c37c618",
+          "block_type": "rich_text",
+          "order_index": 4,
+          "title": "Advocacy vs Effective Advocacy?",
+          "data": {
+            "html": "<p></p>\n<p>Advocacy is an act of supporting or promoting a cause, idea, or policy to bring about change or influence decisions within political, economic, social systems and institutions.</p>\n<p>Effective advocacy is the art of targeting and accomplishing an advocacy action. It utilizes strategic planning and targeted action.</p>\n<img src=\"fit_content_assets/advocacy-colored_woman_with_speaker_wqnuj2.jpg\" alt=\"\" />\n<p>Skills: Effective advocacy requires a range of skills, including networking, public speaking, persuasive writing, and critical thinking.</p>\n<p>In addition, active listening, empathy, and the ability to build relationships and collaborate with others are also important skills for advocates.</p>\n<p>Advocacy Platforms: Various platforms, such as public speaking, letter-writing campaigns, lobbying events, and social media, can be used for advocacy. </p>\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/advocacy-colored_woman_with_speaker_wqnuj2.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "8f1f0687-2110-d4db-69c3-d78a1846a316",
+          "block_type": "rich_text",
+          "order_index": 5,
+          "title": "Lesson 5: Types of Advocacy",
+          "data": {
+            "html": "<p>In this lesson, we will address:</p><ol><li><p>Individual - Driven Advocacy</p></li><li><p>Patient Organization - Driven Advocacy</p></li></ol>\n<img src=\"fit_content_assets/writing_higx0s.jpg\" alt=\"\" />\n<p></p><p></p>\n<p></p>\n<p></p>\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/writing_higx0s.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "ae2fd6f4-3532-52cd-b9c4-103e22e66a0f",
+          "block_type": "image_gallery",
+          "order_index": 6,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/advocacy-line-inverted-icon-free-vector_u8n3zu.jpg",
+                "caption": "<p style=\"text-align: left\"><strong>Overview:</strong></p><p style=\"text-align: left\">Successful advocacy means knowing what needs to be accomplished and being <u>realistic</u> in your expectations. It requires careful planning and strategic thinking. We have provided six ingredients to successful advocacy in this lesson to help you execute your advocacy initiative effectively.</p>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "7c6e2cdf-2ef0-45fb-2a3e-ad7ef84edb34",
+          "block_type": "rich_text",
+          "order_index": 7,
+          "title": "Encountering Advocacy Challenges",
+          "data": {
+            "html": "<p>Your advocacy efforts may be met with various challenges, including:</p><ul><li><p>Resistance from those in power whereby, advocates may encounter indifference, opposition, skepticism, or apathy from decision-makers</p></li><li><p>Inability to maintain momentum and sustain the advocacy efforts</p></li><li><p> Lack of public and decision-makers' awareness of the issue</p></li><li><p> Limited resources (human and financial) and competing priorities</p></li></ul>\n<img src=\"fit_content_assets/overcoming_challenge_2_yvv7lb.jpg\" alt=\"\" />\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/overcoming_challenge_2_yvv7lb.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "d8614b4b-1010-2563-e868-6737562e989e",
+          "block_type": "rich_text",
+          "order_index": 8,
+          "title": "Become a Patient Advocate",
+          "data": {
+            "html": "<p>Patient advocacy is a lifelong journey, requiring perseverance, resilience, and a commitment to making a positive difference in the lives of people affected by one or more disease(s).</p>\n<img src=\"fit_content_assets/become_an_advocate_dlzrei.jpg\" alt=\"\" />\n<p><strong>Who can become a patient advocate?</strong> </p><p>Anyone can become a patient advocate by first identifying a patient-related issue and taking action on it.</p><p>Joining advocacy organizations, attending workshops or training sessions, and volunteering for patient-related causes can provide valuable opportunities to learn and develop skills to become an effective patient advocate.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/become_an_advocate_dlzrei.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "455ae616-a670-0f40-9f09-3e9794c26d29",
+          "block_type": "rich_text",
+          "order_index": 9,
+          "title": "Ethical Considerations in Patient Advocacy",
+          "data": {
+            "html": "<p>Patient advocacy should be conducted ethically, respecting the rights and dignity of all individuals involved.</p>\n<img src=\"fit_content_assets/ethical_considerations_egjaxz.jpg\" alt=\"\" />\n<p>A patient advocate must place the advocacy initiative ahead of any personal interest or personal gain, and disclose all facts in any situation where a potential conflict of interest may arise.</p>\n<p>A patient advocate should be:</p><ul><li><p>Transparent and honest,</p></li><li><p> Be accountable in their actions and communications,</p></li><li><p>Base advocacy efforts on accurate information and evidence.</p></li></ul><p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/ethical_considerations_egjaxz.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "cd179302-0be9-d0bc-9d84-34f49ceacfa5",
+          "block_type": "rich_text",
+          "order_index": 10,
+          "title": "GANSID- Bringing Us Together in Advocacy",
+          "data": {
+            "html": "<p></p>\n<img src=\"fit_content_assets/Roundtable-Lanre_sajqjl_wwadki.jpg\" alt=\"\" />\n<p>Before you complete this advocacy module, we hope to share a few patient advocacy stories with you, and we hope their stories will inspire you to greater work in your own country and region.</p>\n<p></p>\n<p></p>\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/Roundtable-Lanre_sajqjl_wwadki.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "bba11c1b-1616-4693-801b-64b504db4b5a",
+          "block_type": "cta",
+          "order_index": 11,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    }
+  ],
+  "generatedAt": "2026-03-30T16:32:21.300Z"
+}

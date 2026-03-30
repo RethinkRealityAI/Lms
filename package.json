@@ -10,7 +10,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "import-scorm": "npx tsx scripts/import-scorm/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "@types/node": "^25.0.9",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
+    "adm-zip": "^0.5.16",
     "autoprefixer": "^10.4.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -48,9 +50,11 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/adm-zip": "^0.5.8",
     "@vitejs/plugin-react": "^6.0.1",
     "jsdom": "^29.0.1",
     "playwright": "^1.58.2",
+    "tsx": "^4.21.0",
     "vitest": "^4.1.2"
   }
 }
