@@ -9,7 +9,7 @@ export async function getLessonsByCourse(courseId: string): Promise<Lesson[]> {
     .eq('course_id', courseId)
     .order('order_index', { ascending: true });
   if (error) return [];
-  return data as Lesson[];
+  return (data ?? []) as Lesson[];
 }
 
 export async function getLessonById(id: string): Promise<Lesson | null> {
@@ -31,5 +31,5 @@ export async function getBlocksByLesson(lessonId: string): Promise<LessonBlock[]
     .eq('lesson_id', lessonId)
     .order('order_index', { ascending: true });
   if (error) return [];
-  return data as LessonBlock[];
+  return (data ?? []) as LessonBlock[];
 }

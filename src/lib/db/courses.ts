@@ -20,7 +20,7 @@ export async function getCoursesByInstitution(institutionId: string): Promise<Co
     .eq('institution_id', institutionId)
     .order('created_at', { ascending: false });
   if (error) return [];
-  return data as Course[];
+  return (data ?? []) as Course[];
 }
 
 export async function getPublishedCourses(): Promise<Course[]> {
@@ -31,5 +31,5 @@ export async function getPublishedCourses(): Promise<Course[]> {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
   if (error) return [];
-  return data as Course[];
+  return (data ?? []) as Course[];
 }
