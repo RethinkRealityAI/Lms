@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const quizInlineDataSchema = z.object({
   question_type: z.enum(['categorize', 'multiple_choice', 'true_false']),
+  question: z.string().optional(),
   instructions: z.string().optional(),
   categories: z.array(z.object({
     name: z.string(),

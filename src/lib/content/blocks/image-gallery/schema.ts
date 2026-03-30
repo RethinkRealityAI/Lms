@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const imageGalleryDataSchema = z.object({
   images: z.array(z.object({
-    url: z.string(),
+    url: z.string().url(),
     caption: z.string().nullable().optional(),
     alt: z.string().optional(),
   })).default([]),

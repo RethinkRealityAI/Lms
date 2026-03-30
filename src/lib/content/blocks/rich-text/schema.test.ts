@@ -11,6 +11,7 @@ describe('richTextDataSchema', () => {
     const result = richTextDataSchema.safeParse({});
     expect(result.success).toBe(true);
     expect(result.data?.html).toBe('');
+    expect(result.data?.mode).toBe('standard');
   });
 
   it('rejects invalid mode', () => {
