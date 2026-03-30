@@ -11,6 +11,12 @@ const VARIANT_CONFIG = {
   success: { icon: CheckCircle, className: 'bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-100' },
 };
 
+function sanitizeHtml(html: string): string {
+  // Content originates from admin-imported SCORM packages.
+  // Strip script tags as defense-in-depth against malformed imports.
+  return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+}
+
 export default function CalloutViewer({ data }: BlockViewerProps<CalloutData>) {
   const { icon: Icon, className } = VARIANT_CONFIG[data.variant ?? 'info'];
   return (
@@ -18,7 +24,7 @@ export default function CalloutViewer({ data }: BlockViewerProps<CalloutData>) {
       <Icon className="mt-0.5 h-5 w-5 shrink-0" />
       <div>
         {data.title && <p className="mb-1 font-semibold">{data.title}</p>}
-        <div className="prose-sm" dangerouslySetInnerHTML={{ __html: data.html }} />
+        <div className="prose-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.html) }} />
       </div>
     </div>
   );

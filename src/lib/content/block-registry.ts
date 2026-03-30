@@ -12,6 +12,7 @@ export interface BlockEditorProps<TData = Record<string, unknown>> {
 export interface BlockViewerProps<TData = Record<string, unknown>> {
   data: TData;
   block: { id: string; title?: string; is_visible: boolean };
+  onComplete?: () => void;
 }
 
 export interface BlockTypeDefinition<TData = Record<string, unknown>> {

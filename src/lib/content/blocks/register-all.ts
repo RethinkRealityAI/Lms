@@ -1,3 +1,4 @@
+'use client';
 import { z } from 'zod';
 import React from 'react';
 import { registerBlockType } from '@/lib/content/block-registry';
@@ -46,6 +47,7 @@ registerBlockType({
   defaultData: { text: '', action: 'complete_lesson' as const, button_label: 'Continue' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/cta/viewer')),
   EditorComponent: null,
+  completionCriteria: () => true,
   version: 1,
 });
 
@@ -122,7 +124,7 @@ registerBlockType({
   description: 'Interactive H5P learning object.',
   icon: 'zap',
   category: 'interactive',
-  dataSchema: z.object({ contentKey: z.string() }),
+  dataSchema: z.object({ contentKey: z.string() }).passthrough(),
   defaultData: { contentKey: '' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/h5p/viewer')),
   EditorComponent: null,

@@ -1,5 +1,7 @@
 'use client';
-export default function VideoViewer({ data }: { data: { url: string; poster?: string; caption?: string } }) {
+import type { BlockViewerProps } from '@/lib/content/block-registry';
+
+export default function VideoViewer({ data }: BlockViewerProps<{ url: string; poster?: string; caption?: string; autoplay?: boolean }>) {
   return (
     <div className="space-y-2">
       <video src={data.url} poster={data.poster} controls className="w-full rounded-lg" style={{ maxHeight: 500 }}>
