@@ -33,6 +33,10 @@ export interface BlockTypeDefinition<TData = Record<string, unknown>> {
 const registry = new Map<string, BlockTypeDefinition>();
 
 export function registerBlockType<T>(definition: BlockTypeDefinition<T>): void {
+  if (registry.has(definition.type)) {
+    console.warn(`[block-registry] Block type "${definition.type}" is already registered. Overwriting.`);
+  }
+  // Cast required: Map stores erased BlockTypeDefinition; callers must use dataSchema.parse() for type safety
   registry.set(definition.type, definition as unknown as BlockTypeDefinition);
 }
 
@@ -46,6 +50,11 @@ export function getAllBlockTypes(): BlockTypeDefinition[] {
 
 export function getBlockTypesByCategory(category: BlockCategory): BlockTypeDefinition[] {
   return getAllBlockTypes().filter((b) => b.category === category);
+}
+
+/** For testing only — clears all registered block types */
+export function clearRegistry(): void {
+  registry.clear();
 }
 
 // Legacy export for backward compat with any code that used LESSON_BLOCK_REGISTRY

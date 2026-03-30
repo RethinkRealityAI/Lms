@@ -1,9 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { z } from 'zod';
+import { registerBlockType, getBlockType, getAllBlockTypes, getBlockTypesByCategory, clearRegistry } from './block-registry';
 
 describe('block registry', () => {
-  it('registerBlockType adds a type to the registry', async () => {
-    const { registerBlockType, getBlockType } = await import('./block-registry');
+  beforeEach(() => {
+    clearRegistry();
+  });
+
+  it('registerBlockType adds a type to the registry', () => {
     registerBlockType({
       type: 'test_block',
       label: 'Test',
@@ -12,8 +16,8 @@ describe('block registry', () => {
       category: 'content',
       dataSchema: z.object({ text: z.string() }),
       defaultData: { text: '' },
-      EditorComponent: null as any,
-      ViewerComponent: null as any,
+      EditorComponent: null,
+      ViewerComponent: null,
       version: 1,
     });
     const def = getBlockType('test_block');
@@ -21,13 +25,11 @@ describe('block registry', () => {
     expect(def?.label).toBe('Test');
   });
 
-  it('getBlockType returns undefined for unregistered type', async () => {
-    const { getBlockType } = await import('./block-registry');
+  it('getBlockType returns undefined for unregistered type', () => {
     expect(getBlockType('nonexistent')).toBeUndefined();
   });
 
-  it('getAllBlockTypes returns all registered types', async () => {
-    const { registerBlockType, getAllBlockTypes } = await import('./block-registry');
+  it('getAllBlockTypes returns all registered types', () => {
     const before = getAllBlockTypes().length;
     registerBlockType({
       type: 'another_test',
@@ -37,16 +39,40 @@ describe('block registry', () => {
       category: 'media',
       dataSchema: z.object({}),
       defaultData: {},
-      EditorComponent: null as any,
-      ViewerComponent: null as any,
+      EditorComponent: null,
+      ViewerComponent: null,
       version: 1,
     });
     expect(getAllBlockTypes().length).toBe(before + 1);
   });
 
-  it('getBlockTypesByCategory filters correctly', async () => {
-    const { getBlockTypesByCategory } = await import('./block-registry');
+  it('getBlockTypesByCategory filters correctly', () => {
+    registerBlockType({
+      type: 'content_block',
+      label: 'Content',
+      description: '',
+      icon: 'box',
+      category: 'content',
+      dataSchema: z.object({}),
+      defaultData: {},
+      EditorComponent: null,
+      ViewerComponent: null,
+      version: 1,
+    });
+    registerBlockType({
+      type: 'media_block',
+      label: 'Media',
+      description: '',
+      icon: 'image',
+      category: 'media',
+      dataSchema: z.object({}),
+      defaultData: {},
+      EditorComponent: null,
+      ViewerComponent: null,
+      version: 1,
+    });
     const contentBlocks = getBlockTypesByCategory('content');
+    expect(contentBlocks.length).toBeGreaterThan(0);
     expect(contentBlocks.every((b) => b.category === 'content')).toBe(true);
   });
 });
