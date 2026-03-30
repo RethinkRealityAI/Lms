@@ -9,7 +9,21 @@ interface LessonProgressInput {
   is_required?: boolean;
 }
 
-export function calculateLessonProgress(lessons: LessonProgressInput[]) {
+interface LessonProgressResult {
+  completed: boolean;
+  percentage: number;
+  completedCount: number;
+  totalCount: number;
+}
+
+interface CourseProgressResult {
+  completed: boolean;
+  percentage: number;
+  completedLessons: number;
+  totalLessons: number;
+}
+
+export function calculateLessonProgress(lessons: LessonProgressInput[]): LessonProgressResult {
   const required = lessons.filter((l) => l.is_required !== false);
   const completedRequired = required.filter((l) => l.completed);
   const percentage = calculateCompletionPercentage(completedRequired.length, required.length);
@@ -27,7 +41,7 @@ interface ModuleProgressInput {
   totalLessons: number;
 }
 
-export function calculateCourseProgress(modules: ModuleProgressInput[]) {
+export function calculateCourseProgress(modules: ModuleProgressInput[]): CourseProgressResult {
   const total = modules.reduce((sum, m) => sum + m.totalLessons, 0);
   const completed = modules.reduce((sum, m) => sum + m.completedLessons, 0);
   const percentage = calculateCompletionPercentage(completed, total);

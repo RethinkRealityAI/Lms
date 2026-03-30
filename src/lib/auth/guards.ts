@@ -24,7 +24,7 @@ export async function requireAuth(): Promise<User> {
 
 export async function requireAdminAuth(): Promise<User> {
   const user = await requireAuth();
-  if (!isAdminRole(user.role)) redirect('/login');
+  if (!isAdminRole(user.role)) redirect('/student');
   return user;
 }
 

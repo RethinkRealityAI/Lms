@@ -62,6 +62,16 @@ describe('calculateLessonProgress', () => {
     expect(result.completed).toBe(false);
     expect(result.percentage).toBe(0);
   });
+
+  it('treats is_required: undefined as required', () => {
+    const lessons = [
+      { id: 'a', completed: true, is_required: undefined },
+      { id: 'b', completed: false, is_required: undefined },
+    ];
+    const result = calculateLessonProgress(lessons);
+    expect(result.completed).toBe(false);
+    expect(result.totalCount).toBe(2);
+  });
 });
 
 describe('calculateCourseProgress', () => {
