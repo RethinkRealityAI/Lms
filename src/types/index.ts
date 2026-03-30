@@ -12,7 +12,12 @@ declare global {
   }
 }
 
-export type UserRole = 'admin' | 'student';
+export type UserRole =
+  | 'platform_admin'
+  | 'institution_admin'
+  | 'instructor'
+  | 'student'
+  | 'admin'; // Backward-compatible legacy value
 
 export interface User {
   id: string;
@@ -27,6 +32,7 @@ export interface User {
 
 export interface Category {
   id: string;
+  institution_id?: string;
   name: string;
   description?: string;
   created_at: string;
@@ -34,6 +40,7 @@ export interface Category {
 
 export interface Course {
   id: string;
+  institution_id?: string;
   title: string;
   description: string;
   category_id?: string;
@@ -45,8 +52,24 @@ export interface Course {
   category?: Category;
 }
 
+export interface Module {
+  id: string;
+  course_id: string;
+  institution_id?: string;
+  title: string;
+  description?: string;
+  order_index: number;
+  is_published: boolean;
+  prerequisite_module_id?: string;
+  unlock_date?: string;
+  created_at: string;
+  updated_at: string;
+  lessons?: Lesson[];
+}
+
 export interface Lesson {
   id: string;
+  institution_id?: string;
   course_id: string;
   title: string;
   description: string;
@@ -54,6 +77,43 @@ export interface Lesson {
   content_url: string;
   order_index: number;
   created_at: string;
+  module_id?: string;
+  is_required: boolean;
+  prerequisite_lesson_id?: string;
+}
+
+export type LessonBlockType =
+  | 'rich_text'
+  | 'video'
+  | 'image'
+  | 'pdf'
+  | 'iframe'
+  | 'model3d'
+  | 'h5p'
+  | 'canvas'
+  | 'quiz_summary'
+  | 'download'
+  | 'cta'
+  | 'image_gallery'
+  | 'audio'
+  | 'hotspot'
+  | 'quiz_inline'
+  | 'callout';
+
+export interface LessonBlock {
+  id: string;
+  institution_id: string;
+  lesson_id: string;
+  block_type: string;
+  title?: string;
+  data: Record<string, unknown>;
+  order_index: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+  is_visible: boolean;
+  settings: Record<string, unknown>;
+  version: number;
 }
 
 export interface Quiz {
@@ -61,16 +121,35 @@ export interface Quiz {
   lesson_id: string;
   title: string;
   created_at: string;
+  max_attempts: number;
+  passing_score_percentage: number;
+  scoring_mode: 'best' | 'latest' | 'average' | 'first';
+  time_limit_minutes?: number;
+  shuffle_questions: boolean;
 }
 
 export interface Question {
   id: string;
   quiz_id: string;
   question_text: string;
-  question_type: 'mcq' | 'fill_blank';
-  options?: string[]; // For MCQ
-  correct_answer: string;
+  question_type: string;
+  question_data: Record<string, unknown>;
+  correct_answer_data: Record<string, unknown>;
+  points: number;
+  explanation?: string;
+  options?: string[]; // For MCQ - kept for backward compat
+  correct_answer?: string; // Kept for backward compat
   order_index: number;
+}
+
+export interface QuizResponse {
+  id: string;
+  attempt_id: string;
+  question_id: string;
+  response_data: Record<string, unknown>;
+  is_correct?: boolean;
+  points_awarded?: number;
+  answered_at: string;
 }
 
 export interface CourseEnrollment {
@@ -95,6 +174,12 @@ export interface QuizAttempt {
   score: number;
   total_questions: number;
   completed_at: string;
+  attempt_number: number;
+  status: 'in_progress' | 'submitted' | 'graded';
+  max_score?: number;
+  percentage?: number;
+  time_started?: string;
+  graded_by?: string;
 }
 
 export interface CourseReview {
