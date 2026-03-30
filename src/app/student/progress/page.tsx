@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Trophy, Target, BookOpen } from 'lucide-react';

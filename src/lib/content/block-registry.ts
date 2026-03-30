@@ -1,4 +1,4 @@
-import type { ZodSchema } from 'zod';
+import type { ZodType, ZodTypeDef } from 'zod';
 import type React from 'react';
 
 export type BlockCategory = 'content' | 'media' | 'interactive' | 'assessment' | 'navigation';
@@ -21,7 +21,8 @@ export interface BlockTypeDefinition<TData = Record<string, unknown>> {
   description: string;
   icon: string;
   category: BlockCategory;
-  dataSchema: ZodSchema<TData>;
+  // ZodType with unknown input allows schemas with .default() / .superRefine() where input ≠ output
+  dataSchema: ZodType<TData, ZodTypeDef, unknown>;
   defaultData: TData;
   EditorComponent: React.LazyExoticComponent<React.ComponentType<BlockEditorProps<TData>>> | null;
   ViewerComponent: React.LazyExoticComponent<React.ComponentType<BlockViewerProps<TData>>> | null;
