@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toast";
+import '@/lib/content/blocks/register-all';
 
 export const metadata: Metadata = {
   title: "LMS - Learning Management System",
