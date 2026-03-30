@@ -82,7 +82,7 @@ function ModuleSection({
                   )}
                 >
                   {done ? (
-                    <CheckCircle className="h-4 w-4 shrink-0 text-green-500" />
+                    <CheckCircle aria-label="Lesson completed" className="h-4 w-4 shrink-0 text-green-500" />
                   ) : (
                     <div className="h-4 w-4 shrink-0 rounded-full border-2 border-muted-foreground/30" />
                   )}
