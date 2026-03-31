@@ -213,3 +213,75 @@ export interface Certificate {
   certificate_url?: string;
   course?: Course;
 }
+
+// --- Slide types ---
+
+export type SlideType = 'title' | 'content' | 'media' | 'quiz' | 'disclaimer' | 'interactive' | 'cta';
+export type SlideStatus = 'draft' | 'published';
+export type CourseStatus = 'draft' | 'published' | 'archived';
+
+export interface Slide {
+  id: string;
+  lesson_id: string;
+  slide_type: SlideType;
+  title: string | null;
+  order_index: number;
+  status: SlideStatus;
+  settings: Record<string, unknown>;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SlideTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  default_blocks: Array<{ block_type: string; data: Record<string, unknown> }>;
+  thumbnail_url: string | null;
+  institution_id: string | null;
+  created_at: string;
+}
+
+export interface ContentActivityLog {
+  id: string;
+  institution_id: string | null;
+  user_id: string | null;
+  entity_type: 'course' | 'module' | 'lesson' | 'slide' | 'block';
+  entity_id: string;
+  action: 'created' | 'updated' | 'deleted' | 'published' | 'reordered';
+  changes: Record<string, { old: unknown; new: unknown }>;
+  created_at: string;
+}
+
+// --- Theme types ---
+
+export interface InstitutionTheme {
+  primaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  fontFamily: string;
+  fontScale: number;
+  logoUrl?: string;
+  borderRadius: 'none' | 'sm' | 'md' | 'lg' | 'full';
+  slideTransition: 'none' | 'fade' | 'slide';
+}
+
+// --- Editor state types ---
+
+export type EntitySelection =
+  | { type: 'course'; id: string }
+  | { type: 'module'; id: string }
+  | { type: 'lesson'; id: string }
+  | { type: 'slide'; id: string }
+  | { type: 'block'; id: string };
+
+export interface EditorAction {
+  type: string;
+  entityType: string;
+  entityId: string;
+  previousState: unknown;
+  newState: unknown;
+  timestamp: number;
+}
