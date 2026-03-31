@@ -121,7 +121,8 @@ function EditorContent({ courseId }: { courseId: string }) {
       };
       addModule(moduleData);
     } catch (err) {
-      console.error('Failed to add module:', err);
+      const msg = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
+      console.error('Failed to add module:', msg, err);
     }
   }, [courseId, institutionId, addModule]);
 
@@ -150,7 +151,8 @@ function EditorContent({ courseId }: { courseId: string }) {
       };
       addLesson(moduleId, lessonData);
     } catch (err) {
-      console.error('Failed to add lesson:', err);
+      const msg = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
+      console.error('Failed to add lesson:', msg, err);
     }
   }, [courseId, institutionId, store, addLesson]);
 
@@ -188,7 +190,8 @@ function EditorContent({ courseId }: { courseId: string }) {
       );
       addSlide(lessonId, slide);
     } catch (err) {
-      console.error('Failed to add slide:', err);
+      const msg = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
+      console.error('Failed to add slide:', msg, err);
     }
   }, [institutionId, store, addSlide]);
 
@@ -295,7 +298,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   return (
     <>
-      <EditorToolbar onSave={saveNow} />
+      <EditorToolbar onSave={saveNow} courseId={courseId} />
       <div className="flex flex-1 min-h-0">
         <StructurePanel
           onAddModule={handleAddModule}

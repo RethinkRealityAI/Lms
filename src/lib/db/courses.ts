@@ -1,10 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Course, CourseStatus } from '@/types';
 import { logActivity } from './activity-log';
 
-export async function getCourseById(id: string): Promise<Course | null> {
-  const supabase = await createClient();
+export async function getCourseById(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<Course | null> {
   const { data, error } = await supabase
     .from('courses')
     .select('*, category:categories(*)')
@@ -14,8 +15,10 @@ export async function getCourseById(id: string): Promise<Course | null> {
   return data as Course;
 }
 
-export async function getCoursesByInstitution(institutionId: string): Promise<Course[]> {
-  const supabase = await createClient();
+export async function getCoursesByInstitution(
+  supabase: SupabaseClient,
+  institutionId: string,
+): Promise<Course[]> {
   const { data, error } = await supabase
     .from('courses')
     .select('*, category:categories(*)')
@@ -100,8 +103,7 @@ export async function publishCourse(
   });
 }
 
-export async function getPublishedCourses(): Promise<Course[]> {
-  const supabase = await createClient();
+export async function getPublishedCourses(supabase: SupabaseClient): Promise<Course[]> {
   const { data, error } = await supabase
     .from('courses')
     .select('*, category:categories(*)')

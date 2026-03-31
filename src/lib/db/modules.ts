@@ -1,5 +1,4 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/server';
 import type { Module, Lesson } from '@/types';
 
 // ── Client-side CRUD ──────────────────────────────────────────────────────────
@@ -56,8 +55,10 @@ export async function deleteModule(
 
 // ── Server-side read helpers ───────────────────────────────────────────────────
 
-export async function getModulesByCourse(courseId: string): Promise<Module[]> {
-  const supabase = await createClient();
+export async function getModulesByCourse(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<Module[]> {
   const { data, error } = await supabase
     .from('modules')
     .select('*')
@@ -69,9 +70,9 @@ export async function getModulesByCourse(courseId: string): Promise<Module[]> {
 }
 
 export async function getModulesWithLessonsByCourse(
-  courseId: string
+  supabase: SupabaseClient,
+  courseId: string,
 ): Promise<(Module & { lessons: Lesson[] })[]> {
-  const supabase = await createClient();
   const { data, error } = await supabase
     .from('modules')
     .select('*, lessons(*)')

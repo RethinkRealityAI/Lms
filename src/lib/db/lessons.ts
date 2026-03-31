@@ -1,5 +1,4 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/server';
 import type { Lesson, LessonBlock } from '@/types';
 
 // ── Client-side CRUD ──────────────────────────────────────────────────────────
@@ -58,8 +57,10 @@ export async function deleteLesson(
 
 // ── Server-side read helpers ───────────────────────────────────────────────────
 
-export async function getLessonsByCourse(courseId: string): Promise<Lesson[]> {
-  const supabase = await createClient();
+export async function getLessonsByCourse(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<Lesson[]> {
   const { data, error } = await supabase
     .from('lessons')
     .select('*')
@@ -69,8 +70,10 @@ export async function getLessonsByCourse(courseId: string): Promise<Lesson[]> {
   return (data ?? []) as Lesson[];
 }
 
-export async function getLessonById(id: string): Promise<Lesson | null> {
-  const supabase = await createClient();
+export async function getLessonById(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<Lesson | null> {
   const { data, error } = await supabase
     .from('lessons')
     .select('*')
@@ -80,8 +83,10 @@ export async function getLessonById(id: string): Promise<Lesson | null> {
   return data as Lesson;
 }
 
-export async function getBlocksByLesson(lessonId: string): Promise<LessonBlock[]> {
-  const supabase = await createClient();
+export async function getBlocksByLesson(
+  supabase: SupabaseClient,
+  lessonId: string,
+): Promise<LessonBlock[]> {
   const { data, error } = await supabase
     .from('lesson_blocks')
     .select('*')

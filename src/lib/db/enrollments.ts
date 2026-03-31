@@ -1,11 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CourseEnrollment } from '@/types';
 
 export async function getEnrollment(
+  supabase: SupabaseClient,
   userId: string,
   courseId: string
 ): Promise<CourseEnrollment | null> {
-  const supabase = await createClient();
   const { data, error } = await supabase
     .from('course_enrollments')
     .select('*')
@@ -16,8 +16,10 @@ export async function getEnrollment(
   return data as CourseEnrollment;
 }
 
-export async function getEnrolledCourseIds(userId: string): Promise<string[]> {
-  const supabase = await createClient();
+export async function getEnrolledCourseIds(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<string[]> {
   const { data, error } = await supabase
     .from('course_enrollments')
     .select('course_id')

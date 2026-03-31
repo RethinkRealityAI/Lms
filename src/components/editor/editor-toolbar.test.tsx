@@ -11,6 +11,10 @@ vi.mock('@/lib/db', () => ({
   publishCourse: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 vi.mock('@/lib/supabase/client', () => ({
   createClient: vi.fn(() => ({
     auth: {

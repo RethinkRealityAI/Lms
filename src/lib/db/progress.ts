@@ -1,11 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Progress } from '@/types';
 
 export async function getProgressByUserAndCourse(
+  supabase: SupabaseClient,
   userId: string,
   courseId: string
 ): Promise<Progress[]> {
-  const supabase = await createClient();
   // First get all lesson IDs for this course
   const { data: lessons } = await supabase
     .from('lessons')
@@ -26,10 +26,10 @@ export async function getProgressByUserAndCourse(
 }
 
 export async function markLessonComplete(
+  supabase: SupabaseClient,
   userId: string,
   lessonId: string
 ): Promise<void> {
-  const supabase = await createClient();
   const { error } = await supabase
     .from('progress')
     .upsert(

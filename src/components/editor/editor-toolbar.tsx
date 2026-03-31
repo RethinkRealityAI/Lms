@@ -1,13 +1,16 @@
 'use client';
 
 import { Save, Undo2, Redo2, Eye, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEditorStore } from './editor-store-context';
 
 interface EditorToolbarProps {
   onSave?: () => void;
+  courseId?: string;
 }
 
-export function EditorToolbar({ onSave }: EditorToolbarProps) {
+export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
+  const router = useRouter();
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
   const undo = useEditorStore((s) => s.undo);
@@ -54,8 +57,9 @@ export function EditorToolbar({ onSave }: EditorToolbarProps) {
         </button>
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <button
+          onClick={() => courseId && router.push(`/gansid/admin/courses/${courseId}/preview`)}
           className="p-2 rounded hover:bg-gray-100 transition-colors"
-          title="Preview"
+          title="Preview as student"
         >
           <Eye className="w-4 h-4 text-gray-600" />
         </button>

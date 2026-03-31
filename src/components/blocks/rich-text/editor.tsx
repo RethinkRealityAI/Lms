@@ -81,6 +81,7 @@ function RichTextToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
 
 export function RichTextEditor({ data, onChange }: BlockEditorProps<RichTextData>) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Image,
