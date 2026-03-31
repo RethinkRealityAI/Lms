@@ -1,6 +1,6 @@
 'use client';
 
-import { Save, Undo2, Redo2, Eye, Send } from 'lucide-react';
+import { Save, Undo2, Redo2, Eye, Send, CheckCircle, Loader2 } from 'lucide-react';
 import { useEditorStore } from './editor-store-context';
 
 interface EditorToolbarProps {
@@ -14,11 +14,21 @@ export function EditorToolbar({ onSave }: EditorToolbarProps) {
   const redo = useEditorStore((s) => s.redo);
   const undoCount = useEditorStore((s) => s.undoStack.length);
   const redoCount = useEditorStore((s) => s.redoStack.length);
+  const courseStatus = useEditorStore((s) => s.courseStatus);
+  const isPublishing = useEditorStore((s) => s.isPublishing);
+  const publishCourse = useEditorStore((s) => s.publishCourse);
+
+  const isPublished = courseStatus === 'published';
 
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 shrink-0 h-12">
       <div className="flex items-center gap-3">
         <span className="text-sm font-semibold text-[#0F172A]">Course Editor</span>
+        {courseStatus === 'draft' && (
+          <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+            <span>●</span> Draft
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-1">
         <button
@@ -53,9 +63,24 @@ export function EditorToolbar({ onSave }: EditorToolbarProps) {
           <Save className="w-3.5 h-3.5" />
           {isSaving ? 'Saving...' : 'Save'}
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
-          <Send className="w-3.5 h-3.5" />
-          Publish
+        <button
+          onClick={isPublished ? undefined : publishCourse}
+          disabled={isPublished || isPublishing}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-colors disabled:cursor-not-allowed ${
+            isPublished
+              ? 'bg-green-600 opacity-80'
+              : 'bg-green-600 hover:bg-green-700'
+          }`}
+          title={isPublished ? 'Course is published' : 'Publish course'}
+        >
+          {isPublishing ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : isPublished ? (
+            <CheckCircle className="w-3.5 h-3.5" />
+          ) : (
+            <Send className="w-3.5 h-3.5" />
+          )}
+          {isPublished ? 'Published ✓' : isPublishing ? 'Publishing...' : 'Publish'}
         </button>
       </div>
     </div>

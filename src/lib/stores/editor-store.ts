@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla';
-import type { Slide, EntitySelection, EditorAction, InstitutionTheme } from '@/types';
+import type { Slide, EntitySelection, EditorAction, InstitutionTheme, CourseStatus } from '@/types';
+import { publishCourse as dbPublishCourse } from '@/lib/db';
 
 export interface ModuleData {
   id: string;
@@ -37,6 +38,8 @@ interface Snapshot {
 
 export interface EditorState {
   courseId: string | null;
+  courseStatus: CourseStatus;
+  isPublishing: boolean;
   modules: ModuleData[];
   lessons: Map<string, LessonData[]>;
   slides: Map<string, Slide[]>;
@@ -49,6 +52,8 @@ export interface EditorState {
   undoStack: EditorAction[];
   redoStack: EditorAction[];
 
+  setCourseStatus: (status: CourseStatus) => void;
+  publishCourse: () => Promise<void>;
   selectEntity: (entity: EntitySelection | null) => void;
   updateCourseTheme: (changes: Partial<InstitutionTheme>) => void;
   addModule: (module: ModuleData) => void;
@@ -64,6 +69,7 @@ export interface EditorState {
   redo: () => void;
   loadCourse: (data: {
     courseId: string;
+    courseStatus?: CourseStatus;
     modules: ModuleData[];
     lessons: Map<string, LessonData[]>;
     slides: Map<string, Slide[]>;
@@ -118,6 +124,8 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
 export function createEditorStore() {
   return createStore<EditorState>((set, get) => ({
     courseId: null,
+    courseStatus: 'draft',
+    isPublishing: false,
     modules: [],
     lessons: new Map(),
     slides: new Map(),
@@ -129,6 +137,30 @@ export function createEditorStore() {
     isSaving: false,
     undoStack: [],
     redoStack: [],
+
+    setCourseStatus: (status) => set({ courseStatus: status }),
+
+    publishCourse: async () => {
+      const { courseId } = get();
+      if (!courseId) return;
+      set({ isPublishing: true });
+      try {
+        const { createClient } = await import('@/lib/supabase/client');
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+        const { data: userData } = await supabase
+          .from('users')
+          .select('institution_id')
+          .eq('id', user.id)
+          .single();
+        if (!userData?.institution_id) throw new Error('No institution found');
+        await dbPublishCourse(supabase, courseId, userData.institution_id);
+        set({ courseStatus: 'published', isPublishing: false });
+      } catch {
+        set({ isPublishing: false });
+      }
+    },
 
     selectEntity: (entity) => set({ selectedEntity: entity }),
 
@@ -257,6 +289,7 @@ export function createEditorStore() {
     loadCourse: (data) =>
       set({
         courseId: data.courseId,
+        courseStatus: data.courseStatus ?? 'draft',
         modules: data.modules,
         lessons: data.lessons,
         slides: data.slides,
@@ -264,6 +297,7 @@ export function createEditorStore() {
         courseTheme: {},
         isDirty: false,
         isSaving: false,
+        isPublishing: false,
         undoStack: [],
         redoStack: [],
         selectedEntity: null,

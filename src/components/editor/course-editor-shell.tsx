@@ -88,6 +88,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
         store.getState().loadCourse({
           courseId,
+          courseStatus: data.course.status as import('@/types').CourseStatus,
           modules: data.modules,
           lessons: data.lessonsByModule,
           slides: data.slidesByLesson,

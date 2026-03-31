@@ -1,5 +1,24 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createEditorStore, type EditorStore } from './editor-store';
+
+vi.mock('@/lib/db', () => ({
+  publishCourse: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@/lib/supabase/client', () => ({
+  createClient: vi.fn(() => ({
+    auth: {
+      getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } } }),
+    },
+    from: vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: { institution_id: 'inst-1' }, error: null }),
+        }),
+      }),
+    }),
+  })),
+}));
 
 describe('EditorStore', () => {
   let store: EditorStore;
@@ -186,6 +205,63 @@ describe('EditorStore', () => {
         blocks: new Map(),
       });
       expect(store.getState().courseTheme).toEqual({});
+    });
+  });
+
+  describe('courseStatus and publish workflow', () => {
+    it('starts with courseStatus draft', () => {
+      expect(store.getState().courseStatus).toBe('draft');
+    });
+
+    it('setCourseStatus updates courseStatus', () => {
+      store.getState().setCourseStatus('published');
+      expect(store.getState().courseStatus).toBe('published');
+    });
+
+    it('loadCourse sets courseStatus from loaded data', () => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        courseStatus: 'published',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+      expect(store.getState().courseStatus).toBe('published');
+    });
+
+    it('loadCourse defaults courseStatus to draft when not provided', () => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+      expect(store.getState().courseStatus).toBe('draft');
+    });
+
+    it('starts with isPublishing false', () => {
+      expect(store.getState().isPublishing).toBe(false);
+    });
+
+    it('publishCourse sets isPublishing true then false and updates courseStatus', async () => {
+      // Mock the db module
+      const { publishCourse: mockPublishCourse } = await import('@/lib/db');
+      vi.mocked(mockPublishCourse).mockResolvedValue(undefined);
+
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+
+      await store.getState().publishCourse();
+
+      expect(store.getState().isPublishing).toBe(false);
+      expect(store.getState().courseStatus).toBe('published');
     });
   });
 

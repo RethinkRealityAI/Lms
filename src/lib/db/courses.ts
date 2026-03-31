@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-import type { Course } from '@/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Course, CourseStatus } from '@/types';
 
 export async function getCourseById(id: string): Promise<Course | null> {
   const supabase = await createClient();
@@ -21,6 +22,73 @@ export async function getCoursesByInstitution(institutionId: string): Promise<Co
     .order('created_at', { ascending: false });
   if (error) return [];
   return (data ?? []) as Course[];
+}
+
+export async function getCourseStatus(
+  supabase: SupabaseClient,
+  courseId: string,
+  institutionId: string,
+): Promise<CourseStatus> {
+  const { data } = await supabase
+    .from('courses')
+    .select('status')
+    .eq('id', courseId)
+    .eq('institution_id', institutionId)
+    .single();
+  return (data?.status as CourseStatus | null) ?? 'draft';
+}
+
+export async function publishCourse(
+  supabase: SupabaseClient,
+  courseId: string,
+  institutionId: string,
+): Promise<void> {
+  const { error: courseErr } = await supabase
+    .from('courses')
+    .update({ status: 'published' })
+    .eq('id', courseId)
+    .eq('institution_id', institutionId);
+  if (courseErr) throw courseErr;
+
+  // Get all module IDs for this course
+  const { data: modules, error: modErr } = await supabase
+    .from('modules')
+    .select('id')
+    .eq('course_id', courseId)
+    .is('deleted_at', null);
+  if (modErr) throw modErr;
+
+  const moduleIds = (modules ?? []).map((m: { id: string }) => m.id);
+  if (moduleIds.length === 0) return;
+
+  // Get all lesson IDs for those modules
+  const { data: lessons, error: lesErr } = await supabase
+    .from('lessons')
+    .select('id')
+    .in('module_id', moduleIds)
+    .is('deleted_at', null);
+  if (lesErr) throw lesErr;
+
+  const lessonIds = (lessons ?? []).map((l: { id: string }) => l.id);
+  if (lessonIds.length === 0) return;
+
+  // Get all slide IDs for those lessons
+  const { data: slides, error: slideSelectErr } = await supabase
+    .from('slides')
+    .select('id')
+    .in('lesson_id', lessonIds)
+    .is('deleted_at', null);
+  if (slideSelectErr) throw slideSelectErr;
+
+  const slideIds = (slides ?? []).map((s: { id: string }) => s.id);
+  if (slideIds.length === 0) return;
+
+  // Publish all slides
+  const { error: slideErr } = await supabase
+    .from('slides')
+    .update({ status: 'published' })
+    .in('id', slideIds);
+  if (slideErr) throw slideErr;
 }
 
 export async function getPublishedCourses(): Promise<Course[]> {
