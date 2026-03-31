@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Course, CourseStatus } from '@/types';
+import { logActivity } from './activity-log';
 
 export async function getCourseById(id: string): Promise<Course | null> {
   const supabase = await createClient();
@@ -90,6 +91,13 @@ export async function publishCourse(
     .update({ status: 'published' })
     .in('id', slideIds);
   if (slideErr) throw slideErr;
+
+  await logActivity(supabase, {
+    institutionId,
+    entityType: 'course',
+    entityId: courseId,
+    action: 'publish',
+  });
 }
 
 export async function getPublishedCourses(): Promise<Course[]> {

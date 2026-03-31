@@ -10,7 +10,7 @@ import {
 
 function makeMockChain(resolvedValue: { data: unknown; error: unknown }) {
   const chain: Record<string, unknown> = {};
-  const methods = ['select', 'eq', 'is', 'order', 'in', 'or', 'update', 'delete'];
+  const methods = ['select', 'eq', 'is', 'order', 'in', 'or', 'delete'];
   methods.forEach((m) => {
     chain[m] = vi.fn().mockReturnValue(chain);
   });
@@ -22,18 +22,25 @@ function makeMockChain(resolvedValue: { data: unknown; error: unknown }) {
   chain['single'] = vi.fn().mockResolvedValue(resolvedValue);
   // Make the chain itself awaitable for queries without .single()
   chain['order'] = vi.fn().mockResolvedValue(resolvedValue);
-  // Re-wire eq/is to return chain that resolves
+  // Re-wire eq/is to return chain that resolves (and supports chaining)
   chain['eq'] = vi.fn().mockReturnValue(chain);
   chain['is'] = vi.fn().mockReturnValue(chain);
   chain['in'] = vi.fn().mockReturnValue(chain);
   chain['or'] = vi.fn().mockReturnValue(chain);
-  chain['update'] = vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue(resolvedValue) });
+  // update returns the same chain so .eq().eq().select().single() all work
+  chain['update'] = vi.fn().mockReturnValue(chain);
   return chain;
 }
 
 function makeMockSupabase(data: unknown = [], error: unknown = null) {
   const chain = makeMockChain({ data, error });
-  return { from: vi.fn().mockReturnValue(chain) };
+  // Make the chain also work as a thenable for logActivity's insert
+  const activityChain = { insert: vi.fn().mockResolvedValue({ error: null }) };
+  const from = vi.fn().mockImplementation((table: string) => {
+    if (table === 'content_activity_log') return activityChain;
+    return chain;
+  });
+  return { from };
 }
 
 describe('getSlidesByLesson', () => {
@@ -53,16 +60,48 @@ describe('createSlide', () => {
       slide_type: 'content' as const,
       order_index: 0,
     };
-    await createSlide(supabase as any, input);
+    await createSlide(supabase as any, input, 'inst-1');
     expect(supabase.from).toHaveBeenCalledWith('slides');
+  });
+
+  it('logs activity after creating a slide', async () => {
+    const newSlide = { id: 's1', lesson_id: 'l1', slide_type: 'content', order_index: 0 };
+    const supabase = makeMockSupabase(newSlide);
+    const input = { lesson_id: 'l1', slide_type: 'content' as const, order_index: 0 };
+    await createSlide(supabase as any, input, 'inst-1');
+    expect(supabase.from).toHaveBeenCalledWith('content_activity_log');
+  });
+});
+
+describe('updateSlide', () => {
+  it('updates a slide and logs activity', async () => {
+    const updatedSlide = { id: 's1', lesson_id: 'l1', slide_type: 'content', order_index: 0 };
+    const supabase = makeMockSupabase(updatedSlide);
+    await updateSlide(supabase as any, 's1', { title: 'Updated' }, 'inst-1');
+    expect(supabase.from).toHaveBeenCalledWith('slides');
+    expect(supabase.from).toHaveBeenCalledWith('content_activity_log');
   });
 });
 
 describe('deleteSlide', () => {
   it('soft-deletes by setting deleted_at', async () => {
     const supabase = makeMockSupabase(null);
-    await deleteSlide(supabase as any, 's1');
+    await deleteSlide(supabase as any, 's1', 'inst-1');
     expect(supabase.from).toHaveBeenCalledWith('slides');
+  });
+
+  it('logs activity after deleting a slide', async () => {
+    const supabase = makeMockSupabase(null);
+    await deleteSlide(supabase as any, 's1', 'inst-1');
+    expect(supabase.from).toHaveBeenCalledWith('content_activity_log');
+  });
+});
+
+describe('reorderSlides', () => {
+  it('logs activity after reordering slides', async () => {
+    const supabase = makeMockSupabase(null);
+    await reorderSlides(supabase as any, 'l1', ['s1', 's2'], 'inst-1');
+    expect(supabase.from).toHaveBeenCalledWith('content_activity_log');
   });
 });
 

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Slide, SlideType, SlideStatus } from '@/types';
+import { logActivity } from './activity-log';
 
 export async function getSlidesByLesson(
   supabase: SupabaseClient,
@@ -27,7 +28,9 @@ interface CreateSlideInput {
 
 export async function createSlide(
   supabase: SupabaseClient,
-  input: CreateSlideInput
+  input: CreateSlideInput,
+  institutionId: string,
+  userId?: string,
 ): Promise<Slide> {
   const { data, error } = await supabase
     .from('slides')
@@ -43,13 +46,26 @@ export async function createSlide(
     .single();
 
   if (error) throw error;
-  return data as Slide;
+  const slide = data as Slide;
+
+  await logActivity(supabase, {
+    institutionId,
+    userId,
+    entityType: 'slide',
+    entityId: slide.id,
+    action: 'create',
+    changes: { lesson_id: input.lesson_id, slide_type: input.slide_type },
+  });
+
+  return slide;
 }
 
 export async function updateSlide(
   supabase: SupabaseClient,
   slideId: string,
-  changes: Partial<Pick<Slide, 'title' | 'slide_type' | 'status' | 'settings' | 'order_index'>>
+  changes: Partial<Pick<Slide, 'title' | 'slide_type' | 'status' | 'settings' | 'order_index'>>,
+  institutionId: string,
+  userId?: string,
 ): Promise<Slide> {
   const { data, error } = await supabase
     .from('slides')
@@ -59,12 +75,25 @@ export async function updateSlide(
     .single();
 
   if (error) throw error;
-  return data as Slide;
+  const slide = data as Slide;
+
+  await logActivity(supabase, {
+    institutionId,
+    userId,
+    entityType: 'slide',
+    entityId: slideId,
+    action: 'update',
+    changes: changes as Record<string, unknown>,
+  });
+
+  return slide;
 }
 
 export async function deleteSlide(
   supabase: SupabaseClient,
-  slideId: string
+  slideId: string,
+  institutionId: string,
+  userId?: string,
 ): Promise<void> {
   const { error } = await supabase
     .from('slides')
@@ -72,12 +101,22 @@ export async function deleteSlide(
     .eq('id', slideId);
 
   if (error) throw error;
+
+  await logActivity(supabase, {
+    institutionId,
+    userId,
+    entityType: 'slide',
+    entityId: slideId,
+    action: 'delete',
+  });
 }
 
 export async function reorderSlides(
   supabase: SupabaseClient,
   lessonId: string,
-  slideIds: string[]
+  slideIds: string[],
+  institutionId: string,
+  userId?: string,
 ): Promise<void> {
   const updates = slideIds.map((id, index) =>
     supabase
@@ -88,6 +127,15 @@ export async function reorderSlides(
   );
 
   await Promise.all(updates);
+
+  await logActivity(supabase, {
+    institutionId,
+    userId,
+    entityType: 'slide',
+    entityId: lessonId,
+    action: 'reorder',
+    changes: { slideIds },
+  });
 }
 
 export async function getSlideTemplates(
