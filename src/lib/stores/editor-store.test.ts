@@ -174,5 +174,50 @@ describe('EditorStore', () => {
       expect(store.getState().isDirty).toBe(false);
       expect(store.getState().undoStack).toHaveLength(0);
     });
+
+    it('resets courseTheme on load', () => {
+      store.getState().updateCourseTheme({ primaryColor: '#FF0000' });
+      expect(store.getState().courseTheme).toMatchObject({ primaryColor: '#FF0000' });
+      store.getState().loadCourse({
+        courseId: 'c2',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+      expect(store.getState().courseTheme).toEqual({});
+    });
+  });
+
+  describe('updateCourseTheme', () => {
+    it('merges theme changes into courseTheme', () => {
+      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      expect(store.getState().courseTheme).toMatchObject({ primaryColor: '#DC2626' });
+    });
+
+    it('merges multiple updates additively', () => {
+      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      store.getState().updateCourseTheme({ accentColor: '#0099CA' });
+      expect(store.getState().courseTheme).toMatchObject({
+        primaryColor: '#DC2626',
+        accentColor: '#0099CA',
+      });
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      expect(store.getState().isDirty).toBe(true);
+    });
+
+    it('pushes to undo stack', () => {
+      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      expect(store.getState().undoStack).toHaveLength(1);
+    });
+
+    it('undo reverts theme change', () => {
+      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      store.getState().undo();
+      expect(store.getState().courseTheme).toEqual({});
+    });
   });
 });

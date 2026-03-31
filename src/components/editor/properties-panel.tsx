@@ -3,6 +3,8 @@
 import { Settings } from 'lucide-react';
 import { useEditorStore } from './editor-store-context';
 import { BlockEditorPanel } from './block-editor-panel';
+import { CourseThemeEditor } from './theme-editor/course-theme-editor';
+import { SlideStyleEditor } from './theme-editor/slide-style-editor';
 import type { EntitySelection } from '@/types';
 import type { LessonData } from '@/lib/stores/editor-store';
 import type { Slide } from '@/types';
@@ -33,7 +35,7 @@ export function PropertiesPanel() {
       return (
         <div className="space-y-3">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Course Theme</p>
-          <p className="text-xs text-gray-400">Theme editor coming in Phase 4</p>
+          <CourseThemeEditor />
         </div>
       );
     }
@@ -75,7 +77,7 @@ export function PropertiesPanel() {
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Slide</p>
           <p className="text-sm font-medium text-gray-700 capitalize">{slideData?.slide_type ?? 'Unknown type'}</p>
           <p className="text-xs text-gray-500">{slideData?.title ?? '(untitled)'}</p>
-          <p className="text-xs text-gray-400 mt-2">Slide style editor coming in Phase 4</p>
+          <SlideStyleEditor slideId={entity.id} />
         </div>
       );
     }

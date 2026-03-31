@@ -3,8 +3,10 @@
 import { Suspense } from 'react';
 import type { CSSProperties } from 'react';
 import { LessonBlockRenderer } from '@/components/lesson-block-renderer';
+import { resolveTheme } from '@/lib/content/theme';
 import { useEditorStore } from './editor-store-context';
 import type { Slide } from '@/types';
+import type { InstitutionTheme } from '@/types';
 
 interface SlidePreviewProps {
   slide: Slide;
@@ -14,13 +16,21 @@ interface SlidePreviewProps {
 
 export function SlidePreview({ slide, onSelectBlock, selectedBlockId }: SlidePreviewProps) {
   const blocks = useEditorStore((s) => s.blocks.get(slide.id) ?? []);
+  const courseTheme = useEditorStore((s) => s.courseTheme);
+  const resolvedTheme = resolveTheme({ course: courseTheme as Partial<InstitutionTheme> });
 
   const bgStyle = getSlideBackground(slide.settings);
 
   return (
     <div
       className="w-full min-h-full flex flex-col"
-      style={bgStyle}
+      style={{
+        ...bgStyle,
+        fontFamily: resolvedTheme.fontFamily,
+        fontSize: `${resolvedTheme.fontScale}rem`,
+        '--theme-primary': resolvedTheme.primaryColor,
+        '--theme-accent': resolvedTheme.accentColor,
+      } as React.CSSProperties}
     >
       {/* Slide title header if title exists and it's not a title slide */}
       {slide.title && slide.slide_type !== 'title' && (

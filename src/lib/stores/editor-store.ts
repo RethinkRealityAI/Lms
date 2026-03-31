@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import type { Slide, EntitySelection, EditorAction } from '@/types';
+import type { Slide, EntitySelection, EditorAction, InstitutionTheme } from '@/types';
 
 export interface ModuleData {
   id: string;
@@ -32,6 +32,7 @@ interface Snapshot {
   lessons: Map<string, LessonData[]>;
   slides: Map<string, Slide[]>;
   blocks: Map<string, BlockData[]>;
+  courseTheme: Record<string, unknown>;
 }
 
 export interface EditorState {
@@ -40,6 +41,7 @@ export interface EditorState {
   lessons: Map<string, LessonData[]>;
   slides: Map<string, Slide[]>;
   blocks: Map<string, BlockData[]>;
+  courseTheme: Record<string, unknown>;
   selectedEntity: EntitySelection | null;
   previewSlideIndex: number;
   isDirty: boolean;
@@ -48,6 +50,7 @@ export interface EditorState {
   redoStack: EditorAction[];
 
   selectEntity: (entity: EntitySelection | null) => void;
+  updateCourseTheme: (changes: Partial<InstitutionTheme>) => void;
   addModule: (module: ModuleData) => void;
   removeModule: (moduleId: string) => void;
   addSlide: (lessonId: string, slide: Slide) => void;
@@ -74,6 +77,7 @@ function snapshot(state: EditorState): Snapshot {
     lessons: new Map(Array.from(state.lessons.entries()).map(([k, v]) => [k, [...v]])),
     slides: new Map(Array.from(state.slides.entries()).map(([k, v]) => [k, [...v]])),
     blocks: new Map(state.blocks),
+    courseTheme: { ...state.courseTheme },
   };
 }
 
@@ -106,6 +110,7 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
     lessons: snap.lessons,
     slides: snap.slides,
     blocks: snap.blocks,
+    courseTheme: snap.courseTheme,
     isDirty: true,
   };
 }
@@ -117,6 +122,7 @@ export function createEditorStore() {
     lessons: new Map(),
     slides: new Map(),
     blocks: new Map(),
+    courseTheme: {},
     selectedEntity: null,
     previewSlideIndex: 0,
     isDirty: false,
@@ -125,6 +131,14 @@ export function createEditorStore() {
     redoStack: [],
 
     selectEntity: (entity) => set({ selectedEntity: entity }),
+
+    updateCourseTheme: (changes) => {
+      const snap = snapshot(get());
+      set((s) => ({
+        courseTheme: { ...s.courseTheme, ...changes },
+        ...push(s, snap, 'updateCourseTheme', 'course'),
+      }));
+    },
 
     addModule: (module) => {
       const snap = snapshot(get());
@@ -247,6 +261,7 @@ export function createEditorStore() {
         lessons: data.lessons,
         slides: data.slides,
         blocks: data.blocks,
+        courseTheme: {},
         isDirty: false,
         isSaving: false,
         undoStack: [],
