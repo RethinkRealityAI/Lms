@@ -3,3 +3,4 @@ export * from './lessons';
 export * from './modules';
 export * from './progress';
 export * from './enrollments';
+export * from './slides';
