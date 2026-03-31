@@ -263,6 +263,30 @@ describe('EditorStore', () => {
       expect(store.getState().isPublishing).toBe(false);
       expect(store.getState().courseStatus).toBe('published');
     });
+
+    it('publishCourse sets isPublishing true while in-flight before resolving', async () => {
+      const { publishCourse: mockPublishCourse } = await import('@/lib/db');
+      vi.mocked(mockPublishCourse).mockResolvedValue(undefined);
+
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+
+      // publishCourse calls set({ isPublishing: true }) synchronously before any awaits,
+      // so immediately after starting the action (not awaiting) it should be true.
+      const publishPromise = store.getState().publishCourse();
+      expect(store.getState().isPublishing).toBe(true);
+
+      // Await completion and confirm settled state
+      await publishPromise;
+
+      expect(store.getState().isPublishing).toBe(false);
+      expect(store.getState().courseStatus).toBe('published');
+    });
   });
 
   describe('updateCourseTheme', () => {

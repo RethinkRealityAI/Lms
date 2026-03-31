@@ -87,4 +87,15 @@ describe('EditorToolbar', () => {
     // "Published ✓" text is there but not the standalone "Draft" badge
     expect(screen.queryByText(/^draft$/i)).not.toBeInTheDocument();
   });
+
+  it('shows spinner and Publishing... text and disables button when isPublishing is true', () => {
+    store.setState({ isPublishing: true });
+    renderWithStore(store);
+    expect(screen.getByText(/publishing\.\.\./i)).toBeInTheDocument();
+    const btn = screen.getByRole('button', { name: /publishing/i });
+    expect(btn).toBeDisabled();
+    // The Loader2 spinner should be rendered with animate-spin
+    const spinner = btn.querySelector('.animate-spin');
+    expect(spinner).toBeInTheDocument();
+  });
 });
