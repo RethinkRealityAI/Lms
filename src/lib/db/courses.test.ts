@@ -141,4 +141,20 @@ describe('getCourseStatus', () => {
     const status = await getCourseStatus(sb, 'course-1', 'inst-1');
     expect(status).toBe('draft');
   });
+
+  it('throws when Supabase returns an error', async () => {
+    const mockSingle = vi.fn().mockResolvedValue({ data: null, error: { message: 'not found' } });
+    const mockFromError = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: mockSingle,
+          }),
+        }),
+      }),
+    });
+    const sb = { from: mockFromError } as unknown as SupabaseClient;
+
+    await expect(getCourseStatus(sb, 'course-1', 'inst-1')).rejects.toThrow();
+  });
 });

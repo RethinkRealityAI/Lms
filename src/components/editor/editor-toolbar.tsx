@@ -16,6 +16,7 @@ export function EditorToolbar({ onSave }: EditorToolbarProps) {
   const redoCount = useEditorStore((s) => s.redoStack.length);
   const courseStatus = useEditorStore((s) => s.courseStatus);
   const isPublishing = useEditorStore((s) => s.isPublishing);
+  const publishError = useEditorStore((s) => s.publishError);
   const publishCourse = useEditorStore((s) => s.publishCourse);
 
   const isPublished = courseStatus === 'published';
@@ -30,7 +31,11 @@ export function EditorToolbar({ onSave }: EditorToolbarProps) {
           </div>
         )}
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
+        {publishError && (
+          <span className="text-red-500 text-xs">{publishError}</span>
+        )}
+        <div className="flex items-center gap-1">
         <button
           onClick={undo}
           disabled={undoCount === 0}
@@ -82,6 +87,7 @@ export function EditorToolbar({ onSave }: EditorToolbarProps) {
           )}
           {isPublished ? 'Published ✓' : isPublishing ? 'Publishing...' : 'Publish'}
         </button>
+        </div>
       </div>
     </div>
   );

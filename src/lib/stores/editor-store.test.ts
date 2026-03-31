@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createEditorStore, type EditorStore } from './editor-store';
 
+import { publishCourse as mockDbPublishCourse } from '@/lib/db';
+
 vi.mock('@/lib/db', () => ({
   publishCourse: vi.fn().mockResolvedValue(undefined),
 }));
@@ -286,6 +288,49 @@ describe('EditorStore', () => {
 
       expect(store.getState().isPublishing).toBe(false);
       expect(store.getState().courseStatus).toBe('published');
+    });
+
+    it('publishCourse sets publishError and resets isPublishing when db call rejects', async () => {
+      vi.mocked(mockDbPublishCourse).mockRejectedValueOnce(new Error('Network failure'));
+
+      store.getState().loadCourse({
+        courseId: 'c1',
+        institutionId: 'inst-1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+
+      await store.getState().publishCourse();
+
+      expect(store.getState().isPublishing).toBe(false);
+      expect(store.getState().publishError).toBe('Network failure');
+    });
+
+    it('publishCourse clears publishError at the start of a new attempt', async () => {
+      vi.mocked(mockDbPublishCourse).mockRejectedValueOnce(new Error('First failure'));
+
+      store.getState().loadCourse({
+        courseId: 'c1',
+        institutionId: 'inst-1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+
+      await store.getState().publishCourse();
+      expect(store.getState().publishError).toBe('First failure');
+
+      // Second attempt — succeeds; error should be cleared
+      vi.mocked(mockDbPublishCourse).mockResolvedValueOnce(undefined);
+      await store.getState().publishCourse();
+      expect(store.getState().publishError).toBeNull();
+    });
+
+    it('starts with publishError null', () => {
+      expect(store.getState().publishError).toBeNull();
     });
   });
 

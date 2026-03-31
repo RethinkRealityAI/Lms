@@ -10,6 +10,7 @@ import { PropertiesPanel } from './properties-panel';
 import { EditorStatusBar } from './editor-status-bar';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
+import { getUserInstitutionId } from '@/lib/db/users';
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 
@@ -76,18 +77,14 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('Not authenticated');
 
-        const { data: userData } = await supabase
-          .from('users')
-          .select('institution_id')
-          .eq('id', user.id)
-          .single();
+        const institutionId = await getUserInstitutionId(supabase, user.id);
+        if (!institutionId) throw new Error('No institution found for user');
 
-        if (!userData?.institution_id) throw new Error('No institution found for user');
-
-        const data = await loadEditorCourseData(supabase, courseId, userData.institution_id);
+        const data = await loadEditorCourseData(supabase, courseId, institutionId);
 
         store.getState().loadCourse({
           courseId,
+          institutionId,
           courseStatus: data.course.status as import('@/types').CourseStatus,
           modules: data.modules,
           lessons: data.lessonsByModule,

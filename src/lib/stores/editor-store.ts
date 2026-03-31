@@ -38,8 +38,10 @@ interface Snapshot {
 
 export interface EditorState {
   courseId: string | null;
+  institutionId: string | null;
   courseStatus: CourseStatus;
   isPublishing: boolean;
+  publishError: string | null;
   modules: ModuleData[];
   lessons: Map<string, LessonData[]>;
   slides: Map<string, Slide[]>;
@@ -69,6 +71,7 @@ export interface EditorState {
   redo: () => void;
   loadCourse: (data: {
     courseId: string;
+    institutionId?: string;
     courseStatus?: CourseStatus;
     modules: ModuleData[];
     lessons: Map<string, LessonData[]>;
@@ -124,8 +127,10 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
 export function createEditorStore() {
   return createStore<EditorState>((set, get) => ({
     courseId: null,
+    institutionId: null,
     courseStatus: 'draft',
     isPublishing: false,
+    publishError: null,
     modules: [],
     lessons: new Map(),
     slides: new Map(),
@@ -141,24 +146,27 @@ export function createEditorStore() {
     setCourseStatus: (status) => set({ courseStatus: status }),
 
     publishCourse: async () => {
-      const { courseId } = get();
+      const { courseId, institutionId } = get();
       if (!courseId) return;
-      set({ isPublishing: true });
+      set({ isPublishing: true, publishError: null });
       try {
         const { createClient } = await import('@/lib/supabase/client');
         const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
-        const { data: userData } = await supabase
-          .from('users')
-          .select('institution_id')
-          .eq('id', user.id)
-          .single();
-        if (!userData?.institution_id) throw new Error('No institution found');
-        await dbPublishCourse(supabase, courseId, userData.institution_id);
+        const resolvedInstitutionId = institutionId ?? await (async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) throw new Error('Not authenticated');
+          const { data: userData } = await supabase
+            .from('users')
+            .select('institution_id')
+            .eq('id', user.id)
+            .single();
+          if (!userData?.institution_id) throw new Error('No institution found');
+          return userData.institution_id as string;
+        })();
+        await dbPublishCourse(supabase, courseId, resolvedInstitutionId);
         set({ courseStatus: 'published', isPublishing: false });
-      } catch {
-        set({ isPublishing: false });
+      } catch (error) {
+        set({ isPublishing: false, publishError: error instanceof Error ? error.message : 'Failed to publish' });
       }
     },
 
@@ -289,6 +297,7 @@ export function createEditorStore() {
     loadCourse: (data) =>
       set({
         courseId: data.courseId,
+        institutionId: data.institutionId ?? null,
         courseStatus: data.courseStatus ?? 'draft',
         modules: data.modules,
         lessons: data.lessons,
@@ -298,6 +307,7 @@ export function createEditorStore() {
         isDirty: false,
         isSaving: false,
         isPublishing: false,
+        publishError: null,
         undoStack: [],
         redoStack: [],
         selectedEntity: null,

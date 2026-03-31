@@ -98,4 +98,16 @@ describe('EditorToolbar', () => {
     const spinner = btn.querySelector('.animate-spin');
     expect(spinner).toBeInTheDocument();
   });
+
+  it('displays publishError text when publishError is set', () => {
+    store.setState({ publishError: 'Failed to publish' });
+    renderWithStore(store);
+    expect(screen.getByText('Failed to publish')).toBeInTheDocument();
+  });
+
+  it('does not display publishError when publishError is null', () => {
+    store.setState({ publishError: null });
+    renderWithStore(store);
+    expect(screen.queryByText(/failed to publish/i)).not.toBeInTheDocument();
+  });
 });

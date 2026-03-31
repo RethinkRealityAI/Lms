@@ -29,13 +29,14 @@ export async function getCourseStatus(
   courseId: string,
   institutionId: string,
 ): Promise<CourseStatus> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('courses')
     .select('status')
     .eq('id', courseId)
     .eq('institution_id', institutionId)
     .single();
-  return (data?.status as CourseStatus | null) ?? 'draft';
+  if (error) throw error;
+  return (data?.status as CourseStatus) ?? 'draft';
 }
 
 export async function publishCourse(
@@ -96,7 +97,7 @@ export async function getPublishedCourses(): Promise<Course[]> {
   const { data, error } = await supabase
     .from('courses')
     .select('*, category:categories(*)')
-    .eq('is_published', true)
+    .eq('status', 'published')
     .order('created_at', { ascending: false });
   if (error) return [];
   return (data ?? []) as Course[];

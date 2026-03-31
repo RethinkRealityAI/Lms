@@ -5,3 +5,4 @@ export * from './progress';
 export * from './enrollments';
 export * from './slides';
 export * from './editor';
+export * from './users';
