@@ -11,16 +11,16 @@ interface ModuleNodeProps {
   module: ModuleData;
   onAddSlide: (lessonId: string) => void;
   onAddLesson?: (moduleId: string, title: string) => void;
-  onRemoveLesson?: (moduleId: string, lessonId: string) => void;
+  onDeleteLesson?: (lessonId: string) => void;
+  onDeleteModule?: (moduleId: string) => void;
 }
 
-export function ModuleNode({ module, onAddSlide, onAddLesson, onRemoveLesson }: ModuleNodeProps) {
+export function ModuleNode({ module, onAddSlide, onAddLesson, onDeleteLesson, onDeleteModule }: ModuleNodeProps) {
   const [expanded, setExpanded] = useState(true);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const lessons = useEditorStore((s) => s.lessons.get(module.id) ?? []);
-  const removeModule = useEditorStore((s) => s.removeModule);
   const isSelected = selectedEntity?.type === 'module' && selectedEntity.id === module.id;
 
   function handleAddLesson(title: string) {
@@ -32,8 +32,8 @@ export function ModuleNode({ module, onAddSlide, onAddLesson, onRemoveLesson }: 
 
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation();
-    if (confirm(`Delete module "${module.title}" and all its content?`)) {
-      removeModule(module.id);
+    if (onDeleteModule) {
+      onDeleteModule(module.id);
     }
   }
 
@@ -100,7 +100,7 @@ export function ModuleNode({ module, onAddSlide, onAddLesson, onRemoveLesson }: 
             </div>
           ) : (
             lessons.map((lesson) => (
-              <LessonNode key={lesson.id} lesson={lesson} onAddSlide={onAddSlide} onRemoveLesson={onRemoveLesson} />
+              <LessonNode key={lesson.id} lesson={lesson} onAddSlide={onAddSlide} onDeleteLesson={onDeleteLesson} />
             ))
           )}
         </div>

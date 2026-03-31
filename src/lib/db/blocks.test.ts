@@ -16,18 +16,18 @@ function makeSupabase(overrides?: Record<string, unknown>) {
 
 describe('updateBlock', () => {
   it('calls update on lesson_blocks with the given data', async () => {
-    const supabase = makeSupabase();
-    // Make the final .eq() resolve successfully
-    supabase._chain.eq
-      .mockReturnValueOnce(supabase._chain) // first .eq('id', blockId)
-      .mockResolvedValueOnce({ error: null }); // second .eq resolves
+    const mockEq = vi.fn().mockResolvedValue({ error: null });
+    const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
+    const mockFrom = vi.fn().mockReturnValue({ update: mockUpdate });
+    const supabase = { from: mockFrom };
 
     await updateBlock(supabase as never, 'block-1', { data: { html: '<p>Hello</p>' } }, 'inst-1');
 
-    expect(supabase.from).toHaveBeenCalledWith('lesson_blocks');
-    expect(supabase._chain.update).toHaveBeenCalledWith(
+    expect(mockFrom).toHaveBeenCalledWith('lesson_blocks');
+    expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ data: { html: '<p>Hello</p>' } }),
     );
+    expect(mockEq).toHaveBeenCalledWith('id', 'block-1');
   });
 
   it('throws when Supabase returns an error', async () => {

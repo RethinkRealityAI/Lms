@@ -9,10 +9,10 @@ import type { LessonData } from '@/lib/stores/editor-store';
 interface LessonNodeProps {
   lesson: LessonData;
   onAddSlide: (lessonId: string) => void;
-  onRemoveLesson?: (moduleId: string, lessonId: string) => void;
+  onDeleteLesson?: (lessonId: string) => void;
 }
 
-export function LessonNode({ lesson, onAddSlide, onRemoveLesson }: LessonNodeProps) {
+export function LessonNode({ lesson, onAddSlide, onDeleteLesson }: LessonNodeProps) {
   const [expanded, setExpanded] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
@@ -21,10 +21,8 @@ export function LessonNode({ lesson, onAddSlide, onRemoveLesson }: LessonNodePro
 
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation();
-    if (onRemoveLesson && lesson.module_id) {
-      if (confirm(`Delete lesson "${lesson.title}" and all its content?`)) {
-        onRemoveLesson(lesson.module_id, lesson.id);
-      }
+    if (onDeleteLesson) {
+      onDeleteLesson(lesson.id);
     }
   }
 
@@ -69,7 +67,7 @@ export function LessonNode({ lesson, onAddSlide, onRemoveLesson }: LessonNodePro
         >
           <Plus className="w-3 h-3" />
         </button>
-        {onRemoveLesson && (
+        {onDeleteLesson && (
           <button
             onClick={handleDelete}
             className={`p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity ${

@@ -38,6 +38,7 @@ function EditorContent({ courseId }: { courseId: string }) {
   const addSlide = useEditorStore((s) => s.addSlide);
 
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
+  const selectEntity = useEditorStore((s) => s.selectEntity);
   const removeModule = useEditorStore((s) => s.removeModule);
   const removeLesson = useEditorStore((s) => s.removeLesson);
   const removeSlide = useEditorStore((s) => s.removeSlide);
@@ -90,7 +91,7 @@ function EditorContent({ courseId }: { courseId: string }) {
           dbUpdateBlock(
             supabase,
             block.id,
-            { data: block.data, title: undefined },
+            { data: block.data },
             institutionId,
           ).then(() => undefined).catch((err) => {
             console.warn('Failed to save block', block.id, err);
@@ -147,17 +148,17 @@ function EditorContent({ courseId }: { courseId: string }) {
     }
   }, [courseId, institutionId, store, addLesson]);
 
-  // ── Persistence: remove lesson ────────────────────────────────────────────
+  // ── Delete request handlers (select entity + open dialog; actual delete in handleDeleteConfirm) ──
 
-  const handleRemoveLesson = useCallback(async (moduleId: string, lessonId: string) => {
-    try {
-      const supabase = createClient();
-      await dbDeleteLesson(supabase, lessonId);
-      removeLesson(moduleId, lessonId);
-    } catch (err) {
-      console.error('Failed to delete lesson:', err);
-    }
-  }, [removeLesson]);
+  const handleRequestDeleteLesson = useCallback((lessonId: string) => {
+    selectEntity({ type: 'lesson', id: lessonId });
+    setDeleteDialogOpen(true);
+  }, [selectEntity]);
+
+  const handleRequestDeleteModule = useCallback((moduleId: string) => {
+    selectEntity({ type: 'module', id: moduleId });
+    setDeleteDialogOpen(true);
+  }, [selectEntity]);
 
   // ── Persistence: add slide (DB-first) ─────────────────────────────────────
 
@@ -293,7 +294,8 @@ function EditorContent({ courseId }: { courseId: string }) {
         <StructurePanel
           onAddModule={handleAddModule}
           onAddLesson={handleAddLesson}
-          onRemoveLesson={handleRemoveLesson}
+          onDeleteLesson={handleRequestDeleteLesson}
+          onDeleteModule={handleRequestDeleteModule}
           onAddSlide={handleAddSlide}
         />
         <PreviewPanel />
