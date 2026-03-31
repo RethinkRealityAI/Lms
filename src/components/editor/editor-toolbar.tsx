@@ -3,7 +3,11 @@
 import { Save, Undo2, Redo2, Eye, Send } from 'lucide-react';
 import { useEditorStore } from './editor-store-context';
 
-export function EditorToolbar() {
+interface EditorToolbarProps {
+  onSave?: () => void;
+}
+
+export function EditorToolbar({ onSave }: EditorToolbarProps) {
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
   const undo = useEditorStore((s) => s.undo);
@@ -42,6 +46,7 @@ export function EditorToolbar() {
         </button>
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <button
+          onClick={onSave}
           disabled={!isDirty || isSaving}
           className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-[#1E3A5F] rounded-lg hover:bg-[#162d4a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createEditorStore } from '@/lib/stores/editor-store';
-import { EditorStoreContext } from './editor-store-context';
+import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import { EditorToolbar } from './editor-toolbar';
 import { StructurePanel } from './structure-panel';
 import { PreviewPanel } from './preview-panel';
@@ -10,9 +10,55 @@ import { PropertiesPanel } from './properties-panel';
 import { EditorStatusBar } from './editor-status-bar';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
+import { useAutoSave } from '@/lib/hooks/use-auto-save';
+import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 
 interface CourseEditorShellProps {
   courseId: string;
+}
+
+// Inner component — has access to editor store via context
+function EditorContent({ courseId: _courseId }: { courseId: string }) {
+  const isDirty = useEditorStore((s) => s.isDirty);
+  const undo = useEditorStore((s) => s.undo);
+  const redo = useEditorStore((s) => s.redo);
+  const markSaved = useEditorStore((s) => s.markSaved);
+
+  const handleSave = useCallback(async () => {
+    // TODO in Task 5: persist to DB; for now just mark clean
+    markSaved();
+  }, [markSaved]);
+
+  const { saveNow } = useAutoSave(isDirty, handleSave);
+
+  useKeyboardShortcuts({
+    onSave: saveNow,
+    onUndo: undo,
+    onRedo: redo,
+  });
+
+  // Warn on unsaved changes
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      if (isDirty) {
+        e.preventDefault();
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  return (
+    <>
+      <EditorToolbar onSave={saveNow} />
+      <div className="flex flex-1 min-h-0">
+        <StructurePanel />
+        <PreviewPanel />
+        <PropertiesPanel />
+      </div>
+      <EditorStatusBar />
+    </>
+  );
 }
 
 export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
@@ -81,13 +127,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
   return (
     <EditorStoreContext.Provider value={store}>
       <div className="flex flex-col h-screen bg-gray-100 overflow-hidden">
-        <EditorToolbar />
-        <div className="flex flex-1 min-h-0">
-          <StructurePanel />
-          <PreviewPanel />
-          <PropertiesPanel />
-        </div>
-        <EditorStatusBar />
+        <EditorContent courseId={courseId} />
       </div>
     </EditorStoreContext.Provider>
   );
