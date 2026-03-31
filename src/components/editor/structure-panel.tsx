@@ -6,21 +6,23 @@ import { ModuleNode } from './module-node';
 import { AddEntityDialog } from './add-entity-dialog';
 import { SlideTemplatePicker } from './slide-template-picker';
 import { useEditorStore } from './editor-store-context';
+import type { Slide } from '@/types';
 
-export function StructurePanel() {
+interface StructurePanelProps {
+  onAddModule?: (title: string) => void;
+  onAddLesson?: (moduleId: string, title: string) => void;
+  onAddSlide?: (lessonId: string, slideData: Slide) => void;
+}
+
+export function StructurePanel({ onAddModule, onAddLesson, onAddSlide }: StructurePanelProps) {
   const [showAddModule, setShowAddModule] = useState(false);
   const [addSlideForLesson, setAddSlideForLesson] = useState<string | null>(null);
   const modules = useEditorStore((s) => s.modules);
-  const addModule = useEditorStore((s) => s.addModule);
-  const courseId = useEditorStore((s) => s.courseId);
 
   function handleAddModule(title: string) {
-    addModule({
-      id: crypto.randomUUID(),
-      title,
-      course_id: courseId ?? '',
-      order_index: modules.length,
-    });
+    if (onAddModule) {
+      onAddModule(title);
+    }
   }
 
   return (
@@ -58,6 +60,7 @@ export function StructurePanel() {
               key={mod.id}
               module={mod}
               onAddSlide={(lessonId) => setAddSlideForLesson(lessonId)}
+              onAddLesson={onAddLesson}
             />
           ))
         )}
@@ -73,6 +76,7 @@ export function StructurePanel() {
       {addSlideForLesson && (
         <SlideTemplatePicker
           lessonId={addSlideForLesson}
+          onAddSlide={onAddSlide}
           onClose={() => setAddSlideForLesson(null)}
         />
       )}

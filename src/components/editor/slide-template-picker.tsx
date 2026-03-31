@@ -9,14 +9,16 @@ import type { Slide } from '@/types';
 interface SlideTemplatePickerProps {
   lessonId: string;
   onClose: () => void;
+  /** When provided, called instead of writing directly to the store — allows DB-first creation */
+  onAddSlide?: (lessonId: string, slideData: Slide) => void;
 }
 
-export function SlideTemplatePicker({ lessonId, onClose }: SlideTemplatePickerProps) {
+export function SlideTemplatePicker({ lessonId, onClose, onAddSlide }: SlideTemplatePickerProps) {
   const slides = useEditorStore((s) => s.slides.get(lessonId) ?? []);
   const addSlide = useEditorStore((s) => s.addSlide);
 
   function handleSelect(template: SlideTemplateConfig) {
-    const newSlide: Slide = {
+    const slideData: Slide = {
       id: crypto.randomUUID(),
       lesson_id: lessonId,
       slide_type: template.type,
@@ -28,7 +30,11 @@ export function SlideTemplatePicker({ lessonId, onClose }: SlideTemplatePickerPr
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    addSlide(lessonId, newSlide);
+    if (onAddSlide) {
+      onAddSlide(lessonId, slideData);
+    } else {
+      addSlide(lessonId, slideData);
+    }
     onClose();
   }
 

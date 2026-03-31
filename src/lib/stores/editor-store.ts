@@ -60,6 +60,7 @@ export interface EditorState {
   updateCourseTheme: (changes: Partial<InstitutionTheme>) => void;
   addModule: (module: ModuleData) => void;
   removeModule: (moduleId: string) => void;
+  addLesson: (moduleId: string, lesson: LessonData) => void;
   addSlide: (lessonId: string, slide: Slide) => void;
   removeSlide: (lessonId: string, slideId: string) => void;
   reorderSlides: (lessonId: string, slideIds: string[]) => void;
@@ -187,6 +188,16 @@ export function createEditorStore() {
         modules: s.modules.filter((m) => m.id !== moduleId),
         ...push(s, snap, 'removeModule', moduleId),
       }));
+    },
+
+    addLesson: (moduleId, lesson) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.lessons.get(moduleId) ?? [];
+        const next = new Map(s.lessons);
+        next.set(moduleId, [...existing, lesson]);
+        return { lessons: next, ...push(s, snap, 'addLesson', lesson.id) };
+      });
     },
 
     addSlide: (lessonId, slide) => {

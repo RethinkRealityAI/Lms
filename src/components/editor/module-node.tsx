@@ -10,9 +10,10 @@ import type { ModuleData } from '@/lib/stores/editor-store';
 interface ModuleNodeProps {
   module: ModuleData;
   onAddSlide: (lessonId: string) => void;
+  onAddLesson?: (moduleId: string, title: string) => void;
 }
 
-export function ModuleNode({ module, onAddSlide }: ModuleNodeProps) {
+export function ModuleNode({ module, onAddSlide, onAddLesson }: ModuleNodeProps) {
   const [expanded, setExpanded] = useState(true);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
@@ -21,9 +22,10 @@ export function ModuleNode({ module, onAddSlide }: ModuleNodeProps) {
   const removeModule = useEditorStore((s) => s.removeModule);
   const isSelected = selectedEntity?.type === 'module' && selectedEntity.id === module.id;
 
-  function handleAddLesson(_title: string) {
-    // Lesson creation will be wired to DB in Task 2.1 expansion
-    // For now, just close the dialog — full implementation in Task 2.5
+  function handleAddLesson(title: string) {
+    if (onAddLesson) {
+      onAddLesson(module.id, title);
+    }
     setShowAddLesson(false);
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { createEditorStore } from '@/lib/stores/editor-store';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import { EditorToolbar } from './editor-toolbar';
@@ -12,19 +12,29 @@ import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
+import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide } from '@/lib/db/slides';
+import { createModule as dbCreateModule, deleteModule as dbDeleteModule } from '@/lib/db/modules';
+import { createLesson as dbCreateLesson } from '@/lib/db/lessons';
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
+import type { ModuleData, LessonData } from '@/lib/stores/editor-store';
 
 interface CourseEditorShellProps {
   courseId: string;
 }
 
 // Inner component — has access to editor store via context
-function EditorContent({ courseId: _courseId }: { courseId: string }) {
+function EditorContent({ courseId }: { courseId: string }) {
+  const store = useContext(EditorStoreContext);
+
   const isDirty = useEditorStore((s) => s.isDirty);
   const undo = useEditorStore((s) => s.undo);
   const redo = useEditorStore((s) => s.redo);
   const markSaved = useEditorStore((s) => s.markSaved);
+  const institutionId = useEditorStore((s) => s.institutionId);
+  const addModule = useEditorStore((s) => s.addModule);
+  const addLesson = useEditorStore((s) => s.addLesson);
+  const addSlide = useEditorStore((s) => s.addSlide);
 
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const removeModule = useEditorStore((s) => s.removeModule);
@@ -42,12 +52,108 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+  // ── Persistence: save ──────────────────────────────────────────────────────
+
   const handleSave = useCallback(async () => {
-    // TODO in Task 5: persist to DB; for now just mark clean
+    if (!institutionId || !store) return;
+    const supabase = createClient();
+    const state = store.getState();
+    const slidePromises: Promise<void>[] = [];
+    for (const slideList of state.slides.values()) {
+      for (const slide of slideList) {
+        slidePromises.push(
+          dbUpdateSlide(
+            supabase,
+            slide.id,
+            {
+              title: slide.title,
+              slide_type: slide.slide_type,
+              order_index: slide.order_index,
+              status: slide.status,
+              settings: slide.settings,
+            },
+            institutionId,
+          ).then(() => undefined).catch((err) => {
+            console.warn('Failed to save slide', slide.id, err);
+          }),
+        );
+      }
+    }
+    await Promise.all(slidePromises);
     markSaved();
-  }, [markSaved]);
+  }, [institutionId, store, markSaved]);
 
   const { saveNow } = useAutoSave(isDirty, handleSave);
+
+  // ── Persistence: add module ────────────────────────────────────────────────
+
+  const handleAddModule = useCallback(async (title: string) => {
+    if (!courseId || !institutionId) return;
+    try {
+      const supabase = createClient();
+      const newModule = await dbCreateModule(supabase, { courseId, title, institutionId });
+      const moduleData: ModuleData = {
+        id: newModule.id,
+        title: newModule.title,
+        course_id: newModule.course_id,
+        order_index: newModule.order_index,
+      };
+      addModule(moduleData);
+    } catch (err) {
+      console.error('Failed to add module:', err);
+    }
+  }, [courseId, institutionId, addModule]);
+
+  // ── Persistence: add lesson ────────────────────────────────────────────────
+
+  const handleAddLesson = useCallback(async (moduleId: string, title: string) => {
+    if (!institutionId) return;
+    try {
+      const supabase = createClient();
+      const newLesson = await dbCreateLesson(supabase, { moduleId, title, institutionId });
+      // course_id comes from the module — look it up from current state
+      const state = store?.getState();
+      const mod = state?.modules.find((m) => m.id === moduleId);
+      const lessonData: LessonData = {
+        id: newLesson.id,
+        title: newLesson.title,
+        module_id: newLesson.module_id,
+        course_id: mod?.course_id ?? courseId,
+        order_index: newLesson.order_index,
+      };
+      addLesson(moduleId, lessonData);
+    } catch (err) {
+      console.error('Failed to add lesson:', err);
+    }
+  }, [courseId, institutionId, store, addLesson]);
+
+  // ── Persistence: add slide (DB-first) ─────────────────────────────────────
+
+  const handleAddSlide = useCallback(async (lessonId: string, slideData: Parameters<typeof addSlide>[1]) => {
+    if (!institutionId) return;
+    try {
+      const { createSlide: dbCreateSlide } = await import('@/lib/db/slides');
+      const supabase = createClient();
+      const existing = store?.getState().slides.get(lessonId) ?? [];
+      const slide = await dbCreateSlide(
+        supabase,
+        {
+          lesson_id: lessonId,
+          slide_type: slideData.slide_type,
+          title: slideData.title ?? undefined,
+          order_index: existing.length,
+          status: slideData.status ?? 'draft',
+          settings: slideData.settings ?? {},
+        },
+        institutionId,
+      );
+      addSlide(lessonId, slide);
+    } catch (err) {
+      console.error('Failed to add slide:', err);
+    }
+  }, [institutionId, store, addSlide]);
+
+  // ── Persistence: delete ────────────────────────────────────────────────────
 
   const handleDeleteKey = useCallback(() => {
     if (selectedEntity?.type === 'module' || selectedEntity?.type === 'slide') {
@@ -56,16 +162,19 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
     // lesson: removeLesson not yet implemented — skip for now
   }, [selectedEntity]);
 
-  const handleDeleteConfirm = useCallback(() => {
+  const handleDeleteConfirm = useCallback(async () => {
     setDeleteDialogOpen(false);
-    if (!selectedEntity) return;
+    if (!selectedEntity || !institutionId) return;
+    const supabase = createClient();
     if (selectedEntity.type === 'module') {
+      await dbDeleteModule(supabase, selectedEntity.id, institutionId).catch(console.error);
       removeModule(selectedEntity.id);
       return;
     }
     if (selectedEntity.type === 'slide') {
       for (const [lessonId, slideList] of slides) {
         if (slideList.some((s) => s.id === selectedEntity.id)) {
+          await dbDeleteSlide(supabase, selectedEntity.id, institutionId).catch(console.error);
           removeSlide(lessonId, selectedEntity.id);
           break;
         }
@@ -73,7 +182,7 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
       return;
     }
     // lesson: removeLesson not yet implemented — dialog will not open for lessons (see handleDeleteKey)
-  }, [selectedEntity, removeModule, removeSlide, slides]);
+  }, [selectedEntity, institutionId, removeModule, removeSlide, slides]);
 
   const handlePrevSlide = useCallback(() => {
     if (selectedLessonSlides === 0) return; // no lesson in context, can't navigate
@@ -115,7 +224,11 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
     <>
       <EditorToolbar onSave={saveNow} />
       <div className="flex flex-1 min-h-0">
-        <StructurePanel />
+        <StructurePanel
+          onAddModule={handleAddModule}
+          onAddLesson={handleAddLesson}
+          onAddSlide={handleAddSlide}
+        />
         <PreviewPanel />
         <PropertiesPanel />
       </div>
