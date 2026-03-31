@@ -1,12 +1,30 @@
 'use client';
 
+import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { ModuleNode } from './module-node';
+import { AddEntityDialog } from './add-entity-dialog';
 import { useEditorStore } from './editor-store-context';
 
 export function StructurePanel() {
+  const [showAddModule, setShowAddModule] = useState(false);
+  const [addSlideForLesson, setAddSlideForLesson] = useState<string | null>(null);
   const modules = useEditorStore((s) => s.modules);
-  const selectedEntity = useEditorStore((s) => s.selectedEntity);
-  const selectEntity = useEditorStore((s) => s.selectEntity);
+  const addModule = useEditorStore((s) => s.addModule);
+  const courseId = useEditorStore((s) => s.courseId);
+
+  function handleAddModule(title: string) {
+    addModule({
+      id: crypto.randomUUID(),
+      title,
+      course_id: courseId ?? '',
+      order_index: modules.length,
+    });
+  }
+
+  // addSlideForLesson state is passed down and can be consumed by a future
+  // slide-type picker dialog; for now we just store the lessonId.
+  void addSlideForLesson;
 
   return (
     <div className="w-[260px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
@@ -15,41 +33,46 @@ export function StructurePanel() {
           Structure
         </span>
         <button
+          onClick={() => setShowAddModule(true)}
           className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
           title="Add Module"
         >
           <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-2">
+
+      <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {modules.length === 0 ? (
           <div className="text-center py-10 px-4">
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
               <Plus className="w-5 h-5 text-gray-400" />
             </div>
             <p className="text-sm text-gray-500 mb-2">No modules yet</p>
-            <button className="text-sm text-[#1E3A5F] font-medium hover:underline">
+            <button
+              onClick={() => setShowAddModule(true)}
+              className="text-sm text-[#1E3A5F] font-medium hover:underline"
+            >
               + Add first module
             </button>
           </div>
         ) : (
-          <div className="space-y-0.5">
-            {modules.map((mod) => (
-              <button
-                key={mod.id}
-                onClick={() => selectEntity({ type: 'module', id: mod.id })}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                  selectedEntity?.type === 'module' && selectedEntity.id === mod.id
-                    ? 'bg-[#1E3A5F] text-white'
-                    : 'hover:bg-gray-50 text-gray-700'
-                }`}
-              >
-                {mod.title}
-              </button>
-            ))}
-          </div>
+          modules.map((mod) => (
+            <ModuleNode
+              key={mod.id}
+              module={mod}
+              onAddSlide={(lessonId) => setAddSlideForLesson(lessonId)}
+            />
+          ))
         )}
       </div>
+
+      {showAddModule && (
+        <AddEntityDialog
+          entityType="module"
+          onAdd={handleAddModule}
+          onClose={() => setShowAddModule(false)}
+        />
+      )}
     </div>
   );
 }
