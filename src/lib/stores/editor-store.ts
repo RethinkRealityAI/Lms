@@ -148,22 +148,15 @@ export function createEditorStore() {
     publishCourse: async () => {
       const { courseId, institutionId } = get();
       if (!courseId) return;
+      if (!institutionId) {
+        set({ publishError: 'Institution not loaded. Please reload the editor.' });
+        return;
+      }
       set({ isPublishing: true, publishError: null });
       try {
         const { createClient } = await import('@/lib/supabase/client');
         const supabase = createClient();
-        const resolvedInstitutionId = institutionId ?? await (async () => {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (!user) throw new Error('Not authenticated');
-          const { data: userData } = await supabase
-            .from('users')
-            .select('institution_id')
-            .eq('id', user.id)
-            .single();
-          if (!userData?.institution_id) throw new Error('No institution found');
-          return userData.institution_id as string;
-        })();
-        await dbPublishCourse(supabase, courseId, resolvedInstitutionId);
+        await dbPublishCourse(supabase, courseId, institutionId);
         set({ courseStatus: 'published', isPublishing: false });
       } catch (error) {
         set({ isPublishing: false, publishError: error instanceof Error ? error.message : 'Failed to publish' });

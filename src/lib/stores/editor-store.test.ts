@@ -254,6 +254,7 @@ describe('EditorStore', () => {
 
       store.getState().loadCourse({
         courseId: 'c1',
+        institutionId: 'inst-1',
         modules: [],
         lessons: new Map(),
         slides: new Map(),
@@ -272,6 +273,7 @@ describe('EditorStore', () => {
 
       store.getState().loadCourse({
         courseId: 'c1',
+        institutionId: 'inst-1',
         modules: [],
         lessons: new Map(),
         slides: new Map(),
@@ -306,6 +308,21 @@ describe('EditorStore', () => {
 
       expect(store.getState().isPublishing).toBe(false);
       expect(store.getState().publishError).toBe('Network failure');
+    });
+
+    it('publishCourse sets publishError when institutionId is null', async () => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+
+      await store.getState().publishCourse();
+
+      expect(store.getState().isPublishing).toBe(false);
+      expect(store.getState().publishError).toBe('Institution not loaded. Please reload the editor.');
     });
 
     it('publishCourse clears publishError at the start of a new attempt', async () => {
