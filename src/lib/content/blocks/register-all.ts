@@ -18,7 +18,9 @@ registerBlockType({
   dataSchema: richTextDataSchema,
   defaultData: { html: '', mode: 'standard' as const },
   ViewerComponent: React.lazy(() => import('@/components/blocks/rich-text/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/rich-text/editor').then((m) => ({ default: m.RichTextEditor }))
+  ),
   completionCriteria: () => true,
   version: 1,
 });
