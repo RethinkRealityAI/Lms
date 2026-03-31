@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronRight, ChevronDown, Plus } from 'lucide-react';
-import { SlideNode } from './slide-node';
+import { SortableSlideList } from './sortable-slide-list';
 import { useEditorStore } from './editor-store-context';
 import type { LessonData } from '@/lib/stores/editor-store';
 
@@ -70,9 +70,7 @@ export function LessonNode({ lesson, onAddSlide }: LessonNodeProps) {
               + Add first slide
             </div>
           ) : (
-            slides.map((slide) => (
-              <SlideNode key={slide.id} slide={slide} lessonId={lesson.id} />
-            ))
+            <SortableSlideList lessonId={lesson.id} slides={slides} />
           )}
         </div>
       )}
