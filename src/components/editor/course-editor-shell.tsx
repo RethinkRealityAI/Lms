@@ -167,15 +167,25 @@ function EditorContent({ courseId }: { courseId: string }) {
     if (!selectedEntity || !institutionId) return;
     const supabase = createClient();
     if (selectedEntity.type === 'module') {
-      await dbDeleteModule(supabase, selectedEntity.id, institutionId).catch(console.error);
-      removeModule(selectedEntity.id);
+      try {
+        await dbDeleteModule(supabase, selectedEntity.id, institutionId);
+        removeModule(selectedEntity.id);
+      } catch (err) {
+        console.error('Failed to delete module:', err);
+        // Don't remove from store — DB delete failed
+      }
       return;
     }
     if (selectedEntity.type === 'slide') {
       for (const [lessonId, slideList] of slides) {
         if (slideList.some((s) => s.id === selectedEntity.id)) {
-          await dbDeleteSlide(supabase, selectedEntity.id, institutionId).catch(console.error);
-          removeSlide(lessonId, selectedEntity.id);
+          try {
+            await dbDeleteSlide(supabase, selectedEntity.id, institutionId);
+            removeSlide(lessonId, selectedEntity.id);
+          } catch (err) {
+            console.error('Failed to delete slide:', err);
+            // Don't remove from store — DB delete failed
+          }
           break;
         }
       }

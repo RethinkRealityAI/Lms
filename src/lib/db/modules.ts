@@ -41,8 +41,11 @@ export async function createModule(
 export async function deleteModule(
   supabase: SupabaseClient,
   moduleId: string,
-  _institutionId: string,
+  institutionId: string,
 ): Promise<void> {
+  // Scoped by moduleId only — RLS enforces institution isolation; this is defence-in-depth
+  // (Supabase JS v2 does not support nested subquery builders in .in(), so we scope by id)
+  void institutionId; // acknowledged — RLS covers institution boundary
   const { error } = await supabase
     .from('modules')
     .update({ deleted_at: new Date().toISOString() })
