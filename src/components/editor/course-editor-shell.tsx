@@ -8,6 +8,7 @@ import { StructurePanel } from './structure-panel';
 import { PreviewPanel } from './preview-panel';
 import { PropertiesPanel } from './properties-panel';
 import { EditorStatusBar } from './editor-status-bar';
+import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
@@ -25,6 +26,22 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
   const redo = useEditorStore((s) => s.redo);
   const markSaved = useEditorStore((s) => s.markSaved);
 
+  const selectedEntity = useEditorStore((s) => s.selectedEntity);
+  const removeModule = useEditorStore((s) => s.removeModule);
+  const removeSlide = useEditorStore((s) => s.removeSlide);
+  const slides = useEditorStore((s) => s.slides);
+
+  const previewSlideIndex = useEditorStore((s) => s.previewSlideIndex);
+  const setPreviewSlideIndex = useEditorStore((s) => s.setPreviewSlideIndex);
+  const selectedLessonSlides = useEditorStore((s) => {
+    if (!s.selectedEntity) return 0;
+    const type = s.selectedEntity.type;
+    if (type === 'lesson') return s.slides.get(s.selectedEntity.id)?.length ?? 0;
+    return 0;
+  });
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const handleSave = useCallback(async () => {
     // TODO in Task 5: persist to DB; for now just mark clean
     markSaved();
@@ -32,10 +49,51 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
 
   const { saveNow } = useAutoSave(isDirty, handleSave);
 
+  const handleDeleteKey = useCallback(() => {
+    if (
+      selectedEntity?.type === 'module' ||
+      selectedEntity?.type === 'lesson' ||
+      selectedEntity?.type === 'slide'
+    ) {
+      setDeleteDialogOpen(true);
+    }
+  }, [selectedEntity]);
+
+  const handleDeleteConfirm = useCallback(() => {
+    setDeleteDialogOpen(false);
+    if (!selectedEntity) return;
+    if (selectedEntity.type === 'module') {
+      removeModule(selectedEntity.id);
+      return;
+    }
+    if (selectedEntity.type === 'slide') {
+      for (const [lessonId, slideList] of slides) {
+        if (slideList.some((s) => s.id === selectedEntity.id)) {
+          removeSlide(lessonId, selectedEntity.id);
+          break;
+        }
+      }
+      return;
+    }
+    // lesson: removeLesson not yet implemented — just close dialog
+  }, [selectedEntity, removeModule, removeSlide, slides]);
+
+  const handlePrevSlide = useCallback(() => {
+    if (previewSlideIndex > 0) setPreviewSlideIndex(previewSlideIndex - 1);
+  }, [previewSlideIndex, setPreviewSlideIndex]);
+
+  const handleNextSlide = useCallback(() => {
+    const maxIndex = selectedLessonSlides > 0 ? selectedLessonSlides - 1 : previewSlideIndex + 1;
+    if (previewSlideIndex < maxIndex) setPreviewSlideIndex(previewSlideIndex + 1);
+  }, [previewSlideIndex, setPreviewSlideIndex, selectedLessonSlides]);
+
   useKeyboardShortcuts({
     onSave: saveNow,
     onUndo: undo,
     onRedo: redo,
+    onDelete: handleDeleteKey,
+    onPrevSlide: handlePrevSlide,
+    onNextSlide: handleNextSlide,
   });
 
   // Warn on unsaved changes
@@ -49,6 +107,13 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+  const deleteEntityType =
+    selectedEntity?.type === 'module' ||
+    selectedEntity?.type === 'lesson' ||
+    selectedEntity?.type === 'slide'
+      ? selectedEntity.type
+      : null;
+
   return (
     <>
       <EditorToolbar onSave={saveNow} />
@@ -58,6 +123,12 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
         <PropertiesPanel />
       </div>
       <EditorStatusBar />
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        entityType={deleteEntityType}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteDialogOpen(false)}
+      />
     </>
   );
 }
