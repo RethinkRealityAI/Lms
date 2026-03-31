@@ -34,7 +34,9 @@ registerBlockType({
   dataSchema: imageGalleryDataSchema,
   defaultData: { images: [], mode: 'gallery' as const },
   ViewerComponent: React.lazy(() => import('@/components/blocks/image-gallery/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/image-gallery/editor').then((m) => ({ default: m.ImageGalleryEditor }))
+  ),
   completionCriteria: () => true,
   version: 1,
 });
@@ -48,7 +50,9 @@ registerBlockType({
   dataSchema: ctaDataSchema,
   defaultData: { text: '', action: 'complete_lesson' as const, button_label: 'Continue' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/cta/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/cta/editor').then((m) => ({ default: m.CTAEditor }))
+  ),
   completionCriteria: () => true,
   version: 1,
 });
@@ -62,7 +66,9 @@ registerBlockType({
   dataSchema: calloutDataSchema,
   defaultData: { variant: 'info' as const, html: '' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/callout/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/callout/editor').then((m) => ({ default: m.CalloutEditor }))
+  ),
   completionCriteria: () => true,
   version: 1,
 });
@@ -76,7 +82,9 @@ registerBlockType({
   dataSchema: quizInlineDataSchema,
   defaultData: { question_type: 'multiple_choice' as const, show_feedback: true },
   ViewerComponent: React.lazy(() => import('@/components/blocks/quiz-inline/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/quiz-inline/editor').then((m) => ({ default: m.QuizInlineEditor }))
+  ),
   version: 1,
 });
 
@@ -89,7 +97,9 @@ registerBlockType({
   dataSchema: videoDataSchema,
   defaultData: { url: '', autoplay: false },
   ViewerComponent: React.lazy(() => import('@/components/blocks/video/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/video/editor').then((m) => ({ default: m.VideoEditor }))
+  ),
   completionCriteria: () => true,
   version: 1,
 });
@@ -103,7 +113,9 @@ registerBlockType({
   dataSchema: z.object({ url: z.string() }),
   defaultData: { url: '' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/pdf/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/pdf/editor').then((m) => ({ default: m.PDFEditor }))
+  ),
   version: 1,
 });
 
@@ -116,7 +128,9 @@ registerBlockType({
   dataSchema: z.object({ url: z.string(), height: z.number().optional() }),
   defaultData: { url: '' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/iframe/viewer')),
-  EditorComponent: null,
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/iframe/editor').then((m) => ({ default: m.IframeEditor }))
+  ),
   version: 1,
 });
 
