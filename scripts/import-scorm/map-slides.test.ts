@@ -74,7 +74,7 @@ describe('mapSlideToBlock', () => {
       name: 3,
       displayIndex: 4,
       data: {
-        content: 'Well done!',
+        content: 'Well done!' as any, // exit slides use content as a plain string at runtime
         buttonText: 'Finish',
       },
     };

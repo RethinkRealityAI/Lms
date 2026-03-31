@@ -3,7 +3,6 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Trophy, Target, BookOpen } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export default async function StudentProgressPage() {
   const supabase = await createClient();
@@ -53,11 +52,14 @@ export default async function StudentProgressPage() {
     : 0;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-black tracking-tight text-white mb-2">My Progress</h2>
-        <p className="text-slate-400 font-medium">Track your learning journey and achievements.</p>
+    <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="bg-[#0F172A] px-4 sm:px-6 lg:px-8 py-10">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-black tracking-tight text-white mb-2">My Progress</h2>
+          <p className="text-slate-400 font-medium">Track your learning journey and achievements.</p>
+        </div>
       </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
       {/* Stats Overview */}
       <div className="grid gap-6 md:grid-cols-3">
@@ -228,6 +230,7 @@ export default async function StudentProgressPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );
