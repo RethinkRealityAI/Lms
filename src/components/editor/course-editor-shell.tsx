@@ -13,8 +13,9 @@ import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
 import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide } from '@/lib/db/slides';
+import { updateBlock as dbUpdateBlock } from '@/lib/db/blocks';
 import { createModule as dbCreateModule, deleteModule as dbDeleteModule } from '@/lib/db/modules';
-import { createLesson as dbCreateLesson } from '@/lib/db/lessons';
+import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson } from '@/lib/db/lessons';
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 import type { ModuleData, LessonData } from '@/lib/stores/editor-store';
@@ -38,6 +39,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const removeModule = useEditorStore((s) => s.removeModule);
+  const removeLesson = useEditorStore((s) => s.removeLesson);
   const removeSlide = useEditorStore((s) => s.removeSlide);
   const slides = useEditorStore((s) => s.slides);
 
@@ -58,6 +60,7 @@ function EditorContent({ courseId }: { courseId: string }) {
     if (!institutionId || !store) return;
     const supabase = createClient();
     const state = store.getState();
+
     const slidePromises: Promise<void>[] = [];
     for (const slideList of state.slides.values()) {
       for (const slide of slideList) {
@@ -79,7 +82,24 @@ function EditorContent({ courseId }: { courseId: string }) {
         );
       }
     }
-    await Promise.all(slidePromises);
+
+    const blockPromises: Promise<void>[] = [];
+    for (const blockList of state.blocks.values()) {
+      for (const block of blockList) {
+        blockPromises.push(
+          dbUpdateBlock(
+            supabase,
+            block.id,
+            { data: block.data, title: undefined },
+            institutionId,
+          ).then(() => undefined).catch((err) => {
+            console.warn('Failed to save block', block.id, err);
+          }),
+        );
+      }
+    }
+
+    await Promise.all([...slidePromises, ...blockPromises]);
     markSaved();
   }, [institutionId, store, markSaved]);
 
@@ -127,6 +147,18 @@ function EditorContent({ courseId }: { courseId: string }) {
     }
   }, [courseId, institutionId, store, addLesson]);
 
+  // ── Persistence: remove lesson ────────────────────────────────────────────
+
+  const handleRemoveLesson = useCallback(async (moduleId: string, lessonId: string) => {
+    try {
+      const supabase = createClient();
+      await dbDeleteLesson(supabase, lessonId);
+      removeLesson(moduleId, lessonId);
+    } catch (err) {
+      console.error('Failed to delete lesson:', err);
+    }
+  }, [removeLesson]);
+
   // ── Persistence: add slide (DB-first) ─────────────────────────────────────
 
   const handleAddSlide = useCallback(async (lessonId: string, slideData: Parameters<typeof addSlide>[1]) => {
@@ -156,10 +188,13 @@ function EditorContent({ courseId }: { courseId: string }) {
   // ── Persistence: delete ────────────────────────────────────────────────────
 
   const handleDeleteKey = useCallback(() => {
-    if (selectedEntity?.type === 'module' || selectedEntity?.type === 'slide') {
+    if (
+      selectedEntity?.type === 'module' ||
+      selectedEntity?.type === 'lesson' ||
+      selectedEntity?.type === 'slide'
+    ) {
       setDeleteDialogOpen(true);
     }
-    // lesson: removeLesson not yet implemented — skip for now
   }, [selectedEntity]);
 
   const handleDeleteConfirm = useCallback(async () => {
@@ -173,6 +208,26 @@ function EditorContent({ courseId }: { courseId: string }) {
       } catch (err) {
         console.error('Failed to delete module:', err);
         // Don't remove from store — DB delete failed
+      }
+      return;
+    }
+    if (selectedEntity.type === 'lesson') {
+      const state = store!.getState();
+      let owningModuleId: string | null = null;
+      for (const [mId, lessonList] of state.lessons) {
+        if (lessonList.some((l) => l.id === selectedEntity.id)) {
+          owningModuleId = mId;
+          break;
+        }
+      }
+      if (owningModuleId) {
+        try {
+          await dbDeleteLesson(supabase, selectedEntity.id);
+          removeLesson(owningModuleId, selectedEntity.id);
+        } catch (err) {
+          console.error('Failed to delete lesson:', err);
+          // Don't remove from store — DB delete failed
+        }
       }
       return;
     }
@@ -191,8 +246,7 @@ function EditorContent({ courseId }: { courseId: string }) {
       }
       return;
     }
-    // lesson: removeLesson not yet implemented — dialog will not open for lessons (see handleDeleteKey)
-  }, [selectedEntity, institutionId, removeModule, removeSlide, slides]);
+  }, [selectedEntity, institutionId, store, removeModule, removeLesson, removeSlide, slides]);
 
   const handlePrevSlide = useCallback(() => {
     if (selectedLessonSlides === 0) return; // no lesson in context, can't navigate
@@ -226,7 +280,9 @@ function EditorContent({ courseId }: { courseId: string }) {
   }, [isDirty]);
 
   const deleteEntityType =
-    selectedEntity?.type === 'module' || selectedEntity?.type === 'slide'
+    selectedEntity?.type === 'module' ||
+    selectedEntity?.type === 'lesson' ||
+    selectedEntity?.type === 'slide'
       ? selectedEntity.type
       : null;
 
@@ -237,6 +293,7 @@ function EditorContent({ courseId }: { courseId: string }) {
         <StructurePanel
           onAddModule={handleAddModule}
           onAddLesson={handleAddLesson}
+          onRemoveLesson={handleRemoveLesson}
           onAddSlide={handleAddSlide}
         />
         <PreviewPanel />

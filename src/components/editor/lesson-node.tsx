@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronRight, ChevronDown, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { SortableSlideList } from './sortable-slide-list';
 import { useEditorStore } from './editor-store-context';
 import type { LessonData } from '@/lib/stores/editor-store';
@@ -9,14 +9,24 @@ import type { LessonData } from '@/lib/stores/editor-store';
 interface LessonNodeProps {
   lesson: LessonData;
   onAddSlide: (lessonId: string) => void;
+  onRemoveLesson?: (moduleId: string, lessonId: string) => void;
 }
 
-export function LessonNode({ lesson, onAddSlide }: LessonNodeProps) {
+export function LessonNode({ lesson, onAddSlide, onRemoveLesson }: LessonNodeProps) {
   const [expanded, setExpanded] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const slides = useEditorStore((s) => s.slides.get(lesson.id) ?? []);
   const isSelected = selectedEntity?.type === 'lesson' && selectedEntity.id === lesson.id;
+
+  function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (onRemoveLesson && lesson.module_id) {
+      if (confirm(`Delete lesson "${lesson.title}" and all its content?`)) {
+        onRemoveLesson(lesson.module_id, lesson.id);
+      }
+    }
+  }
 
   return (
     <div>
@@ -59,6 +69,17 @@ export function LessonNode({ lesson, onAddSlide }: LessonNodeProps) {
         >
           <Plus className="w-3 h-3" />
         </button>
+        {onRemoveLesson && (
+          <button
+            onClick={handleDelete}
+            className={`p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
+              isSelected ? 'hover:bg-blue-800' : 'hover:bg-gray-200'
+            }`}
+            title="Delete lesson"
+          >
+            <Trash2 className="w-3 h-3" />
+          </button>
+        )}
       </div>
       {expanded && (
         <div className="space-y-0.5">

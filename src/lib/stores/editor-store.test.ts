@@ -351,6 +351,52 @@ describe('EditorStore', () => {
     });
   });
 
+  describe('removeLesson', () => {
+    it('removes the lesson from the correct module', () => {
+      store.getState().addModule({ id: 'm1', title: 'Module 1', course_id: 'c1', order_index: 0 });
+      store.getState().addLesson('m1', { id: 'l1', title: 'Lesson 1', module_id: 'm1', course_id: 'c1', order_index: 0 });
+      store.getState().addLesson('m1', { id: 'l2', title: 'Lesson 2', module_id: 'm1', course_id: 'c1', order_index: 1 });
+
+      store.getState().removeLesson('m1', 'l1');
+
+      const lessons = store.getState().lessons.get('m1')!;
+      expect(lessons).toHaveLength(1);
+      expect(lessons[0].id).toBe('l2');
+    });
+
+    it('does not affect lessons in other modules', () => {
+      store.getState().addModule({ id: 'm1', title: 'Module 1', course_id: 'c1', order_index: 0 });
+      store.getState().addModule({ id: 'm2', title: 'Module 2', course_id: 'c1', order_index: 1 });
+      store.getState().addLesson('m1', { id: 'l1', title: 'Lesson 1', module_id: 'm1', course_id: 'c1', order_index: 0 });
+      store.getState().addLesson('m2', { id: 'l2', title: 'Lesson 2', module_id: 'm2', course_id: 'c1', order_index: 0 });
+
+      store.getState().removeLesson('m1', 'l1');
+
+      expect(store.getState().lessons.get('m2')).toHaveLength(1);
+    });
+
+    it('is undoable (undo restores the lesson)', () => {
+      store.getState().addModule({ id: 'm1', title: 'Module 1', course_id: 'c1', order_index: 0 });
+      store.getState().addLesson('m1', { id: 'l1', title: 'Lesson 1', module_id: 'm1', course_id: 'c1', order_index: 0 });
+
+      store.getState().removeLesson('m1', 'l1');
+      expect(store.getState().lessons.get('m1')).toHaveLength(0);
+
+      store.getState().undo();
+      expect(store.getState().lessons.get('m1')).toHaveLength(1);
+      expect(store.getState().lessons.get('m1')![0].id).toBe('l1');
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().addModule({ id: 'm1', title: 'Module 1', course_id: 'c1', order_index: 0 });
+      store.getState().addLesson('m1', { id: 'l1', title: 'Lesson 1', module_id: 'm1', course_id: 'c1', order_index: 0 });
+      store.getState().markSaved();
+
+      store.getState().removeLesson('m1', 'l1');
+      expect(store.getState().isDirty).toBe(true);
+    });
+  });
+
   describe('updateCourseTheme', () => {
     it('merges theme changes into courseTheme', () => {
       store.getState().updateCourseTheme({ primaryColor: '#DC2626' });

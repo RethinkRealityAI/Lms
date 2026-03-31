@@ -11,10 +11,11 @@ import type { Slide } from '@/types';
 interface StructurePanelProps {
   onAddModule?: (title: string) => void;
   onAddLesson?: (moduleId: string, title: string) => void;
+  onRemoveLesson?: (moduleId: string, lessonId: string) => void;
   onAddSlide?: (lessonId: string, slideData: Slide) => void;
 }
 
-export function StructurePanel({ onAddModule, onAddLesson, onAddSlide }: StructurePanelProps) {
+export function StructurePanel({ onAddModule, onAddLesson, onRemoveLesson, onAddSlide }: StructurePanelProps) {
   const [showAddModule, setShowAddModule] = useState(false);
   const [addSlideForLesson, setAddSlideForLesson] = useState<string | null>(null);
   const modules = useEditorStore((s) => s.modules);
@@ -61,6 +62,7 @@ export function StructurePanel({ onAddModule, onAddLesson, onAddSlide }: Structu
               module={mod}
               onAddSlide={(lessonId) => setAddSlideForLesson(lessonId)}
               onAddLesson={onAddLesson}
+              onRemoveLesson={onRemoveLesson}
             />
           ))
         )}

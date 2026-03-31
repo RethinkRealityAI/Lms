@@ -1,4 +1,5 @@
 export * from './activity-log';
+export * from './blocks';
 export * from './courses';
 export * from './lessons';
 export * from './modules';

@@ -27,8 +27,8 @@ vi.mock('@/lib/db/editor', () => ({
       status: 'draft',
       institution_id: 'inst-1',
     },
-    modules: [],
-    lessonsByModule: new Map(),
+    modules: [{ id: 'mod-1', title: 'Module 1', course_id: 'course-1', order_index: 0 }],
+    lessonsByModule: new Map([['mod-1', [{ id: 'lesson-1', title: 'Lesson 1', module_id: 'mod-1', course_id: 'course-1', order_index: 0 }]]]),
     slidesByLesson: new Map([['lesson-1', [{
       id: 'slide-1',
       lesson_id: 'lesson-1',
@@ -41,7 +41,14 @@ vi.mock('@/lib/db/editor', () => ({
       created_at: '2024-01-01T00:00:00Z',
       updated_at: '2024-01-01T00:00:00Z',
     }]]]),
-    blocksBySlide: new Map(),
+    blocksBySlide: new Map([['slide-1', [{
+      id: 'block-1',
+      slide_id: 'slide-1',
+      block_type: 'rich_text',
+      data: { html: '<p>Hello</p>' },
+      order_index: 0,
+      is_visible: true,
+    }]]]),
   }),
 }));
 
@@ -69,12 +76,19 @@ vi.mock('@/lib/db/lessons', () => ({
   getBlocksByLesson: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock('@/lib/db/blocks', () => ({
+  updateBlock: vi.fn().mockResolvedValue(undefined),
+  deleteBlock: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock('@/lib/db', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/db')>();
   return {
     ...actual,
     publishCourse: vi.fn().mockResolvedValue(undefined),
     updateSlide: vi.fn().mockResolvedValue(undefined),
+    updateBlock: vi.fn().mockResolvedValue(undefined),
+    deleteBlock: vi.fn().mockResolvedValue(undefined),
     createModule: vi.fn().mockResolvedValue({ id: 'new-mod-id', title: 'New Module', course_id: 'course-1', order_index: 0 }),
     deleteModule: vi.fn().mockResolvedValue(undefined),
     createLesson: vi.fn().mockResolvedValue({ id: 'new-les-id', title: 'New Lesson', module_id: 'mod-1', order_index: 0 }),
@@ -132,5 +146,25 @@ describe('CourseEditorShell handleSave', () => {
 
     expect(screen.queryByText('Loading editor...')).toBeNull();
     expect(screen.queryByText('Failed to load course')).toBeNull();
+  });
+
+  it('calls updateBlock for each block in the store when handleSave is invoked', async () => {
+    const { updateBlock } = await import('@/lib/db/blocks');
+
+    await act(async () => {
+      render(<CourseEditorShell courseId="course-1" />);
+    });
+
+    expect(capturedOnSave).toBeDefined();
+    await act(async () => {
+      await capturedOnSave!();
+    });
+
+    expect(updateBlock).toHaveBeenCalledWith(
+      expect.anything(),
+      'block-1',
+      expect.objectContaining({ data: { html: '<p>Hello</p>' } }),
+      'inst-1',
+    );
   });
 });
