@@ -163,6 +163,38 @@ describe('useKeyboardShortcuts — arrow key slide navigation', () => {
     document.body.removeChild(input);
   });
 
+  it('ArrowLeft does NOT call onPrevSlide when focused on a select element', () => {
+    const onPrevSlide = vi.fn();
+    renderHook(() => useKeyboardShortcuts({ onPrevSlide }));
+
+    const select = document.createElement('select');
+    document.body.appendChild(select);
+    select.focus();
+
+    const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true });
+    Object.defineProperty(event, 'target', { value: select });
+    window.dispatchEvent(event);
+
+    expect(onPrevSlide).not.toHaveBeenCalled();
+    document.body.removeChild(select);
+  });
+
+  it('ArrowRight does NOT call onNextSlide when focused on a select element', () => {
+    const onNextSlide = vi.fn();
+    renderHook(() => useKeyboardShortcuts({ onNextSlide }));
+
+    const select = document.createElement('select');
+    document.body.appendChild(select);
+    select.focus();
+
+    const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true });
+    Object.defineProperty(event, 'target', { value: select });
+    window.dispatchEvent(event);
+
+    expect(onNextSlide).not.toHaveBeenCalled();
+    document.body.removeChild(select);
+  });
+
   it('does NOT call onPrevSlide when focus is on a contenteditable element', () => {
     const onPrevSlide = vi.fn();
     renderHook(() => useKeyboardShortcuts({ onPrevSlide }));

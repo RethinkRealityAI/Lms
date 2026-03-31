@@ -50,13 +50,10 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
   const { saveNow } = useAutoSave(isDirty, handleSave);
 
   const handleDeleteKey = useCallback(() => {
-    if (
-      selectedEntity?.type === 'module' ||
-      selectedEntity?.type === 'lesson' ||
-      selectedEntity?.type === 'slide'
-    ) {
+    if (selectedEntity?.type === 'module' || selectedEntity?.type === 'slide') {
       setDeleteDialogOpen(true);
     }
+    // lesson: removeLesson not yet implemented — skip for now
   }, [selectedEntity]);
 
   const handleDeleteConfirm = useCallback(() => {
@@ -75,17 +72,19 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
       }
       return;
     }
-    // lesson: removeLesson not yet implemented — just close dialog
+    // lesson: removeLesson not yet implemented — dialog will not open for lessons (see handleDeleteKey)
   }, [selectedEntity, removeModule, removeSlide, slides]);
 
   const handlePrevSlide = useCallback(() => {
+    if (selectedLessonSlides === 0) return; // no lesson in context, can't navigate
     if (previewSlideIndex > 0) setPreviewSlideIndex(previewSlideIndex - 1);
-  }, [previewSlideIndex, setPreviewSlideIndex]);
+  }, [previewSlideIndex, selectedLessonSlides, setPreviewSlideIndex]);
 
   const handleNextSlide = useCallback(() => {
-    const maxIndex = selectedLessonSlides > 0 ? selectedLessonSlides - 1 : previewSlideIndex + 1;
+    if (selectedLessonSlides === 0) return; // no lesson in context, can't navigate
+    const maxIndex = selectedLessonSlides - 1;
     if (previewSlideIndex < maxIndex) setPreviewSlideIndex(previewSlideIndex + 1);
-  }, [previewSlideIndex, setPreviewSlideIndex, selectedLessonSlides]);
+  }, [previewSlideIndex, selectedLessonSlides, setPreviewSlideIndex]);
 
   useKeyboardShortcuts({
     onSave: saveNow,
@@ -108,9 +107,7 @@ function EditorContent({ courseId: _courseId }: { courseId: string }) {
   }, [isDirty]);
 
   const deleteEntityType =
-    selectedEntity?.type === 'module' ||
-    selectedEntity?.type === 'lesson' ||
-    selectedEntity?.type === 'slide'
+    selectedEntity?.type === 'module' || selectedEntity?.type === 'slide'
       ? selectedEntity.type
       : null;
 
