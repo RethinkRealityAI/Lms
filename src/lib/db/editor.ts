@@ -50,13 +50,17 @@ export async function loadEditorCourseData(
     order_index: m.order_index as number,
   }));
 
-  // Fetch lessons for this course
-  const { data: lessonsRaw, error: lesErr } = await supabase
-    .from('lessons')
-    .select('id, title, description, module_id, course_id, order_index')
-    .eq('course_id', courseId)
-    .is('deleted_at', null)
-    .order('order_index');
+  // Fetch lessons via module_id — more reliable than course_id since newly
+  // created lessons always have module_id set (course_id may be null on older rows).
+  const moduleIds = modules.map((m) => m.id);
+  const { data: lessonsRaw, error: lesErr } = moduleIds.length > 0
+    ? await supabase
+        .from('lessons')
+        .select('id, title, description, module_id, course_id, order_index')
+        .in('module_id', moduleIds)
+        .is('deleted_at', null)
+        .order('order_index')
+    : { data: [], error: null };
 
   if (lesErr) throw lesErr;
   const lessons: LessonData[] = (lessonsRaw ?? []).map((l: Record<string, unknown>) => ({

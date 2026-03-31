@@ -28,6 +28,7 @@ export async function createModule(
     .from('modules')
     .insert({
       course_id: input.courseId,
+      institution_id: input.institutionId,
       title: input.title,
       order_index: nextIndex,
     })

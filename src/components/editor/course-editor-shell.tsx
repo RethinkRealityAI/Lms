@@ -131,15 +131,21 @@ function EditorContent({ courseId }: { courseId: string }) {
     if (!institutionId) return;
     try {
       const supabase = createClient();
-      const newLesson = await dbCreateLesson(supabase, { moduleId, title, institutionId });
-      // course_id comes from the module — look it up from current state
+      // Resolve course_id: prefer the module's stored course_id, fall back to shell prop
       const state = store?.getState();
       const mod = state?.modules.find((m) => m.id === moduleId);
+      const resolvedCourseId = mod?.course_id ?? courseId;
+      const newLesson = await dbCreateLesson(supabase, {
+        moduleId,
+        courseId: resolvedCourseId,
+        title,
+        institutionId,
+      });
       const lessonData: LessonData = {
         id: newLesson.id,
         title: newLesson.title,
         module_id: newLesson.module_id,
-        course_id: mod?.course_id ?? courseId,
+        course_id: newLesson.course_id ?? resolvedCourseId,
         order_index: newLesson.order_index,
       };
       addLesson(moduleId, lessonData);

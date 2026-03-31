@@ -6,6 +6,7 @@ import type { Lesson, LessonBlock } from '@/types';
 
 export interface CreateLessonInput {
   moduleId: string;
+  courseId: string;
   title: string;
   institutionId: string;
 }
@@ -13,7 +14,7 @@ export interface CreateLessonInput {
 export async function createLesson(
   supabase: SupabaseClient,
   input: CreateLessonInput,
-): Promise<{ id: string; title: string; module_id: string; order_index: number }> {
+): Promise<{ id: string; title: string; module_id: string; course_id: string; order_index: number }> {
   const { data: existing } = await supabase
     .from('lessons')
     .select('order_index')
@@ -28,11 +29,12 @@ export async function createLesson(
     .from('lessons')
     .insert({
       module_id: input.moduleId,
+      course_id: input.courseId,
       title: input.title,
       order_index: nextIndex,
       content_type: 'blocks',
     })
-    .select('id, title, module_id, order_index')
+    .select('id, title, module_id, course_id, order_index')
     .single();
 
   if (error) throw error;
