@@ -34,7 +34,7 @@ interface Snapshot {
   blocks: Map<string, BlockData[]>;
 }
 
-interface EditorState {
+export interface EditorState {
   courseId: string | null;
   modules: ModuleData[];
   lessons: Map<string, LessonData[]>;
@@ -54,6 +54,7 @@ interface EditorState {
   removeSlide: (lessonId: string, slideId: string) => void;
   reorderSlides: (lessonId: string, slideIds: string[]) => void;
   updateSlide: (lessonId: string, slideId: string, changes: Partial<Slide>) => void;
+  updateBlock: (slideId: string, blockId: string, changes: Partial<BlockData>) => void;
   setPreviewSlideIndex: (index: number) => void;
   markSaved: () => void;
   undo: () => void;
@@ -187,6 +188,19 @@ export function createEditorStore() {
           existing.map((sl) => (sl.id === slideId ? { ...sl, ...changes } : sl)),
         );
         return { slides: next, ...push(s, snap, 'updateSlide', slideId) };
+      });
+    },
+
+    updateBlock: (slideId, blockId, changes) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const next = new Map(s.blocks);
+        next.set(
+          slideId,
+          existing.map((b) => (b.id === blockId ? { ...b, ...changes } : b)),
+        );
+        return { blocks: next, ...push(s, snap, 'updateBlock', blockId) };
       });
     },
 

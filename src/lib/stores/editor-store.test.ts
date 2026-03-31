@@ -132,6 +132,33 @@ describe('EditorStore', () => {
     });
   });
 
+  describe('updateBlock', () => {
+    it('updates a block in a slide', () => {
+      // Load blocks via loadCourse so we can verify the update
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map([
+          ['slide1', [{ id: 'block1', slide_id: 'slide1', block_type: 'rich_text', data: { html: '<p>Original</p>' }, order_index: 0, is_visible: true }]],
+        ]),
+      });
+      store.getState().updateBlock('slide1', 'block1', { data: { html: '<p>Updated</p>' } });
+      const block = store.getState().blocks.get('slide1')![0];
+      expect(block.data).toEqual({ html: '<p>Updated</p>' });
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().updateBlock('slide1', 'block1', {});
+      expect(store.getState().isDirty).toBe(true);
+    });
+
+    it('does not throw when block is not found', () => {
+      expect(() => store.getState().updateBlock('slide1', 'nonexistent', {})).not.toThrow();
+    });
+  });
+
   describe('loadCourse', () => {
     it('loads initial data and resets dirty/history', () => {
       store.getState().addModule({ id: 'm0', title: 'Old', course_id: 'c0', order_index: 0 });
