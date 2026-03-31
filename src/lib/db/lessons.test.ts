@@ -47,7 +47,7 @@ describe('createLesson', () => {
     const insertedLesson = { id: 'les-real-id', title: 'New Lesson', module_id: 'mod-1', order_index: 0 };
     const mock = makeMockSupabase({ existingData: [], insertedData: insertedLesson });
 
-    await createLesson(mock as any, { moduleId: 'mod-1', title: 'New Lesson', institutionId: 'inst-1' });
+    await createLesson(mock as any, { moduleId: 'mod-1', courseId: 'course-1', title: 'New Lesson', institutionId: 'inst-1' });
 
     expect(mock.from).toHaveBeenCalledWith('lessons');
   });
@@ -56,7 +56,7 @@ describe('createLesson', () => {
     const insertedLesson = { id: 'les-real-id', title: 'New Lesson', module_id: 'mod-1', order_index: 0 };
     const mock = makeMockSupabase({ existingData: [], insertedData: insertedLesson });
 
-    const result = await createLesson(mock as any, { moduleId: 'mod-1', title: 'New Lesson', institutionId: 'inst-1' });
+    const result = await createLesson(mock as any, { moduleId: 'mod-1', courseId: 'course-1', title: 'New Lesson', institutionId: 'inst-1' });
 
     expect(mock._insertFn).toHaveBeenCalledWith(
       expect.objectContaining({ order_index: 0, content_type: 'blocks' })
@@ -68,7 +68,7 @@ describe('createLesson', () => {
     const insertedLesson = { id: 'les-real-id', title: 'New Lesson', module_id: 'mod-1', order_index: 2 };
     const mock = makeMockSupabase({ existingData: [{ order_index: 1 }], insertedData: insertedLesson });
 
-    await createLesson(mock as any, { moduleId: 'mod-1', title: 'New Lesson', institutionId: 'inst-1' });
+    await createLesson(mock as any, { moduleId: 'mod-1', courseId: 'course-1', title: 'New Lesson', institutionId: 'inst-1' });
 
     expect(mock._insertFn).toHaveBeenCalledWith(
       expect.objectContaining({ order_index: 2 })
@@ -79,7 +79,7 @@ describe('createLesson', () => {
     const insertedLesson = { id: 'les-real-id', title: 'Lesson A', module_id: 'mod-1', order_index: 0 };
     const mock = makeMockSupabase({ existingData: [], insertedData: insertedLesson });
 
-    await createLesson(mock as any, { moduleId: 'mod-1', title: 'Lesson A', institutionId: 'inst-1' });
+    await createLesson(mock as any, { moduleId: 'mod-1', courseId: 'course-1', title: 'Lesson A', institutionId: 'inst-1' });
 
     expect(mock._insertFn).toHaveBeenCalledWith(
       expect.objectContaining({ content_type: 'blocks' })
@@ -105,7 +105,7 @@ describe('createLesson', () => {
     });
 
     await expect(
-      createLesson({ from } as any, { moduleId: 'm1', title: 'x', institutionId: 'i1' })
+      createLesson({ from } as any, { moduleId: 'm1', courseId: 'c1', title: 'x', institutionId: 'i1' })
     ).rejects.toEqual({ message: 'insert failed' });
   });
 });
