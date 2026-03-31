@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { ModuleNode } from './module-node';
 import { AddEntityDialog } from './add-entity-dialog';
+import { SlideTemplatePicker } from './slide-template-picker';
 import { useEditorStore } from './editor-store-context';
 
 export function StructurePanel() {
@@ -21,10 +22,6 @@ export function StructurePanel() {
       order_index: modules.length,
     });
   }
-
-  // addSlideForLesson state is passed down and can be consumed by a future
-  // slide-type picker dialog; for now we just store the lessonId.
-  void addSlideForLesson;
 
   return (
     <div className="w-[260px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
@@ -71,6 +68,12 @@ export function StructurePanel() {
           entityType="module"
           onAdd={handleAddModule}
           onClose={() => setShowAddModule(false)}
+        />
+      )}
+      {addSlideForLesson && (
+        <SlideTemplatePicker
+          lessonId={addSlideForLesson}
+          onClose={() => setAddSlideForLesson(null)}
         />
       )}
     </div>
