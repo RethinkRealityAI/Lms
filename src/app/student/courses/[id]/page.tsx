@@ -88,8 +88,9 @@ export default function StudentCoursePage({ params: paramsPromise }: { params: P
 
         const lessonIds = lessonsData.map(l => l.id);
         if (lessonIds.length > 0) {
-          // TODO: When migrating to slide-based content, filter by slides.status = 'published'
-          // before fetching lesson_blocks via slide_id.
+          // TODO: After migration 013 applied, lesson_blocks now have slide_id set.
+          // When fully migrating to slide-based content, filter blocks by slide status:
+          //   SELECT lb.* FROM lesson_blocks lb JOIN slides s ON s.id = lb.slide_id WHERE s.status = 'published'
           const { data: blocksData } = await supabase.from('lesson_blocks').select('*')
             .in('lesson_id', lessonIds).order('order_index', { ascending: true });
 
