@@ -103,6 +103,37 @@ describe('reorderSlides', () => {
     await reorderSlides(supabase as any, 'l1', ['s1', 's2'], 'inst-1');
     expect(supabase.from).toHaveBeenCalledWith('content_activity_log');
   });
+
+  it('throws when one of the update calls returns an error', async () => {
+    const updateError = { message: 'update failed' };
+    // Build a chain where the second update call resolves with an error
+    let callCount = 0;
+    const makeChain = (resolvedValue: { data: unknown; error: unknown }) => {
+      const chain: Record<string, unknown> = {};
+      chain['eq'] = vi.fn().mockReturnValue(chain);
+      chain['update'] = vi.fn().mockImplementation(() => chain);
+      // The chain itself is awaitable — resolve with the given value
+      chain['then'] = (resolve: (v: unknown) => unknown) => Promise.resolve(resolvedValue).then(resolve);
+      return chain;
+    };
+
+    const successChain = makeChain({ data: null, error: null });
+    const errorChain = makeChain({ data: null, error: updateError });
+
+    const activityChain = { insert: vi.fn().mockResolvedValue({ error: null }) };
+    const supabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === 'content_activity_log') return activityChain;
+        callCount++;
+        // First slide update succeeds, second fails
+        return callCount % 2 === 0 ? errorChain : successChain;
+      }),
+    };
+
+    await expect(
+      reorderSlides(supabase as any, 'l1', ['s1', 's2'], 'inst-1')
+    ).rejects.toEqual(updateError);
+  });
 });
 
 describe('getSlideTemplates', () => {

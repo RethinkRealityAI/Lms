@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Slide, SlideType, SlideStatus } from '@/types';
+import type { Slide, SlideType, SlideStatus, SlideTemplate } from '@/types';
 import { logActivity } from './activity-log';
 
 export async function getSlidesByLesson(
@@ -126,7 +126,9 @@ export async function reorderSlides(
       .eq('lesson_id', lessonId)
   );
 
-  await Promise.all(updates);
+  const results = await Promise.all(updates);
+  const firstError = results.find((r) => r.error)?.error;
+  if (firstError) throw firstError;
 
   await logActivity(supabase, {
     institutionId,
@@ -141,18 +143,17 @@ export async function reorderSlides(
 export async function getSlideTemplates(
   supabase: SupabaseClient,
   institutionId?: string
-) {
-  let query = supabase
+): Promise<SlideTemplate[]> {
+  const { data, error } = await supabase
     .from('slide_templates')
-    .select('*');
-
-  if (institutionId) {
-    query = (query as any).or(`institution_id.is.null,institution_id.eq.${institutionId}`);
-  } else {
-    query = (query as any).is('institution_id', null);
-  }
-
-  const { data, error } = await (query as any).order('name');
+    .select('*')
+    .order('created_at', { ascending: true });
   if (error) throw error;
-  return data ?? [];
+  const rows = (data ?? []) as SlideTemplate[];
+  if (institutionId) {
+    return rows.filter(
+      (t) => t.institution_id === null || t.institution_id === institutionId
+    );
+  }
+  return rows.filter((t) => t.institution_id === null);
 }
