@@ -7,6 +7,7 @@ import { BookOpen, LogOut, Menu, X, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { isAdminRole } from '@/lib/auth/roles';
 
 interface PublicNavProps {
   scrolled?: boolean;
@@ -132,7 +133,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
     return '??';
   };
 
-  const dashboardPath = userRole === 'admin' ? '/admin' : '/student';
+  const dashboardPath = isAdminRole(userRole) ? '/admin' : '/student';
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${

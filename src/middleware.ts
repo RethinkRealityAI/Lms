@@ -23,20 +23,20 @@ async function getRoleWithDbFallback(
   supabase: any,
   user: any
 ): Promise<string> {
-  // Fast path: JWT metadata (covers 99%+ of requests)
-  const tokenRole = getRoleFromToken(user);
-  if (tokenRole) return tokenRole;
-
-  // Slow path: DB lookup (only when metadata is missing — e.g. old accounts)
-  const { data } = await supabase
+  // Prioritize DB lookup: prevents stale JWT metadata from locking updated admins out
+  const { data, error } = await supabase
     .from("users")
     .select("role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (data?.role && typeof data.role === "string") {
+  if (!error && data?.role && typeof data.role === "string") {
     return data.role.trim().toLowerCase();
   }
+
+  // Fallback to JWT metadata if no DB record exists
+  const tokenRole = getRoleFromToken(user);
+  if (tokenRole) return tokenRole;
 
   return "student";
 }
