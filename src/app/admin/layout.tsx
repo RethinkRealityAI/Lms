@@ -29,22 +29,22 @@ export default async function AdminLayout({
 
   const navLinks = [
     {
-      href: '/gansid/admin',
+      href: '/admin',
       label: 'Courses',
       icon: 'BookOpen',
     },
     {
-      href: '/gansid/admin/analytics',
+      href: '/admin/analytics',
       label: 'Analytics',
       icon: 'BarChart3',
     },
     {
-      href: '/gansid/admin/users',
+      href: '/admin/users',
       label: 'Users',
       icon: 'User',
     },
     {
-      href: '/gansid/admin/settings',
+      href: '/admin/settings',
       label: 'Settings',
       icon: 'Settings',
     },

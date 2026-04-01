@@ -87,8 +87,7 @@ export async function middleware(request: NextRequest) {
   // Enforce explicit institution context for auth/admin/student routes.
   if (
     !institutionSlugInPath &&
-    (normalizedPath.startsWith("/admin") ||
-      normalizedPath.startsWith("/student") ||
+    (normalizedPath.startsWith("/student") ||
       normalizedPath === "/login" ||
       normalizedPath === "/reset-password")
   ) {
@@ -141,7 +140,7 @@ export async function middleware(request: NextRequest) {
   // Handle admin login page
   if (normalizedPath.startsWith("/admin/login")) {
     if (user && role && ADMIN_ROLES.has(role)) {
-      return NextResponse.redirect(new URL(withInstitution("/admin", selectedInstitution), request.url));
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
     if (institutionSlugInPath) {
       return applyInstitutionContext(
@@ -157,7 +156,7 @@ export async function middleware(request: NextRequest) {
   // Protect admin routes (excluding /admin/login)
   if (normalizedPath.startsWith("/admin")) {
     if (!user) {
-      return NextResponse.redirect(new URL(withInstitution("/admin/login", selectedInstitution), request.url));
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     if (!role || !ADMIN_ROLES.has(role)) {
       return NextResponse.redirect(new URL(withInstitution("/student", selectedInstitution), request.url));
@@ -170,7 +169,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(withInstitution("/login", selectedInstitution), request.url));
     }
     if (role && ADMIN_ROLES.has(role)) {
-      return NextResponse.redirect(new URL(withInstitution("/admin", selectedInstitution), request.url));
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
   }
 
@@ -190,7 +189,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from login page
   if (normalizedPath === "/login" && user) {
     if (role && ADMIN_ROLES.has(role)) {
-      return NextResponse.redirect(new URL(withInstitution("/admin", selectedInstitution), request.url));
+      return NextResponse.redirect(new URL("/admin", request.url));
     } else if (role) {
       return NextResponse.redirect(new URL(withInstitution("/student", selectedInstitution), request.url));
     }

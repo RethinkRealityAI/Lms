@@ -57,7 +57,7 @@ export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
         </button>
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <button
-          onClick={() => courseId && router.push(`/gansid/admin/courses/${courseId}/preview`)}
+          onClick={() => courseId && router.push(`/admin/courses/${courseId}/preview`)}
           className="p-2 rounded hover:bg-gray-100 transition-colors"
           title="Preview as student"
         >

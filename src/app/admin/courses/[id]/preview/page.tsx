@@ -25,7 +25,7 @@ export default function AdminPreviewPage({
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/gansid/admin"
+            href="/admin"
             className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -34,7 +34,7 @@ export default function AdminPreviewPage({
           </Link>
           <div className="w-px h-4 bg-white/20" />
           <Link
-            href={`/gansid/admin/courses/${params.id}/editor`}
+            href={`/admin/courses/${params.id}/editor`}
             className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
           >
             <Pencil className="h-3.5 w-3.5" />

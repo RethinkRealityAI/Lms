@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
 
                     if (!userError && isAdminRole(role)) {
                         // Already authenticated as admin, redirect to admin dashboard
-                        router.replace(withInstitutionPath('/admin', pathname));
+                        router.replace('/admin');
                         return;
                     } else if (!userError && role && !isAdminRole(role)) {
                         // User is a student, sign them out and show error
@@ -190,7 +190,7 @@ export default function AdminLoginPage() {
             });
 
             // Use replace instead of push to avoid back button issues
-            router.replace(withInstitutionPath('/admin', pathname));
+            router.replace('/admin');
         } catch (err: any) {
             toast.error('Authentication Failed', {
                 description: err.message || 'Please check your admin credentials and try again.',

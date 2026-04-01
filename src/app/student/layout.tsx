@@ -26,7 +26,7 @@ export default async function StudentLayout({
   const role = userData?.role || user.user_metadata?.role;
   
   if (isAdminRole(role)) {
-    redirect('/gansid/admin');
+    redirect('/admin');
   }
   
   // Use profile data or fallback to metadata

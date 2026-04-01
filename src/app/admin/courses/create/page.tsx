@@ -139,7 +139,7 @@ export default function CreateCoursePage() {
         description: 'Opening editor...',
       });
 
-      router.push(`/gansid/admin/courses/${data.id}/editor`);
+      router.push(`/admin/courses/${data.id}/editor`);
     } catch (error: any) {
       toast.error('Failed to create course', {
         description: error.message,

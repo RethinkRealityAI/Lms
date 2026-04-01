@@ -197,7 +197,7 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
             }}
             onDragEnd={() => { setDragIdx(null); setDragOverIdx(null); }}
           >
-            <Link href={`/gansid/admin/courses/${course.id}/editor`}>
+            <Link href={`/admin/courses/${course.id}/editor`}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden border border-slate-200 bg-white">
                 {/* Thumbnail */}
                 {course.thumbnail_url ? (
@@ -251,7 +251,7 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
                 <Pencil className="h-4 w-4 text-[#1E3A5F]" />
               </button>
               <Link
-                href={`/gansid/admin/courses/${course.id}/preview`}
+                href={`/admin/courses/${course.id}/preview`}
                 aria-label="Preview as student"
                 title="Preview as student"
                 className="bg-white/90 hover:bg-white rounded-lg p-1.5 shadow-sm border border-gray-200"

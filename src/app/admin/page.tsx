@@ -25,7 +25,7 @@ export default async function AdminPage() {
             {courseCount}
           </Badge>
         </div>
-        <Link href="/gansid/admin/courses/create">
+        <Link href="/admin/courses/create">
           <Button className="bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-sm">
             <Plus className="mr-2 h-4 w-4" />
             Create Course
@@ -48,7 +48,7 @@ export default async function AdminPage() {
               <p className="text-slate-500 mb-6 text-center">
                 No courses yet. Create your first course to get started!
               </p>
-              <Link href="/gansid/admin/courses/create">
+              <Link href="/admin/courses/create">
                 <Button className="bg-[#DC2626] hover:bg-[#B91C1C] text-white">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Course
