@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createLesson, deleteLesson } from './lessons';
+import { createLesson, deleteLesson, updateLesson } from './lessons';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Helper to build a mock Supabase client for lesson operations
 function makeMockSupabase(opts: {
@@ -107,6 +108,56 @@ describe('createLesson', () => {
     await expect(
       createLesson({ from } as any, { moduleId: 'm1', courseId: 'c1', title: 'x', institutionId: 'i1' })
     ).rejects.toEqual({ message: 'insert failed' });
+  });
+});
+
+describe('updateLesson', () => {
+  it('updates title and description', async () => {
+    const eqMock = vi.fn().mockResolvedValue({ error: null });
+    const updateMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const sb = {
+      from: vi.fn().mockReturnValue({ update: updateMock }),
+    } as unknown as SupabaseClient;
+
+    await updateLesson(sb, 'lesson-1', { title: 'New Title', description: 'New Desc' });
+
+    expect(sb.from).toHaveBeenCalledWith('lessons');
+    expect(updateMock).toHaveBeenCalledWith({ title: 'New Title', description: 'New Desc' });
+    expect(eqMock).toHaveBeenCalledWith('id', 'lesson-1');
+  });
+
+  it('updates title_image_url', async () => {
+    const eqMock = vi.fn().mockResolvedValue({ error: null });
+    const updateMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const sb = {
+      from: vi.fn().mockReturnValue({ update: updateMock }),
+    } as unknown as SupabaseClient;
+
+    await updateLesson(sb, 'lesson-2', { title_image_url: 'https://example.com/bg.jpg' });
+
+    expect(updateMock).toHaveBeenCalledWith({ title_image_url: 'https://example.com/bg.jpg' });
+  });
+
+  it('clears title_image_url when set to null', async () => {
+    const eqMock = vi.fn().mockResolvedValue({ error: null });
+    const updateMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const sb = {
+      from: vi.fn().mockReturnValue({ update: updateMock }),
+    } as unknown as SupabaseClient;
+
+    await updateLesson(sb, 'lesson-3', { title_image_url: null });
+
+    expect(updateMock).toHaveBeenCalledWith({ title_image_url: null });
+  });
+
+  it('throws when supabase returns an error', async () => {
+    const eqMock = vi.fn().mockResolvedValue({ error: { message: 'DB error' } });
+    const updateMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const sb = {
+      from: vi.fn().mockReturnValue({ update: updateMock }),
+    } as unknown as SupabaseClient;
+
+    await expect(updateLesson(sb, 'lesson-4', { title: 'X' })).rejects.toThrow();
   });
 });
 

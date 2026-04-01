@@ -56,7 +56,7 @@ export async function loadEditorCourseData(
   const { data: lessonsRaw, error: lesErr } = moduleIds.length > 0
     ? await supabase
         .from('lessons')
-        .select('id, title, description, module_id, course_id, order_index')
+        .select('id, title, description, module_id, course_id, order_index, title_image_url')
         .in('module_id', moduleIds)
         .is('deleted_at', null)
         .order('order_index')
@@ -70,6 +70,7 @@ export async function loadEditorCourseData(
     module_id: (l.module_id as string | null) ?? undefined,
     course_id: l.course_id as string,
     order_index: l.order_index as number,
+    title_image_url: (l.title_image_url as string | null) ?? undefined,
   }));
 
   // Group lessons by module

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle } from 'lucide-react';
@@ -8,11 +8,11 @@ import { cn } from '@/lib/utils';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
 
-export default function QuizInlineViewer({ data }: BlockViewerProps<QuizInlineData>) {
+export default function QuizInlineViewer({ data, block, onComplete }: BlockViewerProps<QuizInlineData>) {
   const [submitted, setSubmitted] = useState(false);
 
   if (data.question_type === 'multiple_choice' || data.question_type === 'true_false') {
-    return <MultipleChoiceViewer data={data} submitted={submitted} onSubmit={() => setSubmitted(true)} onRetry={() => setSubmitted(false)} />;
+    return <MultipleChoiceViewer data={data} submitted={submitted} onSubmit={() => setSubmitted(true)} onRetry={() => setSubmitted(false)} onCorrect={() => onComplete?.()} />;
   }
 
   if (data.question_type === 'categorize' && data.categories) {
@@ -31,14 +31,25 @@ function MultipleChoiceViewer({
   submitted,
   onSubmit,
   onRetry,
+  onCorrect,
 }: {
   data: QuizInlineData;
   submitted: boolean;
   onSubmit: () => void;
   onRetry: () => void;
+  onCorrect?: () => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const isCorrect = submitted && selected === data.correct_answer;
+  const correctFiredRef = useRef(false);
+
+  // Fire onCorrect once when user gets the right answer
+  useEffect(() => {
+    if (isCorrect && !correctFiredRef.current) {
+      correctFiredRef.current = true;
+      onCorrect?.();
+    }
+  }, [isCorrect]);
 
   const handleSubmit = () => {
     if (selected !== null) onSubmit();
@@ -59,7 +70,7 @@ function MultipleChoiceViewer({
         {(data.options ?? []).map((option, i) => {
           const isSelected = selected === option;
           const isCorrectOption = option === data.correct_answer;
-          const showCorrect = submitted && isCorrectOption;
+          const showCorrect = submitted && isCorrectOption && isSelected;
           const showWrong = submitted && isSelected && !isCorrectOption;
 
           return (
@@ -72,9 +83,9 @@ function MultipleChoiceViewer({
                 'w-full text-left px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-lg border text-sm sm:text-base transition-all',
                 !submitted && !isSelected && 'hover:bg-slate-50 border-border',
                 !submitted && isSelected && 'border-[#1E3A5F] bg-[#1E3A5F]/10 font-medium text-[#1E3A5F]',
-                showCorrect && 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-800 dark:text-green-300',
-                showWrong && 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-300',
-                submitted && !isSelected && !isCorrectOption && 'opacity-50',
+                showCorrect && 'border-green-500 bg-green-100 text-green-900 font-medium',
+                showWrong && 'border-red-500 bg-red-100 text-red-900 font-medium',
+                submitted && !isSelected && !isCorrectOption && 'opacity-40',
               )}
             >
               <span className="flex items-center justify-between gap-2">
@@ -90,12 +101,12 @@ function MultipleChoiceViewer({
       {submitted && data.show_feedback && (
         <div className={cn(
           'flex items-start gap-2 text-sm sm:text-base font-medium rounded-lg px-3 py-2.5 sm:px-5 sm:py-3.5',
-          isCorrect ? 'bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-300' : 'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300'
+          isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         )}>
           {isCorrect ? (
             <><CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /> Correct!</>
           ) : (
-            <><XCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /><span>Incorrect. The correct answer is: <strong>{data.correct_answer}</strong></span></>
+            <><XCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /><span>Incorrect. Try again!</span></>
           )}
         </div>
       )}
@@ -104,11 +115,11 @@ function MultipleChoiceViewer({
         <Button onClick={handleSubmit} disabled={selected === null} className="w-full sm:w-auto bg-[#1E3A5F] hover:bg-[#0F172A] text-white">
           Check Answer
         </Button>
-      ) : (
+      ) : !isCorrect ? (
         <Button variant="outline" onClick={handleRetry} className="w-full sm:w-auto border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10">
           Try Again
         </Button>
-      )}
+      ) : null}
     </div>
   );
 }

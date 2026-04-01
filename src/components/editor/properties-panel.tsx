@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Settings, Type, FileText, Image as ImageIcon, Play, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Settings, Type, FileText, Image as ImageIcon, Play, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, Upload, X, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
 import { BlockEditorPanel } from './block-editor-panel';
 import { CourseThemeEditor } from './theme-editor/course-theme-editor';
@@ -98,6 +101,9 @@ function ModuleEditor({ moduleId }: { moduleId: string }) {
 function LessonEditor({ lessonId }: { lessonId: string }) {
   const lessons = useEditorStore((s) => s.lessons);
   const updateLesson = useEditorStore((s) => s.updateLesson);
+  const supabase = createClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   let lessonData: LessonData | undefined;
   let parentModuleId: string | undefined;
@@ -129,6 +135,30 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
     if (trimmed !== (lessonData?.description ?? '') && parentModuleId) {
       updateLesson(parentModuleId, lessonId, { description: trimmed });
     }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !parentModuleId) return;
+    setUploading(true);
+    try {
+      const filePath = `lessons/${lessonId}/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from('block-media').upload(filePath, file);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from('block-media').getPublicUrl(filePath);
+      updateLesson(parentModuleId, lessonId, { title_image_url: urlData.publicUrl });
+      toast.success('Background image uploaded');
+    } catch (err: any) {
+      toast.error('Upload failed', { description: err.message });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (!parentModuleId) return;
+    updateLesson(parentModuleId, lessonId, { title_image_url: null });
   };
 
   return (
@@ -163,6 +193,50 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
           maxLength={500}
         />
         <p className="text-[10px] text-gray-400 text-right">{description.length}/500</p>
+      </div>
+
+      {/* Title slide background image */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium text-gray-600 flex items-center gap-1.5">
+          <ImageIcon className="w-3 h-3" /> Title Background
+        </Label>
+        {lessonData?.title_image_url ? (
+          <div className="relative rounded-lg overflow-hidden border border-gray-200">
+            <img src={lessonData.title_image_url} alt="Title background" className="w-full h-24 object-cover" />
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 transition-colors"
+              title="Remove background image"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="w-full h-20 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-gray-300 hover:text-gray-500 transition-colors"
+          >
+            {uploading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <Upload className="w-4 h-4" />
+                <span className="text-[11px] font-medium">Upload image</span>
+              </>
+            )}
+          </button>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+        <p className="text-[10px] text-gray-400">Replaces the blue gradient on the title slide</p>
       </div>
     </div>
   );

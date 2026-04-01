@@ -114,7 +114,7 @@ function EditorContent({ courseId }: { courseId: string }) {
     for (const lessonList of state.lessons.values()) {
       for (const lesson of lessonList) {
         lessonPromises.push(
-          dbUpdateLesson(supabase, lesson.id, { title: lesson.title, description: lesson.description })
+          dbUpdateLesson(supabase, lesson.id, { title: lesson.title, description: lesson.description, title_image_url: lesson.title_image_url ?? null })
             .catch((err) => { console.warn('Failed to save lesson', lesson.id, err); }),
         );
       }

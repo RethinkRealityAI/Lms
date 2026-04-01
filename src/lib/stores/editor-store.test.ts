@@ -397,6 +397,51 @@ describe('EditorStore', () => {
     });
   });
 
+  describe('updateLesson', () => {
+    beforeEach(() => {
+      store.getState().addModule({ id: 'm1', title: 'Module 1', course_id: 'c1', order_index: 0 });
+      store.getState().addLesson('m1', { id: 'l1', title: 'Lesson 1', module_id: 'm1', course_id: 'c1', order_index: 0 });
+    });
+
+    it('updates lesson title', () => {
+      store.getState().updateLesson('m1', 'l1', { title: 'Updated Title' });
+      const lesson = store.getState().lessons.get('m1')![0];
+      expect(lesson.title).toBe('Updated Title');
+    });
+
+    it('updates lesson description', () => {
+      store.getState().updateLesson('m1', 'l1', { description: 'New desc' });
+      const lesson = store.getState().lessons.get('m1')![0];
+      expect(lesson.description).toBe('New desc');
+    });
+
+    it('updates title_image_url', () => {
+      store.getState().updateLesson('m1', 'l1', { title_image_url: 'https://example.com/bg.jpg' });
+      const lesson = store.getState().lessons.get('m1')![0];
+      expect(lesson.title_image_url).toBe('https://example.com/bg.jpg');
+    });
+
+    it('clears title_image_url when set to null', () => {
+      store.getState().updateLesson('m1', 'l1', { title_image_url: 'https://example.com/bg.jpg' });
+      store.getState().updateLesson('m1', 'l1', { title_image_url: null });
+      const lesson = store.getState().lessons.get('m1')![0];
+      expect(lesson.title_image_url).toBeNull();
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().markSaved();
+      store.getState().updateLesson('m1', 'l1', { title: 'Changed' });
+      expect(store.getState().isDirty).toBe(true);
+    });
+
+    it('is undoable', () => {
+      store.getState().updateLesson('m1', 'l1', { title: 'Changed' });
+      store.getState().undo();
+      const lesson = store.getState().lessons.get('m1')![0];
+      expect(lesson.title).toBe('Lesson 1');
+    });
+  });
+
   describe('updateCourseTheme', () => {
     it('merges theme changes into courseTheme', () => {
       store.getState().updateCourseTheme({ primaryColor: '#DC2626' });

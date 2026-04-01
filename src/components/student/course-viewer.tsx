@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  CheckCircle, Circle, Play, LogOut, Loader2, Star, Send,
+  CheckCircle, Circle, Play, Loader2, Star, Send,
   ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -97,8 +97,6 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonBlocks, setLessonBlocks] = useState<Record<string, LessonBlock[]>>({});
   const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number }>>>({});
-  const [showUnenrollDialog, setShowUnenrollDialog] = useState(false);
-  const [unenrolling, setUnenrolling] = useState(false);
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
   const [pageLoading, setPageLoading] = useState(true);
   // Slide viewer
@@ -108,6 +106,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   // Confetti — track which lessons have already shown the animation
   const confettiFiredRef = useRef<Record<string, boolean>>({});
   const [showConfetti, setShowConfetti] = useState(false);
+  // Inline quiz completion tracking — set of blockIds answered correctly per lesson
+  const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
   // Review modal
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
@@ -277,27 +277,6 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     }
   }, [selectedLesson, progress, lessons, courseId, previewMode]);
 
-  const handleUnenroll = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    setUnenrolling(true);
-    try {
-      const { error } = await supabase.from('course_enrollments').delete()
-        .eq('user_id', user.id).eq('course_id', courseId);
-      if (error) throw error;
-      const lessonIds = lessons.map(l => l.id);
-      if (lessonIds.length > 0) {
-        await supabase.from('progress').delete().eq('user_id', user.id).in('lesson_id', lessonIds);
-      }
-      toast.success('Unenrolled successfully');
-      router.push('/gansid/student');
-    } catch (err: any) {
-      toast.error('Failed to unenroll', { description: err.message });
-    } finally {
-      setUnenrolling(false);
-      setShowUnenrollDialog(false);
-    }
-  };
 
   const openReviewModal = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -390,10 +369,38 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const isFirstSlide = currentSlide === 0;
   const isLastSlide = currentSlide === totalSlides - 1;
 
-  const goNext = useCallback(() => setCurrentSlide(i => Math.min(i + 1, totalSlides - 1)), [totalSlides]);
+  // Quiz gating: count inline quiz blocks for current lesson and check if all answered correctly
+  const handleQuizCorrect = useCallback((blockId: string) => {
+    if (!selectedLesson) return;
+    setCorrectQuizBlocks(prev => {
+      const existing = prev[selectedLesson.id] ?? new Set();
+      if (existing.has(blockId)) return prev;
+      const next = new Set(existing);
+      next.add(blockId);
+      return { ...prev, [selectedLesson.id]: next };
+    });
+  }, [selectedLesson]);
+
+  const currentLessonQuizBlockIds = React.useMemo(() => {
+    if (!selectedLesson) return [];
+    const blocks = lessonBlocks[selectedLesson.id] ?? [];
+    return blocks.filter(b => b.block_type === 'quiz_inline').map(b => b.id);
+  }, [selectedLesson, lessonBlocks]);
+
+  const allQuizzesComplete = currentLessonQuizBlockIds.length === 0 ||
+    currentLessonQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
+
+  // Gate: is the next slide the completion slide and quizzes aren't done?
+  const nextSlideIsCompletion = currentSlides[currentSlide + 1]?.kind === 'completion';
+  const nextBlocked = nextSlideIsCompletion && !allQuizzesComplete;
+
+  const goNext = useCallback(() => {
+    if (nextBlocked) return;
+    setCurrentSlide(i => Math.min(i + 1, totalSlides - 1));
+  }, [totalSlides, nextBlocked]);
   const goPrev = useCallback(() => setCurrentSlide(i => Math.max(i - 1, 0)), []);
 
-  // Keyboard navigation
+  // Keyboard navigation (goNext already respects nextBlocked)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (!selectedLesson) return;
@@ -404,15 +411,16 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     return () => window.removeEventListener('keydown', handler);
   }, [selectedLesson, goNext, goPrev]);
 
-  // Auto-mark complete when completion slide reached
+  // Auto-mark complete when completion slide reached (only if all quizzes done)
   useEffect(() => {
     if (!selectedLesson) return;
     if (currentSlideData?.kind !== 'completion') return;
     if (progress[selectedLesson.id]?.completed) return;
     if (autoCompleteFired[selectedLesson.id]) return;
+    if (!allQuizzesComplete) return;
     setAutoCompleteFired(prev => ({ ...prev, [selectedLesson.id]: true }));
     handleMarkComplete();
-  }, [currentSlide, selectedLesson?.id]);
+  }, [currentSlide, selectedLesson?.id, allQuizzesComplete]);
 
   // Confetti when completion slide is first shown per lesson
   useEffect(() => {
@@ -487,23 +495,6 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     <div className={`${outerHeightClass} flex flex-col overflow-hidden bg-[#F8FAFC]`}>
 
       {/* ── Dialogs ────────────────────────────────────────────────────────── */}
-      <Dialog open={showUnenrollDialog} onOpenChange={setShowUnenrollDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Unenroll from Course</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to unenroll from &quot;{course.title}&quot;? Your progress will be lost.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowUnenrollDialog(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleUnenroll} disabled={unenrolling}>
-              {unenrolling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Unenroll
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -543,14 +534,6 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             <h2 className="text-lg sm:text-xl font-black text-white truncate">{course.title}</h2>
             <p className="text-slate-400 text-xs mt-0.5 line-clamp-1 hidden sm:block">{course.description}</p>
           </div>
-          {!previewMode && (
-            <Button variant="outline" size="sm" onClick={() => setShowUnenrollDialog(true)}
-              aria-label="Unenroll from course"
-              className="shrink-0 border-white/30 text-white hover:bg-white/10 hover:text-white text-xs">
-              <LogOut className="h-3.5 w-3.5 sm:mr-1.5" />
-              <span className="hidden sm:inline">Unenroll</span>
-            </Button>
-          )}
         </div>
         <div className="mt-2.5 flex items-center gap-3">
           <div className="flex-1 bg-white/20 rounded-full h-1.5"
@@ -625,7 +608,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       aria-label={`${lesson.title}${progress[lesson.id]?.completed ? ' (completed)' : ''}`}
                       className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-inset ${
                         selectedLesson?.id === lesson.id
-                          ? 'bg-red-50 text-[#DC2626] border-l-2 border-[#DC2626]'
+                          ? 'bg-blue-50 text-[#1E3A5F] border-l-2 border-[#1E3A5F]'
                           : 'hover:bg-slate-50 text-slate-700 border-l-2 border-transparent'
                       }`}
                     >
@@ -650,7 +633,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                 {/* Top bar: lesson label + counter + progress bar */}
                 <div className="px-6 pt-5 pb-0 shrink-0 border-b border-slate-100 pb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-black uppercase tracking-widest text-[#DC2626] truncate pr-4">
+                    <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] truncate pr-4">
                       {selectedLesson.title}
                     </span>
                     <span className="text-sm font-bold text-slate-500 shrink-0">
@@ -660,7 +643,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                   <div className="w-full bg-slate-100 rounded-full h-1.5"
                     role="progressbar" aria-valuenow={Math.round(((currentSlide + 1) / totalSlides) * 100)} aria-valuemin={0} aria-valuemax={100}
                     aria-label="Slide progress">
-                    <div className="bg-[#DC2626] h-1.5 rounded-full transition-all duration-300"
+                    <div className="bg-[#1E3A5F] h-1.5 rounded-full transition-all duration-300"
                       style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }} />
                   </div>
                 </div>
@@ -673,31 +656,48 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                   style={{ animation: 'slideIn 0.25s ease-out' }}
                 >
 
-                  {/* TITLE SLIDE */}
+                  {/* TITLE SLIDE — full-height, non-scrollable */}
                   {currentSlideData?.kind === 'title' && (
-                    <div className="flex flex-col flex-1 overflow-y-auto">
-                      <div className="w-full aspect-video bg-gradient-to-br from-[#1E3A5F] to-[#2563EB] flex items-center justify-center relative overflow-hidden shrink-0">
-                        <div className="absolute inset-0 opacity-10"
+                    <div className="flex flex-col flex-1 overflow-hidden relative">
+                      {/* Background: image or gradient */}
+                      <div className="absolute inset-0">
+                        {selectedLesson.title_image_url ? (
+                          <img src={selectedLesson.title_image_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-[#1E3A5F] to-[#2563EB]" />
+                        )}
+                        {/* Overlay for text readability */}
+                        <div className="absolute inset-0 bg-black/40" />
+                        <div className="absolute inset-0 opacity-[0.07]"
                           style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-                        <div className="text-center px-8 relative z-10">
-                          <p className="text-white/60 text-xs uppercase tracking-widest font-bold mb-2">GANSID Learning</p>
-                          <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-black leading-tight">
-                            {selectedLesson.title}
-                          </h2>
-                        </div>
                       </div>
-                      <div className="px-7 py-7 flex-1">
+
+                      {/* Centered content */}
+                      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8 sm:px-12">
+                        <p className="text-white/60 text-xs sm:text-sm uppercase tracking-[0.2em] font-bold mb-4">GANSID Learning</p>
+                        <h2 className="text-white text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black leading-tight max-w-3xl">
+                          {selectedLesson.title}
+                        </h2>
                         {selectedLesson.description && (
-                          <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6">
+                          <p className="text-white/70 text-sm sm:text-base lg:text-lg leading-relaxed mt-4 max-w-2xl">
                             {selectedLesson.description}
                           </p>
                         )}
-                        <div className="flex items-center gap-4 pt-5 border-t border-slate-100">
-                          <div className="w-10 h-10 rounded-full bg-[#1E3A5F] flex items-center justify-center text-white text-sm font-black shrink-0">G</div>
+                      </div>
+
+                      {/* Footer bar: GANSID branding left, metadata right */}
+                      <div className="relative z-10 shrink-0 flex items-center justify-between px-6 py-3 border-t border-white/10">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-black shrink-0">G</div>
                           <div>
-                            <p className="text-base font-bold text-slate-800">GANSID</p>
-                            <p className="text-sm text-slate-400">Global Action Network for Sickle Cell &amp; Inherited Blood Disorders</p>
+                            <p className="text-sm font-bold text-white/90">GANSID</p>
+                            <p className="text-[11px] text-white/50">Global Action Network for Sickle Cell &amp; Inherited Blood Disorders</p>
                           </div>
+                        </div>
+                        <div className="text-right hidden sm:block">
+                          {course?.created_at && (
+                            <p className="text-[11px] text-white/40">{new Date(course.created_at).toLocaleDateString('en-CA', { year: 'numeric', month: 'long' })}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -707,7 +707,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                   {currentSlideData?.kind === 'page' && (
                     <div className="px-3 py-3 sm:px-6 sm:py-5 overflow-y-auto flex-1 flex flex-col gap-5">
                       {currentSlideData.blocks.map(block => (
-                        <LessonBlockRenderer key={block.id} block={block} lessonTitle={selectedLesson.title} />
+                        <LessonBlockRenderer key={block.id} block={block} lessonTitle={selectedLesson.title} onQuizCorrect={handleQuizCorrect} />
                       ))}
                     </div>
                   )}
@@ -743,7 +743,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                           const next = lessons[idx + 1];
                           return next ? (
                             <Button onClick={() => selectLesson(next)}
-                              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold">
+                              disabled={!allQuizzesComplete}
+                              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed">
                               Next Lesson<ChevronRight className="ml-2 h-4 w-4" />
                             </Button>
                           ) : (
@@ -767,8 +768,9 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                   </Button>
                   {!isLastSlide && (
                     <Button onClick={goNext}
+                      disabled={nextBlocked}
                       aria-label="Next slide"
-                      className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white font-bold focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2">
+                      className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white font-bold focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed">
                       Next<ChevronRight className="h-4 w-4 ml-1.5" />
                     </Button>
                   )}

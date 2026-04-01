@@ -80,6 +80,7 @@ export interface Lesson {
   module_id?: string;
   is_required: boolean;
   prerequisite_lesson_id?: string;
+  title_image_url?: string | null;
 }
 
 export type LessonBlockType =

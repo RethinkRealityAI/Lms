@@ -17,6 +17,7 @@ export interface LessonData {
   course_id: string;
   order_index: number;
   description?: string;
+  title_image_url?: string | null;
 }
 
 export interface BlockData {
@@ -62,7 +63,7 @@ export interface EditorState {
   updateModule: (moduleId: string, changes: Partial<Pick<ModuleData, 'title' | 'description'>>) => void;
   removeModule: (moduleId: string) => void;
   addLesson: (moduleId: string, lesson: LessonData) => void;
-  updateLesson: (moduleId: string, lessonId: string, changes: Partial<Pick<LessonData, 'title' | 'description'>>) => void;
+  updateLesson: (moduleId: string, lessonId: string, changes: Partial<Pick<LessonData, 'title' | 'description' | 'title_image_url'>>) => void;
   removeLesson: (moduleId: string, lessonId: string) => void;
   addSlide: (lessonId: string, slide: Slide) => void;
   removeSlide: (lessonId: string, slideId: string) => void;

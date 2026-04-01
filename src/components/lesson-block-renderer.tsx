@@ -11,9 +11,10 @@ interface LessonBlockRendererProps {
   block: LessonBlock;
   lessonTitle: string;
   onComplete?: () => void;
+  onQuizCorrect?: (blockId: string) => void;
 }
 
-export function LessonBlockRenderer({ block, lessonTitle, onComplete }: LessonBlockRendererProps) {
+export function LessonBlockRenderer({ block, lessonTitle, onComplete, onQuizCorrect }: LessonBlockRendererProps) {
   if (!block.is_visible) return null;
 
   const definition = getBlockType(block.block_type);
@@ -28,6 +29,10 @@ export function LessonBlockRenderer({ block, lessonTitle, onComplete }: LessonBl
 
   const Viewer = definition.ViewerComponent;
 
+  const handleComplete = block.block_type === 'quiz_inline' && onQuizCorrect
+    ? () => onQuizCorrect(block.id)
+    : onComplete;
+
   return (
     <BlockErrorBoundary blockType={block.block_type}>
       <Suspense fallback={<Skeleton className="h-32 w-full rounded-lg" />}>
@@ -38,7 +43,7 @@ export function LessonBlockRenderer({ block, lessonTitle, onComplete }: LessonBl
             title: block.title ?? lessonTitle,
             is_visible: block.is_visible,
           }}
-          onComplete={onComplete}
+          onComplete={handleComplete}
         />
       </Suspense>
     </BlockErrorBoundary>
