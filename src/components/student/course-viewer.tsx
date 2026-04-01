@@ -203,11 +203,15 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       }
 
       if (enrollment) {
-        const { data: progressData } = await supabase.from('progress').select('*').eq('user_id', user.id);
-        if (progressData) {
-          const pm: Record<string, ProgressType> = {};
-          progressData.forEach(p => { pm[p.lesson_id] = p; });
-          setProgress(pm);
+        const lessonIds = (lessonsData ?? []).map(l => l.id);
+        if (lessonIds.length > 0) {
+          const { data: progressData } = await supabase.from('progress').select('*')
+            .eq('user_id', user.id).in('lesson_id', lessonIds);
+          if (progressData) {
+            const pm: Record<string, ProgressType> = {};
+            progressData.forEach(p => { pm[p.lesson_id] = p; });
+            setProgress(pm);
+          }
         }
       }
     } catch (err) {
@@ -231,7 +235,6 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
         completed: true, completed_at: new Date().toISOString(),
       }};
       setProgress(updatedProgress);
-      toast.success('Lesson completed!', { description: 'Great job! Keep learning.' });
 
       // Skip DB writes in preview mode
       if (!previewMode) {
@@ -257,7 +260,17 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             }
           }
         }
-        fetchData();
+        // Re-fetch progress silently (no jarring page refresh — local state already updated above)
+        const lessonIds = lessons.map(l => l.id);
+        if (lessonIds.length > 0) {
+          const { data: progressData } = await supabase.from('progress').select('*')
+            .eq('user_id', user.id).in('lesson_id', lessonIds);
+          if (progressData) {
+            const pm: Record<string, ProgressType> = {};
+            progressData.forEach(p => { pm[p.lesson_id] = p; });
+            setProgress(pm);
+          }
+        }
       }
     } catch (err: any) {
       toast.error('Failed to mark lesson as complete', { description: err.message });
@@ -459,7 +472,12 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
   // Auto-enrollment is handled in fetchData; we never gate on enrollment here.
 
-  const completedCount = Object.values(progress).filter(p => p.completed).length;
+  // Only count progress for lessons in this course
+  const lessonIdSet = new Set(lessons.map(l => l.id));
+  const completedCount = Math.min(
+    Object.entries(progress).filter(([id, p]) => p.completed && lessonIdSet.has(id)).length,
+    lessons.length,
+  );
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
 
   // ---------------------------------------------------------------------------
@@ -714,7 +732,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                             <Play className="mr-2 h-4 w-4" />Take Quiz
                           </Button>
                         )}
-                        {!previewMode && (
+                        {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
                           <Button variant="outline" onClick={openReviewModal}
                             className="border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-50">
                             <Star className="mr-2 h-4 w-4" />Leave a Review

@@ -10,10 +10,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PublicNav } from '@/components/public-nav';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { BookOpen, Loader2, Mail, Lock, User, AlertCircle, CheckCircle2, Globe } from 'lucide-react';
+import { BookOpen, Loader2, Mail, Lock, User, AlertCircle, CheckCircle2, Globe, MailCheck, ArrowRight } from 'lucide-react';
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
 
@@ -49,6 +50,8 @@ function LoginContent() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -304,101 +307,47 @@ function LoginContent() {
         }
       }
 
-      // Wait a moment for the database trigger to create the profile
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Verify that the user profile was created by the trigger
-      const { data: profileData, error: profileError } = await supabase
-        .from('users')
-        .select('id, email, role, full_name')
-        .eq('id', data.user.id)
-        .single();
-
-      if (profileError || !profileData) {
-        console.error('Profile verification error:', profileError);
-        
-        // If profile doesn't exist, try to create it manually as a fallback
-        const { error: manualCreateError } = await supabase
-          .from('users')
-          .insert([{
-            id: data.user.id,
-            email: data.user.email || formData.email.trim().toLowerCase(),
-            role: formData.role,
-            full_name: formData.fullName.trim(),
-          }]);
-
-        if (manualCreateError) {
-          console.error('Manual profile creation error:', manualCreateError);
-          
-          // Check if it's a duplicate key error (profile was created by trigger but we didn't see it)
-          if (manualCreateError.code === '23505') {
-            // Profile exists, continue
-            console.log('Profile already exists (created by trigger)');
-          } else {
-            // Real error, clean up auth user
-            await supabase.auth.signOut();
-            throw new Error('Account created but profile setup failed. Please contact support with error code: PROFILE_CREATE_FAILED');
-          }
-        }
-      }
-
-      // Ensure institution membership exists for tenant-scoped access.
+      // Best-effort: ensure institution membership exists for tenant-scoped access.
+      // The DB trigger (handle_new_user) creates the user profile with institution_id,
+      // so we only need to handle institution_memberships here.
+      // These are fire-and-forget — we don't block signup success on them.
       const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
-      const { data: institutionData } = await supabase
-        .from('institutions')
-        .select('id')
-        .eq('slug', institutionSlug)
-        .maybeSingle();
+      try {
+        const { data: institutionData } = await supabase
+          .from('institutions')
+          .select('id')
+          .eq('slug', institutionSlug)
+          .maybeSingle();
 
-      if (institutionData?.id) {
-        await supabase
-          .from('institution_memberships')
-          .upsert([
-            {
-              institution_id: institutionData.id,
-              user_id: data.user.id,
-              role: formData.role === 'institution_admin' ? 'institution_admin' : 'student',
-              is_active: true,
-            },
-          ]);
-
-        // Set institution_id on the users row so the admin course editor can find it.
-        // The DB trigger that creates the row doesn't set this field.
-        await supabase
-          .from('users')
-          .update({ institution_id: institutionData.id })
-          .eq('id', data.user.id);
+        if (institutionData?.id) {
+          await supabase
+            .from('institution_memberships')
+            .upsert([
+              {
+                institution_id: institutionData.id,
+                user_id: data.user.id,
+                role: formData.role === 'institution_admin' ? 'institution_admin' : 'student',
+                is_active: true,
+              },
+            ]);
+        }
+      } catch (membershipErr) {
+        // Non-critical — the DB trigger already sets institution_id on the user row
+        console.error('Institution membership setup (non-critical):', membershipErr);
       }
 
-      toast.success('Account created successfully!', {
-        description: data.session 
-          ? 'You have been automatically signed in.' 
-          : 'Please check your email and click the verification link to activate your account.',
-        icon: <CheckCircle2 className="h-5 w-5" />,
-        duration: data.session ? 3000 : 6000,
-      });
-
-      // If session exists, redirect to appropriate dashboard
+      // If session exists (email auto-confirmed), redirect to dashboard
       if (data.session) {
+        toast.success('Account created successfully!', {
+          description: 'You have been automatically signed in.',
+          icon: <CheckCircle2 className="h-5 w-5" />,
+          duration: 3000,
+        });
         router.replace(withInstitutionPath(formData.role === 'institution_admin' ? '/admin' : '/student', pathname));
       } else {
-        // Clear form and switch to sign in tab, but keep email
-        setActiveTab('signin');
-        setFormData({ 
-          email: formData.email, 
-          password: '', 
-          fullName: '', 
-          role: 'student', 
-          verificationCode: '' 
-        });
-        
-        // Show additional help message
-        setTimeout(() => {
-          toast.info('Check your spam folder', {
-            description: 'If you don\'t see the verification email in your inbox, please check your spam or junk folder.',
-            duration: 5000,
-          });
-        }, 2000);
+        // Email verification required — show the verification modal
+        setVerificationEmail(formData.email.trim().toLowerCase());
+        setShowVerificationModal(true);
       }
     } catch (err: any) {
       toast.error('Sign up failed', {
@@ -809,6 +758,71 @@ function LoginContent() {
         </div>
       </div>
       </div>
+
+      {/* Email Verification Modal */}
+      <Dialog open={showVerificationModal} onOpenChange={setShowVerificationModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl p-0 overflow-hidden [&>button]:text-white [&>button]:hover:text-white/80">
+          <div className="bg-gradient-to-br from-[#DC2626] to-[#991B1B] px-8 pt-8 pb-6 text-center">
+            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-lg">
+              <MailCheck className="h-8 w-8 text-white" />
+            </div>
+            <DialogTitle className="text-2xl font-black text-white tracking-tight">
+              Check Your Email
+            </DialogTitle>
+            <p className="text-white/80 text-sm font-medium mt-2">
+              Your account has been created successfully!
+            </p>
+          </div>
+
+          <div className="px-8 pb-8 pt-6 space-y-5">
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+              <p className="text-sm text-slate-700 font-medium leading-relaxed">
+                We&apos;ve sent a verification link to:
+              </p>
+              <p className="text-sm font-black text-slate-900 mt-1 break-all">
+                {verificationEmail}
+              </p>
+            </div>
+
+            <div className="space-y-2.5 text-sm text-slate-600">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-xs font-black text-[#DC2626]">1</span>
+                </div>
+                <p className="font-medium">Open the email and click the verification link</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-xs font-black text-[#DC2626]">2</span>
+                </div>
+                <p className="font-medium">Return here and sign in with your credentials</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-400 font-medium text-center">
+              Don&apos;t see the email? Check your spam or junk folder.
+            </p>
+
+            <Button
+              onClick={() => {
+                setShowVerificationModal(false);
+                setActiveTab('signin');
+                setFormData({
+                  email: verificationEmail,
+                  password: '',
+                  fullName: '',
+                  role: 'student',
+                  verificationCode: '',
+                });
+              }}
+              className="w-full h-12 rounded-xl font-bold text-md bg-[#2563EB] hover:bg-[#1D4ED8] shadow-xl shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98] gap-2"
+            >
+              Got It — Sign In
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
