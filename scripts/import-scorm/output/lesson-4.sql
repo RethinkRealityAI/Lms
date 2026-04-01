@@ -1,0 +1,12 @@
+DO $$ DECLARE v_lesson_id uuid; BEGIN
+  SELECT id INTO v_lesson_id FROM lessons WHERE module_id = 'a4ce8c6c-ea88-45fb-b590-05fb329347c3' AND order_index = 4;
+  IF v_lesson_id IS NULL THEN
+    INSERT INTO lessons (course_id, module_id, institution_id, title, order_index, content_type, content_url, is_required)
+    VALUES ('6b4906f1-803b-40bb-8582-d591220e5d09', 'a4ce8c6c-ea88-45fb-b590-05fb329347c3', '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'Lesson 3: Context to the Fundamentals of Advocacy Module', 4, 'blocks', '', true)
+    RETURNING id INTO v_lesson_id;
+  END IF;
+  DELETE FROM lesson_blocks WHERE lesson_id = v_lesson_id;
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', ' Context to the Fundamentals of Advocacy ', '{"html":"<p>Context to the Fundamentals of Advocacy Module</p>\n<p>Whether operating in a low, medium, or high-resource environment, most advocates and organizations supporting individuals and families affected by inherited blood disorders are typically motivated by a personal connection to the disease. This ensures a passionate commitment, but may not provide access to the opportunities or resources needed for effective advocacy.</p>\n<img src=\"fit_content_assets/advocacy_image-4_nxaum3.jpg\" alt=\"\" />\n<p></p>\n<p>With the GANSID''s capacity-building initiative, we hope to strengthen the advocacy skill sets of the patient organizations serving the inherited blood disorders communities through training, mentorship, and cross-disease collaborations. </p>\n<p>Through this program, the GANSID will empower its member organizations to be able to work with their health systems and governments to advance care, treatment, research, capacity building, and education in regions of the world facing acute challenges due to underdeveloped healthcare systems, poverty, and a lack of disease awareness among patient population.</p>","media":[{"type":"image","url":"fit_content_assets/advocacy_image-4_nxaum3.jpg"}],"mode":"scrolling"}'::jsonb, 0, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'cta', '', '{"action":"complete_lesson","text":"Nice work. You''ve completed this lesson.","button_label":"Exit Lesson"}'::jsonb, 1, true, 1, '{}'::jsonb); END $$;

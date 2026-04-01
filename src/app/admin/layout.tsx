@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
+import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 
 export default async function AdminLayout({
   children,
@@ -11,7 +12,7 @@ export default async function AdminLayout({
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+      <div className="min-h-screen bg-[#F8FAFC]">
         {children}
       </div>
     );
@@ -38,11 +39,11 @@ export default async function AdminLayout({
     emailProfile?.role ||
     user.user_metadata?.role ||
     user.app_metadata?.role;
-  const role = typeof rawRole === 'string' ? rawRole.trim().toLowerCase() : rawRole;
+  const role = normalizeRole(typeof rawRole === 'string' ? rawRole : null);
 
-  if (role !== 'admin') {
+  if (!isAdminRole(role)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+      <div className="min-h-screen bg-[#F8FAFC]">
         {children}
       </div>
     );
@@ -59,29 +60,39 @@ export default async function AdminLayout({
 
   const navLinks = [
     {
-      href: '/admin',
+      href: '/gansid/admin',
       label: 'Courses',
       icon: 'BookOpen',
     },
     {
-      href: '/admin/analytics',
+      href: '/gansid/admin/analytics',
       label: 'Analytics',
       icon: 'BarChart3',
     },
     {
-      href: '/admin/categories',
+      href: '/gansid/admin/users',
+      label: 'Users',
+      icon: 'Users',
+    },
+    {
+      href: '/gansid/admin/categories',
       label: 'Categories',
       icon: 'FolderKanban',
     },
     {
-      href: '/admin/settings',
+      href: '/gansid/admin/settings',
       label: 'Settings',
       icon: 'Settings',
+    },
+    {
+      href: '/gansid/admin/h5p',
+      label: 'H5P',
+      icon: 'BookOpen',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <NavBar
         links={navLinks}
         userEmail={user.email || ''}
@@ -89,7 +100,7 @@ export default async function AdminLayout({
         avatarUrl={avatarUrl}
         title="GANSID Faculty"
       />
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto pt-24 pb-8 px-4 sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

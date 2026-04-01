@@ -13,12 +13,12 @@ import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
 import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide } from '@/lib/db/slides';
-import { updateBlock as dbUpdateBlock } from '@/lib/db/blocks';
-import { createModule as dbCreateModule, deleteModule as dbDeleteModule } from '@/lib/db/modules';
-import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson } from '@/lib/db/lessons';
+import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock } from '@/lib/db/blocks';
+import { createModule as dbCreateModule, deleteModule as dbDeleteModule, updateModule as dbUpdateModule } from '@/lib/db/modules';
+import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson, updateLesson as dbUpdateLesson } from '@/lib/db/lessons';
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
-import type { ModuleData, LessonData } from '@/lib/stores/editor-store';
+import type { ModuleData, LessonData, BlockData } from '@/lib/stores/editor-store';
 
 interface CourseEditorShellProps {
   courseId: string;
@@ -36,6 +36,7 @@ function EditorContent({ courseId }: { courseId: string }) {
   const addModule = useEditorStore((s) => s.addModule);
   const addLesson = useEditorStore((s) => s.addLesson);
   const addSlide = useEditorStore((s) => s.addSlide);
+  const addBlock = useEditorStore((s) => s.addBlock);
 
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
@@ -54,6 +55,8 @@ function EditorContent({ courseId }: { courseId: string }) {
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [structureCollapsed, setStructureCollapsed] = useState(false);
+  const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
 
   // ── Persistence: save ──────────────────────────────────────────────────────
 
@@ -100,7 +103,22 @@ function EditorContent({ courseId }: { courseId: string }) {
       }
     }
 
-    await Promise.all([...slidePromises, ...blockPromises]);
+    const modulePromises: Promise<void>[] = state.modules.map((mod) =>
+      dbUpdateModule(supabase, mod.id, { title: mod.title, description: mod.description })
+        .catch((err) => { console.warn('Failed to save module', mod.id, err); }),
+    );
+
+    const lessonPromises: Promise<void>[] = [];
+    for (const lessonList of state.lessons.values()) {
+      for (const lesson of lessonList) {
+        lessonPromises.push(
+          dbUpdateLesson(supabase, lesson.id, { title: lesson.title, description: lesson.description })
+            .catch((err) => { console.warn('Failed to save lesson', lesson.id, err); }),
+        );
+      }
+    }
+
+    await Promise.all([...slidePromises, ...blockPromises, ...modulePromises, ...lessonPromises]);
     markSaved();
   }, [institutionId, store, markSaved]);
 
@@ -189,11 +207,102 @@ function EditorContent({ courseId }: { courseId: string }) {
         institutionId,
       );
       addSlide(lessonId, slide);
+
+      // Select the new slide immediately
+      selectEntity({ type: 'slide', id: slide.id });
+
+      // Auto-add appropriate block based on slide type
+      let defaultBlockType = null;
+      switch (slide.slide_type) {
+        case 'interactive':
+        case 'quiz':
+          defaultBlockType = 'quiz_inline';
+          break;
+        case 'media':
+          defaultBlockType = 'video';
+          break;
+        case 'content':
+        case 'title':
+        case 'disclaimer':
+          defaultBlockType = 'rich_text';
+          break;
+        case 'cta':
+          defaultBlockType = 'cta';
+          break;
+      }
+
+      if (defaultBlockType) {
+        // We do this immediately so by the time the user sees it, the block is already there.
+        const defaultData = getDefaultBlockData(defaultBlockType);
+        const { createBlock: dbCreateBlock } = await import('@/lib/db/blocks');
+        const blockResult = await dbCreateBlock(supabase, {
+          lesson_id: lessonId,
+          slide_id: slide.id,
+          block_type: defaultBlockType,
+          data: defaultData,
+          order_index: 0,
+          institution_id: institutionId,
+        });
+        addBlock(slide.id, {
+          id: blockResult.id,
+          slide_id: blockResult.slide_id,
+          block_type: blockResult.block_type,
+          data: blockResult.data,
+          order_index: blockResult.order_index,
+          is_visible: blockResult.is_visible,
+        });
+        // Select the newly created block inside the slide!
+        selectEntity({ type: 'block', id: blockResult.id });
+      }
+
     } catch (err) {
       const msg = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
       console.error('Failed to add slide:', msg, err);
     }
-  }, [institutionId, store, addSlide]);
+  }, [institutionId, store, addSlide, addBlock, selectEntity]);
+
+  // ── Persistence: add block to a slide (DB-first) ──────────────────────────
+
+  const handleAddBlock = useCallback(async (slideId: string, blockType: string) => {
+    if (!institutionId) return;
+    try {
+      const state = store!.getState();
+      let lessonId: string | undefined;
+      for (const [lId, slideList] of state.slides) {
+        if (slideList.some(s => s.id === slideId)) {
+          lessonId = lId;
+          break;
+        }
+      }
+      if (!lessonId) throw new Error('Could not resolve lesson_id for block insertion.');
+
+      const supabase = createClient();
+      const existingBlocks = state.blocks.get(slideId) ?? [];
+      const defaultData = getDefaultBlockData(blockType);
+      const result = await dbCreateBlock(supabase, {
+        lesson_id: lessonId,
+        slide_id: slideId,
+        block_type: blockType,
+        data: defaultData,
+        order_index: existingBlocks.length,
+        institution_id: institutionId,
+      });
+      const blockData: BlockData = {
+        id: result.id,
+        slide_id: result.slide_id,
+        block_type: result.block_type,
+        data: result.data,
+        order_index: result.order_index,
+        is_visible: result.is_visible,
+      };
+      addBlock(slideId, blockData);
+      // Select the new block for editing
+      selectEntity({ type: 'block', id: result.id });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
+      console.error('Failed to add block:', msg, err);
+    }
+  }, [institutionId, store, addBlock, selectEntity]);
 
   // ── Persistence: delete ────────────────────────────────────────────────────
 
@@ -301,14 +410,20 @@ function EditorContent({ courseId }: { courseId: string }) {
       <EditorToolbar onSave={saveNow} courseId={courseId} />
       <div className="flex flex-1 min-h-0">
         <StructurePanel
+          collapsed={structureCollapsed}
+          onToggleCollapse={() => setStructureCollapsed((c) => !c)}
           onAddModule={handleAddModule}
           onAddLesson={handleAddLesson}
           onDeleteLesson={handleRequestDeleteLesson}
           onDeleteModule={handleRequestDeleteModule}
           onAddSlide={handleAddSlide}
         />
-        <PreviewPanel />
-        <PropertiesPanel />
+        <PreviewPanel onAddBlock={handleAddBlock} />
+        <PropertiesPanel
+          collapsed={propertiesCollapsed}
+          onToggleCollapse={() => setPropertiesCollapsed((c) => !c)}
+          onAddBlock={handleAddBlock}
+        />
       </div>
       <EditorStatusBar />
       <DeleteConfirmDialog
@@ -319,6 +434,32 @@ function EditorContent({ courseId }: { courseId: string }) {
       />
     </>
   );
+}
+
+/** Default data payloads for each block type */
+function getDefaultBlockData(blockType: string): Record<string, unknown> {
+  switch (blockType) {
+    case 'rich_text':
+      return { html: '<p>Enter your text here...</p>' };
+    case 'image_gallery':
+      return { images: [] };
+    case 'callout':
+      return { style: 'info', title: 'Note', body: 'Enter callout text...' };
+    case 'video':
+      return { url: '', caption: '' };
+    case 'cta':
+      return { text: 'Click here', url: '', style: 'primary' };
+    case 'quiz_inline':
+      return { question: 'Enter your question', options: [], correct_index: 0 };
+    case 'pdf':
+      return { url: '' };
+    case 'iframe':
+      return { url: '', height: 400 };
+    case 'h5p':
+      return { content_id: '' };
+    default:
+      return {};
+  }
 }
 
 export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
@@ -361,7 +502,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="fixed inset-x-0 bottom-0 top-24 z-[40] flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-[#1E3A5F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-gray-500">Loading editor...</p>
@@ -372,7 +513,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="fixed inset-x-0 bottom-0 top-24 z-[40] flex items-center justify-center bg-gray-100">
         <div className="text-center max-w-sm">
           <p className="text-red-600 font-medium mb-2">Failed to load course</p>
           <p className="text-sm text-gray-500">{error}</p>
@@ -383,7 +524,8 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
   return (
     <EditorStoreContext.Provider value={store}>
-      <div className="flex flex-col h-screen bg-gray-100 overflow-hidden">
+      {/* Fixed full-viewport overlay — covers admin layout nav + padding */}
+      <div className="fixed inset-x-0 bottom-0 top-24 z-[40] flex flex-col bg-gray-100 overflow-hidden">
         <EditorContent courseId={courseId} />
       </div>
     </EditorStoreContext.Provider>

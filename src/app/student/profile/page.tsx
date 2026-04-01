@@ -10,14 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, CheckCircle, Award, BarChart3 } from 'lucide-react';
 import type { User as UserType } from '@/types';
+import { isAdminRole } from '@/lib/auth/roles';
+import type { StudentProgress } from '@/lib/db/analytics';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [stats, setStats] = useState<StudentProgress | null>(null);
   const [formData, setFormData] = useState({
     full_name: '',
     bio: '',
@@ -51,6 +55,14 @@ export default function ProfilePage() {
           avatar_url: data.avatar_url || '',
         });
       }
+
+      // Load learning stats
+      const { data: progressData } = await supabase
+        .from('v_student_progress')
+        .select('*')
+        .eq('user_id', authUser.id)
+        .maybeSingle();
+      if (progressData) setStats(progressData as StudentProgress);
     }
     setLoading(false);
   };
@@ -119,14 +131,28 @@ export default function ProfilePage() {
     e.preventDefault();
     if (!user) return;
 
+    const trimmedName = formData.full_name.trim();
+    if (!trimmedName) {
+      toast.error('Full name is required');
+      return;
+    }
+    if (trimmedName.length > 100) {
+      toast.error('Full name must be under 100 characters');
+      return;
+    }
+    if (formData.bio.length > 500) {
+      toast.error('Bio must be under 500 characters');
+      return;
+    }
+
     setSaving(true);
 
     try {
       const { error } = await supabase
         .from('users')
         .update({
-          full_name: formData.full_name,
-          bio: formData.bio,
+          full_name: trimmedName,
+          bio: formData.bio.trim(),
           avatar_url: formData.avatar_url,
           updated_at: new Date().toISOString(),
         })
@@ -171,8 +197,46 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="max-w-3xl mx-auto space-y-8">
+        <div>
+          <Skeleton className="h-9 w-48 bg-slate-700 rounded-lg mb-2" />
+          <Skeleton className="h-5 w-72 bg-slate-700 rounded-lg" />
+        </div>
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+          <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+            <Skeleton className="h-6 w-44 bg-slate-200" />
+            <Skeleton className="h-4 w-64 bg-slate-200 mt-2" />
+          </CardHeader>
+          <CardContent className="pt-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
+              <Skeleton className="h-32 w-32 rounded-full bg-slate-200" />
+              <div className="flex-1 w-full space-y-4">
+                <Skeleton className="h-11 w-full rounded-xl bg-slate-200" />
+              </div>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 mt-8">
+              <Skeleton className="h-11 w-full rounded-xl bg-slate-200" />
+              <Skeleton className="h-11 w-full rounded-xl bg-slate-200" />
+            </div>
+            <Skeleton className="h-24 w-full rounded-xl bg-slate-200 mt-6" />
+          </CardContent>
+        </Card>
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+          <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+            <Skeleton className="h-6 w-36 bg-slate-200" />
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-center">
+                  <Skeleton className="h-5 w-5 rounded bg-slate-200 mb-2" />
+                  <Skeleton className="h-7 w-10 bg-slate-200 mb-1" />
+                  <Skeleton className="h-3 w-16 bg-slate-200" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -189,7 +253,7 @@ export default function ProfilePage() {
           </p>
         </div>
         <Badge className="w-fit bg-[#0099CA] hover:bg-[#007EA0] text-white border-none font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">
-          {user?.role === 'admin' ? 'Instructor' : 'Student'} Account
+          {isAdminRole(user?.role) ? 'Instructor' : 'Student'} Account
         </Badge>
       </div>
 
@@ -277,6 +341,7 @@ export default function ProfilePage() {
                     placeholder="e.g. Dr. Jane Smith"
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    maxLength={100}
                     className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
                   />
                 </div>
@@ -291,8 +356,10 @@ export default function ProfilePage() {
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 rows={4}
+                maxLength={500}
                 className="bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-medium p-4"
               />
+              <p className="text-xs text-slate-400 text-right">{formData.bio.length}/500</p>
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-50">
@@ -326,6 +393,52 @@ export default function ProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Learning Progress Stats */}
+      {stats && (
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+          <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+            <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-[#0099CA]" />
+              Learning Progress
+            </CardTitle>
+            <CardDescription className="font-medium text-slate-500">
+              Your activity and achievements across all courses.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                <BookOpen className="h-5 w-5 text-blue-600 mx-auto mb-2" />
+                <p className="text-2xl font-black text-slate-900">{stats.enrollment_count}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Courses Enrolled</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-2" />
+                <p className="text-2xl font-black text-slate-900">{stats.completed_lessons}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Lessons Done</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                <BarChart3 className="h-5 w-5 text-indigo-600 mx-auto mb-2" />
+                <p className="text-2xl font-black text-slate-900">
+                  {stats.quiz_attempts > 0 ? `${Math.round(stats.avg_quiz_score)}%` : '—'}
+                </p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Avg Quiz Score</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                <Award className="h-5 w-5 text-amber-500 mx-auto mb-2" />
+                <p className="text-2xl font-black text-slate-900">{stats.certificates_earned}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Certificates</p>
+              </div>
+            </div>
+            {stats.last_activity && (
+              <p className="text-xs text-slate-400 font-medium mt-4 text-center">
+                Last activity: {new Date(stats.last_activity).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-8 md:grid-cols-2">
         <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden flex flex-col">

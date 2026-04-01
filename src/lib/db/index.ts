@@ -8,3 +8,6 @@ export * from './enrollments';
 export * from './slides';
 export * from './editor';
 export * from './users';
+export * from './analytics';
+export * from './invitations';
+export * from './legacy-users';

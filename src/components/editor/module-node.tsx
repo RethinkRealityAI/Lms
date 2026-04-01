@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ChevronRight, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { LessonNode } from './lesson-node';
 import { AddEntityDialog } from './add-entity-dialog';
 import { useEditorStore } from './editor-store-context';
-import type { ModuleData } from '@/lib/stores/editor-store';
+import type { ModuleData, LessonData } from '@/lib/stores/editor-store';
+
+const EMPTY_LESSONS: LessonData[] = [];
 
 interface ModuleNodeProps {
   module: ModuleData;
@@ -20,7 +22,7 @@ export function ModuleNode({ module, onAddSlide, onAddLesson, onDeleteLesson, on
   const [showAddLesson, setShowAddLesson] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
-  const lessons = useEditorStore((s) => s.lessons.get(module.id) ?? []);
+  const lessons = useEditorStore((s) => s.lessons.get(module.id) ?? EMPTY_LESSONS);
   const isSelected = selectedEntity?.type === 'module' && selectedEntity.id === module.id;
 
   function handleAddLesson(title: string) {

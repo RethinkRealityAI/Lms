@@ -65,7 +65,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
           : { data: null };
 
         if (profileError) {
-          console.error('Profile fetch error:', profileError);
+          console.warn('Profile fetch error:', profileError?.message ?? profileError?.code ?? 'unknown');
         }
 
         const resolvedProfile = userData || emailProfile;

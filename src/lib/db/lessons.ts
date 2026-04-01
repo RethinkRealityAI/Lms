@@ -55,6 +55,18 @@ export async function deleteLesson(
   if (error) throw error;
 }
 
+export async function updateLesson(
+  supabase: SupabaseClient,
+  lessonId: string,
+  changes: { title?: string; description?: string },
+): Promise<void> {
+  const { error } = await supabase
+    .from('lessons')
+    .update(changes)
+    .eq('id', lessonId);
+  if (error) throw error;
+}
+
 // ── Server-side read helpers ───────────────────────────────────────────────────
 
 export async function getLessonsByCourse(

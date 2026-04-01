@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -14,10 +14,11 @@ import type { LessonBlock, LessonBlockType } from '@/types';
 const URL_BLOCKS = new Set<LessonBlockType>(['video', 'image', 'pdf', 'iframe', 'model3d', 'download']);
 
 export default function LessonBlocksPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string; lessonId: string };
+  params: Promise<{ id: string; lessonId: string }>;
 }) {
+  const params = React.use(paramsPromise);
   const [lessonTitle, setLessonTitle] = useState('');
   const [institutionId, setInstitutionId] = useState<string | null>(null);
   const [blocks, setBlocks] = useState<LessonBlock[]>([]);
@@ -106,7 +107,7 @@ export default function LessonBlocksPage({
 
   return (
     <div className="space-y-6 px-4 sm:px-0">
-      <Button variant="outline" onClick={() => router.push(`/admin/courses/${params.id}`)}>
+      <Button variant="outline" onClick={() => router.push(`/gansid/admin/courses/${params.id}`)}>
         Back to Course
       </Button>
 

@@ -53,6 +53,18 @@ export async function deleteModule(
   if (error) throw error;
 }
 
+export async function updateModule(
+  supabase: SupabaseClient,
+  moduleId: string,
+  changes: { title?: string; description?: string },
+): Promise<void> {
+  const { error } = await supabase
+    .from('modules')
+    .update(changes)
+    .eq('id', moduleId);
+  if (error) throw error;
+}
+
 // ── Server-side read helpers ───────────────────────────────────────────────────
 
 export async function getModulesByCourse(

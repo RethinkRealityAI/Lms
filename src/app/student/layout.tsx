@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
+import { isAdminRole } from '@/lib/auth/roles';
 
 export default async function StudentLayout({
   children,
@@ -24,7 +25,7 @@ export default async function StudentLayout({
   // Check role from profile or fallback to metadata
   const role = userData?.role || user.user_metadata?.role;
   
-  if (role === 'admin') {
+  if (isAdminRole(role)) {
     redirect('/admin');
   }
   
@@ -34,17 +35,17 @@ export default async function StudentLayout({
 
   const navLinks = [
     {
-      href: '/student',
+      href: '/gansid/student',
       label: 'My Courses',
       icon: 'BookOpen',
     },
     {
-      href: '/student/progress',
+      href: '/gansid/student/progress',
       label: 'Progress',
       icon: 'TrendingUp',
     },
     {
-      href: '/student/certificates',
+      href: '/gansid/student/certificates',
       label: 'Certificates',
       icon: 'Award',
     },
@@ -59,12 +60,9 @@ export default async function StudentLayout({
         avatarUrl={avatarUrl}
         title="GANSID LMS"
       />
-      <div className="relative">
-        <div className="absolute inset-0 bg-[#0F172A] h-[200px] z-0" />
-        <main className="relative z-10 max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          {children}
-        </main>
-      </div>
+      <main className="pt-24">
+        {children}
+      </main>
     </div>
   );
 }

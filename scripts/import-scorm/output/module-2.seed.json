@@ -40,7 +40,7 @@
     {
       "edappId": "66524596a5367ff1395027b9",
       "title": "Lesson 1: Disclaimer",
-      "order_index": 0,
+      "order_index": 1,
       "blocks": [
         {
           "edapp_slide_id": "d0ec622c-b508-44c9-b45e-0211ccf8b4b9",
@@ -67,7 +67,7 @@
     {
       "edappId": "66524596a5367ff1395027ba",
       "title": "Lesson 2: Learning Objectives",
-      "order_index": 0,
+      "order_index": 2,
       "blocks": [
         {
           "edapp_slide_id": "08f4ac74-7770-4d9e-b4a4-b5216a8f63a5",
@@ -94,7 +94,7 @@
     {
       "edappId": "66524596a5367ff1395027b7",
       "title": "Lesson 3: Fundraising",
-      "order_index": 0,
+      "order_index": 3,
       "blocks": [
         {
           "edapp_slide_id": "d37829b8-1a8a-4456-ab44-0a55113d22ec",
@@ -384,7 +384,7 @@
     {
       "edappId": "69a3707b9131b7ed8faa0004",
       "title": "Untitled lesson",
-      "order_index": 0,
+      "order_index": 4,
       "blocks": [
         {
           "edapp_slide_id": "e5820ef2-cb19-e119-0a3e-2bf8dd018107",

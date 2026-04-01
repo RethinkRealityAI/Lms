@@ -243,9 +243,11 @@ All security aspects have been reviewed and verified:
 
 ## 🐛 Known Issues & Limitations
 
-### None at this time!
+### Notes
 
-All identified issues have been resolved. The system is now functioning as expected.
+- Authentication issues addressed in this document are resolved.
+- This file only covers auth fixes and does not represent full LMS feature completeness.
+- For current product status and planned features, refer to `README.md`.
 
 ---
 
@@ -263,9 +265,9 @@ While not required now, consider these improvements:
    - Add course enrollment notifications
 
 3. **Admin Dashboard**
-   - Add user management interface
-   - Create verification code management UI
-   - Add analytics dashboard
+   - Expand tenant-aware user management
+   - Improve analytics depth and reporting
+   - Add operational audit views
 
 4. **Audit Logging**
    - Log admin actions
@@ -323,4 +325,4 @@ The system is now ready for testing and deployment.
 
 **Documentation last updated**: January 17, 2026
 **Resolution date**: January 17, 2026
-**Status**: ✅ COMPLETE
+**Status**: ✅ COMPLETE (Authentication scope)

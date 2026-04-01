@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Eye } from 'lucide-react';
+import { ArrowLeft, Eye, Pencil } from 'lucide-react';
 import CourseViewer from '@/components/student/course-viewer';
 
 export default function AdminPreviewPage({
@@ -21,15 +21,27 @@ export default function AdminPreviewPage({
           <Eye className="h-4 w-4 text-white/70" />
           <span className="text-white text-sm font-semibold">Admin Preview</span>
           <span className="text-white/40 text-sm hidden sm:inline">·</span>
-          <span className="text-white/60 text-xs hidden sm:inline">Viewing as a student would see this course</span>
+          <span className="text-white/60 text-xs hidden sm:inline">Student view</span>
         </div>
-        <Link
-          href={`/gansid/admin/courses/${params.id}/editor`}
-          className="flex items-center gap-1.5 text-white/80 hover:text-white text-sm transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Editor
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/gansid/admin"
+            className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back to Courses</span>
+            <span className="sm:hidden">Courses</span>
+          </Link>
+          <div className="w-px h-4 bg-white/20" />
+          <Link
+            href={`/gansid/admin/courses/${params.id}/editor`}
+            className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Open Editor</span>
+            <span className="sm:hidden">Editor</span>
+          </Link>
+        </div>
       </div>
 
       {/* Course viewer — fills remaining height below the banner */}

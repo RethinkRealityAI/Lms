@@ -104,6 +104,7 @@ export interface LessonBlock {
   id: string;
   institution_id: string;
   lesson_id: string;
+  slide_id?: string;
   block_type: string;
   title?: string;
   data: Record<string, unknown>;
@@ -284,4 +285,44 @@ export interface EditorAction {
   previousState: unknown;
   newState: unknown;
   timestamp: number;
+}
+
+export interface LegacyUser {
+  id: string;
+  institution_id: string;
+  email: string;
+  full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  roles: string | null;
+  occupation: string | null;
+  affiliation: string | null;
+  country: string | null;
+  date_registered: string | null;
+  avg_progress: number;
+  avg_score: number | null;
+  completions: number;
+  completed_percent: number;
+  external_id: string | null;
+  invited_at: string | null;
+  accepted_at: string | null;
+  linked_user_id: string | null;
+  created_at: string;
+}
+
+export interface UserInvitation {
+  id: string;
+  institution_id: string;
+  email: string;
+  role: string;
+  invited_by: string;
+  custom_message: string | null;
+  status: 'pending' | 'accepted' | 'expired' | 'cancelled';
+  legacy_user_id: string | null;
+  sent_at: string;
+  accepted_at: string | null;
+  expires_at: string;
+  created_at: string;
+  inviter_name?: string;
+  inviter_email?: string;
 }

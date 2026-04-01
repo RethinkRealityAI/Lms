@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, LogOut, Loader2, Star, Send,
-  ChevronLeft, ChevronRight, ChevronDown, Award,
+  ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -21,8 +21,65 @@ import { sortBlocks } from '@/lib/content/lesson-blocks';
 // ---------------------------------------------------------------------------
 type Slide =
   | { kind: 'title' }
-  | { kind: 'block'; block: LessonBlock }
+  | { kind: 'page'; slideId: string; blocks: LessonBlock[] }
   | { kind: 'completion' };
+
+// ---------------------------------------------------------------------------
+// Confetti celebration — pure CSS, no external deps
+// ---------------------------------------------------------------------------
+const CONFETTI_COLORS = ['#DC2626', '#0099CA', '#1E3A5F', '#FFD700', '#22C55E'];
+
+function Confetti({ count = 24 }: { count?: number }) {
+  const pieces = React.useMemo(() =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,           // % from left
+      delay: Math.random() * 1.2,           // stagger start 0–1.2s
+      duration: 1.8 + Math.random() * 1.2,  // 1.8–3s fall
+      drift: (Math.random() - 0.5) * 60,    // px horizontal drift
+      size: 4 + Math.random() * 4,          // 4–8px
+      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      rotate: Math.random() * 360,
+      isCircle: Math.random() > 0.5,
+    })),
+  [count]);
+
+  return (
+    <>
+      <style>{`
+        @keyframes confetti-fall {
+          0%   { opacity: 1; transform: translateY(-10px) translateX(0px) rotate(0deg) scale(1); }
+          80%  { opacity: 1; }
+          100% { opacity: 0; transform: translateY(calc(100vh - 120px)) translateX(var(--drift)) rotate(var(--rotate)) scale(0.5); }
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-10" aria-hidden="true">
+        {pieces.map(p => (
+          <div
+            key={p.id}
+            className={p.isCircle ? 'rounded-full' : 'rounded-sm'}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: `${p.left}%`,
+              width: p.size,
+              height: p.size,
+              backgroundColor: p.color,
+              opacity: 0,
+              '--drift': `${p.drift}px`,
+              '--rotate': `${p.rotate + 360}deg`,
+              animation: `confetti-fall ${p.duration}s ease-out ${p.delay}s forwards`,
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -39,6 +96,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonBlocks, setLessonBlocks] = useState<Record<string, LessonBlock[]>>({});
+  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number }>>>({});
   const [showUnenrollDialog, setShowUnenrollDialog] = useState(false);
   const [unenrolling, setUnenrolling] = useState(false);
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
@@ -47,6 +105,9 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [currentSlide, setCurrentSlide] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [autoCompleteFired, setAutoCompleteFired] = useState<Record<string, boolean>>({});
+  // Confetti — track which lessons have already shown the animation
+  const confettiFiredRef = useRef<Record<string, boolean>>({});
+  const [showConfetti, setShowConfetti] = useState(false);
   // Review modal
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
@@ -103,9 +164,6 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
         const lessonIds = lessonsData.map(l => l.id);
         if (lessonIds.length > 0) {
-          // TODO: After migration 013 applied, lesson_blocks now have slide_id set.
-          // When fully migrating to slide-based content, filter blocks by slide status:
-          //   SELECT lb.* FROM lesson_blocks lb JOIN slides s ON s.id = lb.slide_id WHERE s.status = 'published'
           const { data: blocksData } = await supabase.from('lesson_blocks').select('*')
             .in('lesson_id', lessonIds).order('order_index', { ascending: true });
 
@@ -117,6 +175,22 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             }
             Object.keys(grouped).forEach(id => { grouped[id] = sortBlocks(grouped[id]); });
             setLessonBlocks(grouped);
+          }
+
+          // Fetch slides to know their order within each lesson
+          const { data: slidesData } = await supabase
+            .from('slides')
+            .select('id, lesson_id, order_index')
+            .in('lesson_id', lessonIds)
+            .order('order_index', { ascending: true });
+
+          if (slidesData) {
+            const groupedSlides: Record<string, Array<{ id: string; order_index: number }>> = {};
+            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number }>) {
+              if (!groupedSlides[slide.lesson_id]) groupedSlides[slide.lesson_id] = [];
+              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index });
+            }
+            setLessonSlidesMap(groupedSlides);
           }
 
           const { data: quizzesData } = await supabase.from('quizzes').select('lesson_id').in('lesson_id', lessonIds);
@@ -257,19 +331,46 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   };
 
   // ---------------------------------------------------------------------------
-  // Slide helpers
+  // Slide helpers — group blocks by slide_id, ordered by slide order_index
   // ---------------------------------------------------------------------------
-  const getLessonBlocks = (lesson: Lesson): LessonBlock[] => {
-    const blocks = lessonBlocks[lesson.id];
-    if (blocks && blocks.length > 0) {
-      return blocks.filter(b => !(b.block_type === 'cta' && (b.data as Record<string, unknown>)?.action === 'complete_lesson'));
-    }
-    return [createFallbackBlockFromLesson(lesson)];
-  };
+  const currentSlides: Slide[] = React.useMemo(() => {
+    if (!selectedLesson) return [];
 
-  const currentSlides: Slide[] = selectedLesson
-    ? [{ kind: 'title' }, ...getLessonBlocks(selectedLesson).map(block => ({ kind: 'block' as const, block })), { kind: 'completion' }]
-    : [];
+    const allBlocks = lessonBlocks[selectedLesson.id] ?? [];
+    const filteredBlocks = allBlocks.filter(
+      b => !(b.block_type === 'cta' && (b.data as Record<string, unknown>)?.action === 'complete_lesson'),
+    );
+    const slides = lessonSlidesMap[selectedLesson.id] ?? [];
+
+    let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[] }> = [];
+
+    if (slides.length > 0 && filteredBlocks.some(b => b.slide_id)) {
+      // Group blocks by slide_id, then order slides by their order_index
+      const blocksBySlide: Record<string, LessonBlock[]> = {};
+      for (const block of filteredBlocks) {
+        const sid = block.slide_id ?? '__no_slide__';
+        if (!blocksBySlide[sid]) blocksBySlide[sid] = [];
+        blocksBySlide[sid].push(block);
+      }
+      const sortedSlides = [...slides].sort((a, b) => a.order_index - b.order_index);
+      pageSlides = sortedSlides
+        .filter(s => (blocksBySlide[s.id]?.length ?? 0) > 0)
+        .map(s => ({ kind: 'page' as const, slideId: s.id, blocks: sortBlocks(blocksBySlide[s.id]) }));
+
+      // Any blocks without a slide_id get appended as a final page
+      if (blocksBySlide['__no_slide__']?.length) {
+        pageSlides.push({ kind: 'page' as const, slideId: '', blocks: sortBlocks(blocksBySlide['__no_slide__']) });
+      }
+    } else if (filteredBlocks.length > 0) {
+      // No slide metadata — treat all blocks as a single page (legacy fallback)
+      pageSlides = [{ kind: 'page' as const, slideId: '', blocks: sortBlocks(filteredBlocks) }];
+    } else {
+      // Absolute fallback — synthesise a block from lesson content
+      pageSlides = [{ kind: 'page' as const, slideId: '', blocks: [createFallbackBlockFromLesson(selectedLesson)] }];
+    }
+
+    return [{ kind: 'title' }, ...pageSlides, { kind: 'completion' }];
+  }, [selectedLesson, lessonBlocks, lessonSlidesMap]);
 
   const totalSlides = currentSlides.length;
   const currentSlideData = currentSlides[currentSlide] ?? null;
@@ -300,6 +401,21 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     handleMarkComplete();
   }, [currentSlide, selectedLesson?.id]);
 
+  // Confetti when completion slide is first shown per lesson
+  useEffect(() => {
+    if (!selectedLesson) return;
+    if (currentSlideData?.kind !== 'completion') {
+      setShowConfetti(false);
+      return;
+    }
+    if (confettiFiredRef.current[selectedLesson.id]) return;
+    confettiFiredRef.current[selectedLesson.id] = true;
+    setShowConfetti(true);
+    // Auto-dismiss after animation completes (~3.5s max)
+    const timer = setTimeout(() => setShowConfetti(false), 4000);
+    return () => clearTimeout(timer);
+  }, [currentSlide, selectedLesson?.id, currentSlideData?.kind]);
+
   // ---------------------------------------------------------------------------
   // Guards
   // ---------------------------------------------------------------------------
@@ -309,8 +425,23 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
   if (pageLoading) {
     return (
-      <div className={`flex items-center justify-center ${outerHeightClass}`}>
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className={`${outerHeightClass} flex flex-col overflow-hidden`}>
+        <div className="shrink-0 h-16 bg-slate-200 animate-pulse" />
+        <div className="flex-1 min-h-0 flex gap-3 p-3">
+          <div className="hidden lg:flex flex-col gap-2 w-[260px] shrink-0">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="h-10 bg-slate-200 animate-pulse rounded-xl" style={{ opacity: 1 - i * 0.08 }} />
+            ))}
+          </div>
+          <div className="flex-1 flex flex-col gap-3">
+            <div className="h-8 w-48 bg-slate-200 animate-pulse rounded-xl" />
+            <div className="flex-1 bg-slate-100 animate-pulse rounded-2xl" />
+            <div className="shrink-0 flex justify-between">
+              <div className="h-10 w-28 bg-slate-200 animate-pulse rounded-xl" />
+              <div className="h-10 w-28 bg-slate-200 animate-pulse rounded-xl" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -367,7 +498,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map(star => (
                   <button key={star} type="button" onClick={() => setReviewRating(star)}
-                    className="cursor-pointer hover:scale-110 transition-transform">
+                    aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+                    className="cursor-pointer hover:scale-110 transition-transform focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 rounded">
                     <Star className={`h-7 w-7 ${star <= reviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                   </button>
                 ))}
@@ -395,6 +527,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           </div>
           {!previewMode && (
             <Button variant="outline" size="sm" onClick={() => setShowUnenrollDialog(true)}
+              aria-label="Unenroll from course"
               className="shrink-0 border-white/30 text-white hover:bg-white/10 hover:text-white text-xs">
               <LogOut className="h-3.5 w-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Unenroll</span>
@@ -402,7 +535,9 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           )}
         </div>
         <div className="mt-2.5 flex items-center gap-3">
-          <div className="flex-1 bg-white/20 rounded-full h-1.5">
+          <div className="flex-1 bg-white/20 rounded-full h-1.5"
+            role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}
+            aria-label="Overall course progress">
             <div className="bg-[#0099CA] h-1.5 rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
           </div>
           <span className="text-xs font-bold text-white shrink-0">{progressPercent}%</span>
@@ -413,15 +548,26 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 p-3 sm:p-4 overflow-hidden">
 
         {/* Mobile lesson dropdown */}
-        <div className="lg:hidden shrink-0">
+        <div className="lg:hidden shrink-0 space-y-1.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-bold text-slate-500">
+              Lesson {lessons.findIndex(l => l.id === selectedLesson?.id) + 1} of {lessons.length}
+            </span>
+            <span className="text-xs font-bold text-green-600 flex items-center gap-1">
+              <CheckCircle className="h-3 w-3" />
+              {completedCount}/{lessons.length} completed
+            </span>
+          </div>
           <div className="relative">
+            <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <select
+              aria-label="Select lesson"
               value={selectedLesson?.id || ''}
               onChange={e => {
                 const lesson = lessons.find(l => l.id === e.target.value);
                 if (lesson) selectLesson(lesson);
               }}
-              className="w-full appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+              className="w-full appearance-none bg-white border border-slate-200 rounded-xl pl-9 pr-10 py-3 text-sm font-medium text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
             >
               {lessons.map(lesson => (
                 <option key={lesson.id} value={lesson.id}>
@@ -436,7 +582,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
         {/* "Show Lessons" toggle — desktop only, when sidebar collapsed */}
         {!sidebarOpen && (
           <button onClick={() => setSidebarOpen(true)}
-            className="hidden lg:flex items-center gap-1.5 shrink-0 self-start mt-1 text-sm font-bold text-[#2563EB] hover:text-[#1D4ED8] transition-colors">
+            aria-label="Show lessons sidebar"
+            className="hidden lg:flex items-center gap-1.5 shrink-0 self-start mt-1 text-sm font-bold text-[#2563EB] hover:text-[#1D4ED8] transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 rounded">
             <ChevronRight className="h-4 w-4" />Lessons
           </button>
         )}
@@ -448,15 +595,17 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
               <CardHeader className="flex flex-row items-center justify-between py-4 px-5 border-b border-slate-100 shrink-0">
                 <CardTitle className="text-base font-black text-slate-900">Lessons</CardTitle>
                 <button onClick={() => setSidebarOpen(false)}
-                  className="text-slate-400 hover:text-slate-700 transition-colors" aria-label="Collapse sidebar">
+                  className="text-slate-400 hover:text-slate-700 transition-colors rounded focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2" aria-label="Collapse sidebar">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
               </CardHeader>
               <CardContent className="p-0 flex-1 overflow-hidden">
-                <div className="h-full overflow-y-auto divide-y divide-slate-100">
+                <div role="list" aria-label="Course lessons" className="h-full overflow-y-auto divide-y divide-slate-100">
                   {lessons.map(lesson => (
-                    <button key={lesson.id} onClick={() => selectLesson(lesson)}
-                      className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors ${
+                    <button key={lesson.id} role="listitem" onClick={() => selectLesson(lesson)}
+                      aria-current={selectedLesson?.id === lesson.id ? 'true' : undefined}
+                      aria-label={`${lesson.title}${progress[lesson.id]?.completed ? ' (completed)' : ''}`}
+                      className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-inset ${
                         selectedLesson?.id === lesson.id
                           ? 'bg-red-50 text-[#DC2626] border-l-2 border-[#DC2626]'
                           : 'hover:bg-slate-50 text-slate-700 border-l-2 border-transparent'
@@ -490,14 +639,21 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       {currentSlide + 1} / {totalSlides}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="w-full bg-slate-100 rounded-full h-1.5"
+                    role="progressbar" aria-valuenow={Math.round(((currentSlide + 1) / totalSlides) * 100)} aria-valuemin={0} aria-valuemax={100}
+                    aria-label="Slide progress">
                     <div className="bg-[#DC2626] h-1.5 rounded-full transition-all duration-300"
                       style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }} />
                   </div>
                 </div>
 
                 {/* Slide content — fills remaining, scrolls internally */}
-                <div className="flex-1 overflow-hidden flex flex-col">
+                <div
+                  key={`${selectedLesson.id}-${currentSlide}`}
+                  role="region" aria-label="Slide content"
+                  className="flex-1 overflow-hidden flex flex-col"
+                  style={{ animation: 'slideIn 0.25s ease-out' }}
+                >
 
                   {/* TITLE SLIDE */}
                   {currentSlideData?.kind === 'title' && (
@@ -529,17 +685,20 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     </div>
                   )}
 
-                  {/* CONTENT SLIDE */}
-                  {currentSlideData?.kind === 'block' && (
-                    <div className="px-3 py-3 sm:px-6 sm:py-5 overflow-y-auto flex-1 flex flex-col">
-                      <LessonBlockRenderer block={currentSlideData.block} lessonTitle={selectedLesson.title} />
+                  {/* CONTENT SLIDE — all blocks on this slide stacked vertically */}
+                  {currentSlideData?.kind === 'page' && (
+                    <div className="px-3 py-3 sm:px-6 sm:py-5 overflow-y-auto flex-1 flex flex-col gap-5">
+                      {currentSlideData.blocks.map(block => (
+                        <LessonBlockRenderer key={block.id} block={block} lessonTitle={selectedLesson.title} />
+                      ))}
                     </div>
                   )}
 
                   {/* COMPLETION SLIDE */}
                   {currentSlideData?.kind === 'completion' && (
-                    <div className="flex flex-col items-center justify-center py-10 px-8 text-center gap-6 flex-1 overflow-y-auto">
-                      <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
+                    <div className="relative flex flex-col items-center justify-center py-10 px-8 text-center gap-6 flex-1 overflow-y-auto">
+                      {showConfetti && <Confetti />}
+                      <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center animate-bounce [animation-iteration-count:1] [animation-duration:0.8s]">
                         <Award className="h-10 w-10 text-green-500" />
                       </div>
                       <div>
@@ -584,20 +743,28 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                 {/* Bottom navigation — always visible, never moves */}
                 <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 shrink-0">
                   <Button variant="outline" onClick={goPrev} disabled={isFirstSlide}
-                    className="border-slate-200 text-slate-600 font-bold hover:bg-slate-50">
+                    aria-label="Previous slide"
+                    className="border-slate-200 text-slate-600 font-bold hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2">
                     <ChevronLeft className="h-4 w-4 mr-1.5" />Previous
                   </Button>
                   {!isLastSlide && (
                     <Button onClick={goNext}
-                      className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white font-bold">
+                      aria-label="Next slide"
+                      className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white font-bold focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2">
                       Next<ChevronRight className="h-4 w-4 ml-1.5" />
                     </Button>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="h-full flex items-center justify-center text-slate-400 font-medium">
-                Select a lesson to begin
+              <div className="h-full flex flex-col items-center justify-center py-16">
+                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-5">
+                  <BookOpen className="h-8 w-8 text-slate-300" />
+                </div>
+                <h3 className="text-lg font-black text-slate-700 mb-2">Ready to Learn?</h3>
+                <p className="text-slate-400 font-medium text-sm max-w-xs text-center">
+                  Select a lesson from the sidebar to start this module.
+                </p>
               </div>
             )}
           </Card>

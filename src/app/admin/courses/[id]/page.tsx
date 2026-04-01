@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2, GripVertical } from 'lucide-react';
+import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2, GripVertical, LayoutTemplate, PanelLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, Quiz } from '@/types';
+import { createLegacyBlockPayload, mapLegacyContentTypeToBlockType } from '@/lib/content/lesson-blocks';
 
-export default function CoursePage({ params }: { params: { id: string } }) {
+export default function CoursePage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
+  const params = React.use(paramsPromise);
   const [course, setCourse] = useState<Course | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [showLessonForm, setShowLessonForm] = useState(false);
@@ -94,17 +96,33 @@ export default function CoursePage({ params }: { params: { id: string } }) {
     e.preventDefault();
 
     try {
-      const { error } = await supabase
+      const { data: createdLesson, error } = await supabase
         .from('lessons')
         .insert([
           {
             ...lessonData,
             course_id: params.id,
+            institution_id: course?.institution_id,
             order_index: lessons.length,
           }
-        ]);
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
+
+      if (createdLesson?.id && course?.institution_id) {
+        await supabase.from('lesson_blocks').insert([
+          {
+            institution_id: course.institution_id,
+            lesson_id: createdLesson.id,
+            block_type: mapLegacyContentTypeToBlockType(lessonData.content_type),
+            title: lessonData.title,
+            data: createLegacyBlockPayload(lessonData),
+            order_index: 0,
+          },
+        ]);
+      }
 
       toast.success('Lesson created successfully!');
       setLessonData({
@@ -130,6 +148,11 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         .eq('id', lessonId);
 
       if (error) throw error;
+
+      await supabase
+        .from('lesson_blocks')
+        .delete()
+        .eq('lesson_id', lessonId);
 
       toast.success('Lesson deleted successfully');
       fetchLessons();
@@ -169,6 +192,37 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         .eq('id', editingLesson.id);
 
       if (error) throw error;
+
+      if (editingLesson && course?.institution_id) {
+        const blockPayload = {
+          block_type: mapLegacyContentTypeToBlockType(lessonEditData.content_type),
+          title: lessonEditData.title,
+          data: createLegacyBlockPayload(lessonEditData),
+        };
+
+        const { data: existingBlock } = await supabase
+          .from('lesson_blocks')
+          .select('id')
+          .eq('lesson_id', editingLesson.id)
+          .eq('order_index', 0)
+          .maybeSingle();
+
+        if (existingBlock?.id) {
+          await supabase
+            .from('lesson_blocks')
+            .update(blockPayload)
+            .eq('id', existingBlock.id);
+        } else {
+          await supabase.from('lesson_blocks').insert([
+            {
+              institution_id: course.institution_id,
+              lesson_id: editingLesson.id,
+              ...blockPayload,
+              order_index: 0,
+            },
+          ]);
+        }
+      }
 
       toast.success('Lesson updated successfully');
       setShowLessonEditDialog(false);
@@ -226,7 +280,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       if (error) throw error;
 
       toast.success('Course deleted successfully');
-      router.push('/admin');
+      router.push('/gansid/admin');
     } catch (error: any) {
       toast.error('Failed to delete course', {
         description: error.message,
@@ -237,11 +291,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
   const getContentIcon = (type: string) => {
     switch (type) {
-      case 'video': return <Video className="h-5 w-5" />;
-      case 'pdf': return <FileText className="h-5 w-5" />;
-      case 'iframe': return <Globe className="h-5 w-5" />;
-      case '3d': return <Box className="h-5 w-5" />;
-      default: return null;
+      case 'video': return <Video className="h-4 w-4 text-slate-400 shrink-0" />;
+      case 'pdf': return <FileText className="h-4 w-4 text-slate-400 shrink-0" />;
+      case 'iframe': return <Globe className="h-4 w-4 text-slate-400 shrink-0" />;
+      case '3d': return <Box className="h-4 w-4 text-slate-400 shrink-0" />;
+      case 'blocks': return <LayoutTemplate className="h-4 w-4 text-slate-400 shrink-0" />;
+      default: return <FileText className="h-4 w-4 text-slate-400 shrink-0" />;
     }
   };
 
@@ -255,12 +310,19 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="px-4 sm:px-0">
-      <div className="mb-6 flex items-start justify-between">
-        <div className="flex-1">
-          <h2 className="text-3xl font-bold">{course.title}</h2>
-          <p className="text-muted-foreground mt-2">{course.description}</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-3xl font-bold truncate">{course.title}</h2>
+          <p className="text-muted-foreground mt-2 line-clamp-2">{course.description}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
+          <Button
+            onClick={() => router.push(`/gansid/admin/courses/${params.id}/editor`)}
+            className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white"
+          >
+            <PanelLeft className="mr-2 h-4 w-4" />
+            Open Editor
+          </Button>
           <Button variant="outline" onClick={() => setShowEditDialog(true)}>
             <Edit className="mr-2 h-4 w-4" />
             Edit Course
@@ -334,43 +396,60 @@ export default function CoursePage({ params }: { params: { id: string } }) {
               </form>
             )}
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {lessons.map((lesson, index) => (
                 <div
                   key={lesson.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent"
+                  className="flex items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-3"
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium text-muted-foreground w-6">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <span className="text-xs font-bold text-muted-foreground w-5 shrink-0 tabular-nums">
                       {index + 1}.
                     </span>
                     {getContentIcon(lesson.content_type)}
-                    <div>
-                      <h4 className="font-medium">{lesson.title}</h4>
-                      <p className="text-sm text-muted-foreground">{lesson.description}</p>
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-sm text-foreground truncate leading-tight">
+                        {lesson.title || <span className="text-muted-foreground italic">Untitled</span>}
+                      </h4>
+                      {lesson.description && (
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">{lesson.description}</p>
+                      )}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5 shrink-0">
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-8 w-8 p-0"
+                      title="Edit lesson"
                       onClick={() => handleEditLesson(lesson)}
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/admin/courses/${params.id}/lessons/${lesson.id}/quiz`)}
+                      className="h-8 text-xs px-2.5"
+                      onClick={() => router.push(`/gansid/admin/courses/${params.id}/lessons/${lesson.id}/quiz`)}
                     >
                       Manage Quiz
                     </Button>
                     <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs px-2.5"
+                      onClick={() => router.push(`/gansid/admin/courses/${params.id}/lessons/${lesson.id}/blocks`)}
+                    >
+                      Manage Blocks
+                    </Button>
+                    <Button
                       variant="ghost"
                       size="sm"
+                      className="h-8 w-8 p-0"
+                      title="Delete lesson"
                       onClick={() => handleDeleteLesson(lesson.id)}
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
                     </Button>
                   </div>
                 </div>

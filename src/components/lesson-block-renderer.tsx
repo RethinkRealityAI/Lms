@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import type { LessonBlock, Lesson } from '@/types';
 import { getBlockType } from '@/lib/content/block-registry';
+import '@/lib/content/blocks/register-all';
 import { BlockErrorBoundary } from '@/components/blocks/block-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 

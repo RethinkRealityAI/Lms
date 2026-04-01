@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { 
   LogOut, 
   BookOpen, 
@@ -71,19 +72,19 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
     return email.slice(0, 2).toUpperCase();
   };
 
-  const isStudent = pathname.startsWith('/student');
+  const isStudent = pathname.includes('/student');
 
   return (
-    <nav className={cn(
+    <nav aria-label="Main navigation" className={cn(
       "fixed top-0 z-50 w-full transition-all duration-300 border-b",
-      scrolled 
-        ? "bg-white/80 backdrop-blur-lg border-slate-200 py-2 shadow-sm" 
+      scrolled
+        ? "bg-white/80 backdrop-blur-lg border-slate-200 py-2 shadow-sm"
         : "bg-white border-transparent py-4"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-3 group">
               <div className="w-10 h-10 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
                 <BookOpen className="h-5 w-5" />
               </div>
@@ -94,12 +95,17 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
             
             <div className="hidden md:flex items-center gap-1">
               {links.map((link) => {
-                const isActive = pathname === link.href || (link.href !== '/student' && link.href !== '/admin' && pathname.startsWith(link.href + '/'));
+                const resolvedHref = withInstitutionPath(link.href, pathname);
+                const isActive =
+                  pathname === resolvedHref ||
+                  (resolvedHref !== withInstitutionPath('/student', pathname) &&
+                    resolvedHref !== withInstitutionPath('/admin', pathname) &&
+                    pathname.startsWith(resolvedHref + '/'));
                 const Icon = iconMap[link.icon] || BookOpen;
                 return (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    href={resolvedHref}
                     className={cn(
                       'inline-flex items-center px-4 py-2 text-sm font-bold rounded-full transition-all duration-200',
                       isActive
@@ -119,7 +125,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
             <ThemeToggle />
             
             <Link 
-              href={isStudent ? "/student/profile" : "/admin/profile"} 
+              href={isStudent ? withInstitutionPath("/student/profile", pathname) : withInstitutionPath("/admin/profile", pathname)} 
               className="hidden sm:flex items-center gap-3 pl-4 border-l border-slate-200 group"
             >
               <div className="text-right">
@@ -151,6 +157,8 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
               size="sm"
               className="md:hidden text-slate-900"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
@@ -162,8 +170,8 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-100 bg-white shadow-2xl animate-in slide-in-from-top-4 duration-300">
           <div className="px-4 py-6 space-y-4">
-            <Link 
-              href={isStudent ? "/student/profile" : "/admin/profile"}
+            <Link
+              href={isStudent ? withInstitutionPath("/student/profile", pathname) : withInstitutionPath("/admin/profile", pathname)}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-4 pb-6 border-b border-slate-100 group"
             >
@@ -181,12 +189,17 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
 
             <div className="space-y-1">
               {links.map((link) => {
-                const isActive = pathname === link.href || (link.href !== '/student' && link.href !== '/admin' && pathname.startsWith(link.href + '/'));
+                const resolvedHref = withInstitutionPath(link.href, pathname);
+                const isActive =
+                  pathname === resolvedHref ||
+                  (resolvedHref !== withInstitutionPath('/student', pathname) &&
+                    resolvedHref !== withInstitutionPath('/admin', pathname) &&
+                    pathname.startsWith(resolvedHref + '/'));
                 const Icon = iconMap[link.icon] || BookOpen;
                 return (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    href={resolvedHref}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
                       'flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all',

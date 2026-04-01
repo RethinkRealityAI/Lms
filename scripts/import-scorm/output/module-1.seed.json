@@ -1,0 +1,818 @@
+{
+  "module": {
+    "title": "Module 1",
+    "slug": "module-1"
+  },
+  "lessons": [
+    {
+      "edappId": "660bb0e3db5d7f6711df95ed",
+      "title": "Introduction",
+      "order_index": 0,
+      "blocks": [
+        {
+          "edapp_slide_id": "f505cc6e-0c1a-c7ad-2596-4921860cc0a4",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Introduction to the Effective Advocacy Module",
+          "data": {
+            "html": "<p>In this module, learners will learn the fundamentals of becoming effective patient advocates; how to advocate with hospitals and governments, and how to personalize the knowledge to their region and country.</p>\n<img src=\"fit_content_assets/advocacy_images_p3z2nc.jpg\" alt=\"\" />\n<p><strong>Author: </strong>Lanre Tunji-Ajayi MSM</p><p><strong>Recognition</strong>: We recognize the video contributions of Ekawat Suwantaroj, Nehal Dhingra, and Eunice Owino.</p><p><strong>Image credits: </strong><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://www.freepic\">www.freep</a>ik.com</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/advocacy_images_p3z2nc.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "1961b42a-d1b0-4dcf-900c-f5880f34d466",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66270157fb2e1e8ee202a26e",
+      "title": "Lesson 10: Case Studies",
+      "order_index": 1,
+      "blocks": [
+        {
+          "edapp_slide_id": "618cc103-0935-e608-1b00-4c6dfa7dd961",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "GANSID- Bringing Us Together in Advocacy",
+          "data": {
+            "html": "<p></p>\n<img src=\"fit_content_assets/Roundtable-Lanre_sajqjl_wwadki.jpg\" alt=\"\" />\n<p>Before you complete this advocacy module, we hope to share a few patient advocacy stories with you, and we hope their stories will inspire you to greater work in your own country and region.</p>\n<p></p>\n<p></p>\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/Roundtable-Lanre_sajqjl_wwadki.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "f09777fc-65ff-b0d1-6a71-145c7271804d",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "media-collection"
+          }
+        },
+        {
+          "edapp_slide_id": "256badc4-def0-4fa6-8d35-1581dc65e324",
+          "block_type": "cta",
+          "order_index": 2,
+          "data": {
+            "action": "complete_lesson",
+            "text": "<p>You have completed the Fundamentals of Effective Advocacy Module!</p>",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "6626dbfe1a47db1457ff6691",
+      "title": "Lesson 1: Disclaimer",
+      "order_index": 2,
+      "blocks": [
+        {
+          "edapp_slide_id": "b0841034-52d6-c118-67c1-b1e5fa51e0ec",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Lesson 1: Disclaimer",
+          "data": {
+            "html": "<p>The Capacity Building Curriculum (\"Curriculum\") may be used strictly for educational, non-commercial purposes. By permitting such use, the Global Action Network for Sickle Cell &amp; Other Inherited Blood Disorders (GANSID) does not grant any broader license or waive any of its or any contributor's rights under copyright or otherwise at law.</p>\n<img src=\"fit_content_assets/an_eduation_trainer_mo2lt7_s4udnl.jpg\" alt=\"\" />\n<p></p>\n<p>This Curriculum has been developed as an educational tool for patient organizations and advocates.  The GANSID assumes no liability for any inaccurate or incomplete information contained in this Curriculum, nor any actions taken in reliance thereon. You assume full responsibility for the use of any information provided. The information contained herein has been supplied by individual subject matter contributors without verification by us. </p>\n<p>The information is provided \"AS IS\" and GANSID assumes no obligation to update the information or advise on further developments concerning the topics mentioned. GANSID will not be responsible or liable in any way for the accuracy, relevancy, or copyright compliance of the material contained in this Curriculum. </p>\n<p>By viewing and using any information derived from the Curriculum, you hereby waive any claims, causes of action, and demands, whether in tort or contract, against GANSID (including its content creators, staff, directors, officers, and agents) and contributors, in any way related to use of the Curriculum or the information derived from it.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/an_eduation_trainer_mo2lt7_s4udnl.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "9817efe8-1603-4951-9d6e-eb50a6c1f384",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "6626865d195acae772ff7009",
+      "title": "Lesson 2: Learning Objectives",
+      "order_index": 3,
+      "blocks": [
+        {
+          "edapp_slide_id": "ee4b669c-7ecb-7d03-b482-395f5e22db56",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Learning Objectives",
+          "data": {
+            "html": "<p>Following completion of this module, learners will be able to:</p><ul><li><p>Improve their advocacy work with their hospitals, health systems, and government</p></li><li><p>Support patients and families they serve to become better self-advocates</p></li><li><p>Better understand ethical considerations in advocacy</p></li><li><p>Apply critical thinking skills from the knowledge gained in this course module to their locality or country.</p></li></ul>\n<img src=\"fit_content_assets/Group_work_whd5ix.jpg\" alt=\"\" />\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/Group_work_whd5ix.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "faf52e77-d366-41a0-b634-22a868840d83",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66268968fd437d858d3af99b",
+      "title": "Lesson 3: Context to the Fundamentals of Advocacy Module",
+      "order_index": 4,
+      "blocks": [
+        {
+          "edapp_slide_id": "7a1fe454-70ab-e7e5-eea4-f5bc2d79894c",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": " Context to the Fundamentals of Advocacy ",
+          "data": {
+            "html": "<p>Context to the Fundamentals of Advocacy Module</p>\n<p>Whether operating in a low, medium, or high-resource environment, most advocates and organizations supporting individuals and families affected by inherited blood disorders are typically motivated by a personal connection to the disease. This ensures a passionate commitment, but may not provide access to the opportunities or resources needed for effective advocacy.</p>\n<img src=\"fit_content_assets/advocacy_image-4_nxaum3.jpg\" alt=\"\" />\n<p></p>\n<p>With the GANSID's capacity-building initiative, we hope to strengthen the advocacy skill sets of the patient organizations serving the inherited blood disorders communities through training, mentorship, and cross-disease collaborations. </p>\n<p>Through this program, the GANSID will empower its member organizations to be able to work with their health systems and governments to advance care, treatment, research, capacity building, and education in regions of the world facing acute challenges due to underdeveloped healthcare systems, poverty, and a lack of disease awareness among patient population.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/advocacy_image-4_nxaum3.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "9740f57e-6787-4471-aeb8-51e7979d847a",
+          "block_type": "cta",
+          "order_index": 1,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66268aeb0e0dca613150125d",
+      "title": "Lesson 4: What is Effective Advocacy",
+      "order_index": 5,
+      "blocks": [
+        {
+          "edapp_slide_id": "c0d7d717-2d50-cb9c-c6e0-5e3a3c0b7d97",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Advocacy vs Effective Advocacy?",
+          "data": {
+            "html": "<p></p>\n<p>Advocacy is an act of supporting or promoting a cause, idea, or policy to bring about change or influence decisions within political, economic, social systems and institutions.</p>\n<p>Effective advocacy is the art of targeting and accomplishing an advocacy action. It utilizes strategic planning and targeted action.</p>\n<img src=\"fit_content_assets/advocacy-colored_woman_with_speaker_wqnuj2.jpg\" alt=\"\" />\n<p>Skills: Effective advocacy requires a range of skills, including networking, public speaking, persuasive writing, and critical thinking.</p>\n<p>In addition, active listening, empathy, and the ability to build relationships and collaborate with others are also important skills for advocates.</p>\n<p>Advocacy Platforms: Various platforms, such as public speaking, letter-writing campaigns, lobbying events, and social media, can be used for advocacy. </p>\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/advocacy-colored_woman_with_speaker_wqnuj2.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "e0685f96-f3cd-f363-d294-f03e99668af4",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "b7cbdc80-0cf3-0365-490b-ec2e1a550d69",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "2574e920-69d7-a928-bbac-08da2c963cad",
+          "block_type": "rich_text",
+          "order_index": 3,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "1d6a9898-2773-4428-be1e-1569eaec4f2d",
+          "block_type": "cta",
+          "order_index": 4,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "66268ccee0552894d154f829",
+      "title": "Lesson 5: Types of Advocacy",
+      "order_index": 6,
+      "blocks": [
+        {
+          "edapp_slide_id": "25dd8f61-7c8c-4ccb-f6a0-6a05f329f2ed",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Lesson 5: Types of Advocacy",
+          "data": {
+            "html": "<p>In this lesson, we will address:</p><ol><li><p>Individual - Driven Advocacy</p></li><li><p>Patient Organization - Driven Advocacy</p></li></ol>\n<img src=\"fit_content_assets/writing_higx0s.jpg\" alt=\"\" />\n<p></p><p></p>\n<p></p>\n<p></p>\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/writing_higx0s.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "bb408fb8-1ffb-0da5-e7d1-ee9ed7270e5e",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "title": "Individual-Driven Advocacy",
+          "data": {
+            "html": "<p>In patient advocacy, individual-driven efforts are led by those affected by one or more diseases. This approach is often referred to as self-advocacy and the individuals engaging in the advocacy act are referred to as self-advocates. </p><p></p><p>An individual(s) affected by a disease is addressed as a person/people with lived disease experience.</p><p>Lived-disease experience is different for different people. Some have lived-disease experience because they are living with the disease, some because they are caregivers and others because they advocate to support people living with the disease(s).</p>\n<img src=\"fit_content_assets/Advocacy-timetotakeaction_h48ljv.jpg\" alt=\"\" />\n<p>The individual(s) affected by a disease may or may not be affiliated with a patient organization.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/Advocacy-timetotakeaction_h48ljv.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "639bbe46-c46d-dc3d-070d-3ef12cacee43",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "040c0a83-d210-9297-800b-e84b3bc7be31",
+          "block_type": "rich_text",
+          "order_index": 3,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "aa9d8470-79d8-cf77-e0fa-56684db5e3e5",
+          "block_type": "rich_text",
+          "order_index": 4,
+          "title": "Patient Organization-Driven Advocacy",
+          "data": {
+            "html": "<p>Patient organizations are organizations established solely to advance a cause relating to one or more diseases. This type of organizations have non-profit and/or charitable status.</p><p>With the principle of \"Nothing About Us Without Us\", these types of organizations typically include people with lived-disease experience in their governance.</p>\n<img src=\"fit_content_assets/Action_Day-2_ar32wx.png\" alt=\"\" />\n<p> Patient organizations may advocate on behalf of their members with governments, hospital administrators and staff, workplaces, and schools.  </p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/Action_Day-2_ar32wx.png"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "3910288e-3a62-db36-dc67-5cbf78339db7",
+          "block_type": "rich_text",
+          "order_index": 5,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "bfd2b547-c2d5-4e9f-dbec-d2b59b1fc240",
+          "block_type": "rich_text",
+          "order_index": 6,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "3cb50b1d-1cf8-4622-bb1a-f928c9d9a6a1",
+          "block_type": "cta",
+          "order_index": 7,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "6626919f4e6ab54ae8dd99fa",
+      "title": "Lesson 6: Six Key Ingredients to Successful Advocacy",
+      "order_index": 7,
+      "blocks": [
+        {
+          "edapp_slide_id": "369a01fd-722b-ee75-2960-804f0d65fd5d",
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/advocacy-line-inverted-icon-free-vector_u8n3zu.jpg",
+                "caption": "<p style=\"text-align: left\"><strong>Overview:</strong></p><p style=\"text-align: left\">Successful advocacy means knowing what needs to be accomplished and being <u>realistic</u> in your expectations. It requires careful planning and strategic thinking. We have provided six ingredients to successful advocacy in this lesson to help you execute your advocacy initiative effectively.</p>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "65388a8b-d21e-1896-9ff5-504270e18c21",
+          "block_type": "image_gallery",
+          "order_index": 1,
+          "data": {
+            "images": [
+              {
+                "url": "fit_content_assets/ingredient_n96pg7_sw7nly.jpg",
+                "caption": "<p style=\"text-align: left\"><strong>6 Key Ingredients to Successful Advocacy:</strong></p><ol><li><p style=\"text-align: left\"><strong>Identify and Define the Issue</strong></p></li><li><p style=\"text-align: left\"><strong>Be Passionate About the Issue</strong></p></li><li><p style=\"text-align: left\"><strong>Engage the People Affected by the Issue</strong></p></li><li><p style=\"text-align: left\"><strong>Engage with Policy Makers or Administrators</strong></p></li><li><p style=\"text-align: left\"><strong>Present One Ask at a Time</strong></p></li><li><p style=\"text-align: left\"><strong>Follow up Persistently</strong></p></li></ol>"
+              }
+            ],
+            "mode": "slider"
+          }
+        },
+        {
+          "edapp_slide_id": "3ef30ab3-ae12-3cf6-dccc-c25e7c20c9e5",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "title": "Identify and Define the Issue",
+          "data": {
+            "html": "<p>Identify and define the advocacy issue to help create a focused and compelling message, and prioritize and allocate resources effectively. To engage others in supporting the advocacy issue, you must also be convincing that the issue is worth supporting and to demonstrate this, you must do your homework (research) to demonstrate your knowledge of the issue. It is important to identify target audiences, develop clear messages, and choose appropriate communication channels to maximize the impact of advocacy efforts.</p>\n<img src=\"fit_content_assets/picture_with_donnell_gtatud_omgktw.jpg\" alt=\"\" />\n<p>You might encounter people asking questions like, \"Why are you passionate about this cause?\" or \"What is your story?\" or \"What is your connection to this issue?\" Essentially, they want to understand <u>why you are dedicated to this cause</u>. They seek to know why they should support you, providing you with an excellent opportunity to engage them effectively.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/picture_with_donnell_gtatud_omgktw.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "e8709f54-d5f1-5f8c-634a-f2f07b0fbf04",
+          "block_type": "rich_text",
+          "order_index": 3,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "b5b5541b-5864-ca80-4c02-2be4d0b2787a",
+          "block_type": "rich_text",
+          "order_index": 4,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "7dba2151-709b-2849-1a8b-e721836a8723",
+          "block_type": "rich_text",
+          "order_index": 5,
+          "title": "Be Passionate About the Issue",
+          "data": {
+            "html": "<p>Once you have defined the issue, the next step is to infuse energy (passion) into the process. To drive an advocacy initiative, you must be passionate about it.</p><p>Patient advocates with personal connections to the advocacy issue are usually passionate about the issue and this is an important ingredient to achieve success in advocacy. However, passion alone is not enough. Passion needs to be honed with strong advocacy skill sets which can be built through training and volunteering among other opportunities.</p>\n<img src=\"fit_content_assets/passionate_advocates_qkke6c.jpg\" alt=\"\" />\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/passionate_advocates_qkke6c.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "c1f6766d-64f0-bafb-0729-5e81806b31cc",
+          "block_type": "rich_text",
+          "order_index": 6,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "2030709e-262b-4ba4-86a4-4eb2a83f4ea2",
+          "block_type": "rich_text",
+          "order_index": 7,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "e2ad3e16-5f7f-5319-46e3-4782e278f998",
+          "block_type": "rich_text",
+          "order_index": 8,
+          "title": "Engage the People Affected by the Issue",
+          "data": {
+            "html": "<p>Utilizing the stories of people with a connection to the issue you are advocating for is a priceless strategy to drive your advocacy initiative forward.</p><p></p><p>Stories that evoke human emotions will go a long way to drive support for your cause. Meet with those affected by the issue, listen to their stories, and what they would like to see accomplished.</p><p></p>\n<img src=\"fit_content_assets/story-_dzg8d7.jpg\" alt=\"\" />\n<p>Utilize your story (if applicable) and their stories to build support for the advocacy issue.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/story-_dzg8d7.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "0382720f-f4a8-c7b8-c689-f57dcf1b7ebe",
+          "block_type": "rich_text",
+          "order_index": 9,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "b00600eb-aeda-b4ec-abcf-6d0920114ab4",
+          "block_type": "rich_text",
+          "order_index": 10,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "d14d4597-e4dc-477c-17e7-d29ddcc54687",
+          "block_type": "rich_text",
+          "order_index": 11,
+          "title": "Engage with Policy Makers or Administrators",
+          "data": {
+            "html": "<p>While the advocacy goal is to drive a change in policy, it is important to know <u>when</u> and <u>how</u> to work with politicians and bureaucrats.</p><p>Working with Politicians: Politicians introduce bills and advocate for policy changes in legislative bodies.</p><p>Find the politician/s with a political will and/or empathy for your cause/issue from the <u>government of the day</u>, and work with them to drive the initiative. In addition, engage all political parties and be non-partisan in your approach.</p><p>When your advocacy work is hitting a brick wall, you may utilize the power of the opposition (such as engaging the health critic to get your initiative some attention with the government.</p>\n<img src=\"fit_content_assets/black_man_reading_a_document_wnekol.jpg\" alt=\"\" />\n<p>Working with Bureaucrats:  The bureaucrats are responsible for putting together (developing) and regulating policies in order to operationalize an approved ASK.</p>\n<p>Seek a face-to-face meeting with politicians and policy makers where possible, and attend the meeting with a well-written 1-2 page paper on your ASK that you can leave behind.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/black_man_reading_a_document_wnekol.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "90c40fb5-0df5-41e1-fe20-3b6947a3ad51",
+          "block_type": "rich_text",
+          "order_index": 12,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "fa895fff-054a-b9c6-985c-952f55bd33db",
+          "block_type": "rich_text",
+          "order_index": 13,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "5ea4d307-1ffc-dbda-f3cb-7becc74bb191",
+          "block_type": "rich_text",
+          "order_index": 14,
+          "title": "Present One Ask at a Time",
+          "data": {
+            "html": "<p>Patient advocates might have multiple ASKs/Needs that will benefit their community, however, there is a higher chance of success when a single ASK at a time is presented to the policy makers. Once that ASK is achieved, the next ASK may be presented.</p><p></p><p>Low Hanging Fruit: To build empathy of policy makers around your disease, start with a low hanging fruit ASK such as an Awareness Day Bill. During the debate of such a Bill, the policy makers debating such Bill will learn more about the disease, and possibly develop empathy for those affected by it.</p><p>With empathy built around the disease, patient advocates would be more successful in receiving their ASK and presenting future ASKs to the policymakers.</p>\n<img src=\"fit_content_assets/policy_maker_hltxnu.jpg\" alt=\"\" />\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/policy_maker_hltxnu.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "2e2eb8b6-bc48-bcd1-9929-f7ab244c45ac",
+          "block_type": "rich_text",
+          "order_index": 15,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "482cd194-b729-930c-6853-1868aaa30555",
+          "block_type": "rich_text",
+          "order_index": 16,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "2f8db8fb-a306-867a-1b2b-2b332fb48795",
+          "block_type": "rich_text",
+          "order_index": 17,
+          "title": "Be Persistent with Your ASK",
+          "data": {
+            "html": "<p>You might have heard that persistency is the name of the game. This could not be more true where advocacy is concerned.</p><p>You must recognize that your ASK or Advocacy issue is not the only item on the government's or hospital administrator's table. Note that:</p><p></p><ul><li><p>Politicians and policymakers are bombarded with numerous ASKs or presented issues</p></li><li><p>There is limited resources to support all ASKs or presented issues</p></li></ul>\n<img src=\"fit_content_assets/0001-2756633896717723470_e9l9w0.png\" alt=\"\" />\n<p>As such, seasoned advocates must:</p><ul><li><p>Be persistent in presenting and reiterating their ASKs with the engaged politician and/or policymakers,</p></li><li><p>Constantly review and improve their <u>engagement strategies</u> and never give up until the goal is accomplished.</p></li></ul>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/0001-2756633896717723470_e9l9w0.png"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "37427ecf-81e1-558e-ef5b-fef15a9eac08",
+          "block_type": "rich_text",
+          "order_index": 18,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "5ebea8e9-8362-9237-78cb-20b47fecd364",
+          "block_type": "rich_text",
+          "order_index": 19,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "9e3d3f1c-b353-4ef3-b2af-8de8815ce913",
+          "block_type": "cta",
+          "order_index": 20,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "6626a94c2116b95537fe9f10",
+      "title": "Lesson 7: Advocacy Challenges",
+      "order_index": 8,
+      "blocks": [
+        {
+          "edapp_slide_id": "fff5e8b0-c7ae-1d5b-c6c2-8c2a0a4c779c",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Encountering Advocacy Challenges",
+          "data": {
+            "html": "<p>Your advocacy efforts may be met with various challenges, including:</p><ul><li><p>Resistance from those in power whereby, advocates may encounter indifference, opposition, skepticism, or apathy from decision-makers</p></li><li><p>Inability to maintain momentum and sustain the advocacy efforts</p></li><li><p> Lack of public and decision-makers' awareness of the issue</p></li><li><p> Limited resources (human and financial) and competing priorities</p></li></ul>\n<img src=\"fit_content_assets/overcoming_challenge_2_yvv7lb.jpg\" alt=\"\" />\n<p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/overcoming_challenge_2_yvv7lb.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "16285d32-9b4f-d0d4-f277-3dc79a7cc457",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "79aa1f5d-2eaa-6f53-d7b1-ef664bcd6250",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "d6e76dc4-317c-f08a-cb11-2cd34641c2cd",
+          "block_type": "rich_text",
+          "order_index": 3,
+          "title": "Overcoming Advocacy Challenges",
+          "data": {
+            "html": "<p><u>Reiterating that Persistency is the Name of the Advocacy Game.</u></p><p>When your ASK is met with a \"No\" or \"Come back later\" or \"There is no funding yet\", do not get discouraged.</p><p>To overcome your advocacy challenges, you might need to revise your strategy but keep going back.</p><p>Ensure that you:</p><ul><li><p>Build or improve your relationship with decision-makers</p></li><li><p>Provide the decision-makers with tailored and evidence-based messages</p></li><li><p>Build a coalition by engaging others with similar interests around the advocacy initiative</p></li></ul><p></p><p>It might take a lot of \"NOs' but you will get your YES with persistency and by upgrading your strategies!</p>\n<img src=\"fit_content_assets/ovvercoming_challenge_vyfmxe.jpg\" alt=\"\" />",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/ovvercoming_challenge_vyfmxe.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "3022fb26-fed5-a089-7639-dad675becff1",
+          "block_type": "rich_text",
+          "order_index": 4,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "f002e55d-94d1-05fb-4b0d-5c0ece39d222",
+          "block_type": "rich_text",
+          "order_index": 5,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "13b04c18-21eb-4455-bf03-2b78681a492c",
+          "block_type": "cta",
+          "order_index": 6,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "6626d9680e0dca6131cc3803",
+      "title": "Lesson 8: Become a Patient Advocate",
+      "order_index": 9,
+      "blocks": [
+        {
+          "edapp_slide_id": "0f68671c-824d-59e2-dc17-26d18bf49697",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Become a Patient Advocate",
+          "data": {
+            "html": "<p>Patient advocacy is a lifelong journey, requiring perseverance, resilience, and a commitment to making a positive difference in the lives of people affected by one or more disease(s).</p>\n<img src=\"fit_content_assets/become_an_advocate_dlzrei.jpg\" alt=\"\" />\n<p><strong>Who can become a patient advocate?</strong> </p><p>Anyone can become a patient advocate by first identifying a patient-related issue and taking action on it.</p><p>Joining advocacy organizations, attending workshops or training sessions, and volunteering for patient-related causes can provide valuable opportunities to learn and develop skills to become an effective patient advocate.</p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/become_an_advocate_dlzrei.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "81ca2ad8-b034-3951-fa7b-b1f8f7eecdca",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "5630cf1c-615f-19b5-daec-b589e27303ea",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "aefe08c9-318e-3c67-5389-780cfb8e0ac5",
+          "block_type": "rich_text",
+          "order_index": 3,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "d083eb8f-66f6-4249-8d50-93c20a42c848",
+          "block_type": "cta",
+          "order_index": 4,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    },
+    {
+      "edappId": "6626e998340f8aa29b13f187",
+      "title": "Lesson 9: Ethical Considerations in Advocacy",
+      "order_index": 10,
+      "blocks": [
+        {
+          "edapp_slide_id": "5be8b2fb-e55a-cc40-bb13-3237e5385648",
+          "block_type": "rich_text",
+          "order_index": 0,
+          "title": "Ethical Considerations in Patient Advocacy",
+          "data": {
+            "html": "<p>Patient advocacy should be conducted ethically, respecting the rights and dignity of all individuals involved.</p>\n<img src=\"fit_content_assets/ethical_considerations_egjaxz.jpg\" alt=\"\" />\n<p>A patient advocate must place the advocacy initiative ahead of any personal interest or personal gain, and disclose all facts in any situation where a potential conflict of interest may arise.</p>\n<p>A patient advocate should be:</p><ul><li><p>Transparent and honest,</p></li><li><p> Be accountable in their actions and communications,</p></li><li><p>Base advocacy efforts on accurate information and evidence.</p></li></ul><p></p>",
+            "media": [
+              {
+                "type": "image",
+                "url": "fit_content_assets/ethical_considerations_egjaxz.jpg"
+              }
+            ],
+            "mode": "scrolling"
+          }
+        },
+        {
+          "edapp_slide_id": "803ceefb-8079-7ff0-3da2-6e83b463264e",
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "faa29671-94df-8011-41e3-592397a7e29a",
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "",
+            "mode": "fallback",
+            "original_type": "multiple-choice-game"
+          }
+        },
+        {
+          "edapp_slide_id": "df079c87-eb17-42ba-85f4-11936946f2b2",
+          "block_type": "cta",
+          "order_index": 3,
+          "data": {
+            "action": "complete_lesson",
+            "text": "Nice work. You've completed this lesson.",
+            "button_label": "Exit Lesson"
+          }
+        }
+      ]
+    }
+  ],
+  "generatedAt": "2026-03-30T18:35:44.593Z"
+}

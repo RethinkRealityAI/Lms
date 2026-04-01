@@ -14,6 +14,9 @@ export interface EdAppSlideData {
   buttonText?: string;
   doneText?: string;
   prompt?: string;
+  options?: Array<string | { text?: string; content?: string }>;
+  correctAnswer?: number;
+  correctAnswerIndex?: number;
 }
 
 export interface EdAppSlideItem {

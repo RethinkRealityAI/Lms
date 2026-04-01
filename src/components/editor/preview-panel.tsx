@@ -14,10 +14,15 @@ const DEVICE_WIDTHS: Record<DeviceMode, string> = {
   mobile: '375px',
 };
 
-export function PreviewPanel() {
+export interface PreviewPanelProps {
+  onAddBlock?: (slideId: string, blockType: string) => void;
+}
+
+export function PreviewPanel({ onAddBlock }: PreviewPanelProps) {
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
+  const blocks = useEditorStore((s) => s.blocks);
   const selectEntity = useEditorStore((s) => s.selectEntity);
 
   // Find the currently selected slide
@@ -31,6 +36,24 @@ export function PreviewPanel() {
         selectedSlide = found;
         siblingSlides = slideList;
         break;
+      }
+    }
+  } else if (selectedEntity?.type === 'block') {
+    let parentSlideId: string | null = null;
+    for (const [slideId, blockList] of blocks) {
+      if (blockList.some((b) => b.id === selectedEntity.id)) {
+        parentSlideId = slideId;
+        break;
+      }
+    }
+    if (parentSlideId) {
+      for (const [, slideList] of slides) {
+        const found = slideList.find((s) => s.id === parentSlideId);
+        if (found) {
+          selectedSlide = found;
+          siblingSlides = slideList;
+          break;
+        }
       }
     }
   }
@@ -74,11 +97,21 @@ export function PreviewPanel() {
         </div>
       </div>
 
-      {/* Preview frame */}
       <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
         <div
           className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-300 flex flex-col"
           style={{ width: DEVICE_WIDTHS[device], maxWidth: '100%', minHeight: '500px' }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            const blockType = e.dataTransfer.getData('application/x-block-type');
+            if (blockType && selectedSlide && onAddBlock) {
+              onAddBlock(selectedSlide.id, blockType);
+            }
+          }}
         >
           {selectedSlide ? (
             <SlidePreview

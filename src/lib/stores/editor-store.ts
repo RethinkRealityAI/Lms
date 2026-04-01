@@ -59,13 +59,16 @@ export interface EditorState {
   selectEntity: (entity: EntitySelection | null) => void;
   updateCourseTheme: (changes: Partial<InstitutionTheme>) => void;
   addModule: (module: ModuleData) => void;
+  updateModule: (moduleId: string, changes: Partial<Pick<ModuleData, 'title' | 'description'>>) => void;
   removeModule: (moduleId: string) => void;
   addLesson: (moduleId: string, lesson: LessonData) => void;
+  updateLesson: (moduleId: string, lessonId: string, changes: Partial<Pick<LessonData, 'title' | 'description'>>) => void;
   removeLesson: (moduleId: string, lessonId: string) => void;
   addSlide: (lessonId: string, slide: Slide) => void;
   removeSlide: (lessonId: string, slideId: string) => void;
   reorderSlides: (lessonId: string, slideIds: string[]) => void;
   updateSlide: (lessonId: string, slideId: string, changes: Partial<Slide>) => void;
+  addBlock: (slideId: string, block: BlockData) => void;
   updateBlock: (slideId: string, blockId: string, changes: Partial<BlockData>) => void;
   setPreviewSlideIndex: (index: number) => void;
   markSaved: () => void;
@@ -183,6 +186,14 @@ export function createEditorStore() {
       }));
     },
 
+    updateModule: (moduleId, changes) => {
+      const snap = snapshot(get());
+      set((s) => ({
+        modules: s.modules.map((m) => m.id === moduleId ? { ...m, ...changes } : m),
+        ...push(s, snap, 'updateModule', moduleId),
+      }));
+    },
+
     removeModule: (moduleId) => {
       const snap = snapshot(get());
       set((s) => ({
@@ -198,6 +209,16 @@ export function createEditorStore() {
         const next = new Map(s.lessons);
         next.set(moduleId, [...existing, lesson]);
         return { lessons: next, ...push(s, snap, 'addLesson', lesson.id) };
+      });
+    },
+
+    updateLesson: (moduleId, lessonId, changes) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const next = new Map(s.lessons);
+        const lessons = next.get(moduleId) ?? [];
+        next.set(moduleId, lessons.map((l) => l.id === lessonId ? { ...l, ...changes } : l));
+        return { lessons: next, ...push(s, snap, 'updateLesson', lessonId) };
       });
     },
 
@@ -257,6 +278,16 @@ export function createEditorStore() {
           existing.map((sl) => (sl.id === slideId ? { ...sl, ...changes } : sl)),
         );
         return { slides: next, ...push(s, snap, 'updateSlide', slideId) };
+      });
+    },
+
+    addBlock: (slideId, block) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const next = new Map(s.blocks);
+        next.set(slideId, [...existing, block]);
+        return { blocks: next, ...push(s, snap, 'addBlock', block.id) };
       });
     },
 

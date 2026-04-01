@@ -1,0 +1,13 @@
+﻿
+[1m[46m RUN [49m[22m [36mv4.1.2 [39m[90mC:/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms[39m
+
+ [31mΓ¥»[39m src/components/editor/course-editor-shell.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 31[2mms[22m[39m
+[31m     [31m├ù[31m calls updateSlide for each slide in the store when handleSave is invoked[39m[32m 23[2mms[22m[39m
+[31m     [31m├ù[31m does not leave loading state when course data is loaded[39m[32m 3[2mms[22m[39m
+[31m     [31m├ù[31m calls updateBlock for each block in the store when handleSave is invoked[39m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 17:43:54
+[2m   Duration [22m 2.37s[2m (transform 336ms, setup 84ms, import 1.31s, tests 31ms, environment 705ms)[22m
+

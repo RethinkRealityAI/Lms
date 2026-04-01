@@ -1,5 +1,44 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+export interface CreateBlockInput {
+  lesson_id: string;
+  slide_id: string;
+  block_type: string;
+  data: Record<string, unknown>;
+  order_index: number;
+  institution_id: string;
+  is_visible?: boolean;
+}
+
+export async function createBlock(
+  supabase: SupabaseClient,
+  input: CreateBlockInput,
+): Promise<{
+  id: string;
+  slide_id: string;
+  block_type: string;
+  data: Record<string, unknown>;
+  order_index: number;
+  is_visible: boolean;
+}> {
+  const { data, error } = await supabase
+    .from('lesson_blocks')
+    .insert({
+      lesson_id: input.lesson_id,
+      slide_id: input.slide_id,
+      block_type: input.block_type,
+      data: input.data,
+      order_index: input.order_index,
+      institution_id: input.institution_id,
+      is_visible: input.is_visible ?? true,
+    })
+    .select('id, slide_id, block_type, data, order_index, is_visible')
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export interface UpdateBlockInput {
   data?: Record<string, unknown>;
   title?: string;

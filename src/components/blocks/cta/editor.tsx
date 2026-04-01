@@ -56,7 +56,7 @@ export function CTAEditor({ data, onChange }: BlockEditorProps<CtaData>) {
         <label className="block text-xs font-medium text-gray-700 mb-1">Button Label</label>
         <input
           type="text"
-          value={data.button_label}
+          value={data.button_label || ''}
           onChange={(e) => onChange({ ...data, button_label: e.target.value })}
           placeholder="Continue"
           className={inputClass}

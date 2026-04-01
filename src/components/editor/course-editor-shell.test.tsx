@@ -13,6 +13,10 @@ vi.mock('@/lib/supabase/client', () => ({
   })),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({ push: vi.fn() })),
+}));
+
 vi.mock('@/lib/db/users', () => ({
   getUserInstitutionId: vi.fn().mockResolvedValue('inst-1'),
 }));
@@ -65,6 +69,7 @@ vi.mock('@/lib/db/modules', () => ({
   createModule: vi.fn().mockResolvedValue({ id: 'new-mod-id', title: 'New Module', course_id: 'course-1', order_index: 0 }),
   deleteModule: vi.fn().mockResolvedValue(undefined),
   getModulesByCourse: vi.fn().mockResolvedValue([]),
+  updateModule: vi.fn().mockResolvedValue(undefined),
   getModulesWithLessonsByCourse: vi.fn().mockResolvedValue([]),
 }));
 
@@ -72,11 +77,13 @@ vi.mock('@/lib/db/lessons', () => ({
   createLesson: vi.fn().mockResolvedValue({ id: 'new-les-id', title: 'New Lesson', module_id: 'mod-1', order_index: 0 }),
   deleteLesson: vi.fn().mockResolvedValue(undefined),
   getLessonsByCourse: vi.fn().mockResolvedValue([]),
+  updateLesson: vi.fn().mockResolvedValue(undefined),
   getLessonById: vi.fn().mockResolvedValue(null),
   getBlocksByLesson: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock('@/lib/db/blocks', () => ({
+  createBlock: vi.fn().mockResolvedValue({ id: 'new-block-id' }),
   updateBlock: vi.fn().mockResolvedValue(undefined),
   deleteBlock: vi.fn().mockResolvedValue(undefined),
 }));

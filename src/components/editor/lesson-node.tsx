@@ -5,6 +5,9 @@ import { ChevronRight, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { SortableSlideList } from './sortable-slide-list';
 import { useEditorStore } from './editor-store-context';
 import type { LessonData } from '@/lib/stores/editor-store';
+import type { Slide } from '@/types';
+
+const EMPTY_SLIDES: Slide[] = [];
 
 interface LessonNodeProps {
   lesson: LessonData;
@@ -16,7 +19,7 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson }: LessonNodePro
   const [expanded, setExpanded] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
-  const slides = useEditorStore((s) => s.slides.get(lesson.id) ?? []);
+  const slides = useEditorStore((s) => s.slides.get(lesson.id) ?? EMPTY_SLIDES);
   const isSelected = selectedEntity?.type === 'lesson' && selectedEntity.id === lesson.id;
 
   function handleDelete(e: React.MouseEvent) {

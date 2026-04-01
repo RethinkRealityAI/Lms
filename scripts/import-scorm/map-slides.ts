@@ -101,6 +101,28 @@ function mapCategorise(slide: EdAppSlide, orderIndex: number): MappedBlock {
   };
 }
 
+function mapMultipleChoiceGame(slide: EdAppSlide, orderIndex: number): MappedBlock {
+  // EdApp multiple-choice-game: has prompt, options array, and correctAnswer index
+  const options: string[] = (slide.data.options ?? []).map((o) =>
+    typeof o === 'string' ? o : (o.text ?? o.content ?? '')
+  );
+  const correctIndex: number = slide.data.correctAnswer ?? slide.data.correctAnswerIndex ?? 0;
+  const correctAnswer: string = options[correctIndex] ?? options[0] ?? '';
+
+  return {
+    edapp_slide_id: slide.id,
+    block_type: 'quiz_inline',
+    order_index: orderIndex,
+    data: {
+      question_type: 'multiple_choice',
+      question: slide.data.prompt ?? slide.data.title ?? '',
+      options,
+      correct_answer: correctAnswer,
+      show_feedback: true,
+    },
+  };
+}
+
 function mapExit(slide: EdAppSlide, orderIndex: number): MappedBlock {
   return {
     edapp_slide_id: slide.id,
@@ -123,5 +145,6 @@ const SLIDE_MAPPERS: Partial<Record<string, SlideMapper>> = {
   'text-sequence': mapTextSequence,
   'image-map': mapImageMap,
   'categorise': mapCategorise,
+  'multiple-choice-game': mapMultipleChoiceGame,
   'exit': mapExit,
 };

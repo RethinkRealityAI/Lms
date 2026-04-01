@@ -13,9 +13,9 @@ export default function RichTextViewer({ data }: BlockViewerProps<RichTextData>)
   if (data.mode === 'sequence' && data.segments) {
     const sorted = [...(data.segments ?? [])].sort((a, b) => a.reveal_order - b.reveal_order);
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {sorted.map((seg, i) => (
-          <div key={i} className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(seg.text) }} />
+          <div key={i} className="prose prose-xl max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(seg.text) }} />
         ))}
       </div>
     );
@@ -23,7 +23,7 @@ export default function RichTextViewer({ data }: BlockViewerProps<RichTextData>)
 
   return (
     <div
-      className="prose prose-sm max-w-none dark:prose-invert"
+      className="prose prose-xl max-w-none dark:prose-invert"
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.html) }}
     />
   );

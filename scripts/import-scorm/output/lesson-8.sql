@@ -1,0 +1,22 @@
+DO $$ DECLARE v_lesson_id uuid; BEGIN
+  SELECT id INTO v_lesson_id FROM lessons WHERE module_id = 'a4ce8c6c-ea88-45fb-b590-05fb329347c3' AND order_index = 8;
+  IF v_lesson_id IS NULL THEN
+    INSERT INTO lessons (course_id, module_id, institution_id, title, order_index, content_type, content_url, is_required)
+    VALUES ('6b4906f1-803b-40bb-8582-d591220e5d09', 'a4ce8c6c-ea88-45fb-b590-05fb329347c3', '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'Lesson 7: Advocacy Challenges', 8, 'blocks', '', true)
+    RETURNING id INTO v_lesson_id;
+  END IF;
+  DELETE FROM lesson_blocks WHERE lesson_id = v_lesson_id;
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', 'Encountering Advocacy Challenges', '{"html":"<p>Your advocacy efforts may be met with various challenges, including:</p><ul><li><p>Resistance from those in power whereby, advocates may encounter indifference, opposition, skepticism, or apathy from decision-makers</p></li><li><p>Inability to maintain momentum and sustain the advocacy efforts</p></li><li><p> Lack of public and decision-makers'' awareness of the issue</p></li><li><p> Limited resources (human and financial) and competing priorities</p></li></ul>\n<img src=\"fit_content_assets/overcoming_challenge_2_yvv7lb.jpg\" alt=\"\" />\n<p></p>","media":[{"type":"image","url":"fit_content_assets/overcoming_challenge_2_yvv7lb.jpg"}],"mode":"scrolling"}'::jsonb, 0, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', '', '{"html":"","mode":"fallback","original_type":"multiple-choice-game"}'::jsonb, 1, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', '', '{"html":"","mode":"fallback","original_type":"multiple-choice-game"}'::jsonb, 2, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', 'Overcoming Advocacy Challenges', '{"html":"<p><u>Reiterating that Persistency is the Name of the Advocacy Game.</u></p><p>When your ASK is met with a \"No\" or \"Come back later\" or \"There is no funding yet\", do not get discouraged.</p><p>To overcome your advocacy challenges, you might need to revise your strategy but keep going back.</p><p>Ensure that you:</p><ul><li><p>Build or improve your relationship with decision-makers</p></li><li><p>Provide the decision-makers with tailored and evidence-based messages</p></li><li><p>Build a coalition by engaging others with similar interests around the advocacy initiative</p></li></ul><p></p><p>It might take a lot of \"NOs'' but you will get your YES with persistency and by upgrading your strategies!</p>\n<img src=\"fit_content_assets/ovvercoming_challenge_vyfmxe.jpg\" alt=\"\" />","media":[{"type":"image","url":"fit_content_assets/ovvercoming_challenge_vyfmxe.jpg"}],"mode":"scrolling"}'::jsonb, 3, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', '', '{"html":"","mode":"fallback","original_type":"multiple-choice-game"}'::jsonb, 4, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'rich_text', '', '{"html":"","mode":"fallback","original_type":"multiple-choice-game"}'::jsonb, 5, true, 1, '{}'::jsonb);
+  INSERT INTO lesson_blocks (lesson_id, institution_id, block_type, title, data, order_index, is_visible, version, settings)
+  VALUES (v_lesson_id, '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a', 'cta', '', '{"action":"complete_lesson","text":"Nice work. You''ve completed this lesson.","button_label":"Exit Lesson"}'::jsonb, 6, true, 1, '{}'::jsonb); END $$;

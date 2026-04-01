@@ -1,0 +1,505 @@
+{
+  "course": {
+    "name": "Patient Organizations' Capacity Building - Training Program: The Final Quiz",
+    "source_url": "https://trainingpreview.edapp.com/p/Xy4IsEjZxyFoYY7CVLSVp7RN",
+    "total_lessons": 9,
+    "lessons": [
+      {
+        "lesson_number": 1,
+        "title": "Recap Module 1: Fundamentals of Effective Advocacy",
+        "total_slides": 8,
+        "capture_status": "complete",
+        "questions": [
+          {
+            "slide": 1,
+            "question": "Which skill is essential for building alliances in advocacy work?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Decision making",
+              "Active listening",
+              "Networking",
+              "Critical thinking"
+            ]
+          },
+          {
+            "slide": 2,
+            "question": "Who can be considered as people with lived disease experience?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Healthcare professionals involved in treating the disease.",
+              "Government officials responsible for disease control.",
+              "Researchers studying the disease.",
+              "Individuals living with the disease, their caregivers, families, and advocates."
+            ]
+          },
+          {
+            "slide": 3,
+            "question": "Where do patient organizations engage in advocacy efforts?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Media outlets and social media platforms.",
+              "Religious institutions and charitable organizations.",
+              "Governments, hospital administrators and staff, workplaces, and schools.",
+              "Community centers and recreational facilities."
+            ]
+          },
+          {
+            "slide": 4,
+            "question": "What is one benefit of having people with lived disease experience in the governance of patient organizations?",
+            "question_type": "multiple_choice",
+            "options": [
+              "They can provide financial support for healthcare initiatives",
+              "They have extensive medical knowledge and expertise",
+              "They have strong connections with pharmaceutical companies",
+              "They bring a unique perspective and understanding of patient needs"
+            ]
+          },
+          {
+            "slide": 5,
+            "question": "What is the main focus of individual-driven advocacy?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Supporting organizations in advocating for policy change",
+              "Empowering individuals to advocate for their own rights",
+              "Providing resources for collective advocacy efforts",
+              "Promoting community-driven initiatives for social change"
+            ]
+          },
+          {
+            "slide": 6,
+            "question": "What is one of the key skills required for effective advocacy?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Time management",
+              "Creativity",
+              "Problem-solving",
+              "Strategic thinking"
+            ]
+          },
+          {
+            "slide": 7,
+            "question": "What is the main difference between advocacy and effective advocacy?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Advocacy is focused on raising awareness only.",
+              "Effective advocacy achieves tangible results.",
+              "Effective advocacy is more expensive than regular advocacy.",
+              "Advocacy and effective advocacy have the same goals and outcomes."
+            ]
+          }
+        ]
+      },
+      {
+        "lesson_number": 2,
+        "title": "Recap Module 2: Fundraising Strategies that Drive Results",
+        "total_slides": 5,
+        "capture_status": "complete",
+        "questions": [
+          {
+            "slide": 2,
+            "question": "Is the following statement true or false?",
+            "statement": "Matching gift arrangements, with the company matching any dollars donated by their employees with an equivalent donation is an example of corporate partnership.",
+            "question_type": "true_false",
+            "options": ["True", "False"]
+          },
+          {
+            "slide": 3,
+            "question": "Is the following statement true or false?",
+            "statement": "Major gifts are the largest donations an organization receives from a single source in a single fiscal year.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 4,
+            "question": "Is the following statement true or false?",
+            "statement": "In Peer-to-Peer fundraising, donors have direct access to friends, family members, coworkers, and other peers that may have never heard of your organization.",
+            "question_type": "true_false",
+            "options": ["True", "False"]
+          }
+        ]
+      },
+      {
+        "lesson_number": 3,
+        "title": "Recap Module 3: Volunteer Management",
+        "total_slides": 11,
+        "capture_status": "partial",
+        "capture_note": "Slides 1-5 captured. Slides 6-11 not yet captured.",
+        "questions": [
+          {
+            "slide": 1,
+            "question": "What else is volunteer engagement referred to as:",
+            "question_type": "multiple_choice",
+            "options": [
+              "Volunteer sleuthing",
+              "Volunteer management",
+              "Volunteer coordination",
+              "Volunteer administration"
+            ]
+          },
+          {
+            "slide": 2,
+            "question": "Which of the following is NOT one of the four key activities in the recruitment phase?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Sourcing volunteers",
+              "Identifying your needs",
+              "Training volunteers",
+              "Defining the application process"
+            ]
+          },
+          {
+            "slide": 3,
+            "question": "What is an effective way to provide orientation to new volunteers?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Conduct a formal training session once a year",
+              "Give them a volunteer handbook and leave them to read it on their own.",
+              "Have them start working immediately without any introduction",
+              "Assign a mentor or partner, such as a senior volunteer or a leader"
+            ]
+          },
+          {
+            "slide": 4,
+            "question": "Who is responsible for recognizing volunteers within an organization?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Only the volunteer manager",
+              "Only the human resources department",
+              "Only the organization's CEO",
+              "Everyone in the organization"
+            ]
+          },
+          {
+            "slide": 5,
+            "question": "What is a key trend in volunteering that organizations should be aware of?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Volunteers are less interested in organizational goals",
+              "Volunteers are increasingly seeking short-term involvement",
+              "Volunteers prefer long-term, indefinite commitments",
+              "Volunteers expect financial compensation"
+            ]
+          }
+        ]
+      },
+      {
+        "lesson_number": 4,
+        "title": "Recap Module 4: Leadership: What works and what does not?",
+        "total_slides": 7,
+        "capture_status": "not_captured",
+        "capture_note": "This lesson was not captured in the current session. Re-run scraping to populate.",
+        "questions": []
+      },
+      {
+        "lesson_number": 5,
+        "title": "Recap Module 5: Project Management",
+        "total_slides": 10,
+        "capture_status": "not_captured",
+        "capture_note": "This lesson was not captured in the current session. Re-run scraping to populate.",
+        "questions": []
+      },
+      {
+        "lesson_number": 6,
+        "title": "Recap Module 6: Effective Communication",
+        "total_slides": 17,
+        "capture_status": "partial",
+        "capture_note": "Slides 12-16 captured. Slides 1-11 not yet captured.",
+        "questions": [
+          {
+            "slide": 12,
+            "question": "How can team leaders effectively empower team members?",
+            "question_type": "multiple_choice",
+            "options": [
+              "By micromanaging their tasks and decisions.",
+              "By providing them with authority and autonomy to make decisions.",
+              "By restricting their access to information and resources."
+            ]
+          },
+          {
+            "slide": 13,
+            "question": "What is a key aspect of building a culture of inclusivity?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Embracing different perspectives and encouraging collaboration.",
+              "Ignoring biases and discrimination in the workplace.",
+              "Focusing on individual achievements rather than teamwork.",
+              "Limiting growth and development opportunities to a select few."
+            ]
+          },
+          {
+            "slide": 14,
+            "question": "What is one strategy for maintaining fruitful relationships with partners from diverse cultural backgrounds?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Using complex language and technical jargon.",
+              "Adapting your communication style to accommodate cultural norms and preferences.",
+              "Speaking quickly to ensure meetings end promptly.",
+              "Being inflexible in your communication approach."
+            ]
+          },
+          {
+            "slide": 15,
+            "question": "What is the recommended approach for encouraging participation from a silent audience member?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Invite everyone to share their opinions and respond positively when they contribute.",
+              "Ask them direct questions and pressure them to respond.",
+              "Criticize their lack of participation in front of the group to motivate them.",
+              "Thank them for their attention and move on to other participants."
+            ]
+          },
+          {
+            "slide": 16,
+            "question": "How can nonverbal communication enhance the effectiveness of your speech?",
+            "question_type": "multiple_choice",
+            "options": [
+              "By using filler words to fill pauses in speech.",
+              "By conveying confidence, sincerity, and engagement.",
+              "By distracting the audience from the main message.",
+              "By speaking in a monotone voice to maintain neutrality."
+            ]
+          }
+        ]
+      },
+      {
+        "lesson_number": 7,
+        "title": "Recap Module 7: Development of Impactful Strategic Work Plans",
+        "total_slides": 19,
+        "capture_status": "complete",
+        "questions": [
+          {
+            "slide": 2,
+            "question": "Is the following statement true or false?",
+            "statement": "The community you serve is a stakeholder.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 3,
+            "question": "Is the following statement true or false?",
+            "statement": "One key part of a concept note is the problem you are trying to address.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 4,
+            "question": "Is the following statement true or false?",
+            "statement": "The rationale includes what is being achieved.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 5,
+            "question": "What is work plan implementation?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Monitoring project progress is crucial. As the project nears completion, prepare to present a comprehensive evaluation to stakeholders. Highlight achievements and outline steps for future projects to sustain and build upon this work.",
+              "The detailed work plan outlines the process from concept to execution, enabling users to understand the project's success measurement.",
+              "Executing the work plan is vital for achieving desired outcomes and communicating success to stakeholders. Monitoring ensures goals are met."
+            ]
+          },
+          {
+            "slide": 6,
+            "question": "What is the work plan cycle in order?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Recruitment, concept note, work plan development, implementation, evaluation",
+              "Concept note, evaluation, work plan development, implementation",
+              "Concept note, work plan development, implementation, evaluation",
+              "Concept note, work plan development, implementation"
+            ]
+          },
+          {
+            "slide": 7,
+            "question": "What should be worked on after the concept note has been approved?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Revise concept plan",
+              "Start buying supplies right away",
+              "Work on work plan"
+            ]
+          },
+          {
+            "slide": 8,
+            "question": "What is the difference between a concept note and a work plan?",
+            "question_type": "multiple_choice",
+            "options": [
+              "A work plan is for getting stakeholders while a concept note is how this will be achieved",
+              "A concept note is for getting stakeholders while a work plan is how this will be achieved",
+              "They are the same."
+            ]
+          },
+          {
+            "slide": 9,
+            "question": "Is the following statement true or false?",
+            "statement": "Less documentation means your organization will be stronger.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 10,
+            "question": "Is the following statement true or false?",
+            "statement": "Success can only be measured through a survey.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 11,
+            "question": "What is most important?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Having a budget, timeline and ensuring success",
+              "Getting your project out as soon as possible",
+              "Making the most amount of money possible"
+            ]
+          },
+          {
+            "slide": 12,
+            "question": "Is the following statement true or false?",
+            "statement": "The logical framework does not help see ways to measure success.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 13,
+            "question": "What are some of the parts of a logical framework?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Inputs, activities, outputs, outcomes, impact",
+              "This is where you decide the reason of the activity",
+              "Only looks at the amount of participants and trainees"
+            ]
+          },
+          {
+            "slide": 14,
+            "question": "Why is documenting important?",
+            "question_type": "multiple_choice",
+            "options": [
+              "It is only needed for donors to see success",
+              "Helps to ensure accountability, betters communication and collaboration, legal reasons",
+              "It is not important"
+            ]
+          },
+          {
+            "slide": 15,
+            "question": "Is the following statement true or false?",
+            "statement": "Do not allow for scope creep.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 16,
+            "question": "What does the 'A' in SMART-IE mean?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Achievable",
+              "Admirable",
+              "Analyzable",
+              "Acceptable"
+            ]
+          },
+          {
+            "slide": 17,
+            "question": "Is the following statement true or false?",
+            "statement": "When working on work plan, expand the rationale.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 18,
+            "question": "Is the following statement true or false?",
+            "statement": "The rationale includes what is being achieved.",
+            "question_type": "true_false",
+            "options": ["True", "False"]
+          }
+        ]
+      },
+      {
+        "lesson_number": 8,
+        "title": "Recap Module 8: Grant Writing",
+        "total_slides": 6,
+        "capture_status": "complete",
+        "questions": [
+          {
+            "slide": 2,
+            "question": "Is the following statement true or false?",
+            "statement": "Projects help programs to achieve its aims.",
+            "question_type": "true_false",
+            "options": ["True", "False"]
+          },
+          {
+            "slide": 3,
+            "question": "Is the following statement true or false?",
+            "statement": "Capital grants can also be used for operations.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 4,
+            "question": "Is the following statement true or false?",
+            "statement": "General operating grants are always restricted.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          },
+          {
+            "slide": 5,
+            "question": "Is the following statement true or false?",
+            "statement": "Reporting after receiving funding is not very important.",
+            "question_type": "true_false",
+            "options": ["False", "True"]
+          }
+        ]
+      },
+      {
+        "lesson_number": 9,
+        "title": "Course Feedback",
+        "total_slides": 8,
+        "capture_status": "complete",
+        "questions": [
+          {
+            "slide": 1,
+            "question": "How likely are you to recommend the course content (e.g., relevance, clarity, and depth) to others?",
+            "question_type": "likert_scale",
+            "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+          },
+          {
+            "slide": 2,
+            "question": "How likely are you to say the course helped you achieve your learning goals?",
+            "question_type": "likert_scale",
+            "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+          },
+          {
+            "slide": 3,
+            "question": "How likely are you to say the course pace was manageable and allowed you to keep up with the material?",
+            "question_type": "likert_scale",
+            "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+          },
+          {
+            "slide": 4,
+            "question": "How likely are you to say the course instructions and expectations were clear and easy to follow?",
+            "question_type": "likert_scale",
+            "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+          },
+          {
+            "slide": 5,
+            "question": "How likely are you to use what you've learned from this course in real-world scenarios?",
+            "question_type": "likert_scale",
+            "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+          },
+          {
+            "slide": 6,
+            "question": "What other topics would you want to learn about in future modules?",
+            "question_type": "open_text",
+            "options": []
+          },
+          {
+            "slide": 7,
+            "question": "Any other comments or feedback?",
+            "question_type": "open_text",
+            "options": []
+          }
+        ]
+      }
+    ]
+  }
+}

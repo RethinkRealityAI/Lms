@@ -351,3 +351,550 @@ CREATE TRIGGER on_auth_user_created
 -- Grant necessary permissions
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
+
+-- ============================================
+-- Multi-Tenant Extensions
+-- ============================================
+
+-- Core institution tables
+CREATE TABLE IF NOT EXISTS institutions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  description TEXT,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS institution_branding (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE UNIQUE,
+  logo_url TEXT,
+  primary_color TEXT,
+  secondary_color TEXT,
+  accent_color TEXT,
+  settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS institution_domains (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  domain TEXT NOT NULL UNIQUE,
+  is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS institution_memberships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('institution_admin', 'instructor', 'student')),
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (institution_id, user_id)
+);
+
+-- Content and operations extensions
+CREATE TABLE IF NOT EXISTS media_assets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  uploaded_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  file_url TEXT NOT NULL,
+  file_type TEXT NOT NULL,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS h5p_contents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content_key TEXT NOT NULL UNIQUE,
+  content_type TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS lesson_blocks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  lesson_id UUID NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  block_type TEXT NOT NULL,
+  title TEXT,
+  data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  order_index INTEGER NOT NULL DEFAULT 0,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS certificate_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  template_url TEXT,
+  template_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  is_default BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (institution_id, name)
+);
+
+CREATE TABLE IF NOT EXISTS analytics_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id UUID NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  event_type TEXT NOT NULL,
+  entity_type TEXT,
+  entity_id UUID,
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add institution scoping to existing tenant-owned tables
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE lessons ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE questions ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE course_enrollments ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE progress ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE quiz_attempts ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE course_reviews ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE lesson_comments ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE certificates ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+ALTER TABLE verification_codes ADD COLUMN IF NOT EXISTS institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE;
+
+-- Expand supported role values
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+ALTER TABLE users
+ADD CONSTRAINT users_role_check
+CHECK (role IN ('platform_admin', 'institution_admin', 'instructor', 'student'));
+
+-- Enable RLS on new tables
+ALTER TABLE institutions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE institution_branding ENABLE ROW LEVEL SECURITY;
+ALTER TABLE institution_domains ENABLE ROW LEVEL SECURITY;
+ALTER TABLE institution_memberships ENABLE ROW LEVEL SECURITY;
+ALTER TABLE media_assets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE h5p_contents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lesson_blocks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE certificate_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Tenant helper functions
+CREATE OR REPLACE FUNCTION public.is_platform_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1
+    FROM users
+    WHERE id = auth.uid()
+      AND role = 'platform_admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+CREATE OR REPLACE FUNCTION public.is_institution_member(p_institution_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  IF p_institution_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  IF public.is_platform_admin() THEN
+    RETURN TRUE;
+  END IF;
+
+  RETURN EXISTS (
+    SELECT 1
+    FROM institution_memberships im
+    WHERE im.user_id = auth.uid()
+      AND im.institution_id = p_institution_id
+      AND im.is_active = TRUE
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+CREATE OR REPLACE FUNCTION public.is_institution_admin_or_instructor(p_institution_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  IF p_institution_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  IF public.is_platform_admin() THEN
+    RETURN TRUE;
+  END IF;
+
+  RETURN EXISTS (
+    SELECT 1
+    FROM institution_memberships im
+    WHERE im.user_id = auth.uid()
+      AND im.institution_id = p_institution_id
+      AND im.is_active = TRUE
+      AND im.role IN ('institution_admin', 'instructor')
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+GRANT EXECUTE ON FUNCTION public.is_platform_admin() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_institution_member(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_institution_admin_or_instructor(UUID) TO authenticated;
+
+-- Backfill or create default institutions
+INSERT INTO institutions (name, slug, description)
+VALUES
+  ('GANSID', 'gansid', 'Default GANSID institution'),
+  ('SCAGO', 'scago', 'SCAGO institution')
+ON CONFLICT (slug) DO NOTHING;
+
+-- Backfill institution_id for existing rows to GANSID
+UPDATE categories
+SET institution_id = i.id
+FROM institutions i
+WHERE categories.institution_id IS NULL
+  AND i.slug = 'gansid';
+
+UPDATE courses
+SET institution_id = i.id
+FROM institutions i
+WHERE courses.institution_id IS NULL
+  AND i.slug = 'gansid';
+
+UPDATE lessons l
+SET institution_id = c.institution_id
+FROM courses c
+WHERE l.course_id = c.id
+  AND l.institution_id IS NULL;
+
+UPDATE quizzes q
+SET institution_id = l.institution_id
+FROM lessons l
+WHERE q.lesson_id = l.id
+  AND q.institution_id IS NULL;
+
+UPDATE questions qs
+SET institution_id = q.institution_id
+FROM quizzes q
+WHERE qs.quiz_id = q.id
+  AND qs.institution_id IS NULL;
+
+UPDATE course_enrollments ce
+SET institution_id = c.institution_id
+FROM courses c
+WHERE ce.course_id = c.id
+  AND ce.institution_id IS NULL;
+
+UPDATE progress p
+SET institution_id = l.institution_id
+FROM lessons l
+WHERE p.lesson_id = l.id
+  AND p.institution_id IS NULL;
+
+UPDATE quiz_attempts qa
+SET institution_id = q.institution_id
+FROM quizzes q
+WHERE qa.quiz_id = q.id
+  AND qa.institution_id IS NULL;
+
+UPDATE course_reviews cr
+SET institution_id = c.institution_id
+FROM courses c
+WHERE cr.course_id = c.id
+  AND cr.institution_id IS NULL;
+
+UPDATE lesson_comments lc
+SET institution_id = l.institution_id
+FROM lessons l
+WHERE lc.lesson_id = l.id
+  AND lc.institution_id IS NULL;
+
+UPDATE certificates cert
+SET institution_id = c.institution_id
+FROM courses c
+WHERE cert.course_id = c.id
+  AND cert.institution_id IS NULL;
+
+UPDATE verification_codes vc
+SET institution_id = i.id
+FROM institutions i
+WHERE vc.institution_id IS NULL
+  AND i.slug = 'gansid';
+
+-- Enforce not-null institution scope after backfill
+ALTER TABLE categories ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE courses ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE lessons ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE quizzes ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE questions ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE course_enrollments ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE progress ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE quiz_attempts ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE course_reviews ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE lesson_comments ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE certificates ALTER COLUMN institution_id SET NOT NULL;
+ALTER TABLE verification_codes ALTER COLUMN institution_id SET NOT NULL;
+
+-- Tenant indexes
+CREATE INDEX IF NOT EXISTS idx_categories_institution_id ON categories(institution_id);
+CREATE INDEX IF NOT EXISTS idx_courses_institution_id ON courses(institution_id);
+CREATE INDEX IF NOT EXISTS idx_lessons_institution_id ON lessons(institution_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_institution_id ON quizzes(institution_id);
+CREATE INDEX IF NOT EXISTS idx_questions_institution_id ON questions(institution_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_institution_id ON course_enrollments(institution_id);
+CREATE INDEX IF NOT EXISTS idx_progress_institution_id ON progress(institution_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_institution_id ON quiz_attempts(institution_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_institution_id ON course_reviews(institution_id);
+CREATE INDEX IF NOT EXISTS idx_comments_institution_id ON lesson_comments(institution_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_institution_id ON certificates(institution_id);
+CREATE INDEX IF NOT EXISTS idx_verification_codes_institution_id ON verification_codes(institution_id);
+CREATE INDEX IF NOT EXISTS idx_memberships_user_institution ON institution_memberships(user_id, institution_id);
+CREATE INDEX IF NOT EXISTS idx_lesson_blocks_lesson_order ON lesson_blocks(lesson_id, order_index);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_institution_created ON analytics_events(institution_id, created_at DESC);
+
+-- Replace permissive policies with tenant-aware policies
+DROP POLICY IF EXISTS "Anyone can read categories" ON categories;
+DROP POLICY IF EXISTS "Admins can create categories" ON categories;
+DROP POLICY IF EXISTS "Admins can update categories" ON categories;
+DROP POLICY IF EXISTS "Admins can delete categories" ON categories;
+
+DROP POLICY IF EXISTS "Anyone can read courses" ON courses;
+DROP POLICY IF EXISTS "Admins can create courses" ON courses;
+DROP POLICY IF EXISTS "Admins can update their courses" ON courses;
+DROP POLICY IF EXISTS "Admins can delete their courses" ON courses;
+
+DROP POLICY IF EXISTS "Anyone can read lessons" ON lessons;
+DROP POLICY IF EXISTS "Admins can create lessons" ON lessons;
+DROP POLICY IF EXISTS "Admins can update lessons" ON lessons;
+DROP POLICY IF EXISTS "Admins can delete lessons" ON lessons;
+
+DROP POLICY IF EXISTS "Anyone can read quizzes" ON quizzes;
+DROP POLICY IF EXISTS "Admins can create quizzes" ON quizzes;
+DROP POLICY IF EXISTS "Admins can update quizzes" ON quizzes;
+DROP POLICY IF EXISTS "Admins can delete quizzes" ON quizzes;
+
+DROP POLICY IF EXISTS "Anyone can read questions" ON questions;
+DROP POLICY IF EXISTS "Admins can create questions" ON questions;
+DROP POLICY IF EXISTS "Admins can update questions" ON questions;
+DROP POLICY IF EXISTS "Admins can delete questions" ON questions;
+
+DROP POLICY IF EXISTS "Users can read their enrollments" ON course_enrollments;
+DROP POLICY IF EXISTS "Users can enroll themselves" ON course_enrollments;
+DROP POLICY IF EXISTS "Admins can read all enrollments" ON course_enrollments;
+
+DROP POLICY IF EXISTS "Users can read their progress" ON progress;
+DROP POLICY IF EXISTS "Users can update their progress" ON progress;
+DROP POLICY IF EXISTS "Users can upsert their progress" ON progress;
+DROP POLICY IF EXISTS "Admins can read all progress" ON progress;
+
+DROP POLICY IF EXISTS "Users can read their quiz attempts" ON quiz_attempts;
+DROP POLICY IF EXISTS "Users can insert their quiz attempts" ON quiz_attempts;
+DROP POLICY IF EXISTS "Admins can read all quiz attempts" ON quiz_attempts;
+
+DROP POLICY IF EXISTS "Anyone can read reviews" ON course_reviews;
+DROP POLICY IF EXISTS "Users can create their own reviews" ON course_reviews;
+DROP POLICY IF EXISTS "Users can update their own reviews" ON course_reviews;
+DROP POLICY IF EXISTS "Users can delete their own reviews" ON course_reviews;
+
+DROP POLICY IF EXISTS "Anyone can read comments" ON lesson_comments;
+DROP POLICY IF EXISTS "Authenticated users can create comments" ON lesson_comments;
+DROP POLICY IF EXISTS "Users can update their own comments" ON lesson_comments;
+DROP POLICY IF EXISTS "Users can delete their own comments" ON lesson_comments;
+
+DROP POLICY IF EXISTS "Users can read their own certificates" ON certificates;
+DROP POLICY IF EXISTS "Admins can read all certificates" ON certificates;
+DROP POLICY IF EXISTS "Admins can create certificates" ON certificates;
+
+DROP POLICY IF EXISTS "Anyone can read active verification codes for validation" ON verification_codes;
+DROP POLICY IF EXISTS "Admins can create verification codes" ON verification_codes;
+DROP POLICY IF EXISTS "Admins can update verification codes" ON verification_codes;
+DROP POLICY IF EXISTS "Admins can delete verification codes" ON verification_codes;
+
+-- Categories
+CREATE POLICY "Institution members can read categories" ON categories
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write categories" ON categories
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+-- Courses
+CREATE POLICY "Institution members can read courses" ON courses
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write courses" ON courses
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+-- Lessons
+CREATE POLICY "Institution members can read lessons" ON lessons
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write lessons" ON lessons
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+-- Quizzes and Questions
+CREATE POLICY "Institution members can read quizzes" ON quizzes
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write quizzes" ON quizzes
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution members can read questions" ON questions
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write questions" ON questions
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+-- Enrollment and learning data
+CREATE POLICY "Users and institution staff can read enrollments" ON course_enrollments
+  FOR SELECT USING (
+    auth.uid() = user_id
+    OR public.is_institution_admin_or_instructor(institution_id)
+  );
+CREATE POLICY "Users and institution staff can write enrollments" ON course_enrollments
+  FOR ALL USING (
+    auth.uid() = user_id
+    OR public.is_institution_admin_or_instructor(institution_id)
+  )
+  WITH CHECK (
+    auth.uid() = user_id
+    OR public.is_institution_admin_or_instructor(institution_id)
+  );
+
+CREATE POLICY "Users and institution staff can read progress" ON progress
+  FOR SELECT USING (
+    auth.uid() = user_id
+    OR public.is_institution_admin_or_instructor(institution_id)
+  );
+CREATE POLICY "Users can write progress in institution" ON progress
+  FOR ALL USING (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  )
+  WITH CHECK (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  );
+
+CREATE POLICY "Users and institution staff can read quiz attempts" ON quiz_attempts
+  FOR SELECT USING (
+    auth.uid() = user_id
+    OR public.is_institution_admin_or_instructor(institution_id)
+  );
+CREATE POLICY "Users can write quiz attempts in institution" ON quiz_attempts
+  FOR INSERT WITH CHECK (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  );
+
+-- Reviews and comments
+CREATE POLICY "Institution members can read reviews" ON course_reviews
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Users can write own reviews in institution" ON course_reviews
+  FOR ALL USING (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  )
+  WITH CHECK (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  );
+
+CREATE POLICY "Institution members can read comments" ON lesson_comments
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Users can write own comments in institution" ON lesson_comments
+  FOR ALL USING (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  )
+  WITH CHECK (
+    auth.uid() = user_id
+    AND public.is_institution_member(institution_id)
+  );
+
+-- Certificates and verification codes
+CREATE POLICY "Users and institution staff can read certificates" ON certificates
+  FOR SELECT USING (
+    auth.uid() = user_id
+    OR public.is_institution_admin_or_instructor(institution_id)
+  );
+CREATE POLICY "Institution admins can write certificates" ON certificates
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution members can read active verification codes" ON verification_codes
+  FOR SELECT USING (
+    is_active = TRUE
+    AND public.is_institution_member(institution_id)
+  );
+CREATE POLICY "Institution admins can write verification codes" ON verification_codes
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+-- Institution tables policies
+CREATE POLICY "Platform admins can manage institutions" ON institutions
+  FOR ALL USING (public.is_platform_admin())
+  WITH CHECK (public.is_platform_admin());
+CREATE POLICY "Institution members can read their institution" ON institutions
+  FOR SELECT USING (public.is_institution_member(id));
+
+CREATE POLICY "Institution members can read branding" ON institution_branding
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write branding" ON institution_branding
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution members can read domains" ON institution_domains
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Platform admins can write domains" ON institution_domains
+  FOR ALL USING (public.is_platform_admin())
+  WITH CHECK (public.is_platform_admin());
+
+CREATE POLICY "Users can read own memberships" ON institution_memberships
+  FOR SELECT USING (auth.uid() = user_id OR public.is_platform_admin());
+CREATE POLICY "Institution admins and platform admins can manage memberships" ON institution_memberships
+  FOR ALL USING (
+    public.is_platform_admin()
+    OR public.is_institution_admin_or_instructor(institution_id)
+  )
+  WITH CHECK (
+    public.is_platform_admin()
+    OR public.is_institution_admin_or_instructor(institution_id)
+  );
+
+CREATE POLICY "Institution members can read media assets" ON media_assets
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write media assets" ON media_assets
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution members can read h5p contents" ON h5p_contents
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write h5p contents" ON h5p_contents
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution members can read lesson blocks" ON lesson_blocks
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write lesson blocks" ON lesson_blocks
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution members can read certificate templates" ON certificate_templates
+  FOR SELECT USING (public.is_institution_member(institution_id));
+CREATE POLICY "Institution admins can write certificate templates" ON certificate_templates
+  FOR ALL USING (public.is_institution_admin_or_instructor(institution_id))
+  WITH CHECK (public.is_institution_admin_or_instructor(institution_id));
+
+CREATE POLICY "Institution staff can read analytics events" ON analytics_events
+  FOR SELECT USING (public.is_institution_admin_or_instructor(institution_id));
+CREATE POLICY "Institution members can create analytics events" ON analytics_events
+  FOR INSERT WITH CHECK (public.is_institution_member(institution_id));

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { Lock, Mail, Loader2, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { PublicNav } from '@/components/public-nav';
+import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
+import { withInstitutionPath } from '@/lib/tenant/path';
 
 const adminSignInSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -28,6 +30,7 @@ export default function AdminLoginPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
     const supabase = createClient();
 
     // Check if user is already authenticated and is an admin
@@ -56,13 +59,13 @@ export default function AdminLoginPage() {
                         emailData?.role ||
                         user.user_metadata?.role ||
                         user.app_metadata?.role;
-                    const role = typeof rawRole === 'string' ? rawRole.trim().toLowerCase() : rawRole;
+                    const role = normalizeRole(typeof rawRole === 'string' ? rawRole : null);
 
-                    if (!userError && role === 'admin') {
+                    if (!userError && isAdminRole(role)) {
                         // Already authenticated as admin, redirect to admin dashboard
-                        router.replace('/admin');
+                        router.replace(withInstitutionPath('/admin', pathname));
                         return;
-                    } else if (!userError && role && role !== 'admin') {
+                    } else if (!userError && role && !isAdminRole(role)) {
                         // User is a student, sign them out and show error
                         await supabase.auth.signOut();
                         toast.error('Access Denied', {
@@ -171,9 +174,9 @@ export default function AdminLoginPage() {
             }
 
             const rawFinalRole = userData?.role || emailProfile?.role || metaRole;
-            const finalRole = typeof rawFinalRole === 'string' ? rawFinalRole.trim().toLowerCase() : rawFinalRole;
+            const finalRole = normalizeRole(typeof rawFinalRole === 'string' ? rawFinalRole : null);
 
-            if (finalRole !== 'admin') {
+            if (!isAdminRole(finalRole)) {
                 await supabase.auth.signOut();
                 toast.error('Access Denied', {
                     description: 'This portal is restricted to administrators only.',
@@ -187,7 +190,7 @@ export default function AdminLoginPage() {
             });
 
             // Use replace instead of push to avoid back button issues
-            router.replace('/admin');
+            router.replace(withInstitutionPath('/admin', pathname));
         } catch (err: any) {
             toast.error('Authentication Failed', {
                 description: err.message || 'Please check your admin credentials and try again.',
@@ -210,7 +213,7 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col selection:bg-red-100 selection:text-red-900">
+        <div className="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900">
             <PublicNav transparentInitially={false} />
             
             <div className="flex-1 flex items-center justify-center bg-white relative overflow-hidden pt-20">
@@ -223,7 +226,7 @@ export default function AdminLoginPage() {
             <Card className="w-full max-w-md bg-white/40 backdrop-blur-2xl border border-white/50 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] rounded-[3rem] relative z-10 overflow-hidden">
                 <CardHeader className="text-center space-y-1 pt-12 pb-8">
                     <div className="flex justify-center mb-6">
-                        <div className="w-20 h-20 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-3xl flex items-center justify-center border border-white/30 shadow-xl shadow-red-100 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+                        <div className="w-20 h-20 bg-gradient-to-br from-[#1E3A5F] to-[#2563EB] rounded-3xl flex items-center justify-center border border-white/30 shadow-xl shadow-blue-100 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
                             <ShieldCheck className="h-10 w-10 text-white" />
                         </div>
                     </div>
@@ -253,12 +256,12 @@ export default function AdminLoginPage() {
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-xs font-black uppercase tracking-widest text-slate-400">Secret Key</Label>
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#DC2626] transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#1E3A5F] transition-colors" />
                                 <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder="••••••••"
-                                    className={`pl-12 pr-12 h-14 bg-white/60 border-slate-200 rounded-2xl focus:ring-blue-100 focus:border-[#DC2626] transition-all font-medium ${errors.password ? 'border-red-500' : ''}`}
+                                    className={`pl-12 pr-12 h-14 bg-white/60 border-slate-200 rounded-2xl focus:ring-blue-100 focus:border-[#1E3A5F] transition-all font-medium ${errors.password ? 'border-red-500' : ''}`}
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 />
@@ -278,12 +281,12 @@ export default function AdminLoginPage() {
                             {errors.password && <p className="text-xs text-red-500 mt-1 font-bold">{errors.password}</p>}
                         </div>
 
-                        <Button type="submit" className="w-full h-14 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#991B1B] to-[#DC2626] hover:opacity-90 shadow-xl shadow-red-100 mt-2 transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
+                        <Button type="submit" className="w-full h-14 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#1E3A5F] to-[#2563EB] hover:opacity-90 shadow-xl shadow-blue-100 mt-2 transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
                             {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Enter Secure Portal'}
                         </Button>
 
                         <div className="pt-4 text-center">
-                            <Link href="/login" className="text-xs font-bold text-slate-400 hover:text-[#2563EB] transition-colors">
+                            <Link href={withInstitutionPath("/login", pathname)} className="text-xs font-bold text-slate-400 hover:text-[#2563EB] transition-colors">
                                 Return to Student Portal
                             </Link>
                         </div>

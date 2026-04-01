@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,8 @@ import { PublicNav } from '@/components/public-nav';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { BookOpen, Loader2, Mail, Lock, User, AlertCircle, CheckCircle2, Globe } from 'lucide-react';
+import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
+import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -28,10 +30,10 @@ const signUpSchema = z.object({
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Must contain at least one number'),
-  role: z.enum(['admin', 'student']),
+  role: z.enum(['institution_admin', 'student']),
   verificationCode: z.string().optional(),
 }).refine((data) => {
-  if (data.role === 'admin' && !data.verificationCode) {
+  if (data.role === 'institution_admin' && !data.verificationCode) {
     return false;
   }
   return true;
@@ -51,11 +53,12 @@ function LoginContent() {
     email: '',
     password: '',
     fullName: '',
-    role: 'student' as 'admin' | 'student',
+    role: 'student' as 'institution_admin' | 'student',
     verificationCode: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const supabase = createClient();
 
@@ -71,13 +74,13 @@ function LoginContent() {
         icon: <CheckCircle2 className="h-5 w-5" />,
       });
       // Clear the URL parameters
-      window.history.replaceState({}, '', '/login');
+      window.history.replaceState({}, '', withInstitutionPath('/login', pathname));
     } else if (error) {
       toast.error('Verification Error', {
         description: decodeURIComponent(error),
       });
       // Clear the URL parameters
-      window.history.replaceState({}, '', '/login');
+      window.history.replaceState({}, '', withInstitutionPath('/login', pathname));
     }
 
     if (tab === 'signup') {
@@ -190,7 +193,7 @@ function LoginContent() {
         }
       }
 
-      const finalRole = userData?.role || 'student';
+      const finalRole = normalizeRole(userData?.role || 'student');
       const finalName = userData?.full_name;
 
       toast.success('Welcome back!', {
@@ -198,7 +201,7 @@ function LoginContent() {
       });
 
       // Use replace to avoid back button issues
-      router.replace(finalRole === 'admin' ? '/admin' : '/student');
+      router.replace(withInstitutionPath(isAdminRole(finalRole) ? '/admin' : '/student', pathname));
     } catch (err: any) {
       toast.error('Sign in failed', {
         description: err.message || 'Please check your credentials and try again.',
@@ -216,7 +219,7 @@ function LoginContent() {
 
     try {
       // Validate verification code for admin signup
-      if (formData.role === 'admin') {
+      if (formData.role === 'institution_admin') {
         if (!formData.verificationCode || formData.verificationCode.trim() === '') {
           setErrors({ verificationCode: 'Verification code is required for admin signup' });
           setLoading(false);
@@ -288,7 +291,7 @@ function LoginContent() {
       }
 
       // Increment verification code usage for admin
-      if (formData.role === 'admin' && formData.verificationCode) {
+      if (formData.role === 'institution_admin' && formData.verificationCode) {
         try {
           await supabase.rpc('increment_code_usage', { p_code: formData.verificationCode.trim() });
         } catch (rpcError) {
@@ -335,6 +338,27 @@ function LoginContent() {
         }
       }
 
+      // Ensure institution membership exists for tenant-scoped access.
+      const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+      const { data: institutionData } = await supabase
+        .from('institutions')
+        .select('id')
+        .eq('slug', institutionSlug)
+        .maybeSingle();
+
+      if (institutionData?.id) {
+        await supabase
+          .from('institution_memberships')
+          .upsert([
+            {
+              institution_id: institutionData.id,
+              user_id: data.user.id,
+              role: formData.role === 'institution_admin' ? 'institution_admin' : 'student',
+              is_active: true,
+            },
+          ]);
+      }
+
       toast.success('Account created successfully!', {
         description: data.session 
           ? 'You have been automatically signed in.' 
@@ -345,7 +369,7 @@ function LoginContent() {
 
       // If session exists, redirect to appropriate dashboard
       if (data.session) {
-        router.replace(formData.role === 'admin' ? '/admin' : '/student');
+        router.replace(withInstitutionPath(formData.role === 'institution_admin' ? '/admin' : '/student', pathname));
       } else {
         // Clear form and switch to sign in tab, but keep email
         setActiveTab('signin');
@@ -665,19 +689,19 @@ function LoginContent() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-role" className="text-xs font-black uppercase tracking-widest text-slate-400">Role</Label>
-                    <Select value={formData.role} onValueChange={(v) => setFormData({ ...formData, role: v as 'admin' | 'student' })}>
+                    <Select value={formData.role} onValueChange={(v) => setFormData({ ...formData, role: v as 'institution_admin' | 'student' })}>
                       <SelectTrigger className="h-11 bg-white border-slate-200 rounded-xl font-bold focus:ring-red-100 focus:border-[#DC2626]">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="student" className="font-bold">Learner</SelectItem>
-                        <SelectItem value="admin" className="font-bold">Instructor</SelectItem>
+                        <SelectItem value="institution_admin" className="font-bold">Instructor</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
-                {formData.role === 'admin' && (
+                {formData.role === 'institution_admin' && (
                   <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
                     <Label htmlFor="signup-code" className="text-xs font-black uppercase tracking-widest text-slate-400">Instructor Verification Code</Label>
                     <div className="relative group">
