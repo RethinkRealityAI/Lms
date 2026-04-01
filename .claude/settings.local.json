@@ -82,7 +82,15 @@
       "Bash(do if:*)",
       "Bash(! grep:*)",
       "Bash(then echo:*)",
-      "Bash(grep -r invite-user c:/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.ts --include=*.tsx)"
+      "Bash(grep -r invite-user c:/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.ts --include=*.tsx)",
+      "Bash(grep -l \"user_invitations\\\\|legacy_users\" c:/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/supabase/migrations/*.sql)",
+      "mcp__claude_ai_Supabase__list_edge_functions",
+      "mcp__claude_ai_Supabase__get_project_url",
+      "Bash(find c:UsersdevelOneDriveDocumentsRethinkRealityGANSID-LMSLmssrcappapi -type f -name *.ts -o -name *.tsx)",
+      "Bash(find c:UsersdevelOneDriveDocumentsRethinkRealityGANSID-LMSLms -path */node_modules -prune -o -type f \\\\\\(-name *.sql -o -name *migration* -o -name *schema* \\\\\\) -print)",
+      "Bash(grep -r \"CREATE TABLE.*user_invitations\\\\|user_invitations\" c:UsersdevelOneDriveDocumentsRethinkRealityGANSID-LMSLms --include=*.ts --include=*.tsx --include=*.sql)",
+      "mcp__claude_ai_Supabase__apply_migration",
+      "Bash(npx next:*)"
     ]
   }
 }

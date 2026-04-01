@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 import type { CSSProperties } from 'react';
+import { Trash2 } from 'lucide-react';
 import { LessonBlockRenderer } from '@/components/lesson-block-renderer';
 import { resolveTheme } from '@/lib/content/theme';
 import { useEditorStore } from './editor-store-context';
@@ -11,10 +12,11 @@ import type { InstitutionTheme } from '@/types';
 interface SlidePreviewProps {
   slide: Slide;
   onSelectBlock: (blockId: string) => void;
+  onDeleteBlock?: (blockId: string) => void;
   selectedBlockId?: string;
 }
 
-export function SlidePreview({ slide, onSelectBlock, selectedBlockId }: SlidePreviewProps) {
+export function SlidePreview({ slide, onSelectBlock, onDeleteBlock, selectedBlockId }: SlidePreviewProps) {
   const blocks = useEditorStore((s) => s.blocks.get(slide.id) ?? []);
   const courseTheme = useEditorStore((s) => s.courseTheme);
   const resolvedTheme = resolveTheme({ course: courseTheme as Partial<InstitutionTheme> });
@@ -56,15 +58,29 @@ export function SlidePreview({ slide, onSelectBlock, selectedBlockId }: SlidePre
                   : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-1'
               }`}
             >
-              {/* Block type label (shown on hover/select) */}
+              {/* Block type label + delete (shown on hover/select) */}
               <div
-                className={`absolute -top-5 left-0 text-xs px-2 py-0.5 rounded text-white transition-opacity z-10 ${
+                className={`absolute -top-5 left-0 flex items-center gap-1.5 transition-opacity z-10 ${
                   selectedBlockId === block.id
-                    ? 'opacity-100 bg-[#1E3A5F]'
-                    : 'opacity-0 group-hover:opacity-100 bg-gray-500'
+                    ? 'opacity-100'
+                    : 'opacity-0 group-hover:opacity-100'
                 }`}
               >
-                {block.block_type.replace('_', ' ')}
+                <span className={`text-xs px-2 py-0.5 rounded text-white ${
+                  selectedBlockId === block.id ? 'bg-[#1E3A5F]' : 'bg-gray-500'
+                }`}>
+                  {block.block_type.replace('_', ' ')}
+                </span>
+                {onDeleteBlock && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onDeleteBlock(block.id); }}
+                    title="Delete block"
+                    className="p-0.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                )}
               </div>
 
               {/* Actual block rendered by student viewer */}

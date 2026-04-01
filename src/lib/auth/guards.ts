@@ -1,12 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import type { User } from '@/types';
+import { isAdminRole } from './roles';
 
-const ADMIN_ROLES = new Set(['platform_admin', 'institution_admin', 'instructor', 'admin']);
-
-export function isAdminRole(role: string): boolean {
-  return ADMIN_ROLES.has(role);
-}
+export { isAdminRole };
 
 export async function requireAuth(): Promise<User> {
   const supabase = await createClient();

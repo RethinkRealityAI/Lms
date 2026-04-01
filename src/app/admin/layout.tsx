@@ -1,62 +1,31 @@
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
-import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Middleware already redirects unauthenticated / non-admin users before
+  // this layout ever runs, so we never render a structurally different tree
+  // based on auth state. Always render the full admin shell to guarantee
+  // SSR ↔ client HTML consistency and prevent hydration mismatches.
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#F8FAFC]">
-        {children}
-      </div>
-    );
-  }
-
-  // Get user data from database
-  const { data: userData } = await supabase
-    .from('users')
-    .select('role, full_name, avatar_url')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  const { data: emailProfile } = user.email
+  // Fetch profile (best-effort — falls back to empty strings if unavailable)
+  const { data: userData } = user
     ? await supabase
         .from('users')
         .select('role, full_name, avatar_url')
-        .eq('email', user.email)
+        .eq('id', user.id)
         .maybeSingle()
     : { data: null };
 
-  // Check role from profile or fallback to metadata
-  const rawRole =
-    userData?.role ||
-    emailProfile?.role ||
-    user.user_metadata?.role ||
-    user.app_metadata?.role;
-  const role = normalizeRole(typeof rawRole === 'string' ? rawRole : null);
-
-  if (!isAdminRole(role)) {
-    return (
-      <div className="min-h-screen bg-[#F8FAFC]">
-        {children}
-      </div>
-    );
-  }
-
-  // Use profile data or fallback to metadata
-  const fullName =
-    userData?.full_name ||
-    emailProfile?.full_name ||
-    user.user_metadata?.full_name;
-  const avatarUrl =
-    userData?.avatar_url ||
-    emailProfile?.avatar_url;
+  const fullName: string | undefined =
+    userData?.full_name || user?.user_metadata?.full_name;
+  const avatarUrl: string | undefined =
+    userData?.avatar_url || undefined;
 
   const navLinks = [
     {
@@ -72,22 +41,12 @@ export default async function AdminLayout({
     {
       href: '/gansid/admin/users',
       label: 'Users',
-      icon: 'Users',
-    },
-    {
-      href: '/gansid/admin/categories',
-      label: 'Categories',
-      icon: 'FolderKanban',
+      icon: 'User',
     },
     {
       href: '/gansid/admin/settings',
       label: 'Settings',
       icon: 'Settings',
-    },
-    {
-      href: '/gansid/admin/h5p',
-      label: 'H5P',
-      icon: 'BookOpen',
     },
   ];
 
@@ -95,7 +54,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-[#F8FAFC]">
       <NavBar
         links={navLinks}
-        userEmail={user.email || ''}
+        userEmail={user?.email || ''}
         userName={fullName}
         avatarUrl={avatarUrl}
         title="GANSID Faculty"

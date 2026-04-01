@@ -83,17 +83,17 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <div className="flex items-center gap-8">
-            <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
-                <BookOpen className="h-5 w-5" />
+          <div className="flex items-center gap-6">
+            <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-2.5 group shrink-0">
+              <div className="w-9 h-9 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
+                <BookOpen className="h-4 w-4" />
               </div>
-              <h1 className="text-xl font-black tracking-tighter text-slate-900">
-                GANSID <span className="text-[#0099CA] font-light italic ml-1">{title.replace('GANSID ', '')}</span>
+              <h1 className="text-lg font-black tracking-tighter text-slate-900">
+                GANSID <span className="text-[#0099CA] font-light italic ml-0.5">{title.replace('GANSID ', '')}</span>
               </h1>
             </Link>
-            
-            <div className="hidden md:flex items-center gap-1">
+
+            <div className="hidden md:flex items-center gap-0.5">
               {links.map((link) => {
                 const resolvedHref = withInstitutionPath(link.href, pathname);
                 const isActive =
@@ -107,13 +107,13 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
                     key={link.href}
                     href={resolvedHref}
                     className={cn(
-                      'inline-flex items-center px-4 py-2 text-sm font-bold rounded-full transition-all duration-200',
+                      'inline-flex items-center px-3 py-1.5 text-[13px] font-bold rounded-full transition-all duration-200',
                       isActive
                         ? 'bg-[#DC2626] text-white shadow-md'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     )}
                   >
-                    <Icon className="mr-2 h-4 w-4" />
+                    <Icon className="mr-1.5 h-3.5 w-3.5" />
                     {link.label}
                   </Link>
                 );

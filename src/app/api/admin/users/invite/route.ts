@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         email,
-        redirectTo: `${request.nextUrl.origin}/gansid/login`,
+        redirectTo: `${request.nextUrl.origin}/auth/callback`,
       }),
     });
 

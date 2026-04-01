@@ -13,7 +13,7 @@ import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
 import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide } from '@/lib/db/slides';
-import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock } from '@/lib/db/blocks';
+import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock, deleteBlock as dbDeleteBlock } from '@/lib/db/blocks';
 import { createModule as dbCreateModule, deleteModule as dbDeleteModule, updateModule as dbUpdateModule } from '@/lib/db/modules';
 import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson, updateLesson as dbUpdateLesson } from '@/lib/db/lessons';
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
@@ -43,6 +43,8 @@ function EditorContent({ courseId }: { courseId: string }) {
   const removeModule = useEditorStore((s) => s.removeModule);
   const removeLesson = useEditorStore((s) => s.removeLesson);
   const removeSlide = useEditorStore((s) => s.removeSlide);
+  const removeBlock = useEditorStore((s) => s.removeBlock);
+  const blocks = useEditorStore((s) => s.blocks);
   const slides = useEditorStore((s) => s.slides);
 
   const previewSlideIndex = useEditorStore((s) => s.previewSlideIndex);
@@ -310,7 +312,8 @@ function EditorContent({ courseId }: { courseId: string }) {
     if (
       selectedEntity?.type === 'module' ||
       selectedEntity?.type === 'lesson' ||
-      selectedEntity?.type === 'slide'
+      selectedEntity?.type === 'slide' ||
+      selectedEntity?.type === 'block'
     ) {
       setDeleteDialogOpen(true);
     }
@@ -326,7 +329,6 @@ function EditorContent({ courseId }: { courseId: string }) {
         removeModule(selectedEntity.id);
       } catch (err) {
         console.error('Failed to delete module:', err);
-        // Don't remove from store — DB delete failed
       }
       return;
     }
@@ -345,7 +347,6 @@ function EditorContent({ courseId }: { courseId: string }) {
           removeLesson(owningModuleId, selectedEntity.id);
         } catch (err) {
           console.error('Failed to delete lesson:', err);
-          // Don't remove from store — DB delete failed
         }
       }
       return;
@@ -358,14 +359,29 @@ function EditorContent({ courseId }: { courseId: string }) {
             removeSlide(lessonId, selectedEntity.id);
           } catch (err) {
             console.error('Failed to delete slide:', err);
-            // Don't remove from store — DB delete failed
           }
           break;
         }
       }
       return;
     }
-  }, [selectedEntity, institutionId, store, removeModule, removeLesson, removeSlide, slides]);
+    if (selectedEntity.type === 'block') {
+      // Find which slide owns this block
+      for (const [slideId, blockList] of blocks) {
+        if (blockList.some((b) => b.id === selectedEntity.id)) {
+          try {
+            await dbDeleteBlock(supabase, selectedEntity.id);
+            removeBlock(slideId, selectedEntity.id);
+            selectEntity(null);
+          } catch (err) {
+            console.error('Failed to delete block:', err);
+          }
+          break;
+        }
+      }
+      return;
+    }
+  }, [selectedEntity, institutionId, store, removeModule, removeLesson, removeSlide, removeBlock, blocks, slides, selectEntity]);
 
   const handlePrevSlide = useCallback(() => {
     if (selectedLessonSlides === 0) return; // no lesson in context, can't navigate
@@ -401,7 +417,8 @@ function EditorContent({ courseId }: { courseId: string }) {
   const deleteEntityType =
     selectedEntity?.type === 'module' ||
     selectedEntity?.type === 'lesson' ||
-    selectedEntity?.type === 'slide'
+    selectedEntity?.type === 'slide' ||
+    selectedEntity?.type === 'block'
       ? selectedEntity.type
       : null;
 
@@ -418,11 +435,18 @@ function EditorContent({ courseId }: { courseId: string }) {
           onDeleteModule={handleRequestDeleteModule}
           onAddSlide={handleAddSlide}
         />
-        <PreviewPanel onAddBlock={handleAddBlock} />
+        <PreviewPanel
+          onAddBlock={handleAddBlock}
+          onDeleteBlock={(blockId) => {
+            selectEntity({ type: 'block', id: blockId });
+            setDeleteDialogOpen(true);
+          }}
+        />
         <PropertiesPanel
           collapsed={propertiesCollapsed}
           onToggleCollapse={() => setPropertiesCollapsed((c) => !c)}
           onAddBlock={handleAddBlock}
+          onDeleteBlock={handleDeleteKey}
         />
       </div>
       <EditorStatusBar />

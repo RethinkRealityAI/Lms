@@ -54,20 +54,12 @@
                                 <p style="margin: 0 0 16px; font-size: 14px; font-weight: 600; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;">Your Invitation Details</p>
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                     <tr>
-                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b; width: 140px;">Invited as:</td>
-                                        <td style="padding: 8px 0; font-size: 14px; color: #0f172a; font-weight: 600;">{{ .Role }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b;">Email:</td>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b; width: 140px;">Email:</td>
                                         <td style="padding: 8px 0; font-size: 14px; color: #0f172a; font-weight: 600;">{{ .Email }}</td>
                                     </tr>
                                     <tr>
-                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b;">Invitation Code:</td>
-                                        <td style="padding: 8px 0;">
-                                            <div style="display: inline-block; background-color: #ffffff; border: 2px dashed #2563EB; padding: 8px 16px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 16px; font-weight: 700; color: #1D4ED8; letter-spacing: 1px;">
-                                                {{ .InviteCode }}
-                                            </div>
-                                        </td>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #64748b;">Platform:</td>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #0f172a; font-weight: 600;">GANSID Learning Management System</td>
                                     </tr>
                                 </table>
                             </div>
@@ -80,7 +72,7 @@
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
                                     <td align="center" style="padding: 0 0 32px;">
-                                        <a href="{{ .InviteURL }}" style="display: inline-block; background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+                                        <a href="{{ .ConfirmationURL }}" style="display: inline-block; background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
                                             Accept Invitation
                                         </a>
                                     </td>
@@ -90,7 +82,7 @@
                             <!-- Expiration Notice -->
                             <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 8px; margin-bottom: 32px;">
                                 <p style="margin: 0; font-size: 14px; color: #92400e; line-height: 1.6;">
-                                    <strong style="color: #78350f;">⏰ Time Sensitive:</strong> This invitation expires in 7 days. Please create your account before {{ .ExpiryDate }}.
+                                    <strong style="color: #78350f;">⏰ Time Sensitive:</strong> This invitation expires in 7 days. Please create your account before the link expires.
                                 </p>
                             </div>
                         </td>

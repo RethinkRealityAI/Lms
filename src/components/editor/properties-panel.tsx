@@ -17,6 +17,7 @@ interface PropertiesPanelProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
   onAddBlock?: (slideId: string, blockType: string) => void;
+  onDeleteBlock?: () => void;
 }
 
 const AVAILABLE_BLOCKS = [
@@ -167,7 +168,7 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
   );
 }
 
-export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock }: PropertiesPanelProps) {
+export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDeleteBlock }: PropertiesPanelProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
@@ -235,7 +236,7 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock }: Pro
     }
 
     if (entity.type === 'block') {
-      return <BlockEditorPanel blockId={entity.id} />;
+      return <BlockEditorPanel blockId={entity.id} onDelete={onDeleteBlock} />;
     }
 
     if (entity.type === 'course') {

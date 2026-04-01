@@ -20,7 +20,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Eye, BookOpen, Pencil, Upload, Link2, X, ImageIcon, Loader2 } from 'lucide-react';
+import { Eye, BookOpen, Pencil, Upload, Link2, X, ImageIcon, Loader2, Plus, GripVertical } from 'lucide-react';
 
 type Course = {
   id: string;
@@ -57,7 +57,55 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
   const [uploading, setUploading] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  // Drag-to-reorder state
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const [localCourses, setLocalCourses] = useState(courses);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleCreateCategory() {
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) return;
+    setCreatingCategory(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      // Need institution_id for the category
+      const { data: profile } = await supabase.from('users').select('institution_id').eq('id', user.id).single();
+      const { data, error } = await supabase
+        .from('categories')
+        .insert({ name: trimmed, institution_id: profile?.institution_id })
+        .select('id, name')
+        .single();
+      if (error) throw error;
+      setLocalCategories(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+      setCategoryId(data.id);
+      setNewCategoryName('');
+      setShowNewCategory(false);
+      toast.success(`Category "${trimmed}" created`);
+    } catch (err: any) {
+      toast.error('Failed to create category', { description: err.message });
+    } finally {
+      setCreatingCategory(false);
+    }
+  }
+
+  async function handleDragEnd(fromIdx: number, toIdx: number) {
+    if (fromIdx === toIdx) return;
+    const reordered = [...localCourses];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    setLocalCourses(reordered);
+    // Persist display_order
+    const updates = reordered.map((c, i) => ({ id: c.id, display_order: i }));
+    for (const u of updates) {
+      await supabase.from('courses').update({ display_order: u.display_order }).eq('id', u.id);
+    }
+  }
 
   function openEdit(course: Course) {
     setEditingCourse(course);
@@ -134,8 +182,21 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
     <>
       {/* Course grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {courses.map((course) => (
-          <div key={course.id} className="relative group">
+        {localCourses.map((course, idx) => (
+          <div
+            key={course.id}
+            className={`relative group ${dragIdx === idx ? 'opacity-40' : ''} ${dragOverIdx === idx ? 'ring-2 ring-[#1E3A5F] ring-offset-2 rounded-xl' : ''}`}
+            draggable
+            onDragStart={() => setDragIdx(idx)}
+            onDragOver={(e) => { e.preventDefault(); setDragOverIdx(idx); }}
+            onDragLeave={() => setDragOverIdx(null)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOverIdx(null);
+              if (dragIdx !== null) { handleDragEnd(dragIdx, idx); setDragIdx(null); }
+            }}
+            onDragEnd={() => { setDragIdx(null); setDragOverIdx(null); }}
+          >
             <Link href={`/gansid/admin/courses/${course.id}/editor`}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden border border-slate-200 bg-white">
                 {/* Thumbnail */}
@@ -165,7 +226,7 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
                   <p className="text-sm text-slate-500 line-clamp-2">{course.description}</p>
                   <div className="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
                     <span>{course.categories?.name || 'Uncategorized'}</span>
-                    <span>{new Date(course.created_at).toLocaleDateString()}</span>
+                    <span>{new Date(course.created_at).toLocaleDateString('en-CA')}</span>
                   </div>
                 </div>
               </Card>
@@ -173,6 +234,13 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
 
             {/* Hover action buttons */}
             <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+              <div
+                className="bg-white/90 hover:bg-white rounded-lg p-1.5 shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing"
+                title="Drag to reorder"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <GripVertical className="h-4 w-4 text-slate-400" />
+              </div>
               <button
                 type="button"
                 aria-label="Edit course details"
@@ -231,17 +299,47 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
             {/* Category */}
             <div className="space-y-1.5">
               <Label className="text-[#0F172A] font-medium text-sm">Category</Label>
-              <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger className="border-slate-300">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">No Category</SelectItem>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select value={categoryId} onValueChange={setCategoryId}>
+                  <SelectTrigger className="border-slate-300 flex-1">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No Category</SelectItem>
+                    {localCategories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <button
+                  type="button"
+                  onClick={() => setShowNewCategory(!showNewCategory)}
+                  title="Create new category"
+                  className="shrink-0 h-9 w-9 flex items-center justify-center rounded-md border border-slate-300 text-slate-500 hover:text-[#1E3A5F] hover:border-[#1E3A5F] transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              {showNewCategory && (
+                <div className="flex gap-2 mt-1.5">
+                  <Input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New category name"
+                    className="border-slate-300 text-sm flex-1"
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateCategory(); } }}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleCreateCategory}
+                    disabled={creatingCategory || !newCategoryName.trim()}
+                    className="bg-[#1E3A5F] hover:bg-[#162d4a] text-white text-xs shrink-0"
+                  >
+                    {creatingCategory ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Add'}
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Thumbnail */}

@@ -642,8 +642,8 @@ function ActiveUsersTab({ users }: { users: ActiveUser[] }) {
                           {initials(u.full_name, u.email)}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-bold text-slate-900 truncate">{u.full_name || 'Unnamed'}</p>
-                          <p className="text-xs text-slate-400 font-medium truncate">{u.email}</p>
+                          <p className="font-bold text-slate-900">{u.full_name || 'Unnamed'}</p>
+                          <p className="text-xs text-slate-400 font-medium break-all">{u.email}</p>
                         </div>
                       </div>
                     </td>
@@ -701,9 +701,20 @@ function PendingInvitesTab({ invitations }: { invitations: UserInvitation[] }) {
 
   const handleCancel = async (inv: UserInvitation) => {
     setLoadingId(inv.id);
-    // For now just toast -- a real API call would update the status
-    toast.info(`Cancel invitation \u2014 Coming soon`);
-    setLoadingId(null);
+    try {
+      const res = await fetch('/api/admin/users/invite/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invitationId: inv.id }),
+      });
+      if (!res.ok) throw new Error('Failed to cancel');
+      toast.success(`Invitation to ${inv.email} cancelled`);
+      router.refresh();
+    } catch {
+      toast.error('Failed to cancel invitation');
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   return (
@@ -981,14 +992,14 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
                           />
                         </td>
                         <td className="py-3 px-4">
-                          <p className="font-bold text-slate-900 truncate max-w-[160px]">
+                          <p className="font-bold text-slate-900">
                             {u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '\u2014'}
                           </p>
                         </td>
                         <td className="py-3 px-4">
-                          <p className="text-slate-600 font-medium text-xs truncate max-w-[180px]">{u.email}</p>
+                          <p className="text-slate-600 font-medium text-xs break-all">{u.email}</p>
                         </td>
-                        <td className="py-3 px-4 text-xs text-slate-500 font-medium truncate max-w-[120px]">
+                        <td className="py-3 px-4 text-xs text-slate-500 font-medium">
                           {u.affiliation || '\u2014'}
                         </td>
                         <td className="py-3 px-4 text-xs text-slate-500 font-medium">

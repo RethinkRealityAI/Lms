@@ -231,6 +231,7 @@ function LoginContent() {
           .select('*')
           .eq('code', formData.verificationCode.trim())
           .eq('role', 'admin')
+          .eq('is_active', true)
           .single();
 
         if (codeError || !codeData) {
@@ -265,6 +266,8 @@ function LoginContent() {
         return;
       }
 
+      const signupInstitutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+
       const { data, error } = await supabase.auth.signUp({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -272,6 +275,7 @@ function LoginContent() {
           data: {
             role: formData.role,
             full_name: formData.fullName.trim(),
+            institution_slug: signupInstitutionSlug,
           },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
         },
@@ -357,6 +361,13 @@ function LoginContent() {
               is_active: true,
             },
           ]);
+
+        // Set institution_id on the users row so the admin course editor can find it.
+        // The DB trigger that creates the row doesn't set this field.
+        await supabase
+          .from('users')
+          .update({ institution_id: institutionData.id })
+          .eq('id', data.user.id);
       }
 
       toast.success('Account created successfully!', {

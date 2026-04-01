@@ -10,7 +10,7 @@ export default async function AdminPage() {
   const supabase = await createClient();
 
   const [{ data: courses }, { data: categories }] = await Promise.all([
-    supabase.from('courses').select('*, categories(name)').order('created_at', { ascending: false }),
+    supabase.from('courses').select('*, categories(name)').order('display_order', { ascending: true }),
     supabase.from('categories').select('id, name').order('name'),
   ]);
 

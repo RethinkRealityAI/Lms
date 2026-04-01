@@ -70,6 +70,7 @@ export interface EditorState {
   updateSlide: (lessonId: string, slideId: string, changes: Partial<Slide>) => void;
   addBlock: (slideId: string, block: BlockData) => void;
   updateBlock: (slideId: string, blockId: string, changes: Partial<BlockData>) => void;
+  removeBlock: (slideId: string, blockId: string) => void;
   setPreviewSlideIndex: (index: number) => void;
   markSaved: () => void;
   undo: () => void;
@@ -301,6 +302,16 @@ export function createEditorStore() {
           existing.map((b) => (b.id === blockId ? { ...b, ...changes } : b)),
         );
         return { blocks: next, ...push(s, snap, 'updateBlock', blockId) };
+      });
+    },
+
+    removeBlock: (slideId, blockId) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const next = new Map(s.blocks);
+        next.set(slideId, existing.filter((b) => b.id !== blockId));
+        return { blocks: next, ...push(s, snap, 'removeBlock', blockId) };
       });
     },
 

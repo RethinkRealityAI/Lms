@@ -16,9 +16,10 @@ const DEVICE_WIDTHS: Record<DeviceMode, string> = {
 
 export interface PreviewPanelProps {
   onAddBlock?: (slideId: string, blockType: string) => void;
+  onDeleteBlock?: (blockId: string) => void;
 }
 
-export function PreviewPanel({ onAddBlock }: PreviewPanelProps) {
+export function PreviewPanel({ onAddBlock, onDeleteBlock }: PreviewPanelProps) {
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
@@ -118,6 +119,7 @@ export function PreviewPanel({ onAddBlock }: PreviewPanelProps) {
               slide={selectedSlide}
               selectedBlockId={selectedBlockId}
               onSelectBlock={(blockId) => selectEntity({ type: 'block', id: blockId })}
+              onDeleteBlock={onDeleteBlock}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-12">

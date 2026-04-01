@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 
 export interface DeleteConfirmDialogProps {
   open: boolean;
-  entityType: 'module' | 'lesson' | 'slide' | null;
+  entityType: 'module' | 'lesson' | 'slide' | 'block' | null;
   onConfirm: () => void;
   onCancel: () => void;
 }
