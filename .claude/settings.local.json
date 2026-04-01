@@ -77,7 +77,12 @@
       "Bash(grep -r \"gansid\\\\|institution\\\\|hardcoded\" /c/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.tsx --include=*.ts)",
       "Bash(grep -r \"redirect\\\\|auth\\\\.getUser\\\\|createClient\" /c/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src/app/admin --include=*.tsx --include=*.ts)",
       "Bash(grep -r /gansid/ /c/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.tsx --include=*.ts)",
-      "Bash(grep -r withInstitutionPath /c/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.tsx --include=*.ts)"
+      "Bash(grep -r withInstitutionPath /c/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.tsx --include=*.ts)",
+      "Bash(while read:*)",
+      "Bash(do if:*)",
+      "Bash(! grep:*)",
+      "Bash(then echo:*)",
+      "Bash(grep -r invite-user c:/Users/devel/OneDrive/Documents/RethinkReality/GANSID-LMS/Lms/src --include=*.ts --include=*.tsx)"
     ]
   }
 }
