@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { getUserInstitutionId } from '@/lib/db/users';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { BookOpen, CheckCircle, TrendingUp, Target } from 'lucide-react';
@@ -24,10 +24,20 @@ export default async function StudentPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect('/login');
+  if (!user) redirect('/gansid/login');
 
-  const institutionId = await getUserInstitutionId(supabase, user.id);
-  if (!institutionId) redirect('/login');
+  let institutionId = await getUserInstitutionId(supabase, user.id);
+
+  // Self-heal: if institution_id is missing, set it to GANSID (default) instead of
+  // redirect-looping to /login (which middleware bounces back here for authenticated users).
+  if (!institutionId) {
+    const GANSID_INSTITUTION_ID = '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a';
+    await supabase
+      .from('users')
+      .update({ institution_id: GANSID_INSTITUTION_ID })
+      .eq('id', user.id);
+    institutionId = GANSID_INSTITUTION_ID;
+  }
 
   // Fetch user's display name
   const { data: userData } = await supabase
@@ -106,56 +116,58 @@ export default async function StudentPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Dark hero header */}
-      <div className="bg-[#0F172A] px-4 sm:px-6 lg:px-8 py-6 pb-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Welcome + title */}
-          <h2 className="text-2xl font-black tracking-tight text-white mb-0.5">
-            {firstName ? `Welcome back, ${firstName}` : 'Capacity Building Curriculum'}
-          </h2>
-          <p className="text-slate-400 text-sm font-medium mb-5">
-            {sortedCourses.length} modules · GANSID Patient Advocacy Training
-          </p>
+      {/* Compact dark header — welcome + stats on one line */}
+      <div className="bg-[#0F172A]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col lg:flex-row lg:items-center gap-3">
+          {/* Left: welcome */}
+          <div className="shrink-0">
+            <h2 className="text-lg font-black tracking-tight text-white leading-tight">
+              {firstName ? `Welcome back, ${firstName}` : 'Capacity Building Curriculum'}
+            </h2>
+            <p className="text-slate-400 text-xs font-medium">
+              {sortedCourses.length} modules · GANSID Patient Advocacy Training
+            </p>
+          </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="bg-white/10 backdrop-blur rounded-lg px-4 py-3 flex items-center gap-3">
-              <div className="rounded-full bg-[#0099CA]/20 p-2 shrink-0">
-                <BookOpen className="h-4 w-4 text-[#0099CA]" />
+          {/* Right: stats */}
+          <div className="flex flex-wrap gap-2 lg:ml-auto">
+            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
+              <div className="rounded-full bg-[#0099CA]/20 p-1.5 shrink-0">
+                <BookOpen className="h-3.5 w-3.5 text-[#0099CA]" />
               </div>
               <div>
-                <p className="text-xl font-black text-white leading-none">{enrolledCount}</p>
-                <p className="text-[11px] font-medium text-slate-400 mt-0.5">Enrolled</p>
+                <p className="text-base font-black text-white leading-none">{enrolledCount}</p>
+                <p className="text-[10px] font-medium text-slate-400">Enrolled</p>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur rounded-lg px-4 py-3 flex items-center gap-3">
-              <div className="rounded-full bg-green-500/20 p-2 shrink-0">
-                <CheckCircle className="h-4 w-4 text-green-400" />
+            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
+              <div className="rounded-full bg-green-500/20 p-1.5 shrink-0">
+                <CheckCircle className="h-3.5 w-3.5 text-green-400" />
               </div>
               <div>
-                <p className="text-xl font-black text-white leading-none">{completedCourseCount}</p>
-                <p className="text-[11px] font-medium text-slate-400 mt-0.5">Completed</p>
+                <p className="text-base font-black text-white leading-none">{completedCourseCount}</p>
+                <p className="text-[10px] font-medium text-slate-400">Completed</p>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur rounded-lg px-4 py-3 flex items-center gap-3">
-              <div className="rounded-full bg-[#DC2626]/20 p-2 shrink-0">
-                <TrendingUp className="h-4 w-4 text-[#DC2626]" />
+            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
+              <div className="rounded-full bg-[#DC2626]/20 p-1.5 shrink-0">
+                <TrendingUp className="h-3.5 w-3.5 text-[#DC2626]" />
               </div>
               <div>
-                <p className="text-xl font-black text-white leading-none">{overallPercent}%</p>
-                <p className="text-[11px] font-medium text-slate-400 mt-0.5">Overall Progress</p>
+                <p className="text-base font-black text-white leading-none">{overallPercent}%</p>
+                <p className="text-[10px] font-medium text-slate-400">Progress</p>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur rounded-lg px-4 py-3 flex items-center gap-3">
-              <div className="rounded-full bg-[#1E3A5F]/60 p-2 shrink-0">
-                <Target className="h-4 w-4 text-blue-300" />
+            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
+              <div className="rounded-full bg-[#1E3A5F]/60 p-1.5 shrink-0">
+                <Target className="h-3.5 w-3.5 text-blue-300" />
               </div>
               <div>
-                <p className="text-xl font-black text-white leading-none">{totalLessonsCompleted}</p>
-                <p className="text-[11px] font-medium text-slate-400 mt-0.5">Lessons Done</p>
+                <p className="text-base font-black text-white leading-none">{totalLessonsCompleted}</p>
+                <p className="text-[10px] font-medium text-slate-400">Lessons</p>
               </div>
             </div>
           </div>
@@ -177,7 +189,7 @@ export default async function StudentPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedCourses.map((course: any) => {
               const moduleNum = MODULE_ORDER[course.id];
               const isEnrolled = enrolledIds.has(course.id);
@@ -189,28 +201,27 @@ export default async function StudentPage() {
               return (
                 <Link key={course.id} href={`/gansid/student/courses/${course.id}`}
                   className="rounded-xl focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:outline-none">
-                  <Card className="group hover:shadow-xl hover:shadow-slate-200/80 hover:-translate-y-1 hover:ring-1 hover:ring-slate-200 transition-all duration-300 cursor-pointer h-full overflow-hidden border-none shadow-[0_2px_12px_rgb(0,0,0,0.05)] flex flex-col">
+                  <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full overflow-hidden border border-slate-200 bg-white flex flex-col">
 
-                    {/* Thumbnail / module number banner */}
-                    <div className="h-24 w-full overflow-hidden bg-gradient-to-br from-[#1E3A5F] to-[#0F172A] relative flex-shrink-0">
+                    {/* Thumbnail */}
+                    <div className="aspect-video w-full overflow-hidden relative bg-gradient-to-br from-[#1E3A5F] to-[#0F172A]">
                       {course.thumbnail_url ? (
                         <img
                           src={course.thumbnail_url}
                           alt={course.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-70"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-5xl font-black text-white/10 select-none">
-                            {moduleNum ?? ''}
-                          </span>
+                          <BookOpen className="h-14 w-14 text-white/30" />
                         </div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
                       {/* Module badge */}
                       {moduleNum != null && (
-                        <div className="absolute top-2 left-2">
-                          <Badge className="bg-white/90 backdrop-blur text-[#0F172A] border-none font-bold text-[10px] px-1.5 py-0 shadow-sm">
+                        <div className="absolute top-2.5 left-2.5">
+                          <Badge className="bg-white/90 backdrop-blur text-[#0F172A] border-none font-bold text-[11px] px-2 py-0.5 shadow-sm">
                             Module {moduleNum}
                           </Badge>
                         </div>
@@ -218,45 +229,52 @@ export default async function StudentPage() {
 
                       {/* Complete badge */}
                       {isComplete && (
-                        <div className="absolute top-2 right-2">
-                          <Badge className="bg-green-500 text-white border-none font-bold text-[10px] gap-1 px-1.5 py-0 shadow-sm">
-                            <CheckCircle className="h-2.5 w-2.5" />
-                            Done
+                        <div className="absolute top-2.5 right-2.5">
+                          <Badge className="bg-green-500 text-white border-none font-bold text-[11px] gap-1 px-2 py-0.5 shadow-sm">
+                            <CheckCircle className="h-3 w-3" />
+                            Complete
                           </Badge>
-                        </div>
-                      )}
-
-                      {/* Progress bar at bottom of thumbnail */}
-                      {isEnrolled && !isComplete && (
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20"
-                          role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}
-                          aria-label={`${course.title} progress`}>
-                          <div
-                            className="h-full bg-[#0099CA] transition-all duration-500 ease-out"
-                            style={{ width: `${progressPercent}%` }}
-                          />
                         </div>
                       )}
                     </div>
 
                     {/* Card body */}
-                    <CardHeader className="pt-3 pb-1 px-3 flex-grow bg-white">
-                      <CardTitle className="line-clamp-2 group-hover:text-[#DC2626] transition-colors font-black text-xs leading-snug">
+                    <div className="p-4 flex flex-col flex-grow space-y-2">
+                      <h3 className="font-semibold text-[#0F172A] text-sm leading-snug group-hover:text-[#DC2626] transition-colors">
                         {course.title}
-                      </CardTitle>
-                    </CardHeader>
-
-                    <CardContent className="bg-white pt-0 pb-3 px-3">
-                      {isEnrolled ? (
-                        <span className="text-[10px] font-bold text-[#0099CA] uppercase tracking-widest">
-                          {progressPercent}% complete
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-widest inline-flex items-center gap-0.5 transition-opacity group-hover:opacity-80">
-                          Start <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
-                        </span>
+                      </h3>
+                      {course.description && (
+                        <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">
+                          {course.description}
+                        </p>
                       )}
-                    </CardContent>
+
+                      {/* Progress / CTA */}
+                      <div className="pt-2 mt-auto border-t border-slate-100">
+                        {isEnrolled ? (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-semibold text-slate-600">{progressPercent}% complete</span>
+                              {prog && <span className="text-slate-400">{prog.completed}/{prog.total} lessons</span>}
+                            </div>
+                            {!isComplete && (
+                              <div className="w-full bg-slate-100 rounded-full h-1.5"
+                                role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}
+                                aria-label={`${course.title} progress`}>
+                                <div
+                                  className="h-full bg-[#0099CA] rounded-full transition-all duration-500 ease-out"
+                                  style={{ width: `${progressPercent}%` }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs font-bold text-[#DC2626] uppercase tracking-widest inline-flex items-center gap-1 transition-opacity group-hover:opacity-80">
+                            Start Course <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </Card>
                 </Link>
               );

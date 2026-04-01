@@ -160,13 +160,23 @@ function LoginContent() {
       userData = profileResult.data;
       userError = profileResult.error;
 
-      // If profile doesn't exist, try to create it from user metadata
+      // If profile doesn't exist, try to create it from user metadata.
+      // Include institution_id to prevent NULL institution → redirect loop.
       if (userError || !userData) {
         console.log('Profile not found, attempting to create from metadata');
-        
+
         const role = data.user.user_metadata?.role || 'student';
         const fullName = data.user.user_metadata?.full_name || '';
-        
+        const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+
+        // Resolve institution_id from slug
+        const { data: instData } = await supabase
+          .from('institutions')
+          .select('id')
+          .eq('slug', institutionSlug)
+          .maybeSingle();
+        const institutionId = instData?.id || '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a'; // GANSID fallback
+
         const { error: createError } = await supabase
           .from('users')
           .insert([{
@@ -174,12 +184,12 @@ function LoginContent() {
             email: data.user.email || formData.email.trim().toLowerCase(),
             role: role,
             full_name: fullName,
+            institution_id: institutionId,
           }]);
 
         if (createError) {
-          // Check if it's a duplicate key error (profile was created by trigger)
           if (createError.code === '23505') {
-            // Profile exists now, fetch it again
+            // Profile exists now (created by trigger), fetch it
             const { data: retryData } = await supabase
               .from('users')
               .select('role, full_name')
@@ -188,7 +198,6 @@ function LoginContent() {
             userData = retryData;
           } else {
             console.error('Profile creation error:', createError);
-            // Still allow login with default role
             userData = { role: role, full_name: fullName };
           }
         } else {
@@ -295,6 +304,15 @@ function LoginContent() {
 
       if (!data.user) {
         throw new Error('Account creation failed. Please try again.');
+      }
+
+      // Detect duplicate signup: Supabase returns a user with empty identities
+      // when the email already belongs to a confirmed account.
+      if (
+        data.user.identities &&
+        data.user.identities.length === 0
+      ) {
+        throw new Error('An account with this email already exists. Please sign in instead.');
       }
 
       // Increment verification code usage for admin
