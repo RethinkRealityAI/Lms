@@ -11,3 +11,4 @@ export * from './users';
 export * from './analytics';
 export * from './invitations';
 export * from './legacy-users';
+export * from './groups';
