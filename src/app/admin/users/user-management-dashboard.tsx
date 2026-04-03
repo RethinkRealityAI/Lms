@@ -40,6 +40,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Papa from 'papaparse';
+import { createClient } from '@/lib/supabase/client';
+import { GroupsTab } from '@/components/admin/groups-tab';
 import type { LegacyUser, UserInvitation } from '@/types';
 import type { ActiveUser } from '@/lib/db/users';
 
@@ -568,9 +570,29 @@ function ImportCsvModal({
 // Tab 1: Active Users
 // ---------------------------------------------------------------------------
 
-function ActiveUsersTab({ users }: { users: ActiveUser[] }) {
+function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institutionId: string }) {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [userGroupMap, setUserGroupMap] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    async function loadUserGroups() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('user_group_members')
+        .select('user_id, user_groups:group_id(name)')
+        .in('user_id', users.map((u) => u.id));
+      if (data) {
+        const map: Record<string, string[]> = {};
+        data.forEach((row: any) => {
+          if (!map[row.user_id]) map[row.user_id] = [];
+          map[row.user_id].push(row.user_groups?.name ?? '');
+        });
+        setUserGroupMap(map);
+      }
+    }
+    if (users.length > 0) loadUserGroups();
+  }, [users]);
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -629,6 +651,7 @@ function ActiveUsersTab({ users }: { users: ActiveUser[] }) {
                   <th className={`${TH} text-center`}>Role</th>
                   <th className={`${TH} text-right`}>Courses</th>
                   <th className={`${TH} text-right`}>Last Active</th>
+                  <th className={`${TH} text-left`}>Groups</th>
                   <th className={`${TH} text-right`}>Joined</th>
                   <th className={`${TH} text-right w-10`}></th>
                 </tr>
@@ -651,6 +674,13 @@ function ActiveUsersTab({ users }: { users: ActiveUser[] }) {
                     <td className="text-right py-3 px-4 font-bold text-slate-900">{u.enrollment_count}</td>
                     <td className="text-right py-3 px-4 text-xs text-slate-500 font-medium">
                       {relativeDate(u.last_activity)}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex flex-wrap gap-1">
+                        {(userGroupMap[u.id] ?? []).map((groupName, i) => (
+                          <Badge key={i} variant="secondary" className="text-xs">{groupName}</Badge>
+                        ))}
+                      </div>
                     </td>
                     <td className="text-right py-3 px-4 text-xs text-slate-500 font-medium">
                       {formatDate(u.created_at)}
@@ -1167,10 +1197,14 @@ export function UserManagementDashboard({
               </Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="groups" className="rounded-lg font-bold text-sm px-4 gap-1">
+            <Users className="h-4 w-4 mr-2" />
+            Groups
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="active">
-          <ActiveUsersTab users={activeUsers} />
+          <ActiveUsersTab users={activeUsers} institutionId={institutionId} />
         </TabsContent>
 
         <TabsContent value="invites">
@@ -1179,6 +1213,10 @@ export function UserManagementDashboard({
 
         <TabsContent value="legacy">
           <LegacyUsersTab users={legacyUsers} institutionId={institutionId} />
+        </TabsContent>
+
+        <TabsContent value="groups">
+          <GroupsTab institutionId={institutionId} />
         </TabsContent>
       </Tabs>
     </div>
