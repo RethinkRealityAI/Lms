@@ -77,6 +77,8 @@ src/
       editor.ts                 # loadEditorCourseData() — bulk fetch for editor shell
       courses.ts / modules.ts / lessons.ts / slides.ts / blocks.ts
       progress.ts / enrollments.ts / users.ts / activity-log.ts
+      groups.ts             # User group CRUD, membership management
+      course-assignments.ts # Course assignment CRUD, visibility query
     auth/
     tenant/
     supabase/
@@ -106,9 +108,12 @@ scripts/
 institutions → courses → modules → lessons → lesson_blocks
                       ↘ course_enrollments
                       ↘ categories
+                      ↘ course_user_assignments → users
+                      ↘ course_group_assignments → user_groups
 users → progress (lesson_id)
       → certificates (course_id)
       → course_reviews (course_id)
+      → user_group_members → user_groups
 ```
 
 ### Key IDs (GANSID institution)
@@ -133,6 +138,7 @@ users → progress (lesson_id)
 | 012–015 | modules_3_10_seed | Modules 3–10 content seeded (all GANSID courses) |
 | 016 | course_enrollments_delete_policy | DELETE RLS policy for self-unenroll |
 | 017 | make_content_url_nullable | `lessons.content_url` DROP NOT NULL (block-based lessons don't use it) |
+| 018 | user_groups_and_course_assignments | `user_groups`, `user_group_members`, `course_user_assignments`, `course_group_assignments` tables + `courses.access_mode` column |
 
 ### RLS Pattern — CRITICAL
 
@@ -346,7 +352,7 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 
 ---
 
-## Current Implementation Status (as of 2026-03-31)
+## Current Implementation Status (as of 2026-04-03)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -374,6 +380,9 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 - [x] Editor toolbar Eye button + admin course card hover Eye → preview route
 - [x] `CourseViewer` extracted to `src/components/student/course-viewer.tsx`
 - [x] DB layer client-safe: all `lib/db/` helpers accept `SupabaseClient` param (no server-only imports)
+- [x] Course assignment system: `access_mode` toggle (all/restricted), user/group assignment, student visibility filtering
+- [x] User groups: CRUD, membership management, Groups tab in admin user management
+- [x] AccessModePicker: reusable component in course create/edit forms + course detail assignments tab
 
 ### In Progress / Next
 - [ ] Phase 3: Admin authoring — block editor UI, slide CRUD from editor
