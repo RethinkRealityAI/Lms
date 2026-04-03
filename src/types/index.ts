@@ -47,6 +47,7 @@ export interface Course {
   thumbnail_url?: string;
   created_by: string;
   is_published: boolean;
+  access_mode?: 'all' | 'restricted';
   created_at: string;
   updated_at: string;
   category?: Category;
@@ -327,3 +328,5 @@ export interface UserInvitation {
   inviter_name?: string;
   inviter_email?: string;
 }
+
+export * from './groups';
