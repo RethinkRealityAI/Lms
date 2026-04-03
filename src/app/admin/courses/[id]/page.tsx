@@ -13,6 +13,7 @@ import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2, GripVertical,
 import { toast } from 'sonner';
 import type { Course, Lesson, Quiz } from '@/types';
 import { createLegacyBlockPayload, mapLegacyContentTypeToBlockType } from '@/lib/content/lesson-blocks';
+import { CourseAssignmentsTab } from '@/components/admin/course-assignments-tab';
 
 export default function CoursePage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
   const params = React.use(paramsPromise);
@@ -24,6 +25,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
   const [showLessonEditDialog, setShowLessonEditDialog] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
+  const [accessMode, setAccessMode] = useState<'all' | 'restricted'>('all');
   const [editData, setEditData] = useState({
     title: '',
     description: '',
@@ -70,6 +72,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
         thumbnail_url: data.thumbnail_url || '',
         is_published: data.is_published ?? true,
       });
+      setAccessMode((data.access_mode as 'all' | 'restricted') ?? 'all');
     }
   };
 
@@ -462,6 +465,13 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
             </div>
           </CardContent>
         </Card>
+
+        <CourseAssignmentsTab
+          courseId={params.id}
+          institutionId={course.institution_id ?? ''}
+          accessMode={accessMode}
+          onAccessModeChange={setAccessMode}
+        />
       </div>
 
       {/* Edit Course Dialog */}
