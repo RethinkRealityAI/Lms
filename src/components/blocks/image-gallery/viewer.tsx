@@ -6,16 +6,24 @@ import { Button } from '@/components/ui/button';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { ImageGalleryData } from '@/lib/content/blocks/image-gallery/schema';
 
+/** Check if a URL is loadable (absolute http/https or data URI) */
+function isLoadableUrl(url: string): boolean {
+  if (!url) return false;
+  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:');
+}
+
 function ImageWithFallback({ src, alt, className }: { src: string; alt: string; className?: string }) {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  if (error) {
+  if (!isLoadableUrl(src) || error) {
     return (
       <div className={`bg-gray-100 flex items-center justify-center ${className}`}>
         <div className="text-center p-4">
           <ImageOff className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-          <p className="text-xs text-gray-400">Image unavailable</p>
+          <p className="text-xs text-gray-400">
+            {!src ? 'No image URL' : !isLoadableUrl(src) ? 'Image needs re-upload' : 'Image unavailable'}
+          </p>
         </div>
       </div>
     );
@@ -36,6 +44,14 @@ function ImageWithFallback({ src, alt, className }: { src: string; alt: string; 
       />
     </div>
   );
+}
+
+/** Render caption — supports HTML from SCORM imports and plain text */
+function Caption({ text, className }: { text: string; className?: string }) {
+  if (text.includes('<')) {
+    return <div className={className} dangerouslySetInnerHTML={{ __html: text }} />;
+  }
+  return <p className={className}>{text}</p>;
 }
 
 export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalleryData>) {
@@ -62,7 +78,7 @@ export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalle
           className="w-full aspect-video rounded-xl overflow-hidden"
         />
         {images[current].caption && (
-          <p className="mt-2.5 text-sm text-gray-500 italic">{images[current].caption}</p>
+          <Caption text={images[current].caption!} className="mt-2.5 text-sm text-gray-500 italic [&_p]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5" />
         )}
         {images.length > 1 && (
           <div className="mt-3 flex items-center justify-center gap-3">
@@ -112,7 +128,7 @@ export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalle
             className="aspect-[4/3] rounded-xl overflow-hidden"
           />
           {img.caption && (
-            <p className="mt-1.5 text-xs text-gray-500 px-0.5">{img.caption}</p>
+            <Caption text={img.caption} className="mt-1.5 text-xs text-gray-500 px-0.5 [&_p]:my-0.5" />
           )}
         </div>
       ))}
