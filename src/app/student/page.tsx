@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { getUserInstitutionId } from '@/lib/db/users';
+import { getVisibleCourseIds } from '@/lib/db/course-assignments';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -47,15 +48,20 @@ export default async function StudentPage() {
     .single();
   const firstName = userData?.full_name?.split(' ')[0] ?? '';
 
-  // Fetch all published courses for this institution
-  const { data: allCourses } = await supabase
-    .from('courses')
-    .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id')
-    .eq('institution_id', institutionId)
-    .eq('is_published', true);
+  // Get visible course IDs based on access_mode + assignments
+  const visibleIds = await getVisibleCourseIds(supabase, user.id, institutionId);
+
+  let coursesRaw: any[] = [];
+  if (visibleIds.length > 0) {
+    const { data } = await supabase
+      .from('courses')
+      .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id')
+      .in('id', visibleIds);
+    coursesRaw = data ?? [];
+  }
 
   // Sort by canonical module order
-  const sortedCourses = (allCourses ?? []).sort((a: any, b: any) => {
+  const sortedCourses = coursesRaw.sort((a: any, b: any) => {
     const aOrder = MODULE_ORDER[a.id] ?? 999;
     const bOrder = MODULE_ORDER[b.id] ?? 999;
     return aOrder - bOrder;
