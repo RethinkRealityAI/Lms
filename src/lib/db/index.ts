@@ -12,3 +12,4 @@ export * from './analytics';
 export * from './invitations';
 export * from './legacy-users';
 export * from './groups';
+export * from './course-assignments';
