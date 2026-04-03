@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
 import { BlockEditorPanel } from './block-editor-panel';
+import { DraggableBlockItem } from './dnd/draggable-block-item';
 import { CourseThemeEditor } from './theme-editor/course-theme-editor';
 import { SlideStyleEditor } from './theme-editor/slide-style-editor';
 import type { EntitySelection } from '@/types';
@@ -271,27 +272,18 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
       return (
         <div className="space-y-4">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Add Elements</p>
-          <div className="grid grid-cols-2 gap-2">
+          <p className="text-[11px] text-gray-400">Click to add or drag onto the canvas</p>
+          <div className="grid grid-cols-2 gap-2.5">
             {AVAILABLE_BLOCKS.map((block) => (
-              <button
+              <DraggableBlockItem
                 key={block.type}
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.setData('application/x-block-type', block.type);
-                  e.dataTransfer.effectAllowed = 'copy';
-                }}
+                type={block.type}
+                label={block.label}
+                icon={block.icon}
+                color={block.color}
                 onClick={() => onAddBlock?.(activeSlideId!, block.type)}
                 disabled={!activeSlideId}
-                className={`flex flex-col items-center justify-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm hover:shadow hover:border-blue-300 transition-all group ${
-                  !activeSlideId ? 'opacity-50 cursor-not-allowed hidden' : ''
-                }`}
-                title={`Click or drag to add ${block.label}`}
-              >
-                <div className={`p-2 rounded-md ${block.color} group-hover:scale-110 transition-transform`}>
-                  <block.icon className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-medium text-gray-600">{block.label}</span>
-              </button>
+              />
             ))}
           </div>
         </div>

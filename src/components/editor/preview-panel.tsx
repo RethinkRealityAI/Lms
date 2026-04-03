@@ -19,7 +19,7 @@ export interface PreviewPanelProps {
   onDeleteBlock?: (blockId: string) => void;
 }
 
-export function PreviewPanel({ onAddBlock, onDeleteBlock }: PreviewPanelProps) {
+export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
@@ -76,7 +76,7 @@ export function PreviewPanel({ onAddBlock, onDeleteBlock }: PreviewPanelProps) {
   const selectedBlockId = selectedEntity?.type === 'block' ? selectedEntity.id : undefined;
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-gray-100">
+    <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
       {/* Device toggle toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 shrink-0">
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Preview</span>
@@ -100,19 +100,8 @@ export function PreviewPanel({ onAddBlock, onDeleteBlock }: PreviewPanelProps) {
 
       <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
         <div
-          className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-300 flex flex-col"
+          className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col"
           style={{ width: DEVICE_WIDTHS[device], maxWidth: '100%', minHeight: '500px' }}
-          onDragOver={(e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-            const blockType = e.dataTransfer.getData('application/x-block-type');
-            if (blockType && selectedSlide && onAddBlock) {
-              onAddBlock(selectedSlide.id, blockType);
-            }
-          }}
         >
           {selectedSlide ? (
             <SlidePreview
@@ -123,9 +112,14 @@ export function PreviewPanel({ onAddBlock, onDeleteBlock }: PreviewPanelProps) {
             />
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-12">
-              <div className="text-center">
-                <Monitor className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                <p>Select a slide to preview</p>
+              <div className="text-center space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto">
+                  <Monitor className="w-7 h-7 text-gray-200" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-500">No slide selected</p>
+                  <p className="text-xs text-gray-400 mt-1">Select a slide from the structure panel</p>
+                </div>
               </div>
             </div>
           )}

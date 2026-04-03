@@ -8,6 +8,7 @@ import { StructurePanel } from './structure-panel';
 import { PreviewPanel } from './preview-panel';
 import { PropertiesPanel } from './properties-panel';
 import { EditorStatusBar } from './editor-status-bar';
+import { EditorDndContext } from './dnd/editor-dnd-context';
 import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
@@ -46,6 +47,7 @@ function EditorContent({ courseId }: { courseId: string }) {
   const removeBlock = useEditorStore((s) => s.removeBlock);
   const blocks = useEditorStore((s) => s.blocks);
   const slides = useEditorStore((s) => s.slides);
+  const reorderBlocks = useEditorStore((s) => s.reorderBlocks);
 
   const previewSlideIndex = useEditorStore((s) => s.previewSlideIndex);
   const setPreviewSlideIndex = useEditorStore((s) => s.setPreviewSlideIndex);
@@ -306,6 +308,28 @@ function EditorContent({ courseId }: { courseId: string }) {
     }
   }, [institutionId, store, addBlock, selectEntity]);
 
+  const handleReorderBlocks = useCallback((slideId: string, blockIds: string[]) => {
+    reorderBlocks(slideId, blockIds);
+  }, [reorderBlocks]);
+
+  const getSlideBlocks = useCallback((slideId: string) => {
+    const state = store?.getState();
+    return state?.blocks.get(slideId) ?? [];
+  }, [store]);
+
+  const activeSlideId = (() => {
+    if (!selectedEntity) return null;
+    if (selectedEntity.type === 'slide') return selectedEntity.id;
+    if (selectedEntity.type === 'block') {
+      const state = store?.getState();
+      if (!state) return null;
+      for (const [slideId, blockList] of state.blocks) {
+        if (blockList.some(b => b.id === selectedEntity.id)) return slideId;
+      }
+    }
+    return null;
+  })();
+
   // ── Persistence: delete ────────────────────────────────────────────────────
 
   const handleDeleteKey = useCallback(() => {
@@ -425,30 +449,37 @@ function EditorContent({ courseId }: { courseId: string }) {
   return (
     <>
       <EditorToolbar onSave={saveNow} courseId={courseId} />
-      <div className="flex flex-1 min-h-0">
-        <StructurePanel
-          collapsed={structureCollapsed}
-          onToggleCollapse={() => setStructureCollapsed((c) => !c)}
-          onAddModule={handleAddModule}
-          onAddLesson={handleAddLesson}
-          onDeleteLesson={handleRequestDeleteLesson}
-          onDeleteModule={handleRequestDeleteModule}
-          onAddSlide={handleAddSlide}
-        />
-        <PreviewPanel
-          onAddBlock={handleAddBlock}
-          onDeleteBlock={(blockId) => {
-            selectEntity({ type: 'block', id: blockId });
-            setDeleteDialogOpen(true);
-          }}
-        />
-        <PropertiesPanel
-          collapsed={propertiesCollapsed}
-          onToggleCollapse={() => setPropertiesCollapsed((c) => !c)}
-          onAddBlock={handleAddBlock}
-          onDeleteBlock={handleDeleteKey}
-        />
-      </div>
+      <EditorDndContext
+        onAddBlock={handleAddBlock}
+        onReorderBlocks={handleReorderBlocks}
+        getSlideBlocks={getSlideBlocks}
+        activeSlideId={activeSlideId}
+      >
+        <div className="flex flex-1 min-h-0">
+          <StructurePanel
+            collapsed={structureCollapsed}
+            onToggleCollapse={() => setStructureCollapsed((c) => !c)}
+            onAddModule={handleAddModule}
+            onAddLesson={handleAddLesson}
+            onDeleteLesson={handleRequestDeleteLesson}
+            onDeleteModule={handleRequestDeleteModule}
+            onAddSlide={handleAddSlide}
+          />
+          <PreviewPanel
+            onAddBlock={handleAddBlock}
+            onDeleteBlock={(blockId) => {
+              selectEntity({ type: 'block', id: blockId });
+              setDeleteDialogOpen(true);
+            }}
+          />
+          <PropertiesPanel
+            collapsed={propertiesCollapsed}
+            onToggleCollapse={() => setPropertiesCollapsed((c) => !c)}
+            onAddBlock={handleAddBlock}
+            onDeleteBlock={handleDeleteKey}
+          />
+        </div>
+      </EditorDndContext>
       <EditorStatusBar />
       <DeleteConfirmDialog
         open={deleteDialogOpen}

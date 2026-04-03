@@ -3,9 +3,12 @@
 import { Suspense } from 'react';
 import type { CSSProperties } from 'react';
 import { Trash2 } from 'lucide-react';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import { LessonBlockRenderer } from '@/components/lesson-block-renderer';
 import { resolveTheme } from '@/lib/content/theme';
 import { useEditorStore } from './editor-store-context';
+import { SortableBlock } from './dnd/sortable-block';
 import type { Slide } from '@/types';
 import type { InstitutionTheme } from '@/types';
 
@@ -19,6 +22,7 @@ interface SlidePreviewProps {
 export function SlidePreview({ slide, onSelectBlock, onDeleteBlock, selectedBlockId }: SlidePreviewProps) {
   const blocks = useEditorStore((s) => s.blocks.get(slide.id) ?? []);
   const courseTheme = useEditorStore((s) => s.courseTheme);
+  const { setNodeRef: setDropRef, isOver } = useDroppable({ id: 'slide-canvas' });
   const resolvedTheme = resolveTheme({ course: courseTheme as Partial<InstitutionTheme> });
 
   const bgStyle = getSlideBackground(slide.settings);
@@ -42,71 +46,88 @@ export function SlidePreview({ slide, onSelectBlock, onDeleteBlock, selectedBloc
       )}
 
       {/* Blocks */}
-      <div className="flex-1 p-6 space-y-4">
+      <div ref={setDropRef} className={`flex-1 p-6 pl-10 space-y-3 transition-colors duration-200 ${isOver ? 'bg-blue-50/40' : ''}`}>
         {blocks.length === 0 ? (
-          <div className="flex items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-lg text-gray-400 text-sm">
-            No blocks on this slide. Add blocks from the properties panel.
+          <div className={`flex items-center justify-center h-40 border-2 border-dashed rounded-xl text-sm transition-all duration-200 ${
+            isOver
+              ? 'border-blue-400 bg-blue-50/60 text-blue-500'
+              : 'border-gray-200 text-gray-400'
+          }`}>
+            <div className="text-center">
+              <p className="font-medium">{isOver ? 'Drop to add block' : 'No blocks on this slide'}</p>
+              <p className="text-xs mt-1 opacity-70">Drag components from the panel or click to add</p>
+            </div>
           </div>
         ) : (
-          blocks.map((block) => (
-            <div
-              key={block.id}
-              onClick={() => onSelectBlock(block.id)}
-              className={`relative group cursor-pointer rounded-lg transition-all ${
-                selectedBlockId === block.id
-                  ? 'ring-2 ring-[#1E3A5F] ring-offset-2'
-                  : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-1'
-              }`}
-            >
-              {/* Block type label + delete (shown on hover/select) */}
-              <div
-                className={`absolute -top-5 left-0 flex items-center gap-1.5 transition-opacity z-10 ${
-                  selectedBlockId === block.id
-                    ? 'opacity-100'
-                    : 'opacity-0 group-hover:opacity-100'
-                }`}
+          <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+            {blocks.map((block) => (
+              <SortableBlock
+                key={block.id}
+                id={block.id}
+                blockType={block.block_type}
+                label={block.block_type.replace('_', ' ')}
               >
-                <span className={`text-xs px-2 py-0.5 rounded text-white ${
-                  selectedBlockId === block.id ? 'bg-[#1E3A5F]' : 'bg-gray-500'
-                }`}>
-                  {block.block_type.replace('_', ' ')}
-                </span>
-                {onDeleteBlock && (
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onDeleteBlock(block.id); }}
-                    title="Delete block"
-                    className="p-0.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors"
+                <div
+                  onClick={() => onSelectBlock(block.id)}
+                  className={`relative group/block cursor-pointer rounded-xl transition-all duration-150 ${
+                    selectedBlockId === block.id
+                      ? 'ring-2 ring-[#1E3A5F] ring-offset-2 shadow-sm'
+                      : 'hover:ring-2 hover:ring-blue-200 hover:ring-offset-1'
+                  }`}
+                >
+                  {/* Block type label + delete */}
+                  <div
+                    className={`absolute -top-6 left-0 flex items-center gap-1.5 transition-all duration-150 z-10 ${
+                      selectedBlockId === block.id
+                        ? 'opacity-100'
+                        : 'opacity-0 group-hover/block:opacity-100'
+                    }`}
                   >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full tracking-wide uppercase ${
+                      selectedBlockId === block.id
+                        ? 'bg-[#1E3A5F] text-white'
+                        : 'bg-gray-600 text-white'
+                    }`}>
+                      {block.block_type.replace('_', ' ')}
+                    </span>
+                    {onDeleteBlock && (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); onDeleteBlock(block.id); }}
+                        title="Delete block"
+                        className="p-0.5 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors shadow-sm"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
 
-              {/* Actual block rendered by student viewer */}
-              <div className="pointer-events-none">
-                <Suspense fallback={<div className="animate-pulse bg-gray-100 rounded-lg h-16" />}>
-                  <LessonBlockRenderer
-                    block={{
-                      id: block.id,
-                      institution_id: '',
-                      lesson_id: '',
-                      block_type: block.block_type,
-                      data: block.data,
-                      order_index: block.order_index,
-                      is_visible: block.is_visible,
-                      settings: {},
-                      version: 1,
-                      title: undefined,
-                      created_at: new Date().toISOString(),
-                      updated_at: new Date().toISOString(),
-                    }}
-                    lessonTitle=""
-                  />
-                </Suspense>
-              </div>
-            </div>
-          ))
+                  {/* Block content */}
+                  <div className="pointer-events-none">
+                    <Suspense fallback={<div className="animate-pulse bg-gray-100 rounded-xl h-16" />}>
+                      <LessonBlockRenderer
+                        block={{
+                          id: block.id,
+                          institution_id: '',
+                          lesson_id: '',
+                          block_type: block.block_type,
+                          data: block.data,
+                          order_index: block.order_index,
+                          is_visible: block.is_visible,
+                          settings: {},
+                          version: 1,
+                          title: undefined,
+                          created_at: new Date().toISOString(),
+                          updated_at: new Date().toISOString(),
+                        }}
+                        lessonTitle=""
+                      />
+                    </Suspense>
+                  </div>
+                </div>
+              </SortableBlock>
+            ))}
+          </SortableContext>
         )}
       </div>
     </div>
