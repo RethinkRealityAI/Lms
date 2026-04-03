@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import { Loader2, Upload, Link2, X, ImageIcon } from 'lucide-react';
 import type { Category } from '@/types';
 import { getUserInstitutionId } from '@/lib/db/users';
+import { AccessModePicker } from '@/components/admin/access-mode-picker';
+import { setCourseUserAssignments, setCourseGroupAssignments } from '@/lib/db/course-assignments';
 
 type ThumbnailMode = 'upload' | 'url';
 
@@ -28,12 +30,17 @@ export default function CreateCoursePage() {
   const [isPublished, setIsPublished] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const [accessMode, setAccessMode] = useState<'all' | 'restricted'>('all');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+  const [institutionId, setInstitutionId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
     loadCategories();
+    loadInstitutionId();
   }, []);
 
   const loadCategories = async () => {
@@ -45,6 +52,13 @@ export default function CreateCoursePage() {
     if (data) {
       setCategories(data);
     }
+  };
+
+  const loadInstitutionId = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const id = await getUserInstitutionId(supabase, user.id);
+    setInstitutionId(id);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,13 +141,21 @@ export default function CreateCoursePage() {
             institution_id: institutionId,
             category_id: categoryId || null,
             thumbnail_url: thumbnailUrl || null,
-            is_published: isPublished
+            is_published: isPublished,
+            access_mode: accessMode,
           }
         ])
         .select()
         .single();
 
       if (error) throw error;
+
+      if (accessMode === 'restricted') {
+        await Promise.all([
+          setCourseUserAssignments(supabase, data.id, selectedUserIds, user.id),
+          setCourseGroupAssignments(supabase, data.id, selectedGroupIds, user.id),
+        ]);
+      }
 
       toast.success('Course created successfully!', {
         description: 'Opening editor...',
@@ -319,6 +341,18 @@ export default function CreateCoursePage() {
                 </div>
               )}
             </div>
+
+            {institutionId && (
+              <AccessModePicker
+                accessMode={accessMode}
+                selectedUserIds={selectedUserIds}
+                selectedGroupIds={selectedGroupIds}
+                institutionId={institutionId}
+                onAccessModeChange={setAccessMode}
+                onSelectedUsersChange={setSelectedUserIds}
+                onSelectedGroupsChange={setSelectedGroupIds}
+              />
+            )}
 
             <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50">
               <div className="space-y-0.5">
