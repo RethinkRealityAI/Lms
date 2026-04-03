@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -20,7 +20,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Eye, BookOpen, Pencil, Upload, Link2, X, ImageIcon, Loader2, Plus, GripVertical } from 'lucide-react';
+import { Eye, BookOpen, Pencil, Upload, Link2, X, ImageIcon, Loader2, Plus, GripVertical, Lock } from 'lucide-react';
+import { AccessModePicker } from '@/components/admin/access-mode-picker';
+import { getCourseAssignments, setCourseUserAssignments, setCourseGroupAssignments } from '@/lib/db/course-assignments';
 
 type Course = {
   id: string;
@@ -31,6 +33,7 @@ type Course = {
   created_at: string;
   category_id: string | null;
   categories: { name: string } | null;
+  access_mode?: string;
 };
 
 type Category = { id: string; name: string };
@@ -61,11 +64,25 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [creatingCategory, setCreatingCategory] = useState(false);
+  const [accessMode, setAccessMode] = useState<'all' | 'restricted'>('all');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+  const [institutionId, setInstitutionId] = useState<string | null>(null);
   // Drag-to-reorder state
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const [localCourses, setLocalCourses] = useState(courses);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function loadInstitutionId() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase.from('users').select('institution_id').eq('id', user.id).single();
+      if (profile?.institution_id) setInstitutionId(profile.institution_id);
+    }
+    loadInstitutionId();
+  }, []);
 
   async function handleCreateCategory() {
     const trimmed = newCategoryName.trim();
@@ -107,7 +124,7 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
     }
   }
 
-  function openEdit(course: Course) {
+  async function openEdit(course: Course) {
     setEditingCourse(course);
     setTitle(course.title);
     setDescription(course.description ?? '');
@@ -116,6 +133,11 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
     setThumbnailPreview(null);
     setThumbnailMode(course.thumbnail_url ? 'url' : 'upload');
     setIsPublished(course.is_published);
+    setAccessMode((course.access_mode as 'all' | 'restricted') ?? 'all');
+    const supabase = createClient();
+    const assignments = await getCourseAssignments(supabase, course.id);
+    setSelectedUserIds(assignments.users.map((a) => a.user_id));
+    setSelectedGroupIds(assignments.groups.map((a) => a.group_id));
   }
 
   function closeEdit() {
@@ -155,6 +177,8 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
     if (!editingCourse) return;
     setSaving(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
       const { error } = await supabase
         .from('courses')
         .update({
@@ -163,9 +187,14 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
           category_id: categoryId || null,
           thumbnail_url: thumbnailUrl || null,
           is_published: isPublished,
+          access_mode: accessMode,
         })
         .eq('id', editingCourse.id);
       if (error) throw error;
+      await Promise.all([
+        setCourseUserAssignments(supabase, editingCourse.id, selectedUserIds, user.id),
+        setCourseGroupAssignments(supabase, editingCourse.id, selectedGroupIds, user.id),
+      ]);
       toast.success('Course updated');
       closeEdit();
       router.refresh();
@@ -217,11 +246,19 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
                     <h3 className="font-semibold text-[#0F172A] text-sm leading-snug">
                       {course.title}
                     </h3>
-                    {!course.is_published && (
-                      <Badge variant="outline" className="border-[#DC2626] text-[#DC2626] text-xs shrink-0">
-                        Draft
-                      </Badge>
-                    )}
+                    <div className="flex flex-col gap-1 items-end shrink-0">
+                      {!course.is_published && (
+                        <Badge variant="outline" className="border-[#DC2626] text-[#DC2626] text-xs">
+                          Draft
+                        </Badge>
+                      )}
+                      {course.access_mode === 'restricted' && (
+                        <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">
+                          <Lock className="w-3 h-3 mr-1" />
+                          Restricted
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <p className="text-sm text-slate-500 line-clamp-2">{course.description}</p>
                   <div className="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
@@ -412,6 +449,19 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
                 </div>
               )}
             </div>
+
+            {/* Access Mode */}
+            {institutionId && (
+              <AccessModePicker
+                accessMode={accessMode}
+                selectedUserIds={selectedUserIds}
+                selectedGroupIds={selectedGroupIds}
+                institutionId={institutionId}
+                onAccessModeChange={setAccessMode}
+                onSelectedUsersChange={setSelectedUserIds}
+                onSelectedGroupsChange={setSelectedGroupIds}
+              />
+            )}
 
             {/* Published */}
             <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50">
