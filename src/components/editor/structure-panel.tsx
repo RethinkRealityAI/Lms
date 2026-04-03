@@ -33,15 +33,15 @@ export function StructurePanel({ collapsed, onToggleCollapse, onAddModule, onAdd
     <div className={`shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden transition-all duration-300 ${collapsed ? 'w-12' : 'w-[260px]'}`}>
       <div className={`flex items-center px-3 py-2.5 border-b border-gray-100 shrink-0 ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider overflow-hidden whitespace-nowrap">
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest overflow-hidden whitespace-nowrap">
             Structure
           </span>
         )}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           {!collapsed && (
             <button
               onClick={() => setShowAddModule(true)}
-              className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all"
               title="Add Module"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -49,7 +49,7 @@ export function StructurePanel({ collapsed, onToggleCollapse, onAddModule, onAdd
           )}
           <button
             onClick={onToggleCollapse}
-            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all"
             title={collapsed ? 'Expand Structure' : 'Collapse Structure'}
           >
             {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}

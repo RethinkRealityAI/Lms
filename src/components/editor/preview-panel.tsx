@@ -78,16 +78,18 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
       {/* Device toggle toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 shrink-0">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Preview</span>
-        <div className="flex items-center gap-0.5">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 shrink-0">
+        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Preview</span>
+        <div className="flex items-center gap-1 bg-gray-50 rounded-lg p-0.5">
           {(['desktop', 'tablet', 'mobile'] as DeviceMode[]).map((d) => (
             <button
               key={d}
               onClick={() => setDevice(d)}
               title={d.charAt(0).toUpperCase() + d.slice(1)}
-              className={`p-1.5 rounded transition-colors ${
-                device === d ? 'bg-gray-200 text-gray-700' : 'hover:bg-gray-100 text-gray-400'
+              className={`p-1.5 rounded-md transition-all duration-150 ${
+                device === d
+                  ? 'bg-white text-gray-700 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-500'
               }`}
             >
               {d === 'desktop' && <Monitor className="w-4 h-4" />}
@@ -127,15 +129,15 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
       </div>
 
       {/* Slide navigation */}
-      <div className="flex items-center justify-center gap-3 py-3 bg-white border-t border-gray-200 shrink-0">
+      <div className="flex items-center justify-center gap-4 py-2.5 bg-white/95 backdrop-blur-sm border-t border-gray-100 shrink-0">
         <button
           onClick={goToPrevSlide}
           disabled={slideIndex <= 0}
-          className="p-1 rounded hover:bg-gray-100 text-gray-400 disabled:opacity-30"
+          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 disabled:opacity-20 transition-all"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-xs text-gray-500 min-w-[80px] text-center">
+        <span className="text-xs font-medium text-gray-500 min-w-[100px] text-center tabular-nums">
           {selectedSlide
             ? `Slide ${slideIndex + 1} of ${siblingSlides.length}`
             : 'No slide selected'
@@ -144,7 +146,7 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
         <button
           onClick={goToNextSlide}
           disabled={slideIndex < 0 || slideIndex >= siblingSlides.length - 1}
-          className="p-1 rounded hover:bg-gray-100 text-gray-400 disabled:opacity-30"
+          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 disabled:opacity-20 transition-all"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

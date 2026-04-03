@@ -344,33 +344,41 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
   const showTabs = activeSlideId !== null;
 
   return (
-    <div className={`shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden transition-all duration-300 ${collapsed ? 'w-12' : 'w-[300px]'}`}>
+    <div className={`shrink-0 bg-white border-l border-gray-100 flex flex-col overflow-hidden transition-all duration-300 ${collapsed ? 'w-12' : 'w-[300px]'}`}>
       <div className={`flex flex-col border-b border-gray-100 shrink-0 ${collapsed ? 'py-2.5 items-center' : ''}`}>
         <div className={`flex items-center gap-2 ${collapsed ? 'justify-center' : 'px-3 pt-2.5 pb-2'} shrink-0`}>
           <button
             onClick={onToggleCollapse}
-            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all"
             title={collapsed ? 'Expand Properties' : 'Collapse Properties'}
           >
             {collapsed ? <PanelRightOpen className="w-4 h-4" /> : <PanelRightClose className="w-4 h-4" />}
           </button>
           {!collapsed && (
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex-1 overflow-hidden whitespace-nowrap">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest flex-1 overflow-hidden whitespace-nowrap">
               Properties
             </span>
           )}
         </div>
         {!collapsed && showTabs && (
-          <div className="flex items-center px-1 pb-1 gap-1">
+          <div className="flex items-center mx-3 mb-1 p-0.5 bg-gray-50 rounded-lg gap-0.5">
             <button
               onClick={() => setActiveTab('properties')}
-              className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${activeTab === 'properties' ? 'bg-gray-100 text-gray-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+              className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all duration-150 ${
+                activeTab === 'properties'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
             >
               Content
             </button>
             <button
               onClick={() => setActiveTab('components')}
-              className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${activeTab === 'components' ? 'bg-gray-100 text-gray-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+              className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all duration-150 ${
+                activeTab === 'components'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
             >
               Components
             </button>

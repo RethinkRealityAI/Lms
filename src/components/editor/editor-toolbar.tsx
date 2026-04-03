@@ -25,12 +25,12 @@ export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
   const isPublished = courseStatus === 'published';
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 shrink-0 h-12">
+    <div className="flex items-center justify-between px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-gray-100 shrink-0 h-12">
       <div className="flex items-center gap-3">
-        <span className="text-sm font-semibold text-[#0F172A]">Course Editor</span>
+        <span className="text-sm font-semibold text-gray-800 tracking-tight">Course Editor</span>
         {courseStatus === 'draft' && (
-          <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
-            <span>●</span> Draft
+          <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            Draft
           </div>
         )}
       </div>
@@ -67,7 +67,7 @@ export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
         <button
           onClick={onSave}
           disabled={!isDirty || isSaving}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-[#1E3A5F] rounded-lg hover:bg-[#162d4a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium text-white bg-[#1E3A5F] rounded-lg hover:bg-[#162d4a] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 shadow-sm hover:shadow"
         >
           <Save className="w-3.5 h-3.5" />
           {isSaving ? 'Saving...' : 'Save'}
