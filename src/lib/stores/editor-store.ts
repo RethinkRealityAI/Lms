@@ -72,6 +72,7 @@ export interface EditorState {
   addBlock: (slideId: string, block: BlockData) => void;
   updateBlock: (slideId: string, blockId: string, changes: Partial<BlockData>) => void;
   removeBlock: (slideId: string, blockId: string) => void;
+  reorderBlocks: (slideId: string, blockIds: string[]) => void;
   setPreviewSlideIndex: (index: number) => void;
   markSaved: () => void;
   undo: () => void;
@@ -313,6 +314,22 @@ export function createEditorStore() {
         const next = new Map(s.blocks);
         next.set(slideId, existing.filter((b) => b.id !== blockId));
         return { blocks: next, ...push(s, snap, 'removeBlock', blockId) };
+      });
+    },
+
+    reorderBlocks: (slideId, blockIds) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const reordered = blockIds
+          .map((id) => existing.find((b) => b.id === id))
+          .filter(Boolean) as BlockData[];
+        const next = new Map(s.blocks);
+        next.set(
+          slideId,
+          reordered.map((b, i) => ({ ...b, order_index: i })),
+        );
+        return { blocks: next, ...push(s, snap, 'reorderBlocks', slideId) };
       });
     },
 
