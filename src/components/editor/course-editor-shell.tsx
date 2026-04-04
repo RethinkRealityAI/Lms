@@ -351,6 +351,7 @@ function EditorContent({ courseId }: { courseId: string }) {
       try {
         await dbDeleteModule(supabase, selectedEntity.id, institutionId);
         removeModule(selectedEntity.id);
+        selectEntity(null);
       } catch (err) {
         console.error('Failed to delete module:', err);
       }
@@ -369,6 +370,8 @@ function EditorContent({ courseId }: { courseId: string }) {
         try {
           await dbDeleteLesson(supabase, selectedEntity.id);
           removeLesson(owningModuleId, selectedEntity.id);
+          // Select parent module
+          selectEntity({ type: 'module', id: owningModuleId });
         } catch (err) {
           console.error('Failed to delete lesson:', err);
         }
@@ -381,6 +384,8 @@ function EditorContent({ courseId }: { courseId: string }) {
           try {
             await dbDeleteSlide(supabase, selectedEntity.id, institutionId);
             removeSlide(lessonId, selectedEntity.id);
+            // Select parent lesson
+            selectEntity({ type: 'lesson', id: lessonId });
           } catch (err) {
             console.error('Failed to delete slide:', err);
           }
@@ -396,7 +401,8 @@ function EditorContent({ courseId }: { courseId: string }) {
           try {
             await dbDeleteBlock(supabase, selectedEntity.id);
             removeBlock(slideId, selectedEntity.id);
-            selectEntity(null);
+            // Stay on the parent slide instead of clearing selection
+            selectEntity({ type: 'slide', id: slideId });
           } catch (err) {
             console.error('Failed to delete block:', err);
           }

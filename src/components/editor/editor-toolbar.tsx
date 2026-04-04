@@ -28,11 +28,16 @@ export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
     <div className="flex items-center justify-between px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-gray-100 shrink-0 h-12">
       <div className="flex items-center gap-3">
         <span className="text-sm font-semibold text-gray-800 tracking-tight">Course Editor</span>
-        {courseStatus === 'draft' && (
+        {isDirty ? (
+          <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+            Unsaved changes
+          </div>
+        ) : courseStatus === 'draft' ? (
           <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
             Draft
           </div>
-        )}
+        ) : null}
       </div>
       <div className="flex items-center gap-2">
         {publishError && (
@@ -73,23 +78,23 @@ export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
           {isSaving ? 'Saving...' : 'Save'}
         </button>
         <button
-          onClick={isPublished ? undefined : publishCourse}
-          disabled={isPublished || isPublishing}
+          onClick={isPublished && !isDirty ? undefined : publishCourse}
+          disabled={(isPublished && !isDirty) || isPublishing}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-colors disabled:cursor-not-allowed ${
-            isPublished
+            isPublished && !isDirty
               ? 'bg-green-600 opacity-80'
               : 'bg-green-600 hover:bg-green-700'
           }`}
-          title={isPublished ? 'Course is published' : 'Publish course'}
+          title={isPublished && !isDirty ? 'Course is published' : isDirty ? 'Save & publish changes' : 'Publish course'}
         >
           {isPublishing ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : isPublished ? (
+          ) : isPublished && !isDirty ? (
             <CheckCircle className="w-3.5 h-3.5" />
           ) : (
             <Send className="w-3.5 h-3.5" />
           )}
-          {isPublished ? 'Published ✓' : isPublishing ? 'Publishing...' : 'Publish'}
+          {isPublished && !isDirty ? 'Published' : isPublishing ? 'Publishing...' : 'Publish'}
         </button>
         </div>
       </div>

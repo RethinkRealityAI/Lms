@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
 
@@ -16,9 +17,16 @@ const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 
 const TRUE_FALSE_OPTIONS = ['True', 'False'];
 
+/** Per-type cache so switching types doesn't lose work */
+interface TypeCache {
+  multiple_choice?: { options: string[]; correct_answer?: string };
+  categorize?: { categories: Array<{ name: string; items: string[] }> };
+}
+
 export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInlineData>) {
   const options = data.options ?? [];
   const categories = data.categories ?? [];
+  const typeCacheRef = useRef<TypeCache>({});
 
   function updateOption(index: number, value: string) {
     const updated = options.map((o, i) => (i === index ? value : o));
@@ -73,17 +81,32 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
   }
 
   function handleTypeChange(newType: QuestionType) {
+    // Cache current type's state before switching
+    const currentType = data.question_type;
+    if (currentType === 'multiple_choice') {
+      typeCacheRef.current.multiple_choice = {
+        options: [...options],
+        correct_answer: data.correct_answer,
+      };
+    } else if (currentType === 'categorize') {
+      typeCacheRef.current.categorize = {
+        categories: categories.map((c) => ({ ...c, items: [...c.items] })),
+      };
+    }
+
+    // Restore from cache if available, otherwise use defaults
     const patch: Partial<QuizInlineData> = { question_type: newType };
     if (newType === 'true_false') {
       patch.options = ['True', 'False'];
-      patch.correct_answer = undefined;
     } else if (newType === 'multiple_choice') {
-      patch.options = [];
-      patch.correct_answer = undefined;
+      const cached = typeCacheRef.current.multiple_choice;
+      patch.options = cached?.options ?? [];
+      patch.correct_answer = cached?.correct_answer;
     } else if (newType === 'categorize') {
+      const cached = typeCacheRef.current.categorize;
+      patch.categories = cached?.categories ?? [];
       patch.options = undefined;
       patch.correct_answer = undefined;
-      patch.categories = [];
     }
     onChange({ ...data, ...patch });
   }

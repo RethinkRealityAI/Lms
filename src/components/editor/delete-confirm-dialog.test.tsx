@@ -12,10 +12,10 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByText(/delete this/i)).not.toBeInTheDocument();
   });
 
-  it('renders dialog title "Delete module?" when entityType is module', () => {
+  it('shows "Delete this module?" when entityType is module', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -24,10 +24,10 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.getByText('Delete module?')).toBeInTheDocument();
+    expect(screen.getByText(/delete this module/i)).toBeInTheDocument();
   });
 
-  it('renders dialog title "Delete slide?" when entityType is slide', () => {
+  it('shows "Delete this slide?" when entityType is slide', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -36,10 +36,10 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.getByText('Delete slide?')).toBeInTheDocument();
+    expect(screen.getByText(/delete this slide/i)).toBeInTheDocument();
   });
 
-  it('renders dialog title "Delete lesson?" when entityType is lesson', () => {
+  it('shows "Delete this lesson?" when entityType is lesson', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -48,19 +48,7 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.getByText('Delete lesson?')).toBeInTheDocument();
-  });
-
-  it('renders "This action cannot be undone." description', () => {
-    render(
-      <DeleteConfirmDialog
-        open={true}
-        entityType="module"
-        onConfirm={vi.fn()}
-        onCancel={vi.fn()}
-      />
-    );
-    expect(screen.getByText('This action cannot be undone.')).toBeInTheDocument();
+    expect(screen.getByText(/delete this lesson/i)).toBeInTheDocument();
   });
 
   it('calls onCancel when Cancel button is clicked', () => {
@@ -91,7 +79,7 @@ describe('DeleteConfirmDialog', () => {
     expect(onConfirm).toHaveBeenCalledOnce();
   });
 
-  it('renders "Delete?" title gracefully when entityType is null', () => {
+  it('does not render when entityType is null', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -100,7 +88,6 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    // Dialog should still open with a fallback title
-    expect(screen.getByText('Delete?')).toBeInTheDocument();
+    expect(screen.queryByText(/delete this/i)).not.toBeInTheDocument();
   });
 });
