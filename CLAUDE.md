@@ -139,6 +139,7 @@ users → progress (lesson_id)
 | 016 | course_enrollments_delete_policy | DELETE RLS policy for self-unenroll |
 | 017 | make_content_url_nullable | `lessons.content_url` DROP NOT NULL (block-based lessons don't use it) |
 | 018 | user_groups_and_course_assignments | `user_groups`, `user_group_members`, `course_user_assignments`, `course_group_assignments` tables + `courses.access_mode` column |
+| 019 | user_group_members_legacy_support | `user_group_members.user_id` nullable + `legacy_user_id` column with CHECK constraint (exactly one set) |
 
 ### RLS Pattern — CRITICAL
 
@@ -381,7 +382,7 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 - [x] `CourseViewer` extracted to `src/components/student/course-viewer.tsx`
 - [x] DB layer client-safe: all `lib/db/` helpers accept `SupabaseClient` param (no server-only imports)
 - [x] Course assignment system: `access_mode` toggle (all/restricted), user/group assignment, student visibility filtering
-- [x] User groups: CRUD, membership management, Groups tab in admin user management
+- [x] User groups: CRUD, membership management (active + legacy users), Groups tab in admin user management
 - [x] AccessModePicker: reusable component in course create/edit forms + course detail assignments tab
 
 ### In Progress / Next
