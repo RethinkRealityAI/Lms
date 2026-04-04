@@ -46,16 +46,23 @@ export function SlidePreview({ slide, onSelectBlock, onDeleteBlock, selectedBloc
       )}
 
       {/* Blocks */}
-      <div ref={setDropRef} className={`flex-1 p-6 pl-10 space-y-3 transition-colors duration-200 ${isOver ? 'bg-blue-50/40' : ''}`}>
+      <div
+        ref={setDropRef}
+        className={`flex-1 p-6 pl-10 space-y-3 transition-all duration-200 min-h-[200px] ${
+          isOver ? 'bg-blue-50/50 ring-2 ring-inset ring-blue-300 rounded-xl' : ''
+        }`}
+      >
         {blocks.length === 0 ? (
           <div className={`flex items-center justify-center h-40 border-2 border-dashed rounded-xl text-sm transition-all duration-200 ${
             isOver
-              ? 'border-blue-400 bg-blue-50/60 text-blue-500'
+              ? 'border-blue-400 bg-blue-50/60 text-blue-500 scale-[1.01]'
               : 'border-gray-200 text-gray-400'
           }`}>
             <div className="text-center">
-              <p className="font-medium">{isOver ? 'Drop to add block' : 'No blocks on this slide'}</p>
-              <p className="text-xs mt-1 opacity-70">Drag components from the panel or click to add</p>
+              <p className="font-medium">{isOver ? 'Drop here to add' : 'No blocks on this slide'}</p>
+              <p className="text-xs mt-1 opacity-70">
+                {isOver ? 'Release to place the block' : 'Drag components from the panel or click to add'}
+              </p>
             </div>
           </div>
         ) : (

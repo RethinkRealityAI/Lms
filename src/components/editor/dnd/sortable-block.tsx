@@ -19,6 +19,8 @@ export function SortableBlock({ id, blockType, label, children }: SortableBlockP
     transform,
     transition,
     isDragging,
+    isOver,
+    isSorting,
   } = useSortable({
     id,
     data: { source: 'canvas', blockType, label },
@@ -26,15 +28,30 @@ export function SortableBlock({ id, blockType, label, children }: SortableBlockP
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition ?? undefined,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group ${isDragging ? 'opacity-30 scale-[0.98]' : ''}`}
+      className={`relative group transition-all duration-150 ${
+        isDragging
+          ? 'opacity-20 scale-[0.97] z-0'
+          : isOver && isSorting
+            ? 'z-10'
+            : ''
+      }`}
     >
+      {/* Blue insertion line — visible when something is being dragged over this block */}
+      {isOver && !isDragging && (
+        <div className="absolute -top-1.5 left-2 right-2 flex items-center z-20 pointer-events-none">
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white shadow-sm shrink-0" />
+          <div className="flex-1 h-0.5 bg-blue-500 rounded-full" />
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white shadow-sm shrink-0" />
+        </div>
+      )}
+
       {/* Drag handle — shown on hover */}
       <button
         {...attributes}

@@ -7,8 +7,12 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  closestCenter,
+  pointerWithin,
   type DragStartEvent,
   type DragEndEvent,
+  type DragOverEvent,
+  type CollisionDetection,
 } from '@dnd-kit/core';
 import { BlockDragOverlay } from './block-drag-overlay';
 
@@ -19,6 +23,13 @@ interface DragState {
   label?: string;
 }
 
+export interface DropTarget {
+  /** The id of the droppable/sortable being hovered */
+  overId: string | null;
+  /** Whether hovering over the canvas drop zone itself */
+  overCanvas: boolean;
+}
+
 interface EditorDndContextProps {
   children: React.ReactNode;
   onAddBlock: (slideId: string, blockType: string) => void;
@@ -26,6 +37,15 @@ interface EditorDndContextProps {
   getSlideBlocks: (slideId: string) => { id: string }[];
   activeSlideId: string | null;
 }
+
+// Use pointerWithin for palette drops (large zone), closestCenter for reorder precision
+const collisionDetection: CollisionDetection = (args) => {
+  // If dragging from palette, use pointerWithin (easier to hit the canvas)
+  const pointerCollisions = pointerWithin(args);
+  if (pointerCollisions.length > 0) return pointerCollisions;
+  // Fallback to closestCenter for reorder scenarios
+  return closestCenter(args);
+};
 
 export function EditorDndContext({
   children,
@@ -35,6 +55,7 @@ export function EditorDndContext({
   activeSlideId,
 }: EditorDndContextProps) {
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget>({ overId: null, overCanvas: false });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,10 +83,23 @@ export function EditorDndContext({
     }
   }, []);
 
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const { over } = event;
+    if (!over) {
+      setDropTarget({ overId: null, overCanvas: false });
+      return;
+    }
+    setDropTarget({
+      overId: over.id as string,
+      overCanvas: over.id === 'slide-canvas' || over.data.current?.source === 'canvas',
+    });
+  }, []);
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
       setDragState(null);
+      setDropTarget({ overId: null, overCanvas: false });
 
       if (!over || !activeSlideId) return;
 
@@ -100,7 +134,9 @@ export function EditorDndContext({
   return (
     <DndContext
       sensors={sensors}
+      collisionDetection={collisionDetection}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       {children}
