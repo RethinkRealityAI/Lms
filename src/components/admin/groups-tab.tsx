@@ -15,7 +15,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Users, Plus, Pencil, Trash2, UserPlus, X, Loader2 } from 'lucide-react';
+import { Users, Plus, Pencil, Trash2, UserPlus, X, Loader2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   getGroups,
@@ -24,6 +24,7 @@ import {
   deleteGroup,
   getGroupMembers,
   addGroupMembers,
+  addLegacyGroupMembers,
   removeGroupMember,
 } from '@/lib/db/groups';
 import type { UserGroupWithCounts, UserGroupMember } from '@/types';
@@ -44,9 +45,11 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<UserGroupMember[]>([]);
-  const [allUsers, setAllUsers] = useState<{ id: string; email: string; full_name: string | null }[]>([]);
+  const [allUsers, setAllUsers] = useState<{ id: string; email: string; full_name: string | null; source: 'active' | 'legacy' }[]>([]);
   const [membersLoading, setMembersLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [memberSearch, setMemberSearch] = useState('');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'active' | 'legacy'>('all');
 
   useEffect(() => {
     loadGroups();
@@ -123,25 +126,51 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
     setSelectedGroup(group);
     setShowMembers(true);
     setMembersLoading(true);
+    setMemberSearch('');
+    setSourceFilter('all');
     const supabase = createClient();
-    const [membersData, usersData] = await Promise.all([
+    const [membersData, usersData, legacyData] = await Promise.all([
       getGroupMembers(supabase, group.id),
       supabase
         .from('users')
         .select('id, email, full_name')
         .eq('institution_id', institutionId)
         .order('email'),
+      supabase
+        .from('legacy_users')
+        .select('id, email, full_name')
+        .eq('institution_id', institutionId)
+        .order('full_name'),
     ]);
+
+    const activeUsers = (usersData.data ?? []).map((u: any) => ({
+      id: u.id,
+      email: u.email,
+      full_name: u.full_name,
+      source: 'active' as const,
+    }));
+
+    const legacyUsers = (legacyData.data ?? []).map((l: any) => ({
+      id: l.id,
+      email: l.email,
+      full_name: l.full_name,
+      source: 'legacy' as const,
+    }));
+
     setMembers(membersData);
-    setAllUsers(usersData.data ?? []);
+    setAllUsers([...activeUsers, ...legacyUsers]);
     setMembersLoading(false);
   }
 
-  async function handleAddMember(userId: string) {
+  async function handleAddMember(id: string, source: 'active' | 'legacy') {
     if (!selectedGroup) return;
     try {
       const supabase = createClient();
-      await addGroupMembers(supabase, selectedGroup.id, [userId]);
+      if (source === 'legacy') {
+        await addLegacyGroupMembers(supabase, selectedGroup.id, [id]);
+      } else {
+        await addGroupMembers(supabase, selectedGroup.id, [id]);
+      }
       await openMembers(selectedGroup);
       toast.success('Member added');
     } catch (err: unknown) {
@@ -149,12 +178,14 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
     }
   }
 
-  async function handleRemoveMember(userId: string) {
+  async function handleRemoveMember(memberId: string, source: 'active' | 'legacy') {
     if (!selectedGroup) return;
     try {
       const supabase = createClient();
-      await removeGroupMember(supabase, selectedGroup.id, userId);
-      setMembers((prev) => prev.filter((m) => m.user_id !== userId));
+      await removeGroupMember(supabase, selectedGroup.id, memberId, source);
+      setMembers((prev) => prev.filter((m) =>
+        source === 'legacy' ? m.legacy_user_id !== memberId : m.user_id !== memberId
+      ));
       toast.success('Member removed');
       await loadGroups();
     } catch (err: unknown) {
@@ -174,8 +205,22 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
     setShowDelete(true);
   }
 
-  const memberIds = new Set(members.map((m) => m.user_id));
-  const availableUsers = allUsers.filter((u) => !memberIds.has(u.id));
+  const memberActiveIds = new Set(members.filter((m) => m.user_id).map((m) => m.user_id));
+  const memberLegacyIds = new Set(members.filter((m) => m.legacy_user_id).map((m) => m.legacy_user_id));
+  const availableUsers = allUsers.filter((u) => {
+    // Exclude already-added members
+    if (u.source === 'legacy' && memberLegacyIds.has(u.id)) return false;
+    if (u.source === 'active' && memberActiveIds.has(u.id)) return false;
+    // Apply source filter
+    if (sourceFilter !== 'all' && u.source !== sourceFilter) return false;
+    // Apply search
+    if (!memberSearch) return true;
+    const q = memberSearch.toLowerCase();
+    return (
+      u.email.toLowerCase().includes(q) ||
+      (u.full_name?.toLowerCase().includes(q) ?? false)
+    );
+  });
   const filteredGroups = groups.filter((g) =>
     g.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -392,7 +437,7 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
 
       {/* Manage Members Dialog */}
       <Dialog open={showMembers} onOpenChange={setShowMembers}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Members of {selectedGroup?.name}</DialogTitle>
             <DialogDescription>Add or remove users from this group.</DialogDescription>
@@ -403,60 +448,102 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {availableUsers.length > 0 && (
-                <div className="border rounded-md max-h-32 overflow-y-auto">
-                  <p className="text-xs font-medium text-slate-500 px-3 py-1.5 bg-slate-50 border-b">
-                    Add member
-                  </p>
-                  {availableUsers.slice(0, 20).map((u) => (
-                    <button
-                      key={u.id}
-                      type="button"
-                      onClick={() => handleAddMember(u.id)}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 text-left border-b last:border-0"
-                    >
-                      <UserPlus className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span>{u.full_name || u.email}</span>
-                      {u.full_name && (
-                        <span className="text-xs text-slate-500">{u.email}</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {members.length === 0 ? (
-                <p className="text-sm text-slate-500 text-center py-4">No members yet.</p>
-              ) : (
-                <div className="max-h-64 overflow-y-auto space-y-1">
-                  {members.map((m) => (
-                    <div
-                      key={m.id}
-                      className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded"
-                    >
-                      <div>
-                        <span className="text-sm font-medium">{m.full_name || m.email}</span>
-                        {m.full_name && (
-                          <span className="text-xs text-slate-500 ml-2">{m.email}</span>
-                        )}
-                        {m.role && (
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            {m.role}
-                          </Badge>
-                        )}
-                      </div>
+              {/* Add members section with search and source filter */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      placeholder="Search users to add..."
+                      value={memberSearch}
+                      onChange={(e) => setMemberSearch(e.target.value)}
+                      className="pl-9 h-9"
+                    />
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    {(['all', 'active', 'legacy'] as const).map((f) => (
                       <Button
-                        variant="ghost"
+                        key={f}
+                        type="button"
+                        variant={sourceFilter === f ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => handleRemoveMember(m.user_id)}
-                        className="text-red-600 hover:text-red-700"
+                        className={sourceFilter === f ? 'bg-[#1E3A5F] hover:bg-[#162d4a] text-white h-9' : 'h-9'}
+                        onClick={() => setSourceFilter(f)}
                       >
-                        <X className="w-4 h-4" />
+                        {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Legacy'}
                       </Button>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              )}
+                {availableUsers.length > 0 ? (
+                  <div className="border rounded-md max-h-48 overflow-y-auto mt-2">
+                    {availableUsers.map((u) => (
+                      <button
+                        key={`${u.source}-${u.id}`}
+                        type="button"
+                        onClick={() => handleAddMember(u.id, u.source)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 text-left border-b last:border-0"
+                      >
+                        <UserPlus className="w-4 h-4 text-slate-400 shrink-0" />
+                        <span>{u.full_name || u.email}</span>
+                        {u.full_name && (
+                          <span className="text-xs text-slate-500">{u.email}</span>
+                        )}
+                        {u.source === 'legacy' && (
+                          <Badge variant="outline" className="ml-auto text-xs text-amber-700 border-amber-300">Legacy</Badge>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 text-center py-2 mt-2">
+                    {memberSearch || sourceFilter !== 'all' ? 'No matching users found.' : 'All users are already members.'}
+                  </p>
+                )}
+              </div>
+
+              {/* Current members */}
+              <div>
+                <Label className="text-sm font-medium">Current Members ({members.length})</Label>
+                {members.length === 0 ? (
+                  <p className="text-sm text-slate-500 text-center py-4">No members yet.</p>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto space-y-1 mt-2">
+                    {members.map((m) => (
+                      <div
+                        key={m.id}
+                        className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded"
+                      >
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium">{m.full_name || m.email}</span>
+                          {m.full_name && (
+                            <span className="text-xs text-slate-500">{m.email}</span>
+                          )}
+                          {m.role && (
+                            <Badge variant="outline" className="text-xs">
+                              {m.role}
+                            </Badge>
+                          )}
+                          {m.source === 'legacy' && (
+                            <Badge variant="outline" className="text-xs text-amber-700 border-amber-300">Legacy</Badge>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveMember(
+                            m.source === 'legacy' ? m.legacy_user_id! : m.user_id!,
+                            m.source
+                          )}
+                          className="text-red-600 hover:text-red-700 shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
           <DialogFooter>

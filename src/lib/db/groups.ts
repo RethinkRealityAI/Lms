@@ -79,21 +79,28 @@ export async function getGroupMembers(
 ): Promise<UserGroupMember[]> {
   const { data, error } = await supabase
     .from('user_group_members')
-    .select('*, users:user_id(email, full_name, role)')
+    .select('*, users:user_id(email, full_name, role), legacy_users:legacy_user_id(email, full_name)')
     .eq('group_id', groupId)
     .order('added_at', { ascending: false });
 
   if (error || !data) return [];
 
-  return data.map((m: any) => ({
-    id: m.id,
-    group_id: m.group_id,
-    user_id: m.user_id,
-    added_at: m.added_at,
-    email: m.users?.email,
-    full_name: m.users?.full_name,
-    role: m.users?.role,
-  }));
+  return data.map((m: any) => {
+    const isLegacy = m.legacy_user_id != null;
+    const source = isLegacy ? 'legacy' as const : 'active' as const;
+    const joined = isLegacy ? m.legacy_users : m.users;
+    return {
+      id: m.id,
+      group_id: m.group_id,
+      user_id: m.user_id,
+      legacy_user_id: m.legacy_user_id,
+      added_at: m.added_at,
+      email: joined?.email,
+      full_name: joined?.full_name,
+      role: isLegacy ? undefined : joined?.role,
+      source,
+    };
+  });
 }
 
 export async function addGroupMembers(
@@ -107,16 +114,29 @@ export async function addGroupMembers(
   if (error) throw error;
 }
 
+export async function addLegacyGroupMembers(
+  supabase: SupabaseClient,
+  groupId: string,
+  legacyUserIds: string[]
+): Promise<void> {
+  if (legacyUserIds.length === 0) return;
+  const rows = legacyUserIds.map((legacy_user_id) => ({ group_id: groupId, legacy_user_id }));
+  const { error } = await supabase.from('user_group_members').insert(rows);
+  if (error) throw error;
+}
+
 export async function removeGroupMember(
   supabase: SupabaseClient,
   groupId: string,
-  userId: string
+  memberId: string,
+  source: 'active' | 'legacy'
 ): Promise<void> {
+  const column = source === 'legacy' ? 'legacy_user_id' : 'user_id';
   const { error } = await supabase
     .from('user_group_members')
     .delete()
     .eq('group_id', groupId)
-    .eq('user_id', userId);
+    .eq(column, memberId);
 
   if (error) throw error;
 }

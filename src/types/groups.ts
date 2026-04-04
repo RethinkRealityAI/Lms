@@ -15,12 +15,14 @@ export interface UserGroupWithCounts extends UserGroup {
 export interface UserGroupMember {
   id: string;
   group_id: string;
-  user_id: string;
+  user_id: string | null;
+  legacy_user_id: string | null;
   added_at: string;
   // Joined fields
   email?: string;
   full_name?: string | null;
   role?: string;
+  source: 'active' | 'legacy';
 }
 
 export interface CourseUserAssignment {
