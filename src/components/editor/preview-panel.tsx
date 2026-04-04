@@ -24,18 +24,21 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
+  const lessons = useEditorStore((s) => s.lessons);
   const selectEntity = useEditorStore((s) => s.selectEntity);
 
-  // Find the currently selected slide
+  // Find the currently selected slide and its owning lesson
   let selectedSlide: Slide | null = null;
   let siblingSlides: Slide[] = [];
+  let owningLessonId: string | null = null;
 
   if (selectedEntity?.type === 'slide') {
-    for (const [, slideList] of slides) {
+    for (const [lessonId, slideList] of slides) {
       const found = slideList.find((s) => s.id === selectedEntity.id);
       if (found) {
         selectedSlide = found;
         siblingSlides = slideList;
+        owningLessonId = lessonId;
         break;
       }
     }
@@ -48,11 +51,12 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
       }
     }
     if (parentSlideId) {
-      for (const [, slideList] of slides) {
+      for (const [lessonId, slideList] of slides) {
         const found = slideList.find((s) => s.id === parentSlideId);
         if (found) {
           selectedSlide = found;
           siblingSlides = slideList;
+          owningLessonId = lessonId;
           break;
         }
       }
@@ -60,6 +64,23 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
   }
 
   const slideIndex = selectedSlide ? siblingSlides.indexOf(selectedSlide) : -1;
+
+  // Resolve lesson context for WYSIWYG header
+  let lessonTitle = 'Untitled Lesson';
+  let lessonDescription: string | null = null;
+  let titleImageUrl: string | null = null;
+
+  if (owningLessonId) {
+    for (const lessonList of lessons.values()) {
+      const lesson = lessonList.find(l => l.id === owningLessonId);
+      if (lesson) {
+        lessonTitle = lesson.title;
+        lessonDescription = lesson.description ?? null;
+        titleImageUrl = lesson.title_image_url ?? null;
+        break;
+      }
+    }
+  }
 
   function goToPrevSlide() {
     if (slideIndex > 0) {
@@ -102,7 +123,7 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
 
       <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
         <div
-          className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col"
+          className="bg-white rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col"
           style={{ width: DEVICE_WIDTHS[device], maxWidth: '100%', minHeight: '500px' }}
         >
           {selectedSlide ? (
@@ -111,6 +132,11 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
               selectedBlockId={selectedBlockId}
               onSelectBlock={(blockId) => selectEntity({ type: 'block', id: blockId })}
               onDeleteBlock={onDeleteBlock}
+              lessonTitle={lessonTitle}
+              lessonDescription={lessonDescription}
+              titleImageUrl={titleImageUrl}
+              slideNumber={slideIndex + 1}
+              totalSlides={siblingSlides.length}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-12">
