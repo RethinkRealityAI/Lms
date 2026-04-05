@@ -58,13 +58,24 @@ src/
       structure-panel.tsx       # Left: module/lesson/slide tree
       preview-panel.tsx         # Centre: slide preview
       properties-panel.tsx      # Right: selected element properties
+      dnd/                      # @dnd-kit drag-and-drop system
+        editor-dnd-context.tsx  # Top-level DnD context (palette→canvas + block reorder)
+        draggable-block-item.tsx # Palette items with useDraggable
+        sortable-block.tsx      # Canvas blocks with useSortable + drag handles
+        block-drag-overlay.tsx  # Floating preview with block-type icon
+        drop-indicator.tsx      # Blue insertion line between blocks
+    shared/                     # Shared components used by both editor and student views
+      slide-frame.tsx           # WYSIWYG slide card: header + progress bar + content area
+      title-slide.tsx           # Hero gradient/image title slide with GANSID branding
+      completion-slide.tsx      # Award icon completion slide
     blocks/                     # One viewer per block type
       rich-text/viewer.tsx      # prose-xl scaling
-      image-gallery/viewer.tsx
+      image-gallery/viewer.tsx  # Aspect ratio, lazy loading, error fallback, HTML captions
       cta/viewer.tsx
       quiz-inline/viewer.tsx    # Navy button/highlight, h-full layout
       callout/viewer.tsx
-      video/viewer.tsx, pdf/, iframe/, h5p/
+      video/viewer.tsx          # Responsive aspect-video, loading spinner, error state
+      pdf/, iframe/, h5p/
   lib/
     content/
       block-registry.ts         # Runtime Map of registered block types
@@ -328,6 +339,44 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 
 ---
 
+## WYSIWYG Editor Architecture
+
+The editor canvas renders slides identically to the student viewer using shared components:
+
+| Component | Location | Purpose |
+|---|---|---|
+| `SlideFrame` | `src/components/shared/slide-frame.tsx` | Card shell: header (lesson title + progress bar) + content area. Used by both editor and student views. |
+| `TitleSlide` | `src/components/shared/title-slide.tsx` | Gradient/image hero with GANSID branding. Shared. |
+| `CompletionSlide` | `src/components/shared/completion-slide.tsx` | Award icon + "Lesson Complete". Editor-only (student has action buttons inline). |
+| `SlideContentArea` | Exported from `slide-frame.tsx` | Content wrapper with student-matching padding (`px-6 py-5 gap-5`). |
+
+### Slide Backgrounds
+
+Stored in `slide.settings`:
+- `settings.background` — `'gradient'` | `'#hexcolor'` | defaults to `'#FFFFFF'`
+- `settings.background_image` — Full Supabase URL to an uploaded image (renders as absolute-positioned cover behind content with `bg-black/20` overlay)
+
+The `SlideStyleEditor` (`theme-editor/slide-style-editor.tsx`) provides both color presets and image upload.
+
+### Editor DnD System
+
+All DnD uses `@dnd-kit` (no HTML5 drag). Components in `src/components/editor/dnd/`:
+
+- **`EditorDndContext`** — Wraps the three editor panels. Hybrid collision detection: `pointerWithin` for palette drops, `closestCenter` for block reorder.
+- **`DraggableBlockItem`** — Palette items (properties panel "Components" tab) use `useDraggable` with `source: 'palette'` data.
+- **`SortableBlock`** — Canvas blocks use `useSortable` with `source: 'canvas'` data. Drag handle (GripVertical) appears on hover. Blue insertion line shows drop target.
+- **`BlockDragOverlay`** — Floating preview with block-type icon + contextual hint.
+
+### Delete Confirmation
+
+Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-screen dialog. No blur overlay. After deletion, selection moves to the parent entity (block→slide, slide→lesson, lesson→module).
+
+### Quiz Editor State Caching
+
+`quiz-inline/editor.tsx` uses a `useRef<TypeCache>` to cache options/categories per question type. Switching from multiple choice → categorize → back restores previous options.
+
+---
+
 ## Admin Preview Route
 
 `/gansid/admin/courses/[id]/preview` renders `<CourseViewer courseId={id} previewMode />` inside a `fixed inset-0 z-[60]` overlay that covers the admin nav entirely. A navy banner at the top (`h-12`, `bg-[#1E3A5F]`) shows "Admin Preview" with a "Back to Editor" link.
@@ -353,7 +402,7 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 
 ---
 
-## Current Implementation Status (as of 2026-04-03)
+## Current Implementation Status (as of 2026-04-05)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -384,9 +433,15 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 - [x] Course assignment system: `access_mode` toggle (all/restricted), user/group assignment, student visibility filtering
 - [x] User groups: CRUD, membership management (active + legacy users), Groups tab in admin user management
 - [x] AccessModePicker: reusable component in course create/edit forms + course detail assignments tab
+- [x] Editor DnD: @dnd-kit block drag from palette with visual overlay, block reorder with drag handles + insertion lines
+- [x] Block viewer improvements: image gallery (aspect ratio, lazy load, error fallback), video (responsive, loading spinner)
+- [x] WYSIWYG editor preview: shared SlideFrame/TitleSlide components, editor matches student view pixel-for-pixel
+- [x] Full-page slide backgrounds: image upload + color/gradient via slide settings editor
+- [x] Editor UX: inline delete toast (no blur overlay), quiz type state caching, "Unsaved changes" indicator
+- [x] Image URL validation: handles SCORM relative paths gracefully, HTML caption rendering
 
 ### In Progress / Next
-- [ ] Phase 3: Admin authoring — block editor UI, slide CRUD from editor
+- [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
 - [ ] Phase 4: Quiz expansion (standalone quiz grading, scores, retry logic)
 - [ ] Phase 5: Multi-tenant polish, per-tenant branding
 - [ ] Phase 6: Advanced blocks (hotspot, sequence, drag-and-drop)
@@ -396,7 +451,7 @@ A `useEffect` fires `handleMarkComplete()` when `currentSlide` reaches the compl
 - `CourseViewer` still makes direct Supabase calls (should go through `lib/db/`)
 - `src/app/admin/courses/[id]/page.tsx` same issue
 - No `SUPABASE_SERVICE_ROLE_KEY` — seed scripts must use MCP
-- Block viewers have no unit tests (TDD rule not yet applied to viewer layer)
+- SCORM-imported images use relative paths (`fit_content_assets/...`) — files not in Supabase storage, need data migration
 
 ---
 
