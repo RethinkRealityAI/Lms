@@ -6,7 +6,12 @@ import type { RichTextData } from '@/lib/content/blocks/rich-text/schema';
 function sanitizeHtml(html: string): string {
   // Content originates from admin-imported SCORM packages.
   // Strip script tags as defense-in-depth against malformed imports.
-  return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  let result = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  // Remove inline images with relative SCORM paths (fit_content_assets/...) that
+  // can't load in the browser. The actual images live in separate image_gallery blocks
+  // with absolute CDN URLs.
+  result = result.replace(/<img\s+[^>]*src=["'](?!https?:\/\/|data:)[^"']*["'][^>]*\/?>/gi, '');
+  return result;
 }
 
 export default function RichTextViewer({ data }: BlockViewerProps<RichTextData>) {

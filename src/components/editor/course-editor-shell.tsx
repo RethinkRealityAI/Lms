@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useContext } from 'react';
+import { toast } from 'sonner';
 import { createEditorStore } from '@/lib/stores/editor-store';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import { EditorToolbar } from './editor-toolbar';
@@ -68,25 +69,28 @@ function EditorContent({ courseId }: { courseId: string }) {
     if (!institutionId || !store) return;
     const supabase = createClient();
     const state = store.getState();
+    let failCount = 0;
+
+    const tracked = <T,>(promise: Promise<T>, label: string): Promise<void> =>
+      promise.then(() => undefined).catch((err) => {
+        failCount++;
+        console.error(`Failed to save ${label}:`, err);
+      });
 
     const slidePromises: Promise<void>[] = [];
     for (const slideList of state.slides.values()) {
       for (const slide of slideList) {
         slidePromises.push(
-          dbUpdateSlide(
-            supabase,
-            slide.id,
-            {
+          tracked(
+            dbUpdateSlide(supabase, slide.id, {
               title: slide.title,
               slide_type: slide.slide_type,
               order_index: slide.order_index,
               status: slide.status,
               settings: slide.settings,
-            },
-            institutionId,
-          ).then(() => undefined).catch((err) => {
-            console.warn('Failed to save slide', slide.id, err);
-          }),
+            }, institutionId),
+            `slide ${slide.id}`,
+          ),
         );
       }
     }
@@ -95,35 +99,44 @@ function EditorContent({ courseId }: { courseId: string }) {
     for (const blockList of state.blocks.values()) {
       for (const block of blockList) {
         blockPromises.push(
-          dbUpdateBlock(
-            supabase,
-            block.id,
-            { data: block.data },
-            institutionId,
-          ).then(() => undefined).catch((err) => {
-            console.warn('Failed to save block', block.id, err);
-          }),
+          tracked(
+            dbUpdateBlock(supabase, block.id, { data: block.data }, institutionId),
+            `block ${block.id}`,
+          ),
         );
       }
     }
 
     const modulePromises: Promise<void>[] = state.modules.map((mod) =>
-      dbUpdateModule(supabase, mod.id, { title: mod.title, description: mod.description })
-        .catch((err) => { console.warn('Failed to save module', mod.id, err); }),
+      tracked(
+        dbUpdateModule(supabase, mod.id, { title: mod.title, description: mod.description }),
+        `module ${mod.id}`,
+      ),
     );
 
     const lessonPromises: Promise<void>[] = [];
     for (const lessonList of state.lessons.values()) {
       for (const lesson of lessonList) {
         lessonPromises.push(
-          dbUpdateLesson(supabase, lesson.id, { title: lesson.title, description: lesson.description, title_image_url: lesson.title_image_url ?? null })
-            .catch((err) => { console.warn('Failed to save lesson', lesson.id, err); }),
+          tracked(
+            dbUpdateLesson(supabase, lesson.id, { title: lesson.title, description: lesson.description, title_image_url: lesson.title_image_url ?? null }),
+            `lesson ${lesson.id}`,
+          ),
         );
       }
     }
 
     await Promise.all([...slidePromises, ...blockPromises, ...modulePromises, ...lessonPromises]);
-    markSaved();
+
+    if (failCount > 0) {
+      toast.error('Some changes failed to save', {
+        description: `${failCount} item(s) could not be saved. Your changes are preserved locally — try saving again.`,
+        duration: 6000,
+      });
+      // Keep isDirty = true so auto-save will retry
+    } else {
+      markSaved();
+    }
   }, [institutionId, store, markSaved]);
 
   const { saveNow } = useAutoSave(isDirty, handleSave);

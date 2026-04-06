@@ -16,13 +16,20 @@ import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/ty
 import { LessonBlockRenderer, createFallbackBlockFromLesson } from '@/components/lesson-block-renderer';
 import { sortBlocks } from '@/lib/content/lesson-blocks';
 import { TitleSlide } from '@/components/shared/title-slide';
+import { SlideContentArea } from '@/components/shared/slide-frame';
 
 // ---------------------------------------------------------------------------
 // Slide types
 // ---------------------------------------------------------------------------
+interface SlideSettings {
+  background?: string;
+  background_image?: string;
+  [key: string]: unknown;
+}
+
 type Slide =
   | { kind: 'title' }
-  | { kind: 'page'; slideId: string; blocks: LessonBlock[] }
+  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings }
   | { kind: 'completion' };
 
 // ---------------------------------------------------------------------------
@@ -83,6 +90,16 @@ function Confetti({ count = 24 }: { count?: number }) {
 }
 
 // ---------------------------------------------------------------------------
+// Slide background — matches editor's getSlideBackground (slide-preview.tsx)
+// ---------------------------------------------------------------------------
+function getSlideBackground(settings?: SlideSettings): React.CSSProperties {
+  const bg = settings?.background;
+  if (bg === 'gradient') return { background: 'linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)' };
+  if (typeof bg === 'string' && bg.startsWith('#')) return { backgroundColor: bg };
+  return { backgroundColor: '#FFFFFF' };
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 interface CourseViewerProps {
@@ -97,7 +114,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonBlocks, setLessonBlocks] = useState<Record<string, LessonBlock[]>>({});
-  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number }>>>({});
+  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings }>>>({});
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
   const [pageLoading, setPageLoading] = useState(true);
   // Slide viewer
@@ -178,18 +195,18 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             setLessonBlocks(grouped);
           }
 
-          // Fetch slides to know their order within each lesson
+          // Fetch slides to know their order and settings within each lesson
           const { data: slidesData } = await supabase
             .from('slides')
-            .select('id, lesson_id, order_index')
+            .select('id, lesson_id, order_index, settings')
             .in('lesson_id', lessonIds)
             .order('order_index', { ascending: true });
 
           if (slidesData) {
-            const groupedSlides: Record<string, Array<{ id: string; order_index: number }>> = {};
-            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number }>) {
+            const groupedSlides: Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings }>> = {};
+            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number; settings?: SlideSettings }>) {
               if (!groupedSlides[slide.lesson_id]) groupedSlides[slide.lesson_id] = [];
-              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index });
+              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index, settings: slide.settings });
             }
             setLessonSlidesMap(groupedSlides);
           }
@@ -335,7 +352,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     );
     const slides = lessonSlidesMap[selectedLesson.id] ?? [];
 
-    let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[] }> = [];
+    let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings }> = [];
 
     if (slides.length > 0 && filteredBlocks.some(b => b.slide_id)) {
       // Group blocks by slide_id, then order slides by their order_index
@@ -348,7 +365,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       const sortedSlides = [...slides].sort((a, b) => a.order_index - b.order_index);
       pageSlides = sortedSlides
         .filter(s => (blocksBySlide[s.id]?.length ?? 0) > 0)
-        .map(s => ({ kind: 'page' as const, slideId: s.id, blocks: sortBlocks(blocksBySlide[s.id]) }));
+        .map(s => ({ kind: 'page' as const, slideId: s.id, blocks: sortBlocks(blocksBySlide[s.id]), settings: s.settings }));
 
       // Any blocks without a slide_id get appended as a final page
       if (blocksBySlide['__no_slide__']?.length) {
@@ -667,14 +684,31 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     />
                   )}
 
-                  {/* CONTENT SLIDE — all blocks on this slide stacked vertically */}
-                  {currentSlideData?.kind === 'page' && (
-                    <div className="px-3 py-3 sm:px-6 sm:py-5 overflow-y-auto flex-1 flex flex-col gap-5">
-                      {currentSlideData.blocks.map(block => (
-                        <LessonBlockRenderer key={block.id} block={block} lessonTitle={selectedLesson.title} onQuizCorrect={handleQuizCorrect} />
-                      ))}
-                    </div>
-                  )}
+                  {/* CONTENT SLIDE — matches editor slide-preview.tsx rendering */}
+                  {currentSlideData?.kind === 'page' && (() => {
+                    const bgStyle = getSlideBackground(currentSlideData.settings);
+                    const backgroundImage = typeof currentSlideData.settings?.background_image === 'string'
+                      ? currentSlideData.settings.background_image : null;
+                    return (
+                      <div className="relative flex-1 overflow-y-auto" style={bgStyle}>
+                        {backgroundImage && (
+                          <div
+                            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                            style={{ backgroundImage: `url(${backgroundImage})` }}
+                          >
+                            <div className="absolute inset-0 bg-black/20" />
+                          </div>
+                        )}
+                        <div className="relative z-10">
+                          <SlideContentArea>
+                            {currentSlideData.blocks.map(block => (
+                              <LessonBlockRenderer key={block.id} block={block} lessonTitle={selectedLesson.title} onQuizCorrect={handleQuizCorrect} />
+                            ))}
+                          </SlideContentArea>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* COMPLETION SLIDE */}
                   {currentSlideData?.kind === 'completion' && (

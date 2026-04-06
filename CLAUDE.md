@@ -303,7 +303,7 @@ When `previewMode={true}`:
 ```ts
 type Slide =
   | { kind: 'title' }               // Hero gradient + lesson title + description + GANSID attribution
-  | { kind: 'block'; block: LessonBlock }  // One block per slide, rendered by LessonBlockRenderer
+  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings }
   | { kind: 'completion' }          // Award icon, Mark Complete, Take Quiz, Next Lesson / Back buttons
 ```
 
@@ -358,6 +358,8 @@ Stored in `slide.settings`:
 
 The `SlideStyleEditor` (`theme-editor/slide-style-editor.tsx`) provides both color presets and image upload.
 
+Both the editor preview (`slide-preview.tsx`) and the student/preview viewer (`course-viewer.tsx`) use `getSlideBackground()` + background image overlays, and `SlideContentArea` for matching padding. The student viewer fetches `settings` from the `slides` table alongside `id` and `order_index`.
+
 ### Editor DnD System
 
 All DnD uses `@dnd-kit` (no HTML5 drag). Components in `src/components/editor/dnd/`:
@@ -399,10 +401,12 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 9. **`lib/db/` files must NOT import from `@/lib/supabase/server`** — `server.ts` uses `next/headers` which is server-only. Any db file imported by a client component (directly or via the `@/lib/db` barrel) will break the build. All read helpers must accept a `SupabaseClient` parameter instead of calling `createClient()` internally.
 10. **Tiptap `useEditor` must include `immediatelyRender: false`** — without it, SSR throws a hydration mismatch error.
 11. **`lessons.content_url` is nullable** — block-based lessons don't use it (migration 017). Do not restore the NOT NULL constraint.
+12. **Editor save must not swallow errors** — `handleSave` tracks failure count and only calls `markSaved()` when all DB writes succeed. Failures keep `isDirty = true` (so auto-save retries) and show a toast error. Never `.catch()` and discard save errors silently.
+13. **Rich text sanitizer strips relative image paths** — SCORM-imported HTML may contain `<img src="fit_content_assets/...">` with relative paths that can't load. The sanitizer in `rich-text/viewer.tsx` removes `<img>` tags whose `src` doesn't start with `http://`, `https://`, or `data:`.
 
 ---
 
-## Current Implementation Status (as of 2026-04-05)
+## Current Implementation Status (as of 2026-04-06)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -439,6 +443,9 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 - [x] Full-page slide backgrounds: image upload + color/gradient via slide settings editor
 - [x] Editor UX: inline delete toast (no blur overlay), quiz type state caching, "Unsaved changes" indicator
 - [x] Image URL validation: handles SCORM relative paths gracefully, HTML caption rendering
+- [x] Save reliability: errors tracked per-item, `markSaved()` only on zero failures, toast on failure, auto-save retries
+- [x] WYSIWYG parity: student/preview viewer renders slide backgrounds + `SlideContentArea` matching editor
+- [x] Rich text sanitizer strips unresolvable relative `<img>` paths from SCORM imports
 
 ### In Progress / Next
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
@@ -451,7 +458,7 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 - `CourseViewer` still makes direct Supabase calls (should go through `lib/db/`)
 - `src/app/admin/courses/[id]/page.tsx` same issue
 - No `SUPABASE_SERVICE_ROLE_KEY` — seed scripts must use MCP
-- SCORM-imported images use relative paths (`fit_content_assets/...`) — files not in Supabase storage, need data migration
+- SCORM-imported images: inline relative paths (`fit_content_assets/...`) are stripped by the rich text sanitizer; the actual images exist as separate `image_gallery` blocks with working EdApp CDN URLs. A future data migration could upload them to Supabase Storage.
 
 ---
 
