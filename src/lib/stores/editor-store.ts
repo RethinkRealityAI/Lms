@@ -289,7 +289,14 @@ export function createEditorStore() {
       set((s) => {
         const existing = s.blocks.get(slideId) ?? [];
         const next = new Map(s.blocks);
-        next.set(slideId, [...existing, block]);
+        // Shift existing blocks at or after the insert position, then insert sorted
+        const updated = existing.map((b) =>
+          b.order_index >= block.order_index
+            ? { ...b, order_index: b.order_index + 1 }
+            : b
+        );
+        const merged = [...updated, block].sort((a, b) => a.order_index - b.order_index);
+        next.set(slideId, merged);
         return { blocks: next, ...push(s, snap, 'addBlock', block.id) };
       });
     },

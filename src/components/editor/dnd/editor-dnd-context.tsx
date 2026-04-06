@@ -32,7 +32,7 @@ export interface DropTarget {
 
 interface EditorDndContextProps {
   children: React.ReactNode;
-  onAddBlock: (slideId: string, blockType: string) => void;
+  onAddBlock: (slideId: string, blockType: string, insertIndex?: number) => void;
   onReorderBlocks: (slideId: string, blockIds: string[]) => void;
   getSlideBlocks: (slideId: string) => { id: string }[];
   activeSlideId: string | null;
@@ -105,12 +105,21 @@ export function EditorDndContext({
 
       const activeData = active.data.current;
 
-      // Palette → Canvas: add new block
+      // Palette → Canvas: add new block at the drop position
       if (activeData?.source === 'palette') {
         const targetIsCanvas =
           over.id === 'slide-canvas' || over.data.current?.source === 'canvas';
         if (targetIsCanvas) {
-          onAddBlock(activeSlideId, activeData.blockType as string);
+          // If dropped over a specific block, insert at that block's position
+          let insertIndex: number | undefined;
+          if (over.id !== 'slide-canvas' && over.data.current?.source === 'canvas') {
+            const blocks = getSlideBlocks(activeSlideId);
+            const overIndex = blocks.findIndex((b) => b.id === over.id);
+            if (overIndex !== -1) {
+              insertIndex = overIndex;
+            }
+          }
+          onAddBlock(activeSlideId, activeData.blockType as string, insertIndex);
         }
         return;
       }

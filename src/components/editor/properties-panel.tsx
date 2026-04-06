@@ -20,7 +20,7 @@ import type { Slide } from '@/types';
 interface PropertiesPanelProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-  onAddBlock?: (slideId: string, blockType: string) => void;
+  onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
   onDeleteBlock?: () => void;
 }
 

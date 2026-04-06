@@ -15,7 +15,7 @@ const DEVICE_WIDTHS: Record<DeviceMode, string> = {
 };
 
 export interface PreviewPanelProps {
-  onAddBlock?: (slideId: string, blockType: string) => void;
+  onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
   onDeleteBlock?: (blockId: string) => void;
 }
 

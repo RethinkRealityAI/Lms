@@ -267,7 +267,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   // ── Persistence: add block to a slide (DB-first) ──────────────────────────
 
-  const handleAddBlock = useCallback(async (slideId: string, blockType: string) => {
+  const handleAddBlock = useCallback(async (slideId: string, blockType: string, insertIndex?: number) => {
     if (!institutionId) return;
     try {
       const state = store!.getState();
@@ -282,13 +282,26 @@ function EditorContent({ courseId }: { courseId: string }) {
 
       const supabase = createClient();
       const existingBlocks = state.blocks.get(slideId) ?? [];
+      const orderIndex = insertIndex != null ? insertIndex : existingBlocks.length;
+
+      // If inserting in the middle, shift subsequent blocks' order_index
+      if (insertIndex != null && insertIndex < existingBlocks.length) {
+        const blocksToShift = existingBlocks.filter(b => b.order_index >= insertIndex);
+        for (const b of blocksToShift) {
+          await supabase
+            .from('lesson_blocks')
+            .update({ order_index: b.order_index + 1 })
+            .eq('id', b.id);
+        }
+      }
+
       const defaultData = getDefaultBlockData(blockType);
       const result = await dbCreateBlock(supabase, {
         lesson_id: lessonId,
         slide_id: slideId,
         block_type: blockType,
         data: defaultData,
-        order_index: existingBlocks.length,
+        order_index: orderIndex,
         institution_id: institutionId,
       });
       const blockData: BlockData = {
