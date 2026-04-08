@@ -260,13 +260,13 @@ export function PreviewPanel({ devicePreview, onDeleteBlock }: PreviewPanelProps
 function getDefaultCanvasBlockData(blockType: string): Record<string, unknown> {
   switch (blockType) {
     case 'quiz_inline':
-      return { question: 'Enter your question', options: [], correct_index: 0 };
+      return { question_type: 'multiple_choice', question: 'Enter your question', options: ['Option A', 'Option B'], correct_answer: 'Option A' };
     case 'callout':
       return { variant: 'info', title: 'Note', html: '<p>Enter callout text...</p>' };
     case 'cta':
-      return { text: 'Click here', url: '', style: 'primary' };
+      return { text: 'Click here', action: 'external_url', button_label: 'Click here', url: 'https://example.com' };
     case 'video':
-      return { url: '', caption: '' };
+      return { url: 'https://example.com/video.mp4', caption: '' };
     default:
       return {};
   }
