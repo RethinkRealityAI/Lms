@@ -20,6 +20,7 @@ A multi-tenant Learning Management System built for the **Global Action Network 
 | Styling | Tailwind CSS 4, shadcn/ui |
 | Validation | Zod |
 | Testing | Vitest, React Testing Library |
+| Canvas editor | tldraw v4.x (freeform canvas slides) |
 | SCORM import | Node.js CLI (`scripts/import-scorm/`) |
 
 ---
@@ -48,6 +49,7 @@ src/
   components/
     student/
       course-viewer.tsx  # Shared viewer — accepts courseId + previewMode props
+      canvas-slide-viewer.tsx  # Read-only tldraw viewer (dynamic import, ssr: false)
                          #   previewMode suppresses enrollment/progress/cert DB writes
                          #   h-[calc(100vh-3rem)] preview vs h-[calc(100vh-6rem)] student
     lesson-block-renderer.tsx   # Renders any LessonBlock using registry
@@ -58,6 +60,7 @@ src/
       structure-panel.tsx       # Left: module/lesson/slide tree
       preview-panel.tsx         # Centre: slide preview
       properties-panel.tsx      # Right: selected element properties
+      canvas-slide-editor.tsx   # tldraw editor for canvas slides (dynamic import, ssr: false)
       dnd/                      # @dnd-kit drag-and-drop system
         editor-dnd-context.tsx  # Top-level DnD context (palette→canvas + block reorder)
         draggable-block-item.tsx # Palette items with useDraggable
@@ -81,6 +84,15 @@ src/
       block-registry.ts         # Runtime Map of registered block types
       blocks/register-all.ts    # 'use client' — registers ALL block types on import
       lesson-blocks.ts          # sortBlocks(), createLegacyBlockPayload()
+    canvas/
+      canvas-utils.ts           # tldraw snapshot helpers, design frame, CanvasBlockContext
+      register-shapes.ts        # Custom LMS shape registry (lmsShapeUtils, CANVAS_BLOCK_TYPES)
+      lms-shape-content.tsx     # Renders block viewer inside tldraw shapes via context
+      shapes/                   # Custom tldraw ShapeUtils
+        lms-quiz-shape.tsx      # quiz_inline on canvas
+        lms-callout-shape.tsx   # callout on canvas
+        lms-cta-shape.tsx       # CTA on canvas
+        lms-video-shape.tsx     # video on canvas
     stores/
       editor-store.ts           # Zustand vanilla store for editor state (undo/redo, dirty flag)
     db/                         # All Supabase CRUD — functions accept SupabaseClient param
@@ -151,6 +163,7 @@ users → progress (lesson_id)
 | 017 | make_content_url_nullable | `lessons.content_url` DROP NOT NULL (block-based lessons don't use it) |
 | 018 | user_groups_and_course_assignments | `user_groups`, `user_group_members`, `course_user_assignments`, `course_group_assignments` tables + `courses.access_mode` column |
 | 019 | user_group_members_legacy_support | `user_group_members.user_id` nullable + `legacy_user_id` column with CHECK constraint (exactly one set) |
+| 020 | add_canvas_data_to_slides | `slides.canvas_data` jsonb column + updates `slides_slide_type_check` constraint to include `'canvas'` |
 
 ### RLS Pattern — CRITICAL
 
@@ -206,6 +219,10 @@ Student URL for testing: `http://localhost:3001/gansid/student`
 ### Registered Block Types
 
 `rich_text`, `image_gallery`, `cta`, `callout`, `quiz_inline`, `video`, `pdf`, `iframe`, `h5p`
+
+### CTA Block — Content Links Only
+
+The CTA block is for external content links (e.g., "Visit our website"). It does NOT handle slide navigation — that is built into the viewer footer. Schema: `{ text, button_label, url }`. Legacy CTA blocks with `action: 'complete_lesson'` or `'next_lesson'` render as nothing.
 
 ---
 
@@ -303,8 +320,8 @@ When `previewMode={true}`:
 ```ts
 type Slide =
   | { kind: 'title' }               // Hero gradient + lesson title + description + GANSID attribution
-  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings }
-  | { kind: 'completion' }          // Award icon, Mark Complete, Take Quiz, Next Lesson / Back buttons
+  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }
+  | { kind: 'completion' }          // Award icon + confetti animation; nav buttons are in the footer
 ```
 
 ### Key State
@@ -324,6 +341,17 @@ type Slide =
 - Body: `flex-1 min-h-0 flex lg:flex-row gap-3 p-3` — sidebar + slide card side by side
 - Sidebar: fixed `260px` wide, collapsible on desktop; `<select>` dropdown on mobile (`lg:hidden`)
 - Slide card: `flex flex-col h-full` with `shrink-0` top bar + bottom nav, `flex-1 overflow-y-auto` content
+
+### Navigation Footer
+
+All slide navigation is in a consistent bottom footer bar (not in slide content):
+- **Previous** button on the left (disabled on first slide)
+- **Primary action** on the right, context-dependent:
+  - Regular content slides: "Next" (navy)
+  - Last content slide: "Complete Lesson" (red `#DC2626`)
+  - Completion slide: "Next Lesson" (navy) or "Back to Dashboard" (near-black)
+- **Slide settings** can override button labels via `settings.nav_label` and redirect via `settings.nav_url`
+- CTA blocks are content-only (external links) — they do NOT handle navigation
 
 ### Auto-complete behaviour
 
@@ -355,6 +383,8 @@ The editor canvas renders slides identically to the student viewer using shared 
 Stored in `slide.settings`:
 - `settings.background` — `'gradient'` | `'#hexcolor'` | defaults to `'#FFFFFF'`
 - `settings.background_image` — Full Supabase URL to an uploaded image (renders as absolute-positioned cover behind content with `bg-black/20` overlay)
+- `settings.nav_label` — Custom button label override for the footer nav button (optional)
+- `settings.nav_url` — External URL; if set, footer button opens this URL instead of navigating (optional)
 
 The `SlideStyleEditor` (`theme-editor/slide-style-editor.tsx`) provides both color presets and image upload.
 
@@ -376,6 +406,41 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 ### Quiz Editor State Caching
 
 `quiz-inline/editor.tsx` uses a `useRef<TypeCache>` to cache options/categories per question type. Switching from multiple choice → categorize → back restores previous options.
+
+---
+
+## tldraw Canvas Slides
+
+Slides can be either **block-based** (vertical stack of blocks) or **canvas-based** (freeform tldraw layout). Set by `slide_type = 'canvas'`.
+
+### Data Model
+- `slides.canvas_data` (jsonb) — tldraw document snapshot, only populated for canvas slides
+- Native tldraw shapes (text, drawings, arrows) live entirely in `canvas_data`
+- Custom LMS shapes (quiz, callout, CTA, video) store spatial data in `canvas_data` and content data in `lesson_blocks` via `blockId` reference
+
+### Custom Shapes
+Registered in `src/lib/canvas/register-shapes.ts`:
+- `lms-quiz` → quiz_inline blocks
+- `lms-callout` → callout blocks
+- `lms-cta` → CTA blocks
+- `lms-video` → video blocks
+
+### Key Components
+- `canvas-slide-editor.tsx` — Dynamic import, wraps `<Tldraw>` with custom shapes + LMS block palette sidebar
+- `canvas-slide-viewer.tsx` — Dynamic import, read-only tldraw (`isReadonly: true`, `hideUi`)
+- `CanvasBlockContext` — React context providing `resolveBlock(blockId)` to custom shapes
+
+### CRITICAL: Dynamic Import Required
+tldraw requires browser APIs. Both canvas components MUST be dynamically imported with `ssr: false`:
+```tsx
+const CanvasSlideEditor = dynamic(() => import('./canvas-slide-editor'), { ssr: false });
+```
+
+### Design Frame
+New canvas slides get a locked 1920x1080 geo rectangle as a design boundary. Content can extend beyond it but `zoomToFit()` targets the frame.
+
+### Device Preview
+Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel width. Works for both canvas and block-based slides.
 
 ---
 
@@ -403,10 +468,12 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 11. **`lessons.content_url` is nullable** — block-based lessons don't use it (migration 017). Do not restore the NOT NULL constraint.
 12. **Editor save must not swallow errors** — `handleSave` tracks failure count and only calls `markSaved()` when all DB writes succeed. Failures keep `isDirty = true` (so auto-save retries) and show a toast error. Never `.catch()` and discard save errors silently.
 13. **Rich text sanitizer strips relative image paths** — SCORM-imported HTML may contain `<img src="fit_content_assets/...">` with relative paths that can't load. The sanitizer in `rich-text/viewer.tsx` removes `<img>` tags whose `src` doesn't start with `http://`, `https://`, or `data:`.
+14. **tldraw components must be dynamically imported** with `ssr: false` — tldraw requires browser APIs and will crash during SSR. Always use `next/dynamic`.
+15. **Navigation is viewer chrome, not block content** — Slide navigation (Next/Previous/Complete) is built into the course-viewer footer. Do not use CTA blocks for navigation. Slide settings (`nav_label`, `nav_url`) control button labels and external links.
 
 ---
 
-## Current Implementation Status (as of 2026-04-06)
+## Current Implementation Status (as of 2026-04-08)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -446,6 +513,15 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 - [x] Save reliability: errors tracked per-item, `markSaved()` only on zero failures, toast on failure, auto-save retries
 - [x] WYSIWYG parity: student/preview viewer renders slide backgrounds + `SlideContentArea` matching editor
 - [x] Rich text sanitizer strips unresolvable relative `<img>` paths from SCORM imports
+- [x] tldraw canvas slides: freeform layout as alternative slide type (`slide_type = 'canvas'`)
+- [x] Custom tldraw shapes for LMS blocks (quiz, callout, CTA, video) with React context block resolution
+- [x] Canvas slide editor with tldraw toolbar + LMS block palette sidebar
+- [x] Canvas slide viewer (read-only, pan/zoom, interactive content)
+- [x] Device preview toggle (desktop/tablet/mobile) in editor toolbar
+- [x] Navigation footer: consistent bottom bar for all slides (Previous / Next / Complete / Next Lesson)
+- [x] Slide navigation settings: custom button labels and external links via slide properties
+- [x] CTA block simplified to content links only (no more navigation actions)
+- [x] Migration 020: `canvas_data` jsonb column + CHECK constraint for `'canvas'` slide type
 
 ### In Progress / Next
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
