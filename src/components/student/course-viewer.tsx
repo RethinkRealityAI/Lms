@@ -402,6 +402,9 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const navLabel = currentSlideData?.kind === 'page'
     ? (currentSlideData.settings?.nav_label as string | undefined)
     : undefined;
+  const navUrl = currentSlideData?.kind === 'page'
+    ? (currentSlideData.settings?.nav_url as string | undefined)
+    : undefined;
 
   // Quiz gating: count inline quiz blocks for current lesson and check if all answered correctly
   const handleQuizCorrect = useCallback((blockId: string) => {
@@ -808,8 +811,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       )
                     ) : isLastContentSlide ? (
                       <button
-                        onClick={goNext}
-                        disabled={nextBlocked}
+                        onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}
+                        disabled={!navUrl && nextBlocked}
                         aria-label="Complete lesson"
                         className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
@@ -817,8 +820,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       </button>
                     ) : !isLastSlide ? (
                       <button
-                        onClick={goNext}
-                        disabled={nextBlocked}
+                        onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}
+                        disabled={!navUrl && nextBlocked}
                         aria-label="Next slide"
                         className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
