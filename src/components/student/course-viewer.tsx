@@ -15,8 +15,14 @@ import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
 import { LessonBlockRenderer, createFallbackBlockFromLesson } from '@/components/lesson-block-renderer';
 import { sortBlocks } from '@/lib/content/lesson-blocks';
+import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
+
+const CanvasSlideViewer = dynamic(
+  () => import('./canvas-slide-viewer'),
+  { ssr: false, loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading canvas...</div> }
+);
 
 // ---------------------------------------------------------------------------
 // Slide types
@@ -29,7 +35,7 @@ interface SlideSettings {
 
 type Slide =
   | { kind: 'title' }
-  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings }
+  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }
   | { kind: 'completion' };
 
 // ---------------------------------------------------------------------------
@@ -114,7 +120,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonBlocks, setLessonBlocks] = useState<Record<string, LessonBlock[]>>({});
-  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings }>>>({});
+  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>>>({});
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
   const [pageLoading, setPageLoading] = useState(true);
   // Slide viewer
@@ -203,10 +209,10 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             .order('order_index', { ascending: true });
 
           if (slidesData) {
-            const groupedSlides: Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings }>> = {};
-            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number; settings?: SlideSettings }>) {
+            const groupedSlides: Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>> = {};
+            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>) {
               if (!groupedSlides[slide.lesson_id]) groupedSlides[slide.lesson_id] = [];
-              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index, settings: slide.settings });
+              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index, settings: slide.settings, slide_type: slide.slide_type, canvas_data: slide.canvas_data });
             }
             setLessonSlidesMap(groupedSlides);
           }
@@ -352,7 +358,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     );
     const slides = lessonSlidesMap[selectedLesson.id] ?? [];
 
-    let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings }> = [];
+    let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }> = [];
 
     if (slides.length > 0 && filteredBlocks.some(b => b.slide_id)) {
       // Group blocks by slide_id, then order slides by their order_index
@@ -364,8 +370,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       }
       const sortedSlides = [...slides].sort((a, b) => a.order_index - b.order_index);
       pageSlides = sortedSlides
-        .filter(s => (blocksBySlide[s.id]?.length ?? 0) > 0)
-        .map(s => ({ kind: 'page' as const, slideId: s.id, blocks: sortBlocks(blocksBySlide[s.id]), settings: s.settings }));
+        .filter(s => s.slide_type === 'canvas' || (blocksBySlide[s.id]?.length ?? 0) > 0)
+        .map(s => ({ kind: 'page' as const, slideId: s.id, blocks: sortBlocks(blocksBySlide[s.id] ?? []), settings: s.settings, slideType: s.slide_type, canvasData: s.canvas_data }));
 
       // Any blocks without a slide_id get appended as a final page
       if (blocksBySlide['__no_slide__']?.length) {
@@ -684,8 +690,19 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     />
                   )}
 
+                  {/* CANVAS SLIDE — read-only tldraw viewer */}
+                  {currentSlideData?.kind === 'page' && currentSlideData.slideType === 'canvas' && currentSlideData.canvasData ? (
+                    <div className="flex-1 min-h-0">
+                      <CanvasSlideViewer
+                        canvasData={currentSlideData.canvasData}
+                        blocks={currentSlideData.blocks}
+                        onQuizCorrect={handleQuizCorrect}
+                      />
+                    </div>
+                  ) : null}
+
                   {/* CONTENT SLIDE — matches editor slide-preview.tsx rendering */}
-                  {currentSlideData?.kind === 'page' && (() => {
+                  {currentSlideData?.kind === 'page' && !(currentSlideData.slideType === 'canvas' && currentSlideData.canvasData) && (() => {
                     const bgStyle = getSlideBackground(currentSlideData.settings);
                     const backgroundImage = typeof currentSlideData.settings?.background_image === 'string'
                       ? currentSlideData.settings.background_image : null;
