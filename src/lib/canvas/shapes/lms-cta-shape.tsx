@@ -6,6 +6,7 @@ import {
   T,
   type RecordProps,
 } from 'tldraw';
+import { LmsShapeContent } from '../lms-shape-content';
 
 type LmsCtaShapeProps = { w: number; h: number; blockId: string };
 export type LmsCtaShape = TLBaseShape<'lms-cta', LmsCtaShapeProps>;
@@ -51,27 +52,8 @@ export class LmsCtaShapeUtil extends BaseBoxShapeUtil<LmsCtaShape> {
 
   override component(shape: LmsCtaShape) {
     return (
-      <HTMLContainer>
-        <div
-          data-lms-block-id={shape.props.blockId}
-          data-lms-block-type="cta"
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#f0fdf4',
-            border: '2px dashed #16a34a',
-            borderRadius: 8,
-            fontSize: 14,
-            color: '#166534',
-            fontWeight: 600,
-            pointerEvents: 'all',
-          }}
-        >
-          CTA Button Block
-        </div>
+      <HTMLContainer style={{ width: shape.props.w, height: shape.props.h, overflow: 'auto', pointerEvents: 'all' }}>
+        <LmsShapeContent blockId={shape.props.blockId} width={shape.props.w} height={shape.props.h} />
       </HTMLContainer>
     );
   }

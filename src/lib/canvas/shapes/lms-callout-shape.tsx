@@ -6,6 +6,7 @@ import {
   T,
   type RecordProps,
 } from 'tldraw';
+import { LmsShapeContent } from '../lms-shape-content';
 
 type LmsCalloutShapeProps = { w: number; h: number; blockId: string };
 export type LmsCalloutShape = TLBaseShape<'lms-callout', LmsCalloutShapeProps>;
@@ -51,27 +52,8 @@ export class LmsCalloutShapeUtil extends BaseBoxShapeUtil<LmsCalloutShape> {
 
   override component(shape: LmsCalloutShape) {
     return (
-      <HTMLContainer>
-        <div
-          data-lms-block-id={shape.props.blockId}
-          data-lms-block-type="callout"
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#fefce8',
-            border: '2px dashed #ca8a04',
-            borderRadius: 8,
-            fontSize: 14,
-            color: '#92400e',
-            fontWeight: 600,
-            pointerEvents: 'all',
-          }}
-        >
-          Callout Block
-        </div>
+      <HTMLContainer style={{ width: shape.props.w, height: shape.props.h, overflow: 'auto', pointerEvents: 'all' }}>
+        <LmsShapeContent blockId={shape.props.blockId} width={shape.props.w} height={shape.props.h} />
       </HTMLContainer>
     );
   }

@@ -6,6 +6,7 @@ import {
   T,
   type RecordProps,
 } from 'tldraw';
+import { LmsShapeContent } from '../lms-shape-content';
 
 type LmsVideoShapeProps = { w: number; h: number; blockId: string };
 export type LmsVideoShape = TLBaseShape<'lms-video', LmsVideoShapeProps>;
@@ -51,27 +52,8 @@ export class LmsVideoShapeUtil extends BaseBoxShapeUtil<LmsVideoShape> {
 
   override component(shape: LmsVideoShape) {
     return (
-      <HTMLContainer>
-        <div
-          data-lms-block-id={shape.props.blockId}
-          data-lms-block-type="video"
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#faf5ff',
-            border: '2px dashed #9333ea',
-            borderRadius: 8,
-            fontSize: 14,
-            color: '#7e22ce',
-            fontWeight: 600,
-            pointerEvents: 'all',
-          }}
-        >
-          Video Block
-        </div>
+      <HTMLContainer style={{ width: shape.props.w, height: shape.props.h, overflow: 'auto', pointerEvents: 'all' }}>
+        <LmsShapeContent blockId={shape.props.blockId} width={shape.props.w} height={shape.props.h} />
       </HTMLContainer>
     );
   }

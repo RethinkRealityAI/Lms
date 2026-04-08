@@ -6,6 +6,7 @@ import {
   T,
   type RecordProps,
 } from 'tldraw';
+import { LmsShapeContent } from '../lms-shape-content';
 
 type LmsQuizShapeProps = { w: number; h: number; blockId: string };
 export type LmsQuizShape = TLBaseShape<'lms-quiz', LmsQuizShapeProps>;
@@ -51,27 +52,8 @@ export class LmsQuizShapeUtil extends BaseBoxShapeUtil<LmsQuizShape> {
 
   override component(shape: LmsQuizShape) {
     return (
-      <HTMLContainer>
-        <div
-          data-lms-block-id={shape.props.blockId}
-          data-lms-block-type="quiz_inline"
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#f0f4ff',
-            border: '2px dashed #6366f1',
-            borderRadius: 8,
-            fontSize: 14,
-            color: '#4338ca',
-            fontWeight: 600,
-            pointerEvents: 'all',
-          }}
-        >
-          Quiz Block
-        </div>
+      <HTMLContainer style={{ width: shape.props.w, height: shape.props.h, overflow: 'auto', pointerEvents: 'all' }}>
+        <LmsShapeContent blockId={shape.props.blockId} width={shape.props.w} height={shape.props.h} />
       </HTMLContainer>
     );
   }

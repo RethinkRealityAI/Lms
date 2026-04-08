@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect, useMemo } from 'react';
 import { Tldraw, type Editor } from 'tldraw';
 import 'tldraw/tldraw.css';
 import { lmsShapeUtils } from '@/lib/canvas/register-shapes';
-import { loadCanvasSnapshot, fitCanvasToContent } from '@/lib/canvas/canvas-utils';
+import { loadCanvasSnapshot, fitCanvasToContent, CanvasBlockContext } from '@/lib/canvas/canvas-utils';
 import type { LessonBlock } from '@/types';
 
 interface CanvasSlideViewerProps {
@@ -19,6 +19,17 @@ export default function CanvasSlideViewer({
   onQuizCorrect,
 }: CanvasSlideViewerProps) {
   const editorRef = useRef<Editor | null>(null);
+  const blockMapRef = useRef(new Map<string, LessonBlock>());
+
+  useEffect(() => {
+    blockMapRef.current.clear();
+    for (const b of blocks) blockMapRef.current.set(b.id, b);
+  }, [blocks]);
+
+  const contextValue = useMemo(() => ({
+    resolveBlock: (id: string) => blockMapRef.current.get(id),
+    onQuizCorrect,
+  }), [onQuizCorrect]);
 
   const handleMount = useCallback((editor: Editor) => {
     editorRef.current = editor;
@@ -29,11 +40,13 @@ export default function CanvasSlideViewer({
 
   return (
     <div className="w-full h-full relative">
-      <Tldraw
-        shapeUtils={lmsShapeUtils}
-        onMount={handleMount}
-        hideUi
-      />
+      <CanvasBlockContext.Provider value={contextValue}>
+        <Tldraw
+          shapeUtils={lmsShapeUtils}
+          onMount={handleMount}
+          hideUi
+        />
+      </CanvasBlockContext.Provider>
     </div>
   );
 }

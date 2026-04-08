@@ -10,6 +10,7 @@ import {
   loadCanvasSnapshot,
   fitCanvasToContent,
   createDesignFrame,
+  CanvasBlockContext,
 } from '@/lib/canvas/canvas-utils';
 import type { Slide, LessonBlock } from '@/types';
 
@@ -114,10 +115,15 @@ export default function CanvasSlideEditor({
     <div className="flex h-full w-full">
       {/* tldraw canvas */}
       <div className="flex-1 relative">
-        <Tldraw
-          shapeUtils={shapeUtils}
-          onMount={handleMount}
-        />
+        <CanvasBlockContext.Provider value={{
+          resolveBlock: (id) => blockMapRef.current.get(id),
+          onQuizCorrect: undefined,
+        }}>
+          <Tldraw
+            shapeUtils={shapeUtils}
+            onMount={handleMount}
+          />
+        </CanvasBlockContext.Provider>
       </div>
 
       {/* LMS block palette sidebar */}

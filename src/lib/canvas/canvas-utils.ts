@@ -1,4 +1,6 @@
+import { createContext, useContext } from 'react';
 import { createShapeId, type Editor } from 'tldraw';
+import type { LessonBlock } from '@/types';
 
 /** Default canvas frame dimensions (16:9) */
 export const CANVAS_FRAME = { width: 1920, height: 1080 } as const;
@@ -63,4 +65,27 @@ export function createDesignFrame(editor: Editor): void {
   });
   editor.toggleLock([frameId]);
   editor.sendToBack([frameId]);
+}
+
+// ---------------------------------------------------------------------------
+// Block context — lets tldraw custom shapes resolve LessonBlock data
+// ---------------------------------------------------------------------------
+
+export type BlockResolver = (blockId: string) => LessonBlock | undefined;
+export type QuizCorrectHandler = ((blockId: string) => void) | undefined;
+
+export const CanvasBlockContext = createContext<{
+  resolveBlock: BlockResolver;
+  onQuizCorrect: QuizCorrectHandler;
+}>({
+  resolveBlock: () => undefined,
+  onQuizCorrect: undefined,
+});
+
+export function useCanvasBlock(blockId: string) {
+  const ctx = useContext(CanvasBlockContext);
+  return {
+    block: ctx.resolveBlock(blockId),
+    onQuizCorrect: ctx.onQuizCorrect,
+  };
 }
