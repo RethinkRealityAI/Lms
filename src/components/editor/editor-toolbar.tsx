@@ -1,15 +1,18 @@
 'use client';
 
-import { Save, Undo2, Redo2, Eye, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { Save, Undo2, Redo2, Eye, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEditorStore } from './editor-store-context';
+import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
 interface EditorToolbarProps {
   onSave?: () => void;
   courseId?: string;
+  devicePreview: DevicePreview;
+  onDevicePreviewChange: (device: DevicePreview) => void;
 }
 
-export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
+export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreviewChange }: EditorToolbarProps) {
   const router = useRouter();
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
@@ -68,6 +71,42 @@ export function EditorToolbar({ onSave, courseId }: EditorToolbarProps) {
         >
           <Eye className="w-4 h-4 text-gray-600" />
         </button>
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+        <div className="flex items-center gap-0.5 bg-gray-50 rounded-lg p-0.5">
+          <button
+            onClick={() => onDevicePreviewChange('desktop')}
+            className={`p-1.5 rounded-md transition-all duration-150 ${
+              devicePreview === 'desktop'
+                ? 'bg-white text-gray-700 shadow-sm'
+                : 'text-gray-400 hover:text-gray-500'
+            }`}
+            title="Desktop preview"
+          >
+            <Monitor className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => onDevicePreviewChange('tablet')}
+            className={`p-1.5 rounded-md transition-all duration-150 ${
+              devicePreview === 'tablet'
+                ? 'bg-white text-gray-700 shadow-sm'
+                : 'text-gray-400 hover:text-gray-500'
+            }`}
+            title="Tablet preview"
+          >
+            <Tablet className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => onDevicePreviewChange('mobile')}
+            className={`p-1.5 rounded-md transition-all duration-150 ${
+              devicePreview === 'mobile'
+                ? 'bg-white text-gray-700 shadow-sm'
+                : 'text-gray-400 hover:text-gray-500'
+            }`}
+            title="Mobile preview"
+          >
+            <Smartphone className="h-4 w-4" />
+          </button>
+        </div>
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <button
           onClick={onSave}

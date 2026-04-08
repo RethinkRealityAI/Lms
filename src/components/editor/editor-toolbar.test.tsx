@@ -33,7 +33,7 @@ vi.mock('@/lib/supabase/client', () => ({
 function renderWithStore(store: EditorStore, onSave?: () => void) {
   return render(
     <EditorStoreContext.Provider value={store}>
-      <EditorToolbar onSave={onSave} />
+      <EditorToolbar onSave={onSave} devicePreview="desktop" onDevicePreviewChange={() => {}} />
     </EditorStoreContext.Provider>,
   );
 }

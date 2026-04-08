@@ -1,13 +1,20 @@
 'use client';
 
-import { useState, useCallback, useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import dynamic from 'next/dynamic';
-import { Monitor, Tablet, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Monitor, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SlidePreview } from './slide-preview';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import { createClient } from '@/lib/supabase/client';
 import { createBlock as dbCreateBlock } from '@/lib/db/blocks';
+import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 import type { Slide, LessonBlock } from '@/types';
+
+const DEVICE_WIDTHS: Record<DevicePreview, string> = {
+  desktop: '100%',
+  tablet: '768px',
+  mobile: '375px',
+};
 
 const CanvasSlideEditor = dynamic(
   () => import('./canvas-slide-editor'),
@@ -21,22 +28,14 @@ const CanvasSlideEditor = dynamic(
   },
 );
 
-type DeviceMode = 'desktop' | 'tablet' | 'mobile';
-
-const DEVICE_WIDTHS: Record<DeviceMode, string> = {
-  desktop: '100%',
-  tablet: '768px',
-  mobile: '375px',
-};
-
 export interface PreviewPanelProps {
+  devicePreview: DevicePreview;
   onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
   onDeleteBlock?: (blockId: string) => void;
 }
 
-export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
+export function PreviewPanel({ devicePreview, onDeleteBlock }: PreviewPanelProps) {
   const store = useContext(EditorStoreContext);
-  const [device, setDevice] = useState<DeviceMode>('desktop');
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
@@ -185,29 +184,6 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
-      {/* Device toggle toolbar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-white/95 backdrop-blur-sm border-b border-gray-100 shrink-0">
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Preview</span>
-        <div className="flex items-center gap-1 bg-gray-50 rounded-lg p-0.5">
-          {(['desktop', 'tablet', 'mobile'] as DeviceMode[]).map((d) => (
-            <button
-              key={d}
-              onClick={() => setDevice(d)}
-              title={d.charAt(0).toUpperCase() + d.slice(1)}
-              className={`p-1.5 rounded-md transition-all duration-150 ${
-                device === d
-                  ? 'bg-white text-gray-700 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-500'
-              }`}
-            >
-              {d === 'desktop' && <Monitor className="w-4 h-4" />}
-              {d === 'tablet' && <Tablet className="w-4 h-4" />}
-              {d === 'mobile' && <Smartphone className="w-4 h-4" />}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
         {selectedSlide && isCanvasSlide ? (
           <div className="w-full h-full">
@@ -222,7 +198,7 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
         ) : (
           <div
             className="bg-white rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col"
-            style={{ width: DEVICE_WIDTHS[device], maxWidth: '100%', minHeight: '500px' }}
+            style={{ width: DEVICE_WIDTHS[devicePreview], maxWidth: '100%', minHeight: '500px' }}
           >
             {selectedSlide ? (
               <SlidePreview

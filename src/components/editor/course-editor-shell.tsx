@@ -21,6 +21,7 @@ import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson, updateL
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 import type { ModuleData, LessonData, BlockData } from '@/lib/stores/editor-store';
+import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
 interface CourseEditorShellProps {
   courseId: string;
@@ -62,6 +63,7 @@ function EditorContent({ courseId }: { courseId: string }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [structureCollapsed, setStructureCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
+  const [devicePreview, setDevicePreview] = useState<DevicePreview>('desktop');
 
   // ── Persistence: save ──────────────────────────────────────────────────────
 
@@ -485,7 +487,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   return (
     <>
-      <EditorToolbar onSave={saveNow} courseId={courseId} />
+      <EditorToolbar onSave={saveNow} courseId={courseId} devicePreview={devicePreview} onDevicePreviewChange={setDevicePreview} />
       <EditorDndContext
         onAddBlock={handleAddBlock}
         onReorderBlocks={handleReorderBlocks}
@@ -503,6 +505,7 @@ function EditorContent({ courseId }: { courseId: string }) {
             onAddSlide={handleAddSlide}
           />
           <PreviewPanel
+            devicePreview={devicePreview}
             onAddBlock={handleAddBlock}
             onDeleteBlock={(blockId) => {
               selectEntity({ type: 'block', id: blockId });
