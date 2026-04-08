@@ -219,7 +219,7 @@ export interface Certificate {
 
 // --- Slide types ---
 
-export type SlideType = 'title' | 'content' | 'media' | 'quiz' | 'disclaimer' | 'interactive' | 'cta';
+export type SlideType = 'title' | 'content' | 'media' | 'quiz' | 'disclaimer' | 'interactive' | 'cta' | 'canvas';
 export type SlideStatus = 'draft' | 'published';
 export type CourseStatus = 'draft' | 'published' | 'archived';
 
@@ -231,6 +231,7 @@ export interface Slide {
   order_index: number;
   status: SlideStatus;
   settings: Record<string, unknown>;
+  canvas_data: Record<string, unknown> | null;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;

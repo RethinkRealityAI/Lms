@@ -24,6 +24,7 @@ interface CreateSlideInput {
   order_index: number;
   status?: SlideStatus;
   settings?: Record<string, unknown>;
+  canvas_data?: Record<string, unknown> | null;
 }
 
 export async function createSlide(
@@ -41,6 +42,7 @@ export async function createSlide(
       order_index: input.order_index,
       status: input.status ?? 'draft',
       settings: input.settings ?? {},
+      canvas_data: input.canvas_data ?? null,
     })
     .select()
     .single();
@@ -63,7 +65,7 @@ export async function createSlide(
 export async function updateSlide(
   supabase: SupabaseClient,
   slideId: string,
-  changes: Partial<Pick<Slide, 'title' | 'slide_type' | 'status' | 'settings' | 'order_index'>>,
+  changes: Partial<Pick<Slide, 'title' | 'slide_type' | 'status' | 'settings' | 'order_index' | 'canvas_data'>>,
   institutionId: string,
   userId?: string,
 ): Promise<Slide> {

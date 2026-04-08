@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Video, HelpCircle, AlertTriangle, Globe, MousePointerClick } from 'lucide-react';
+import { FileText, Video, HelpCircle, AlertTriangle, Globe, MousePointerClick, PenTool } from 'lucide-react';
 import type { SlideType } from '@/types';
 
 interface SlideTypeIconProps {
@@ -16,6 +16,7 @@ const icons: Record<SlideType, typeof FileText> = {
   disclaimer: AlertTriangle,
   interactive: Globe,
   cta: MousePointerClick,
+  canvas: PenTool,
 };
 
 export function SlideTypeIcon({ type, className = 'w-3.5 h-3.5' }: SlideTypeIconProps) {

@@ -198,7 +198,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           // Fetch slides to know their order and settings within each lesson
           const { data: slidesData } = await supabase
             .from('slides')
-            .select('id, lesson_id, order_index, settings')
+            .select('id, lesson_id, order_index, settings, slide_type, canvas_data')
             .in('lesson_id', lessonIds)
             .order('order_index', { ascending: true });
 

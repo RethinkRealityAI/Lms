@@ -26,6 +26,7 @@ export function SlideTemplatePicker({ lessonId, onClose, onAddSlide }: SlideTemp
       order_index: slides.length,
       status: 'draft',
       settings: template.defaultSettings,
+      canvas_data: null,
       deleted_at: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

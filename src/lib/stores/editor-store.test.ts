@@ -120,6 +120,7 @@ describe('EditorStore', () => {
       order_index: order,
       status: 'draft' as const,
       settings: {},
+      canvas_data: null,
       deleted_at: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
