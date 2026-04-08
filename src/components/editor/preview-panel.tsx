@@ -1,10 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useContext } from 'react';
+import dynamic from 'next/dynamic';
 import { Monitor, Tablet, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SlidePreview } from './slide-preview';
-import { useEditorStore } from './editor-store-context';
-import type { Slide } from '@/types';
+import { EditorStoreContext, useEditorStore } from './editor-store-context';
+import { createClient } from '@/lib/supabase/client';
+import { createBlock as dbCreateBlock } from '@/lib/db/blocks';
+import type { Slide, LessonBlock } from '@/types';
+
+const CanvasSlideEditor = dynamic(
+  () => import('./canvas-slide-editor'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full text-gray-400">
+        Loading canvas editor...
+      </div>
+    ),
+  },
+);
 
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
 
@@ -20,12 +35,16 @@ export interface PreviewPanelProps {
 }
 
 export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
+  const store = useContext(EditorStoreContext);
   const [device, setDevice] = useState<DeviceMode>('desktop');
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
   const lessons = useEditorStore((s) => s.lessons);
   const selectEntity = useEditorStore((s) => s.selectEntity);
+  const updateSlide = useEditorStore((s) => s.updateSlide);
+  const addBlock = useEditorStore((s) => s.addBlock);
+  const institutionId = useEditorStore((s) => s.institutionId);
 
   // Find the currently selected slide and its owning lesson
   let selectedSlide: Slide | null = null;
@@ -96,6 +115,74 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
 
   const selectedBlockId = selectedEntity?.type === 'block' ? selectedEntity.id : undefined;
 
+  // --- Canvas slide handlers ---
+
+  const handleCanvasChange = useCallback(
+    (canvasData: Record<string, unknown>) => {
+      if (!selectedSlide || !owningLessonId) return;
+      updateSlide(owningLessonId, selectedSlide.id, { canvas_data: canvasData });
+    },
+    [selectedSlide, owningLessonId, updateSlide],
+  );
+
+  const handleAddCanvasBlock = useCallback(
+    async (blockType: string): Promise<LessonBlock | null> => {
+      if (!selectedSlide || !owningLessonId || !institutionId) return null;
+      try {
+        const supabase = createClient();
+        const existingBlocks = store?.getState().blocks.get(selectedSlide.id) ?? [];
+        const defaultData = getDefaultCanvasBlockData(blockType);
+        const result = await dbCreateBlock(supabase, {
+          lesson_id: owningLessonId,
+          slide_id: selectedSlide.id,
+          block_type: blockType,
+          data: defaultData,
+          order_index: existingBlocks.length,
+          institution_id: institutionId,
+        });
+        const blockData = {
+          id: result.id,
+          slide_id: result.slide_id,
+          block_type: result.block_type,
+          data: result.data,
+          order_index: result.order_index,
+          is_visible: result.is_visible,
+        };
+        addBlock(selectedSlide.id, blockData);
+        return result as LessonBlock;
+      } catch (err) {
+        console.error('Failed to add canvas block:', err);
+        return null;
+      }
+    },
+    [selectedSlide, owningLessonId, institutionId, store, addBlock],
+  );
+
+  const handleSelectCanvasBlock = useCallback(
+    (blockId: string | null) => {
+      if (blockId) {
+        selectEntity({ type: 'block', id: blockId });
+      } else {
+        if (selectedSlide) {
+          selectEntity({ type: 'slide', id: selectedSlide.id });
+        }
+      }
+    },
+    [selectEntity, selectedSlide],
+  );
+
+  // Resolve blocks for the selected canvas slide
+  const selectedSlideBlocks = selectedSlide
+    ? (blocks.get(selectedSlide.id) ?? []).map((b) => ({
+        ...b,
+        institution_id: institutionId ?? '',
+        lesson_id: owningLessonId ?? '',
+        created_at: '',
+      } as LessonBlock))
+    : [];
+
+  const isCanvasSlide = selectedSlide?.slide_type === 'canvas';
+
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
       {/* Device toggle toolbar */}
@@ -122,36 +209,48 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
       </div>
 
       <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
-        <div
-          className="bg-white rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col"
-          style={{ width: DEVICE_WIDTHS[device], maxWidth: '100%', minHeight: '500px' }}
-        >
-          {selectedSlide ? (
-            <SlidePreview
+        {selectedSlide && isCanvasSlide ? (
+          <div className="w-full h-full">
+            <CanvasSlideEditor
               slide={selectedSlide}
-              selectedBlockId={selectedBlockId}
-              onSelectBlock={(blockId) => selectEntity({ type: 'block', id: blockId })}
-              onDeleteBlock={onDeleteBlock}
-              lessonTitle={lessonTitle}
-              lessonDescription={lessonDescription}
-              titleImageUrl={titleImageUrl}
-              slideNumber={slideIndex + 1}
-              totalSlides={siblingSlides.length}
+              blocks={selectedSlideBlocks}
+              onCanvasChange={handleCanvasChange}
+              onAddBlock={handleAddCanvasBlock}
+              onSelectBlock={handleSelectCanvasBlock}
             />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-12">
-              <div className="text-center space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto">
-                  <Monitor className="w-7 h-7 text-gray-200" />
-                </div>
-                <div>
-                  <p className="font-medium text-gray-500">No slide selected</p>
-                  <p className="text-xs text-gray-400 mt-1">Select a slide from the structure panel</p>
+          </div>
+        ) : (
+          <div
+            className="bg-white rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col"
+            style={{ width: DEVICE_WIDTHS[device], maxWidth: '100%', minHeight: '500px' }}
+          >
+            {selectedSlide ? (
+              <SlidePreview
+                slide={selectedSlide}
+                selectedBlockId={selectedBlockId}
+                onSelectBlock={(blockId) => selectEntity({ type: 'block', id: blockId })}
+                onDeleteBlock={onDeleteBlock}
+                lessonTitle={lessonTitle}
+                lessonDescription={lessonDescription}
+                titleImageUrl={titleImageUrl}
+                slideNumber={slideIndex + 1}
+                totalSlides={siblingSlides.length}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-12">
+                <div className="text-center space-y-3">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto">
+                    <Monitor className="w-7 h-7 text-gray-200" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-500">No slide selected</p>
+                    <p className="text-xs text-gray-400 mt-1">Select a slide from the structure panel</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Slide navigation */}
@@ -179,4 +278,20 @@ export function PreviewPanel({ onDeleteBlock }: PreviewPanelProps) {
       </div>
     </div>
   );
+}
+
+/** Default data payloads for canvas block types */
+function getDefaultCanvasBlockData(blockType: string): Record<string, unknown> {
+  switch (blockType) {
+    case 'quiz_inline':
+      return { question: 'Enter your question', options: [], correct_index: 0 };
+    case 'callout':
+      return { style: 'info', title: 'Note', body: 'Enter callout text...' };
+    case 'cta':
+      return { text: 'Click here', url: '', style: 'primary' };
+    case 'video':
+      return { url: '', caption: '' };
+    default:
+      return {};
+  }
 }
