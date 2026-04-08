@@ -14,7 +14,7 @@ const VARIANT_CONFIG = {
 function sanitizeHtml(html: string): string {
   // Content originates from admin-imported SCORM packages.
   // Strip script tags as defense-in-depth against malformed imports.
-  return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  return (html ?? '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 }
 
 export default function CalloutViewer({ data }: BlockViewerProps<CalloutData>) {

@@ -262,7 +262,7 @@ function getDefaultCanvasBlockData(blockType: string): Record<string, unknown> {
     case 'quiz_inline':
       return { question: 'Enter your question', options: [], correct_index: 0 };
     case 'callout':
-      return { style: 'info', title: 'Note', body: 'Enter callout text...' };
+      return { variant: 'info', title: 'Note', html: '<p>Enter callout text...</p>' };
     case 'cta':
       return { text: 'Click here', url: '', style: 'primary' };
     case 'video':
