@@ -393,6 +393,19 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const isFirstSlide = currentSlide === 0;
   const isLastSlide = currentSlide === totalSlides - 1;
 
+  // Footer helpers
+  const isCompletionSlide = currentSlideData?.kind === 'completion';
+  const isLastContentSlide = !isCompletionSlide && currentSlide === totalSlides - 2;
+  const nextLesson = React.useMemo(() => {
+    if (!selectedLesson) return null;
+    const idx = lessons.findIndex(l => l.id === selectedLesson.id);
+    return lessons[idx + 1] ?? null;
+  }, [selectedLesson, lessons]);
+  const hasQuiz = selectedLesson ? !!lessonQuizzes[selectedLesson.id] : false;
+  const navLabel = currentSlideData?.kind === 'page'
+    ? (currentSlideData.settings?.nav_label as string | undefined)
+    : undefined;
+
   // Quiz gating: count inline quiz blocks for current lesson and check if all answered correctly
   const handleQuizCorrect = useCallback((blockId: string) => {
     if (!selectedLesson) return;
@@ -739,56 +752,83 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         <h3 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
                         <p className="text-slate-500 mt-2 text-base">Congratulations! You&apos;ve completed this lesson.</p>
                       </div>
-                      <div className="flex flex-wrap gap-3 justify-center">
-                        {lessonQuizzes[selectedLesson.id] && (
-                          <Button variant="outline"
-                            onClick={() => router.push(`/student/courses/${courseId}/lessons/${selectedLesson.id}/quiz`)}
-                            className="border-[#1E3A5F] text-[#1E3A5F] font-bold hover:bg-[#1E3A5F]/10">
-                            <Play className="mr-2 h-4 w-4" />Take Quiz
-                          </Button>
-                        )}
-                        {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
-                          <Button variant="outline" onClick={openReviewModal}
-                            className="border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-50">
-                            <Star className="mr-2 h-4 w-4" />Leave a Review
-                          </Button>
-                        )}
-                        {(() => {
-                          const idx = lessons.findIndex(l => l.id === selectedLesson.id);
-                          const next = lessons[idx + 1];
-                          return next ? (
-                            <Button onClick={() => selectLesson(next)}
-                              disabled={!allQuizzesComplete}
-                              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed">
-                              Next Lesson<ChevronRight className="ml-2 h-4 w-4" />
-                            </Button>
-                          ) : (
-                            <Button onClick={() => router.push('/gansid/student')}
-                              className="bg-[#0F172A] hover:bg-[#1E293B] text-white font-bold">
-                              Back to Dashboard
-                            </Button>
-                          );
-                        })()}
-                      </div>
+                      {/* Leave a Review — only on last lesson, not in preview */}
+                      {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
+                        <Button variant="outline" onClick={openReviewModal}
+                          className="border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-50">
+                          <Star className="mr-2 h-4 w-4" />Leave a Review
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
 
-                {/* Bottom navigation — always visible, never moves */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 shrink-0">
-                  <Button variant="outline" onClick={goPrev} disabled={isFirstSlide}
+                {/* Navigation Footer — always visible */}
+                <div className="shrink-0 flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
+                  {/* Left: Previous */}
+                  <button
+                    onClick={goPrev}
+                    disabled={isFirstSlide}
                     aria-label="Previous slide"
-                    className="border-slate-200 text-slate-600 font-bold hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2">
-                    <ChevronLeft className="h-4 w-4 mr-1.5" />Previous
-                  </Button>
-                  {!isLastSlide && (
-                    <Button onClick={goNext}
-                      disabled={nextBlocked}
-                      aria-label="Next slide"
-                      className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white font-bold focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed">
-                      Next<ChevronRight className="h-4 w-4 ml-1.5" />
-                    </Button>
-                  )}
+                    className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </button>
+
+                  {/* Right: Context-dependent primary action */}
+                  <div className="flex items-center gap-3">
+                    {/* Take Quiz in footer when on completion slide with quizzes */}
+                    {isCompletionSlide && hasQuiz && (
+                      <button
+                        onClick={() => selectedLesson && router.push(`/student/courses/${courseId}/lessons/${selectedLesson.id}/quiz`)}
+                        className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold border border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10 rounded-xl transition-colors"
+                      >
+                        <Play className="h-4 w-4" />
+                        Take Quiz
+                      </button>
+                    )}
+
+                    {/* Primary nav button */}
+                    {isCompletionSlide ? (
+                      nextLesson ? (
+                        <button
+                          onClick={() => selectLesson(nextLesson)}
+                          disabled={!allQuizzesComplete}
+                          aria-label="Next lesson"
+                          className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        >
+                          Next Lesson <ChevronRight className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => router.push('/gansid/student')}
+                          aria-label="Back to dashboard"
+                          className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#0F172A] hover:bg-[#1e293b] rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        >
+                          Back to Dashboard
+                        </button>
+                      )
+                    ) : isLastContentSlide ? (
+                      <button
+                        onClick={goNext}
+                        disabled={nextBlocked}
+                        aria-label="Complete lesson"
+                        className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                      >
+                        {navLabel || 'Complete Lesson'} <ChevronRight className="h-4 w-4" />
+                      </button>
+                    ) : !isLastSlide ? (
+                      <button
+                        onClick={goNext}
+                        disabled={nextBlocked}
+                        aria-label="Next slide"
+                        className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                      >
+                        {navLabel || 'Next'} <ChevronRight className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             ) : (
