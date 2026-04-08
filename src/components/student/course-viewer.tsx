@@ -18,6 +18,7 @@ import { sortBlocks } from '@/lib/content/lesson-blocks';
 import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
+import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
 
 const CanvasSlideViewer = dynamic(
   () => import('./canvas-slide-viewer'),
@@ -387,24 +388,19 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
   const totalSlides = currentSlides.length;
   const currentSlideData = currentSlides[currentSlide] ?? null;
-  const isFirstSlide = currentSlide === 0;
-  const isLastSlide = currentSlide === totalSlides - 1;
 
-  // Footer helpers
-  const isCompletionSlide = currentSlideData?.kind === 'completion';
-  const isLastContentSlide = !isCompletionSlide && currentSlide === totalSlides - 2;
+  // Navigation state — uses tested utility for consistency
+  const navState = computeNavState(
+    currentSlides.map(s => ({ kind: s.kind, settings: s.kind === 'page' ? s.settings : undefined })),
+    currentSlide,
+  );
+  const { isFirstSlide, isLastSlide, isCompletionSlide, isLastContentSlide, navLabel, navUrl } = navState;
+
   const nextLesson = React.useMemo(() => {
     if (!selectedLesson) return null;
-    const idx = lessons.findIndex(l => l.id === selectedLesson.id);
-    return lessons[idx + 1] ?? null;
+    return findNextLesson(lessons, selectedLesson.id);
   }, [selectedLesson, lessons]);
   const hasQuiz = selectedLesson ? !!lessonQuizzes[selectedLesson.id] : false;
-  const navLabel = currentSlideData?.kind === 'page'
-    ? (currentSlideData.settings?.nav_label as string | undefined)
-    : undefined;
-  const navUrl = currentSlideData?.kind === 'page'
-    ? (currentSlideData.settings?.nav_url as string | undefined)
-    : undefined;
 
   // Quiz gating: count inline quiz blocks for current lesson and check if all answered correctly
   const handleQuizCorrect = useCallback((blockId: string) => {
