@@ -88,6 +88,7 @@ function EditorContent({ courseId }: { courseId: string }) {
               order_index: slide.order_index,
               status: slide.status,
               settings: slide.settings,
+              canvas_data: slide.canvas_data,
             }, institutionId),
             `slide ${slide.id}`,
           ),
