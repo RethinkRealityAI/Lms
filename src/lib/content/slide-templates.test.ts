@@ -3,21 +3,27 @@ import { SLIDE_TEMPLATES, getTemplateByType } from './slide-templates';
 import type { SlideType } from '@/types';
 
 describe('SLIDE_TEMPLATES', () => {
-  it('has 7 templates', () => {
-    expect(SLIDE_TEMPLATES).toHaveLength(7);
+  it('has 8 templates', () => {
+    expect(SLIDE_TEMPLATES).toHaveLength(8);
   });
 
-  it('covers all 7 slide types', () => {
+  it('covers all 8 slide types', () => {
     const types = SLIDE_TEMPLATES.map((t) => t.type);
-    const expected: SlideType[] = ['title', 'content', 'media', 'quiz', 'disclaimer', 'interactive', 'cta'];
+    const expected: SlideType[] = ['title', 'content', 'media', 'quiz', 'disclaimer', 'interactive', 'cta', 'canvas'];
     expect(types).toEqual(expect.arrayContaining(expected));
     expect(types).toHaveLength(expected.length);
   });
 
-  it('each template has at least one default block', () => {
-    SLIDE_TEMPLATES.forEach((t) => {
+  it('each non-canvas template has at least one default block', () => {
+    SLIDE_TEMPLATES.filter((t) => t.type !== 'canvas').forEach((t) => {
       expect(t.defaultBlocks.length).toBeGreaterThan(0);
     });
+  });
+
+  it('canvas template has no default blocks', () => {
+    const canvas = getTemplateByType('canvas');
+    expect(canvas).toBeDefined();
+    expect(canvas!.defaultBlocks).toHaveLength(0);
   });
 
   it('getTemplateByType returns correct template', () => {

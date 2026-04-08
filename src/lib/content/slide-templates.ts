@@ -90,6 +90,14 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     defaultSettings: { background: 'gradient' },
     accentColor: '#DC2626',
   },
+  {
+    type: 'canvas',
+    name: 'Freeform Canvas',
+    description: 'Free-form layout with tldraw — place content anywhere',
+    defaultBlocks: [],
+    defaultSettings: { background: '#FFFFFF' },
+    accentColor: '#8B5CF6',
+  },
 ];
 
 export function getTemplateByType(type: SlideType): SlideTemplateConfig | undefined {

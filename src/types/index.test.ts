@@ -20,8 +20,8 @@ describe('Editor types', () => {
   });
 
   it('SlideType union covers all types', () => {
-    const types: SlideType[] = ['title', 'content', 'media', 'quiz', 'disclaimer', 'interactive', 'cta'];
-    expect(types).toHaveLength(7);
+    const types: SlideType[] = ['title', 'content', 'media', 'quiz', 'disclaimer', 'interactive', 'cta', 'canvas'];
+    expect(types).toHaveLength(8);
   });
 
   it('InstitutionTheme has color fields', () => {

@@ -229,8 +229,12 @@ function EditorContent({ courseId }: { courseId: string }) {
       selectEntity({ type: 'slide', id: slide.id });
 
       // Auto-add appropriate block based on slide type
+      // Canvas slides start empty — the design frame is created by CanvasSlideEditor on mount.
       let defaultBlockType = null;
       switch (slide.slide_type) {
+        case 'canvas':
+          // No default block — canvas uses tldraw for free-form layout
+          break;
         case 'interactive':
         case 'quiz':
           defaultBlockType = 'quiz_inline';
