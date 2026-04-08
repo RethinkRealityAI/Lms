@@ -44,17 +44,10 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 rounded-full text-[#DC2626] text-xs font-black uppercase tracking-wider mb-6">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-                </span>
-                Launching 2026
-              </div>
               <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tight">
                 GANSID <br />
-                <span className="text-[#0099CA]">Healthcare Providers</span> <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#991B1B] to-[#DC2626]">Online Training</span>
+                <span className="text-[#0099CA]">Patient Organizations&apos;</span> <br />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#991B1B] to-[#DC2626]">E-Learning Modules</span>
               </h1>
               <p className="text-xl text-slate-600 mb-10 leading-relaxed max-w-xl font-medium">
                 A structured, modular education initiative designed to strengthen clinical competence for those caring for people with hemoglobinopathies and other inherited blood disorders (IBDs).
