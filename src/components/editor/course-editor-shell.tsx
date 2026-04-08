@@ -543,7 +543,7 @@ function getDefaultBlockData(blockType: string): Record<string, unknown> {
     case 'video':
       return { url: '', caption: '' };
     case 'cta':
-      return { text: 'Click here', url: '', style: 'primary' };
+      return { text: 'Learn more', button_label: 'Visit Link', url: 'https://example.com' };
     case 'quiz_inline':
       return { question: 'Enter your question', options: [], correct_index: 0 };
     case 'pdf':

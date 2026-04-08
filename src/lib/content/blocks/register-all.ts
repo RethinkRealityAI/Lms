@@ -44,11 +44,11 @@ registerBlockType({
 registerBlockType({
   type: 'cta',
   label: 'Call to Action',
-  description: 'End-of-lesson action button.',
+  description: 'Styled link button for external content.',
   icon: 'mouse-pointer-click',
   category: 'navigation',
   dataSchema: ctaDataSchema,
-  defaultData: { text: '', action: 'complete_lesson' as const, button_label: 'Continue' },
+  defaultData: { text: '', button_label: 'Click Here' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/cta/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/cta/editor').then((m) => ({ default: m.CTAEditor }))

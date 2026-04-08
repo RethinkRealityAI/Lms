@@ -353,17 +353,14 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     if (!selectedLesson) return [];
 
     const allBlocks = lessonBlocks[selectedLesson.id] ?? [];
-    const filteredBlocks = allBlocks.filter(
-      b => !(b.block_type === 'cta' && (b.data as Record<string, unknown>)?.action === 'complete_lesson'),
-    );
     const slides = lessonSlidesMap[selectedLesson.id] ?? [];
 
     let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }> = [];
 
-    if (slides.length > 0 && filteredBlocks.some(b => b.slide_id)) {
+    if (slides.length > 0 && allBlocks.some(b => b.slide_id)) {
       // Group blocks by slide_id, then order slides by their order_index
       const blocksBySlide: Record<string, LessonBlock[]> = {};
-      for (const block of filteredBlocks) {
+      for (const block of allBlocks) {
         const sid = block.slide_id ?? '__no_slide__';
         if (!blocksBySlide[sid]) blocksBySlide[sid] = [];
         blocksBySlide[sid].push(block);
@@ -377,9 +374,9 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       if (blocksBySlide['__no_slide__']?.length) {
         pageSlides.push({ kind: 'page' as const, slideId: '', blocks: sortBlocks(blocksBySlide['__no_slide__']) });
       }
-    } else if (filteredBlocks.length > 0) {
+    } else if (allBlocks.length > 0) {
       // No slide metadata — treat all blocks as a single page (legacy fallback)
-      pageSlides = [{ kind: 'page' as const, slideId: '', blocks: sortBlocks(filteredBlocks) }];
+      pageSlides = [{ kind: 'page' as const, slideId: '', blocks: sortBlocks(allBlocks) }];
     } else {
       // Absolute fallback — synthesise a block from lesson content
       pageSlides = [{ kind: 'page' as const, slideId: '', blocks: [createFallbackBlockFromLesson(selectedLesson)] }];

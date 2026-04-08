@@ -264,7 +264,7 @@ function getDefaultCanvasBlockData(blockType: string): Record<string, unknown> {
     case 'callout':
       return { variant: 'info', title: 'Note', html: '<p>Enter callout text...</p>' };
     case 'cta':
-      return { text: 'Click here', action: 'external_url', button_label: 'Click here', url: 'https://example.com' };
+      return { text: 'Learn more', button_label: 'Visit Link', url: 'https://example.com' };
     case 'video':
       return { url: 'https://example.com/video.mp4', caption: '' };
     default:

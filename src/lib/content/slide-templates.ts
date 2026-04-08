@@ -80,17 +80,6 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#0099CA',
   },
   {
-    type: 'cta',
-    name: 'Call to Action',
-    description: 'Navigation prompt with button',
-    defaultBlocks: [
-      { block_type: 'rich_text', data: { html: '<h2>Ready to continue?</h2>', mode: 'standard' } },
-      { block_type: 'cta', data: { action: 'next_lesson', button_label: 'Next Lesson', text: '' } },
-    ],
-    defaultSettings: { background: 'gradient' },
-    accentColor: '#DC2626',
-  },
-  {
     type: 'canvas',
     name: 'Freeform Canvas',
     description: 'Free-form layout with tldraw — place content anywhere',
