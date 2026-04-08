@@ -149,6 +149,35 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
         />
         <p className="text-[10px] text-gray-400 mt-1">Full-page background behind slide content</p>
       </div>
+
+      {/* Navigation Settings */}
+      <div className="space-y-3 pt-4 border-t border-gray-100">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</p>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Button Label</label>
+          <input
+            type="text"
+            value={(settings.nav_label as string) ?? ''}
+            onChange={(e) => updateSettings({ nav_label: e.target.value || undefined })}
+            placeholder="Auto (Next / Complete Lesson)"
+            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent"
+          />
+          <p className="mt-1 text-xs text-gray-400">Leave empty for automatic labels</p>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">External Link (optional)</label>
+          <input
+            type="url"
+            value={(settings.nav_url as string) ?? ''}
+            onChange={(e) => updateSettings({ nav_url: e.target.value || undefined })}
+            placeholder="https://..."
+            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent"
+          />
+          <p className="mt-1 text-xs text-gray-400">If set, button opens this URL instead of navigating</p>
+        </div>
+      </div>
     </div>
   );
 }
