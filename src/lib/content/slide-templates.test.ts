@@ -3,13 +3,13 @@ import { SLIDE_TEMPLATES, getTemplateByType } from './slide-templates';
 import type { SlideType } from '@/types';
 
 describe('SLIDE_TEMPLATES', () => {
-  it('has 8 templates', () => {
-    expect(SLIDE_TEMPLATES).toHaveLength(8);
+  it('has 7 templates', () => {
+    expect(SLIDE_TEMPLATES).toHaveLength(7);
   });
 
-  it('covers all 8 slide types', () => {
+  it('covers all 7 slide types', () => {
     const types = SLIDE_TEMPLATES.map((t) => t.type);
-    const expected: SlideType[] = ['title', 'content', 'media', 'quiz', 'disclaimer', 'interactive', 'cta', 'canvas'];
+    const expected: SlideType[] = ['title', 'content', 'media', 'quiz', 'disclaimer', 'interactive', 'canvas'];
     expect(types).toEqual(expect.arrayContaining(expected));
     expect(types).toHaveLength(expected.length);
   });
