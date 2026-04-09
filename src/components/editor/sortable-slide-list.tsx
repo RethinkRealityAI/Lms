@@ -22,9 +22,10 @@ import type { Slide } from '@/types';
 interface SortableSlideListProps {
   lessonId: string;
   slides: Slide[];
+  onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
 }
 
-export function SortableSlideList({ lessonId, slides }: SortableSlideListProps) {
+export function SortableSlideList({ lessonId, slides, onMoveSlide }: SortableSlideListProps) {
   const reorderSlides = useEditorStore((s) => s.reorderSlides);
 
   const sensors = useSensors(
@@ -66,7 +67,7 @@ export function SortableSlideList({ lessonId, slides }: SortableSlideListProps) 
         <div className="space-y-0.5">
           {slides.map((slide) => (
             <SortableItem key={slide.id} id={slide.id}>
-              <SlideNode slide={slide} lessonId={lessonId} />
+              <SlideNode slide={slide} lessonId={lessonId} onMoveSlide={onMoveSlide} />
             </SortableItem>
           ))}
         </div>

@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
   ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
+  Minimize2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -19,6 +20,8 @@ import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
 import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
+import { LessonNavbar } from '@/components/student/lesson-navbar';
+import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
 
 const CanvasSlideViewer = dynamic(
   () => import('./canvas-slide-viewer'),
@@ -107,6 +110,62 @@ function getSlideBackground(settings?: SlideSettings): React.CSSProperties {
 }
 
 // ---------------------------------------------------------------------------
+// Grid Block Renderer — CSS Grid for blocks with grid positions, vertical stack for legacy
+// ---------------------------------------------------------------------------
+function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect }: {
+  blocks: LessonBlock[];
+  lessonTitle?: string;
+  onQuizCorrect?: (blockId: string) => void;
+}) {
+  if (!blocks.length) return null;
+
+  // Check if any block has explicit non-default grid positions
+  const hasGridLayout = blocks.some(
+    b => typeof b.data?.gridX === 'number' && typeof b.data?.gridW === 'number' && (b.data.gridW as number) < 12
+  );
+
+  // If no custom grid layout, render simple vertical stack (backward compatible)
+  if (!hasGridLayout) {
+    return (
+      <div className="flex flex-col gap-4">
+        {blocks.map(block => (
+          <LessonBlockRenderer key={block.id} block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} />
+        ))}
+      </div>
+    );
+  }
+
+  // CSS Grid renderer matching editor's react-grid-layout
+  return (
+    <div
+      className="w-full grid-viewer"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`,
+        gap: `${GRID_MARGIN[1]}px ${GRID_MARGIN[0]}px`,
+        padding: `${GRID_CONTAINER_PADDING[1]}px ${GRID_CONTAINER_PADDING[0]}px`,
+      }}
+    >
+      {blocks.map(block => {
+        const layout = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
+        return (
+          <div
+            key={block.id}
+            className="min-w-0 min-h-0"
+            style={{
+              gridColumn: `${layout.gridX + 1} / ${layout.gridX + layout.gridW + 1}`,
+              gridRow: `${layout.gridY + 1} / ${layout.gridY + layout.gridH + 1}`,
+            }}
+          >
+            <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 interface CourseViewerProps {
@@ -142,6 +201,36 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
   const router = useRouter();
   const supabase = createClient();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Hide the parent layout's full navbar when this component mounts
+  useEffect(() => {
+    const navbar = document.getElementById('student-navbar');
+    const main = document.getElementById('student-main');
+    if (navbar) navbar.style.display = 'none';
+    if (main) main.style.paddingTop = '0';
+    return () => {
+      if (navbar) navbar.style.display = '';
+      if (main) main.style.paddingTop = '';
+    };
+  }, []);
+
+  // Fullscreen keyboard shortcuts (F to toggle, Escape to exit)
+  useEffect(() => {
+    const handleFullscreenKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        setIsFullscreen(prev => !prev);
+      }
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', handleFullscreenKey);
+    return () => window.removeEventListener('keydown', handleFullscreenKey);
+  }, [isFullscreen]);
 
   useEffect(() => { fetchData(); }, [courseId]);
 
@@ -473,9 +562,11 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   // ---------------------------------------------------------------------------
   // Guards
   // ---------------------------------------------------------------------------
-  const outerHeightClass = previewMode
-    ? 'h-[calc(100vh-3rem)]'   // 3rem = 48px preview banner (h-12)
-    : 'h-[calc(100vh-6rem)]';  // 6rem = 96px student nav bar
+  const outerHeightClass = isFullscreen
+    ? 'h-screen'
+    : previewMode
+      ? 'h-[calc(100vh-3rem)]'   // 3rem = 48px preview banner (h-12)
+      : 'h-screen';              // LessonNavbar is inside the component now
 
   if (pageLoading) {
     return (
@@ -527,6 +618,26 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   return (
     <div className={`${outerHeightClass} flex flex-col overflow-hidden bg-[#F8FAFC]`}>
 
+      {/* ── Slim Lesson Navbar ─────────────────────────────────────────────── */}
+      {!previewMode && (
+        <LessonNavbar
+          courseTitle={course?.title ?? ''}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => setIsFullscreen(prev => !prev)}
+        />
+      )}
+
+      {/* ── Floating fullscreen exit button ────────────────────────────────── */}
+      {isFullscreen && (
+        <button
+          onClick={() => setIsFullscreen(false)}
+          className="fixed bottom-6 right-6 z-[70] p-2 bg-black/40 hover:bg-black/60 text-white/70 hover:text-white rounded-lg backdrop-blur-sm transition-all"
+          title="Exit fullscreen (Esc)"
+        >
+          <Minimize2 className="w-5 h-5" />
+        </button>
+      )}
+
       {/* ── Dialogs ────────────────────────────────────────────────────────── */}
       <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
         <DialogContent className="sm:max-w-md">
@@ -560,23 +671,22 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
         </DialogContent>
       </Dialog>
 
-      {/* ── Dark header ────────────────────────────────────────────────────── */}
-      <div className="bg-[#0F172A] px-4 sm:px-6 lg:px-8 py-3 sm:py-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <h2 className="text-lg sm:text-xl font-black text-white truncate">{course.title}</h2>
-            <p className="text-slate-400 text-xs mt-0.5 line-clamp-1 hidden sm:block">{course.description}</p>
+      {/* ── Compact course header (hidden in fullscreen) ─────────────────── */}
+      {!isFullscreen && (
+        <div className="bg-[#0F172A] px-4 sm:px-6 lg:px-8 py-2 shrink-0">
+          <div className="flex items-center gap-4">
+            <h1 className="text-sm font-bold text-white truncate flex-1">{course.title}</h1>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="w-32 bg-white/20 rounded-full h-1.5"
+                role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}
+                aria-label="Overall course progress">
+                <div className="bg-[#0099CA] h-1.5 rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
+              </div>
+              <span className="text-xs font-bold text-white">{progressPercent}%</span>
+            </div>
           </div>
         </div>
-        <div className="mt-2.5 flex items-center gap-3">
-          <div className="flex-1 bg-white/20 rounded-full h-1.5"
-            role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}
-            aria-label="Overall course progress">
-            <div className="bg-[#0099CA] h-1.5 rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
-          </div>
-          <span className="text-xs font-bold text-white shrink-0">{progressPercent}%</span>
-        </div>
-      </div>
+      )}
 
       {/* ── Main content ───────────────────────────────────────────────────── */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 p-3 sm:p-4 overflow-hidden">
@@ -658,14 +768,14 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
         )}
 
         {/* Slide viewer */}
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 max-w-5xl mx-auto w-full">
           <Card className="flex flex-col h-full border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)] bg-white overflow-hidden">
             {selectedLesson ? (
               <div className="flex flex-col h-full">
 
                 {/* Top bar: lesson label + counter + progress bar */}
-                <div className="px-6 pt-5 pb-0 shrink-0 border-b border-slate-100 pb-4">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="px-5 pt-3 pb-3 shrink-0 border-b border-slate-100">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] truncate pr-4">
                       {selectedLesson.title}
                     </span>
@@ -673,10 +783,10 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       {currentSlide + 1} / {totalSlides}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-1.5"
+                  <div className="w-full bg-slate-100 rounded-full h-[3px]"
                     role="progressbar" aria-valuenow={Math.round(((currentSlide + 1) / totalSlides) * 100)} aria-valuemin={0} aria-valuemax={100}
                     aria-label="Slide progress">
-                    <div className="bg-[#1E3A5F] h-1.5 rounded-full transition-all duration-300"
+                    <div className="bg-[#1E3A5F] h-[3px] rounded-full transition-all duration-300"
                       style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }} />
                   </div>
                 </div>
@@ -727,9 +837,11 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         )}
                         <div className="relative z-10">
                           <SlideContentArea>
-                            {currentSlideData.blocks.map(block => (
-                              <LessonBlockRenderer key={block.id} block={block} lessonTitle={selectedLesson.title} onQuizCorrect={handleQuizCorrect} />
-                            ))}
+                            <GridBlockRenderer
+                              blocks={currentSlideData.blocks}
+                              lessonTitle={selectedLesson.title}
+                              onQuizCorrect={handleQuizCorrect}
+                            />
                           </SlideContentArea>
                         </div>
                       </div>

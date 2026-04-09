@@ -302,7 +302,7 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
     }
 
     if (entity.type === 'block') {
-      return <BlockEditorPanel blockId={entity.id} onDelete={onDeleteBlock} />;
+      return <BlockEditorPanel key={entity.id} blockId={entity.id} onDelete={onDeleteBlock} />;
     }
 
     if (entity.type === 'course') {

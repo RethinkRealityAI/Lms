@@ -147,3 +147,55 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
 }
+
+/* Preserve Tiptap formatting in the prose viewer */
+.rich-text-viewer.prose p:empty::before {
+  content: '\00a0';
+  display: block;
+}
+
+.rich-text-viewer.prose p:empty {
+  min-height: 1em;
+}
+
+/* Honor inline text-align from Tiptap */
+.rich-text-viewer.prose p[style*="text-align"],
+.rich-text-viewer.prose h1[style*="text-align"],
+.rich-text-viewer.prose h2[style*="text-align"],
+.rich-text-viewer.prose h3[style*="text-align"] {
+  text-align: inherit;
+}
+
+/* Honor inline color from Tiptap */
+.rich-text-viewer.prose span[style*="color"] {
+  color: inherit;
+}
+
+/* Honor inline font-family from Tiptap */
+.rich-text-viewer.prose span[style*="font-family"] {
+  font-family: inherit;
+}
+
+/* Honor inline font-size from Tiptap */
+.rich-text-viewer.prose span[style*="font-size"] {
+  font-size: inherit;
+}
+
+/* Ensure list items render with proper markers */
+.rich-text-viewer.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}
+
+.rich-text-viewer.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+}
+
+/* Mobile: force grid blocks to full-width stack */
+@media (max-width: 767px) {
+  .grid-viewer > * {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+}

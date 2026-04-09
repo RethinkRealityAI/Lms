@@ -13,9 +13,10 @@ interface LessonNodeProps {
   lesson: LessonData;
   onAddSlide: (lessonId: string) => void;
   onDeleteLesson?: (lessonId: string) => void;
+  onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
 }
 
-export function LessonNode({ lesson, onAddSlide, onDeleteLesson }: LessonNodeProps) {
+export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide }: LessonNodeProps) {
   const [expanded, setExpanded] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
@@ -92,7 +93,7 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson }: LessonNodePro
               + Add first slide
             </div>
           ) : (
-            <SortableSlideList lessonId={lesson.id} slides={slides} />
+            <SortableSlideList lessonId={lesson.id} slides={slides} onMoveSlide={onMoveSlide} />
           )}
         </div>
       )}

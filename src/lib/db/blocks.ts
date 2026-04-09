@@ -81,3 +81,40 @@ export async function deleteBlock(
 
   if (error) throw error;
 }
+
+export async function duplicateBlock(
+  supabase: SupabaseClient,
+  sourceBlock: { id: string; slide_id: string; block_type: string; data: Record<string, unknown>; order_index: number },
+  lessonId: string,
+  institutionId: string,
+  targetSlideId?: string,
+  targetLessonId?: string,
+): Promise<{
+  id: string;
+  slide_id: string;
+  block_type: string;
+  data: Record<string, unknown>;
+  order_index: number;
+  is_visible: boolean;
+}> {
+  const newData = JSON.parse(JSON.stringify(sourceBlock.data));
+
+  const isSameSlide = !targetSlideId || targetSlideId === sourceBlock.slide_id;
+  if (isSameSlide && typeof newData.gridY === 'number' && typeof newData.gridH === 'number') {
+    newData.gridY = newData.gridY + newData.gridH;
+  } else if (!isSameSlide) {
+    newData.gridX = 0;
+    newData.gridY = 0;
+    newData.gridW = 12;
+    newData.gridH = 2;
+  }
+
+  return createBlock(supabase, {
+    lesson_id: targetLessonId || lessonId,
+    slide_id: targetSlideId || sourceBlock.slide_id,
+    block_type: sourceBlock.block_type,
+    data: newData,
+    order_index: isSameSlide ? sourceBlock.order_index + 1 : 999,
+    institution_id: institutionId,
+  });
+}

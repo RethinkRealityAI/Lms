@@ -31,8 +31,8 @@ export function SlideFrame({
 
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden">
-      <div className="px-6 pt-5 pb-4 shrink-0 border-b border-slate-100">
-        <div className="flex items-center justify-between mb-3">
+      <div className="px-5 pt-3 pb-3 shrink-0 border-b border-slate-100">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] truncate pr-4">
             {lessonTitle}
           </span>
@@ -40,9 +40,9 @@ export function SlideFrame({
             {currentSlide} / {totalSlides}
           </span>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-1.5">
+        <div className="w-full bg-slate-100 rounded-full h-[3px]">
           <div
-            className="bg-[#1E3A5F] h-1.5 rounded-full transition-all duration-300"
+            className="bg-[#1E3A5F] h-[3px] rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -78,7 +78,7 @@ export function SlideFrame({
 
 export function SlideContentArea({ children }: { children: ReactNode }) {
   return (
-    <div className="px-3 py-3 sm:px-6 sm:py-5 overflow-y-auto flex-1 flex flex-col gap-5">
+    <div className="px-3 py-3 sm:px-5 sm:py-4 overflow-y-auto flex-1 flex flex-col gap-4">
       {children}
     </div>
   );

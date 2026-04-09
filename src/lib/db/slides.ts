@@ -142,6 +142,56 @@ export async function reorderSlides(
   });
 }
 
+export async function moveSlideToLesson(
+  supabase: SupabaseClient,
+  slideId: string,
+  fromLessonId: string,
+  toLessonId: string,
+  institutionId: string,
+): Promise<{ success: boolean; error?: string }> {
+  // 1. Get the target lesson's current max order_index
+  const { data: targetSlides } = await supabase
+    .from('slides')
+    .select('order_index')
+    .eq('lesson_id', toLessonId)
+    .is('deleted_at', null)
+    .order('order_index', { ascending: false })
+    .limit(1);
+
+  const nextIndex = (targetSlides?.[0]?.order_index ?? -1) + 1;
+
+  // 2. Update the slide's lesson_id and order_index
+  const { error } = await supabase
+    .from('slides')
+    .update({ lesson_id: toLessonId, order_index: nextIndex, updated_at: new Date().toISOString() })
+    .eq('id', slideId);
+
+  if (error) return { success: false, error: error.message };
+
+  // 3. Reindex source lesson slides
+  const { data: sourceSlides } = await supabase
+    .from('slides')
+    .select('id')
+    .eq('lesson_id', fromLessonId)
+    .is('deleted_at', null)
+    .order('order_index', { ascending: true });
+
+  if (sourceSlides && sourceSlides.length > 0) {
+    await reorderSlides(supabase, fromLessonId, sourceSlides.map(s => s.id), institutionId);
+  }
+
+  // 4. Log activity
+  await supabase.from('activity_log').insert({
+    institution_id: institutionId,
+    entity_type: 'slide',
+    entity_id: slideId,
+    action: 'move',
+    details: { from_lesson_id: fromLessonId, to_lesson_id: toLessonId },
+  });
+
+  return { success: true };
+}
+
 export async function getSlideTemplates(
   supabase: SupabaseClient,
   institutionId?: string

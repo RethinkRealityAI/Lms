@@ -16,9 +16,10 @@ interface StructurePanelProps {
   onDeleteLesson?: (lessonId: string) => void;
   onDeleteModule?: (moduleId: string) => void;
   onAddSlide?: (lessonId: string, slideData: Slide) => void;
+  onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
 }
 
-export function StructurePanel({ collapsed, onToggleCollapse, onAddModule, onAddLesson, onDeleteLesson, onDeleteModule, onAddSlide }: StructurePanelProps) {
+export function StructurePanel({ collapsed, onToggleCollapse, onAddModule, onAddLesson, onDeleteLesson, onDeleteModule, onAddSlide, onMoveSlide }: StructurePanelProps) {
   const [showAddModule, setShowAddModule] = useState(false);
   const [addSlideForLesson, setAddSlideForLesson] = useState<string | null>(null);
   const modules = useEditorStore((s) => s.modules);
@@ -80,6 +81,7 @@ export function StructurePanel({ collapsed, onToggleCollapse, onAddModule, onAdd
               onAddLesson={onAddLesson}
               onDeleteLesson={onDeleteLesson}
               onDeleteModule={onDeleteModule}
+              onMoveSlide={onMoveSlide}
             />
           ))
         )}

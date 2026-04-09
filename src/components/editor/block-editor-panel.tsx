@@ -66,6 +66,7 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
         )}
       </div>
       <Suspense
+        key={block.id}
         fallback={
           <div className="animate-pulse bg-gray-100 rounded-lg h-32" />
         }

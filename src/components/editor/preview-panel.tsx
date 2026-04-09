@@ -32,9 +32,10 @@ export interface PreviewPanelProps {
   devicePreview: DevicePreview;
   onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
   onDeleteBlock?: (blockId: string) => void;
+  onDuplicateBlock?: (blockId: string, slideId: string) => void;
 }
 
-export function PreviewPanel({ devicePreview, onDeleteBlock }: PreviewPanelProps) {
+export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock }: PreviewPanelProps) {
   const store = useContext(EditorStoreContext);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
@@ -113,6 +114,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock }: PreviewPanelProps
   }
 
   const selectedBlockId = selectedEntity?.type === 'block' ? selectedEntity.id : undefined;
+  const updateBlock = useEditorStore((s) => s.updateBlock);
 
   // --- Canvas slide handlers ---
 
@@ -206,6 +208,10 @@ export function PreviewPanel({ devicePreview, onDeleteBlock }: PreviewPanelProps
                 selectedBlockId={selectedBlockId}
                 onSelectBlock={(blockId) => selectEntity({ type: 'block', id: blockId })}
                 onDeleteBlock={onDeleteBlock}
+                onUpdateBlock={(blockId, data) => {
+                  if (selectedSlide) updateBlock(selectedSlide.id, blockId, data);
+                }}
+                onDuplicateBlock={onDuplicateBlock}
                 lessonTitle={lessonTitle}
                 lessonDescription={lessonDescription}
                 titleImageUrl={titleImageUrl}

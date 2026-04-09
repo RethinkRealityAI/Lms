@@ -14,7 +14,8 @@ import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
-import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide } from '@/lib/db/slides';
+import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide, moveSlideToLesson as dbMoveSlideToLesson } from '@/lib/db/slides';
+import { duplicateBlock as dbDuplicateBlock } from '@/lib/db/blocks';
 import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock, deleteBlock as dbDeleteBlock } from '@/lib/db/blocks';
 import { createModule as dbCreateModule, deleteModule as dbDeleteModule, updateModule as dbUpdateModule } from '@/lib/db/modules';
 import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson, updateLesson as dbUpdateLesson } from '@/lib/db/lessons';
@@ -477,6 +478,50 @@ function EditorContent({ courseId }: { courseId: string }) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+  // Cross-lesson slide movement
+  const handleMoveSlide = useCallback(async (slideId: string, fromLessonId: string, toLessonId: string) => {
+    if (!institutionId) return;
+    const supabase = createClient();
+    const result = await dbMoveSlideToLesson(supabase, slideId, fromLessonId, toLessonId, institutionId);
+    if (result.success) {
+      store?.getState().moveSlideToLesson(slideId, fromLessonId, toLessonId);
+      toast.success('Slide moved');
+    } else {
+      toast.error('Failed to move slide');
+    }
+  }, [institutionId, store]);
+
+  // Block duplication
+  const handleDuplicateBlock = useCallback(async (blockId: string, slideId: string) => {
+    if (!institutionId || !store) return;
+    const state = store.getState();
+    const blockList = state.blocks.get(slideId);
+    const sourceBlock = blockList?.find(b => b.id === blockId);
+    if (!sourceBlock) return;
+
+    // Find lesson ID for this slide
+    let lessonId = '';
+    for (const [lid, slideList] of state.slides.entries()) {
+      if (slideList.some(s => s.id === slideId)) { lessonId = lid; break; }
+    }
+
+    try {
+      const supabase = createClient();
+      const data = await dbDuplicateBlock(supabase, {
+        id: sourceBlock.id,
+        slide_id: slideId,
+        block_type: sourceBlock.block_type,
+        data: (sourceBlock.data ?? {}) as Record<string, unknown>,
+        order_index: sourceBlock.order_index,
+      }, lessonId, institutionId);
+
+      state.duplicateBlock(slideId, blockId, data.id, data.data);
+      toast.success('Block duplicated');
+    } catch {
+      toast.error('Failed to duplicate block');
+    }
+  }, [institutionId, store]);
+
   const deleteEntityType =
     selectedEntity?.type === 'module' ||
     selectedEntity?.type === 'lesson' ||
@@ -503,6 +548,7 @@ function EditorContent({ courseId }: { courseId: string }) {
             onDeleteLesson={handleRequestDeleteLesson}
             onDeleteModule={handleRequestDeleteModule}
             onAddSlide={handleAddSlide}
+            onMoveSlide={handleMoveSlide}
           />
           <PreviewPanel
             devicePreview={devicePreview}
@@ -511,6 +557,7 @@ function EditorContent({ courseId }: { courseId: string }) {
               selectEntity({ type: 'block', id: blockId });
               setDeleteDialogOpen(true);
             }}
+            onDuplicateBlock={handleDuplicateBlock}
           />
           <PropertiesPanel
             collapsed={propertiesCollapsed}

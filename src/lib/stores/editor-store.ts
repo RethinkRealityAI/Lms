@@ -69,10 +69,12 @@ export interface EditorState {
   removeSlide: (lessonId: string, slideId: string) => void;
   reorderSlides: (lessonId: string, slideIds: string[]) => void;
   updateSlide: (lessonId: string, slideId: string, changes: Partial<Slide>) => void;
+  moveSlideToLesson: (slideId: string, fromLessonId: string, toLessonId: string) => void;
   addBlock: (slideId: string, block: BlockData) => void;
   updateBlock: (slideId: string, blockId: string, changes: Partial<BlockData>) => void;
   removeBlock: (slideId: string, blockId: string) => void;
   reorderBlocks: (slideId: string, blockIds: string[]) => void;
+  duplicateBlock: (slideId: string, blockId: string, newBlockId: string, newData: Record<string, unknown>) => void;
   setPreviewSlideIndex: (index: number) => void;
   markSaved: () => void;
   undo: () => void;
@@ -284,6 +286,30 @@ export function createEditorStore() {
       });
     },
 
+    moveSlideToLesson: (slideId, fromLessonId, toLessonId) => {
+      const state = get();
+      const snap = snapshot(state);
+
+      const fromSlides = [...(state.slides.get(fromLessonId) ?? [])];
+      const toSlides = [...(state.slides.get(toLessonId) ?? [])];
+
+      const slideIndex = fromSlides.findIndex(s => s.id === slideId);
+      if (slideIndex === -1) return;
+
+      const [slide] = fromSlides.splice(slideIndex, 1);
+      const movedSlide = { ...slide, lesson_id: toLessonId, order_index: toSlides.length };
+      toSlides.push(movedSlide);
+
+      // Reindex source
+      fromSlides.forEach((s, i) => { s.order_index = i; });
+
+      const newSlides = new Map(state.slides);
+      newSlides.set(fromLessonId, fromSlides);
+      newSlides.set(toLessonId, toSlides);
+
+      set({ slides: newSlides, ...push(state, snap, 'moveSlide', slideId) });
+    },
+
     addBlock: (slideId, block) => {
       const snap = snapshot(get());
       set((s) => {
@@ -337,6 +363,40 @@ export function createEditorStore() {
           reordered.map((b, i) => ({ ...b, order_index: i })),
         );
         return { blocks: next, ...push(s, snap, 'reorderBlocks', slideId) };
+      });
+    },
+
+    duplicateBlock: (slideId, blockId, newBlockId, newData) => {
+      const state = get();
+      const snap = snapshot(state);
+
+      const blocks = [...(state.blocks.get(slideId) ?? [])];
+      const sourceIndex = blocks.findIndex(b => b.id === blockId);
+      if (sourceIndex === -1) return;
+
+      const source = blocks[sourceIndex];
+      const newBlock = {
+        ...source,
+        id: newBlockId,
+        data: newData,
+        order_index: source.order_index + 1,
+      };
+
+      // Shift subsequent blocks
+      for (let i = sourceIndex + 1; i < blocks.length; i++) {
+        blocks[i] = { ...blocks[i], order_index: blocks[i].order_index + 1 };
+      }
+
+      blocks.splice(sourceIndex + 1, 0, newBlock);
+
+      const newBlocks = new Map(state.blocks);
+      newBlocks.set(slideId, blocks);
+
+      set({
+        blocks: newBlocks,
+        isDirty: true,
+        selectedEntity: { type: 'block', id: newBlockId },
+        ...push(state, snap, 'duplicateBlock', blockId),
       });
     },
 

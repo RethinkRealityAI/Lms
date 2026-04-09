@@ -63,14 +63,16 @@ export default async function StudentLayout({
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <NavBar
-        links={navLinks}
-        userEmail={user.email || ''}
-        userName={fullName}
-        avatarUrl={avatarUrl}
-        title="GANSID LMS"
-      />
-      <main className="pt-24">
+      <div id="student-navbar">
+        <NavBar
+          links={navLinks}
+          userEmail={user.email || ''}
+          userName={fullName}
+          avatarUrl={avatarUrl}
+          title="GANSID LMS"
+        />
+      </div>
+      <main className="pt-24" id="student-main">
         {children}
       </main>
     </div>
