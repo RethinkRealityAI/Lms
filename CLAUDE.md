@@ -164,6 +164,7 @@ users → progress (lesson_id)
 | 018 | user_groups_and_course_assignments | `user_groups`, `user_group_members`, `course_user_assignments`, `course_group_assignments` tables + `courses.access_mode` column |
 | 019 | user_group_members_legacy_support | `user_group_members.user_id` nullable + `legacy_user_id` column with CHECK constraint (exactly one set) |
 | 020 | add_canvas_data_to_slides | `slides.canvas_data` jsonb column + updates `slides_slide_type_check` constraint to include `'canvas'` |
+| 021 | add_user_demographics_and_legacy_claim | `occupation`, `affiliation`, `country` on users + `claim_legacy_profile()` fn + updated `handle_new_user()` trigger |
 
 ### RLS Pattern — CRITICAL
 
@@ -522,6 +523,8 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 - [x] Slide navigation settings: custom button labels and external links via slide properties
 - [x] CTA block simplified to content links only (no more navigation actions)
 - [x] Migration 020: `canvas_data` jsonb column + CHECK constraint for `'canvas'` slide type
+- [x] Legacy user auto-claim: signup with matching email pre-fills occupation/affiliation/country, links legacy record, migrates group memberships
+- [x] User demographic fields (occupation, affiliation, country) on profile page for all users
 
 ### In Progress / Next
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
