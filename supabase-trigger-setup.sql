@@ -21,7 +21,11 @@ BEGIN
     NOW(),
     NOW()
   );
-  
+
+  -- Attempt to claim a matching legacy profile
+  -- (copies occupation/affiliation/country, links legacy record, migrates group memberships)
+  PERFORM public.claim_legacy_profile(NEW.id, NEW.email);
+
   RETURN NEW;
 EXCEPTION
   WHEN OTHERS THEN
