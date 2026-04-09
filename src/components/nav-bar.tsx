@@ -8,18 +8,20 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { withInstitutionPath } from '@/lib/tenant/path';
-import { 
-  LogOut, 
-  BookOpen, 
-  Menu, 
-  X, 
-  BarChart3, 
-  FolderKanban, 
-  Settings, 
-  TrendingUp, 
-  Award, 
+import {
+  LogOut,
+  BookOpen,
+  Menu,
+  X,
+  BarChart3,
+  FolderKanban,
+  Settings,
+  TrendingUp,
+  Award,
   User,
-  type LucideIcon 
+  Users,
+  Stethoscope,
+  type LucideIcon
 } from 'lucide-react';
 
 // Map icon names to actual icon components
@@ -31,6 +33,8 @@ const iconMap: Record<string, LucideIcon> = {
   TrendingUp,
   Award,
   User,
+  Users,
+  Stethoscope,
 };
 
 interface NavLink {

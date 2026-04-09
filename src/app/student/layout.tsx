@@ -36,8 +36,18 @@ export default async function StudentLayout({
   const navLinks = [
     {
       href: '/gansid/student',
-      label: 'My Courses',
+      label: 'Home',
       icon: 'BookOpen',
+    },
+    {
+      href: '/gansid/student/patient-organizations',
+      label: 'Patient Organizations',
+      icon: 'Users',
+    },
+    {
+      href: '/gansid/student/clinicians',
+      label: 'Clinicians',
+      icon: 'Stethoscope',
     },
     {
       href: '/gansid/student/progress',
