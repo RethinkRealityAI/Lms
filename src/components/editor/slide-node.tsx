@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Trash2, Move } from 'lucide-react';
 import { SlideTypeIcon } from './slide-type-icon';
 import { useEditorStore } from './editor-store-context';
@@ -23,13 +23,27 @@ export function SlideNode({ slide, lessonId, onMoveSlide }: SlideNodeProps) {
 
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   // Close context menu on outside click
   useEffect(() => {
     if (!contextMenu) return;
-    const close = () => setContextMenu(null);
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
+    const handleClose = (e: MouseEvent) => {
+      if (contextMenuRef.current?.contains(e.target as Node)) return;
+      setContextMenu(null);
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setContextMenu(null);
+    };
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClose);
+      document.addEventListener('keydown', handleEsc);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClose);
+      document.removeEventListener('keydown', handleEsc);
+    };
   }, [contextMenu]);
 
   function handleDelete(e: React.MouseEvent) {
@@ -79,6 +93,7 @@ export function SlideNode({ slide, lessonId, onMoveSlide }: SlideNodeProps) {
       {/* Context menu */}
       {contextMenu && (
         <div
+          ref={contextMenuRef}
           className="fixed z-[90] bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[140px]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onMouseDown={e => e.stopPropagation()}

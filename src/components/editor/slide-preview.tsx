@@ -72,14 +72,27 @@ export function SlidePreview({
 
   // Block context menu state
   const [blockContextMenu, setBlockContextMenu] = useState<{ x: number; y: number; blockId: string } | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!blockContextMenu) return;
-    const close = () => setBlockContextMenu(null);
-    document.addEventListener('mousedown', close);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    const handleClose = (e: MouseEvent) => {
+      // Don't close if clicking inside the context menu itself
+      if (contextMenuRef.current?.contains(e.target as Node)) return;
+      setBlockContextMenu(null);
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setBlockContextMenu(null);
+    };
+    // Use setTimeout to avoid the current right-click event triggering close
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClose);
+      document.addEventListener('keydown', handleEsc);
+    }, 0);
     return () => {
-      document.removeEventListener('mousedown', close);
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClose);
+      document.removeEventListener('keydown', handleEsc);
     };
   }, [blockContextMenu]);
 
@@ -263,6 +276,7 @@ export function SlidePreview({
           {/* Block context menu */}
           {blockContextMenu && (
             <div
+              ref={contextMenuRef}
               className="fixed z-[90] bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
               style={{ left: blockContextMenu.x, top: blockContextMenu.y }}
               onMouseDown={e => e.stopPropagation()}

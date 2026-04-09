@@ -209,7 +209,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock }:
                 onSelectBlock={(blockId) => selectEntity({ type: 'block', id: blockId })}
                 onDeleteBlock={onDeleteBlock}
                 onUpdateBlock={(blockId, data) => {
-                  if (selectedSlide) updateBlock(selectedSlide.id, blockId, data);
+                  if (selectedSlide) updateBlock(selectedSlide.id, blockId, { data });
                 }}
                 onDuplicateBlock={onDuplicateBlock}
                 lessonTitle={lessonTitle}
