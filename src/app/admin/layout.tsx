@@ -64,7 +64,7 @@ export default async function AdminLayout({
         avatarUrl={avatarUrl}
         title="GANSID Faculty"
       />
-      <main className="max-w-7xl mx-auto pt-24 pb-8 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto pt-16 pb-8 px-4 sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

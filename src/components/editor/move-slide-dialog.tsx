@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronRight, FolderOpen, FileText } from 'lucide-react';
 
 interface MoveSlideDialogProps {
@@ -20,8 +21,8 @@ export function MoveSlideDialog({
 }: MoveSlideDialogProps) {
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
 
-  return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40" onClick={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40" onClick={onClose}>
       <div
         className="bg-white rounded-xl shadow-2xl w-80 max-h-96 flex flex-col"
         onClick={e => e.stopPropagation()}
@@ -73,6 +74,7 @@ export function MoveSlideDialog({
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

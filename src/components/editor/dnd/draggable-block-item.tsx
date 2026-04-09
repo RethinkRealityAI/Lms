@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useCallback } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import type { LucideIcon } from 'lucide-react';
 
@@ -26,12 +27,42 @@ export function DraggableBlockItem({
     disabled,
   });
 
+  // Track pointer to distinguish clicks from drags.
+  // dnd-kit's PointerSensor captures the pointer on pointerdown, which can
+  // swallow the native click event. We detect "click" ourselves: if the
+  // pointer hasn't moved more than 5 px between down and up, treat it as a click.
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      pointerStart.current = { x: e.clientX, y: e.clientY };
+      // Forward to dnd-kit so dragging still works
+      listeners?.onPointerDown?.(e as any);
+    },
+    [listeners],
+  );
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!pointerStart.current) return;
+      const dx = e.clientX - pointerStart.current.x;
+      const dy = e.clientY - pointerStart.current.y;
+      pointerStart.current = null;
+      // If the pointer barely moved, treat as a click
+      if (Math.abs(dx) < 5 && Math.abs(dy) < 5 && !disabled) {
+        onClick();
+      }
+    },
+    [onClick, disabled],
+  );
+
   return (
     <button
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      onClick={onClick}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
       disabled={disabled}
       className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border border-gray-100 bg-white
         shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5

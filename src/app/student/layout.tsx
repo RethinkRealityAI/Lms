@@ -60,7 +60,7 @@ export default async function StudentLayout({
         avatarUrl={avatarUrl}
         title="GANSID LMS"
       />
-      <main className="pt-24">
+      <main className="pt-16">
         {children}
       </main>
     </div>

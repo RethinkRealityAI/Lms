@@ -505,6 +505,11 @@ function EditorContent({ courseId }: { courseId: string }) {
       if (slideList.some(s => s.id === slideId)) { lessonId = lid; break; }
     }
 
+    if (!lessonId) {
+      toast.error('Failed to duplicate block', { description: 'Could not resolve lesson for this slide.' });
+      return;
+    }
+
     try {
       const supabase = createClient();
       const data = await dbDuplicateBlock(supabase, {
@@ -515,10 +520,12 @@ function EditorContent({ courseId }: { courseId: string }) {
         order_index: sourceBlock.order_index,
       }, lessonId, institutionId);
 
-      state.duplicateBlock(slideId, blockId, data.id, data.data);
+      state.duplicateBlock(slideId, blockId, data.id, (data.data ?? {}) as Record<string, unknown>);
       toast.success('Block duplicated');
-    } catch {
-      toast.error('Failed to duplicate block');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : (err as any)?.message ?? JSON.stringify(err);
+      console.error('Failed to duplicate block:', msg, err);
+      toast.error('Failed to duplicate block', { description: msg });
     }
   }, [institutionId, store]);
 

@@ -84,17 +84,17 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
     <nav aria-label="Main navigation" className={cn(
       "fixed top-0 z-50 w-full transition-all duration-300 border-b",
       scrolled
-        ? "bg-white/80 backdrop-blur-lg border-slate-200 py-2 shadow-sm"
-        : "bg-white border-transparent py-4"
+        ? "bg-white/80 backdrop-blur-lg border-slate-200 shadow-sm"
+        : "bg-white border-transparent"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+        <div className="flex justify-between h-12 items-center">
           <div className="flex items-center gap-6">
-            <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-2.5 group shrink-0">
-              <div className="w-9 h-9 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
-                <BookOpen className="h-4 w-4" />
+            <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-2 group shrink-0">
+              <div className="w-7 h-7 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-lg flex items-center justify-center text-white shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <BookOpen className="h-3.5 w-3.5" />
               </div>
-              <h1 className="text-lg font-black tracking-tighter text-slate-900">
+              <h1 className="text-sm font-black tracking-tighter text-slate-900">
                 GANSID <span className="text-[#0099CA] font-light italic ml-0.5">{title.replace('GANSID ', '')}</span>
               </h1>
             </Link>
@@ -130,17 +130,17 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
           <div className="flex items-center gap-4">
             <ThemeToggle />
             
-            <Link 
-              href={isStudent ? withInstitutionPath("/student/profile", pathname) : withInstitutionPath("/admin/profile", pathname)} 
-              className="hidden sm:flex items-center gap-3 pl-4 border-l border-slate-200 group"
+            <Link
+              href={isStudent ? withInstitutionPath("/student/profile", pathname) : withInstitutionPath("/admin/profile", pathname)}
+              className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-200 group"
             >
               <div className="text-right">
-                <p className="text-sm font-bold text-slate-900 group-hover:text-[#0099CA] transition-colors">{userName || 'User'}</p>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{userEmail.split('@')[0]}</p>
+                <p className="text-xs font-bold text-slate-900 group-hover:text-[#0099CA] transition-colors">{userName || 'User'}</p>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{userEmail.split('@')[0]}</p>
               </div>
-              <Avatar className="h-10 w-10 border-2 border-slate-100 group-hover:border-[#0099CA] transition-all shadow-sm">
+              <Avatar className="h-7 w-7 border border-slate-100 group-hover:border-[#0099CA] transition-all">
                 {avatarUrl && <AvatarImage src={avatarUrl} alt={userName || userEmail} className="object-cover" />}
-                <AvatarFallback className="text-sm bg-slate-100 text-slate-500 font-bold">
+                <AvatarFallback className="text-[10px] bg-slate-100 text-slate-500 font-bold">
                   {getInitials(userEmail, userName)}
                 </AvatarFallback>
               </Avatar>

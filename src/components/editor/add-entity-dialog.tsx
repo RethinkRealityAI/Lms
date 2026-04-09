@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface AddEntityDialogProps {
@@ -21,8 +22,8 @@ export function AddEntityDialog({ entityType, onAdd, onClose }: AddEntityDialogP
     onClose();
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-gray-800">Add {label}</h2>
@@ -62,6 +63,7 @@ export function AddEntityDialog({ entityType, onAdd, onClose }: AddEntityDialogP
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

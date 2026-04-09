@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -46,10 +47,10 @@ export function DeleteConfirmDialog({
 
   if (!open || !entityType) return null;
 
-  return (
+  return createPortal(
     <div
       ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] flex items-center gap-3 bg-white border border-gray-200 shadow-xl rounded-xl px-4 py-3 animate-in slide-in-from-bottom-4 fade-in duration-200"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 bg-white border border-gray-200 shadow-xl rounded-xl px-4 py-3 animate-in slide-in-from-bottom-4 fade-in duration-200"
     >
       <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
       <span className="text-sm text-gray-700">
@@ -63,6 +64,7 @@ export function DeleteConfirmDialog({
           Delete
         </Button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
