@@ -26,6 +26,9 @@ export interface User {
   full_name?: string;
   avatar_url?: string;
   bio?: string;
+  occupation?: string;
+  affiliation?: string;
+  country?: string;
   created_at: string;
   updated_at: string;
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { getUserInstitutionId } from './users';
+import { getUserInstitutionId, updateUserDetails } from './users';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 describe('getUserInstitutionId', () => {
@@ -72,5 +72,45 @@ describe('getUserInstitutionId', () => {
 
     await getUserInstitutionId(sb, 'user-xyz');
     expect(mockFrom).toHaveBeenCalledWith('users');
+  });
+});
+
+describe('updateUserDetails', () => {
+  it('passes demographic fields through to supabase update', async () => {
+    const mockUpdate = vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    });
+    const sb = {
+      from: vi.fn().mockReturnValue({ update: mockUpdate }),
+    } as unknown as SupabaseClient;
+
+    await updateUserDetails(sb, 'user-1', {
+      occupation: 'Doctor',
+      affiliation: 'WHO',
+      country: 'Ghana',
+    });
+
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        occupation: 'Doctor',
+        affiliation: 'WHO',
+        country: 'Ghana',
+      }),
+    );
+  });
+
+  it('throws when supabase returns an error', async () => {
+    const mockEq = vi.fn().mockResolvedValue({
+      error: { message: 'update failed' },
+    });
+    const sb = {
+      from: vi.fn().mockReturnValue({
+        update: vi.fn().mockReturnValue({ eq: mockEq }),
+      }),
+    } as unknown as SupabaseClient;
+
+    await expect(
+      updateUserDetails(sb, 'user-1', { full_name: 'Test' }),
+    ).rejects.toThrow();
   });
 });

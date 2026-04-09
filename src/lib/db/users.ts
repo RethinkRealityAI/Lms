@@ -69,7 +69,7 @@ export async function getActiveUsers(
 export async function updateUserDetails(
   supabase: SupabaseClient,
   userId: string,
-  changes: { full_name?: string; role?: string; bio?: string },
+  changes: { full_name?: string; role?: string; bio?: string; occupation?: string; affiliation?: string; country?: string },
 ): Promise<void> {
   const { error } = await supabase
     .from('users')
