@@ -21,6 +21,7 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
   const undoCount = useEditorStore((s) => s.undoStack.length);
   const redoCount = useEditorStore((s) => s.redoStack.length);
   const courseStatus = useEditorStore((s) => s.courseStatus);
+  const lastSaveError = useEditorStore((s) => s.lastSaveError);
   const isPublishing = useEditorStore((s) => s.isPublishing);
   const publishError = useEditorStore((s) => s.publishError);
   const publishCourse = useEditorStore((s) => s.publishCourse);
@@ -31,16 +32,32 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
     <div className="flex items-center justify-between px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-gray-100 shrink-0 h-12">
       <div className="flex items-center gap-3">
         <span className="text-sm font-semibold text-gray-800 tracking-tight">Course Editor</span>
-        {isDirty ? (
+        {isSaving ? (
+          <div className="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 text-yellow-600 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <Loader2 className="w-2.5 h-2.5 animate-spin" />
+            Saving
+          </div>
+        ) : lastSaveError ? (
+          <div className="flex items-center gap-1.5 bg-red-50 border border-red-200 text-red-600 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+            Save failed
+          </div>
+        ) : isDirty ? (
           <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
             Unsaved changes
           </div>
-        ) : courseStatus === 'draft' ? (
+        ) : (
+          <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-600 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+            Saved
+          </div>
+        )}
+        {courseStatus === 'draft' && !isDirty && !isSaving && (
           <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
             Draft
           </div>
-        ) : null}
+        )}
       </div>
       <div className="flex items-center gap-2">
         {publishError && (
@@ -50,10 +67,15 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
         <button
           onClick={undo}
           disabled={undoCount === 0}
-          className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          title="Undo (Ctrl+Z)"
+          className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors relative"
+          title={`Undo (Ctrl+Z) — ${undoCount} action${undoCount !== 1 ? 's' : ''}`}
         >
           <Undo2 className="w-4 h-4 text-gray-600" />
+          {undoCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] flex items-center justify-center bg-[#1E3A5F] text-white text-[9px] font-bold rounded-full px-0.5">
+              {undoCount}
+            </span>
+          )}
         </button>
         <button
           onClick={redo}

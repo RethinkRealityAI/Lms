@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import { Trash2 } from 'lucide-react';
 import { getBlockType } from '@/lib/content/block-registry';
+import { getCompatibleTypes, transformBlockData } from '@/lib/content/block-type-compat';
 import { useEditorStore } from './editor-store-context';
 import type { BlockData } from '@/lib/stores/editor-store';
 
@@ -14,6 +15,7 @@ interface BlockEditorPanelProps {
 export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
   const blocks = useEditorStore((s) => s.blocks);
   const updateBlock = useEditorStore((s) => s.updateBlock);
+  const switchBlockType = useEditorStore((s) => s.switchBlockType);
 
   // Find the block across all slides
   let foundBlock: { slideId: string; block: BlockData } | null = null;
@@ -65,6 +67,29 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
           </button>
         )}
       </div>
+      {(() => {
+        const compatibleTypes = getCompatibleTypes(block.block_type);
+        if (compatibleTypes.length === 0) return null;
+        return (
+          <div className="px-4 py-2 border-b border-gray-100">
+            <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Block Type</label>
+            <select
+              value={block.block_type}
+              onChange={(e) => {
+                const newType = e.target.value;
+                const newData = transformBlockData(block.block_type, newType, (block.data ?? {}) as Record<string, unknown>);
+                switchBlockType(slideId, block.id, newType, newData);
+              }}
+              className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] bg-white capitalize"
+            >
+              <option value={block.block_type}>{block.block_type.replace(/_/g, ' ')}</option>
+              {compatibleTypes.map(t => (
+                <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>
+              ))}
+            </select>
+          </div>
+        );
+      })()}
       <Suspense
         key={block.id}
         fallback={

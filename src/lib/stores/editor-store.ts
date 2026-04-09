@@ -52,6 +52,7 @@ export interface EditorState {
   previewSlideIndex: number;
   isDirty: boolean;
   isSaving: boolean;
+  lastSaveError: string | null;
   undoStack: EditorAction[];
   redoStack: EditorAction[];
 
@@ -75,8 +76,16 @@ export interface EditorState {
   removeBlock: (slideId: string, blockId: string) => void;
   reorderBlocks: (slideId: string, blockIds: string[]) => void;
   duplicateBlock: (slideId: string, blockId: string, newBlockId: string, newData: Record<string, unknown>) => void;
+  switchBlockType: (slideId: string, blockId: string, newType: string, newData: Record<string, unknown>) => void;
+  selectedBlockIds: Set<string>;
+  toggleBlockSelection: (blockId: string) => void;
+  clearBlockSelection: () => void;
+  deleteSelectedBlocks: (slideId: string) => void;
+  duplicateSelectedBlocks: (slideId: string) => void;
+  alignBlocks: (slideId: string, alignment: 'left' | 'right' | 'top' | 'bottom' | 'distribute-h' | 'distribute-v') => void;
   setPreviewSlideIndex: (index: number) => void;
   markSaved: () => void;
+  setSaveError: (error: string | null) => void;
   undo: () => void;
   redo: () => void;
   loadCourse: (data: {
@@ -150,6 +159,8 @@ export function createEditorStore() {
     previewSlideIndex: 0,
     isDirty: false,
     isSaving: false,
+    lastSaveError: null,
+    selectedBlockIds: new Set<string>(),
     undoStack: [],
     redoStack: [],
 
@@ -400,9 +411,134 @@ export function createEditorStore() {
       });
     },
 
+    switchBlockType: (slideId, blockId, newType, newData) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const next = new Map(s.blocks);
+        next.set(
+          slideId,
+          existing.map((b) => b.id === blockId ? { ...b, block_type: newType, data: newData } : b),
+        );
+        return { blocks: next, ...push(s, snap, 'switchBlockType', blockId) };
+      });
+    },
+
     setPreviewSlideIndex: (index) => set({ previewSlideIndex: index }),
 
-    markSaved: () => set({ isDirty: false, isSaving: false }),
+    markSaved: () => set({ isDirty: false, isSaving: false, lastSaveError: null }),
+
+    setSaveError: (error) => set({ lastSaveError: error }),
+
+    toggleBlockSelection: (blockId) => {
+      set((s) => {
+        const next = new Set(s.selectedBlockIds);
+        if (next.has(blockId)) { next.delete(blockId); } else { next.add(blockId); }
+        return { selectedBlockIds: next };
+      });
+    },
+
+    clearBlockSelection: () => set({ selectedBlockIds: new Set() }),
+
+    deleteSelectedBlocks: (slideId) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const next = new Map(s.blocks);
+        next.set(slideId, existing.filter(b => !s.selectedBlockIds.has(b.id)));
+        return { blocks: next, selectedBlockIds: new Set(), ...push(s, snap, 'deleteSelectedBlocks', slideId) };
+      });
+    },
+
+    duplicateSelectedBlocks: (slideId) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = [...(s.blocks.get(slideId) ?? [])];
+        const selected = existing.filter(b => s.selectedBlockIds.has(b.id));
+        const clones = selected.map((b, i) => ({
+          ...b,
+          id: crypto.randomUUID(),
+          order_index: existing.length + i,
+          data: JSON.parse(JSON.stringify(b.data)),
+        }));
+        const next = new Map(s.blocks);
+        next.set(slideId, [...existing, ...clones]);
+        const newIds = new Set(clones.map(c => c.id));
+        return { blocks: next, selectedBlockIds: newIds, ...push(s, snap, 'duplicateSelectedBlocks', slideId) };
+      });
+    },
+
+    alignBlocks: (slideId, alignment) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const existing = s.blocks.get(slideId) ?? [];
+        const selected = existing.filter(b => s.selectedBlockIds.has(b.id));
+        if (selected.length < 2) return {};
+
+        const getGrid = (b: typeof selected[0]) => {
+          const d = (b.data ?? {}) as Record<string, unknown>;
+          return {
+            gridX: (d.gridX as number) ?? 0,
+            gridY: (d.gridY as number) ?? 0,
+            gridW: (d.gridW as number) ?? 12,
+            gridH: (d.gridH as number) ?? 2,
+          };
+        };
+
+        const grids = selected.map(b => ({ id: b.id, ...getGrid(b) }));
+        const updates: Record<string, { gridX?: number; gridY?: number }> = {};
+
+        switch (alignment) {
+          case 'left': {
+            const minX = Math.min(...grids.map(g => g.gridX));
+            grids.forEach(g => { updates[g.id] = { gridX: minX }; });
+            break;
+          }
+          case 'right': {
+            const maxRight = Math.max(...grids.map(g => g.gridX + g.gridW));
+            grids.forEach(g => { updates[g.id] = { gridX: maxRight - g.gridW }; });
+            break;
+          }
+          case 'top': {
+            const minY = Math.min(...grids.map(g => g.gridY));
+            grids.forEach(g => { updates[g.id] = { gridY: minY }; });
+            break;
+          }
+          case 'bottom': {
+            const maxBottom = Math.max(...grids.map(g => g.gridY + g.gridH));
+            grids.forEach(g => { updates[g.id] = { gridY: maxBottom - g.gridH }; });
+            break;
+          }
+          case 'distribute-h': {
+            const sorted = [...grids].sort((a, b) => a.gridX - b.gridX);
+            const first = sorted[0].gridX;
+            const last = sorted[sorted.length - 1].gridX;
+            const step = sorted.length > 1 ? (last - first) / (sorted.length - 1) : 0;
+            sorted.forEach((g, i) => { updates[g.id] = { gridX: Math.round(first + step * i) }; });
+            break;
+          }
+          case 'distribute-v': {
+            const sorted = [...grids].sort((a, b) => a.gridY - b.gridY);
+            const first = sorted[0].gridY;
+            const last = sorted[sorted.length - 1].gridY;
+            const step = sorted.length > 1 ? (last - first) / (sorted.length - 1) : 0;
+            sorted.forEach((g, i) => { updates[g.id] = { gridY: Math.round(first + step * i) }; });
+            break;
+          }
+        }
+
+        const next = new Map(s.blocks);
+        next.set(slideId, existing.map(b => {
+          const u = updates[b.id];
+          if (!u) return b;
+          const d = { ...(b.data as Record<string, unknown>) };
+          if (u.gridX !== undefined) d.gridX = u.gridX;
+          if (u.gridY !== undefined) d.gridY = u.gridY;
+          return { ...b, data: d };
+        }));
+        return { blocks: next, ...push(s, snap, 'alignBlocks', slideId) };
+      });
+    },
 
     undo: () => {
       const { undoStack, redoStack } = get();

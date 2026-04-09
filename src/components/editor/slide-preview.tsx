@@ -17,6 +17,8 @@ import {
   RESIZE_HANDLES, computeRowHeight, getBlockGridLayout,
 } from '@/lib/content/gridConstants';
 import { CopyBlockDialog } from './copy-block-dialog';
+import { MultiSelectToolbar } from './multi-select-toolbar';
+import { AlignmentGuides, computeAlignmentGuides } from './alignment-guides';
 import type { Slide } from '@/types';
 
 interface SlidePreviewProps {
@@ -81,6 +83,15 @@ export function SlidePreview({
   const modules = useEditorStore((s) => s.modules);
   const allLessons = useEditorStore((s) => s.lessons);
   const allSlides = useEditorStore((s) => s.slides);
+  // Multi-select
+  const selectedBlockIds = useEditorStore((s) => s.selectedBlockIds);
+  const toggleBlockSelection = useEditorStore((s) => s.toggleBlockSelection);
+  const clearBlockSelection = useEditorStore((s) => s.clearBlockSelection);
+  const deleteSelectedBlocks = useEditorStore((s) => s.deleteSelectedBlocks);
+  const duplicateSelectedBlocks = useEditorStore((s) => s.duplicateSelectedBlocks);
+  const alignBlocks = useEditorStore((s) => s.alignBlocks);
+  // Alignment guides
+  const [activeGuides, setActiveGuides] = useState<Array<{ type: 'vertical' | 'horizontal'; position: number }>>([]);
 
   useEffect(() => {
     if (!blockContextMenu) return;
@@ -205,18 +216,33 @@ export function SlidePreview({
                 margin={GRID_MARGIN}
                 containerPadding={GRID_CONTAINER_PADDING}
                 onLayoutChange={handleLayoutChange as any}
+                onDrag={(_layout: any, _oldItem: any, newItem: any) => {
+                  const currentLayout = blocks.map((b, i) => {
+                    const g = getBlockGridLayout((b.data ?? {}) as Record<string, unknown>);
+                    return { i: b.id, x: g.gridX, y: g.gridY === 0 && i > 0 ? i * 2 : g.gridY, w: g.gridW, h: g.gridH };
+                  });
+                  const updated = currentLayout.map(l => l.i === newItem.i ? { ...l, x: newItem.x, y: newItem.y } : l);
+                  setActiveGuides(computeAlignmentGuides(newItem.i, updated));
+                }}
+                onDragStop={() => setActiveGuides([])}
+                onResizeStop={() => setActiveGuides([])}
               >
                 {blocks.map(block => (
                   <div
                     key={block.id}
                     className={`relative overflow-hidden rounded-lg transition-all cursor-default group ${
-                      selectedBlockId === block.id
+                      selectedBlockId === block.id || selectedBlockIds.has(block.id)
                         ? 'ring-2 ring-[#1E3A5F]'
                         : 'ring-1 ring-slate-200 hover:ring-slate-300'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSelectBlock(block.id);
+                      if (e.shiftKey) {
+                        toggleBlockSelection(block.id);
+                      } else {
+                        clearBlockSelection();
+                        onSelectBlock(block.id);
+                      }
                     }}
                     onContextMenu={(e) => {
                       e.preventDefault();
@@ -278,6 +304,19 @@ export function SlidePreview({
                   </div>
                 ))}
               </ReactGridLayout>
+            )}
+
+            {/* Alignment guides overlay */}
+            <AlignmentGuides guides={activeGuides} />
+
+            {/* Multi-select toolbar */}
+            {selectedBlockIds.size > 1 && (
+              <MultiSelectToolbar
+                count={selectedBlockIds.size}
+                onDeleteAll={() => deleteSelectedBlocks(slide.id)}
+                onDuplicateAll={() => duplicateSelectedBlocks(slide.id)}
+                onAlign={(alignment) => alignBlocks(slide.id, alignment)}
+              />
             )}
           </div>
 

@@ -21,6 +21,7 @@ import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
 import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
+import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
 
 const CanvasSlideViewer = dynamic(
@@ -189,6 +190,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [autoCompleteFired, setAutoCompleteFired] = useState<Record<string, boolean>>({});
   // Confetti — track which lessons have already shown the animation
   const confettiFiredRef = useRef<Record<string, boolean>>({});
+  const navDirection = useRef<'forward' | 'backward'>('forward');
   const [showConfetti, setShowConfetti] = useState(false);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
@@ -357,6 +359,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           completed: true, completed_at: new Date().toISOString(),
         }]);
         if (error) throw error;
+        toast.success('Progress saved', { duration: 2000 });
 
         const allCompleted = lessons.every(l => updatedProgress[l.id]?.completed);
         if (allCompleted && lessons.length > 0) {
@@ -517,10 +520,14 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const nextBlocked = nextSlideIsCompletion && !allQuizzesComplete;
 
   const goNext = useCallback(() => {
+    navDirection.current = 'forward';
     if (nextBlocked) return;
     setCurrentSlide(i => Math.min(i + 1, totalSlides - 1));
   }, [totalSlides, nextBlocked]);
-  const goPrev = useCallback(() => setCurrentSlide(i => Math.max(i - 1, 0)), []);
+  const goPrev = useCallback(() => {
+    navDirection.current = 'backward';
+    setCurrentSlide(i => Math.max(i - 1, 0));
+  }, []);
 
   // Keyboard navigation (goNext already respects nextBlocked)
   useEffect(() => {
@@ -612,6 +619,20 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   );
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
 
+  function getSlideAnimation(transition?: string, direction: 'forward' | 'backward' = 'forward'): string {
+    switch (transition) {
+      case 'slide-horizontal':
+        return direction === 'forward'
+          ? 'slideFromRight 0.3s ease-out'
+          : 'slideFromLeft 0.3s ease-out';
+      case 'fade-up':
+        return 'fadeUp 0.2s ease-out';
+      case 'crossfade':
+      default:
+        return 'crossfade 0.3s ease-out';
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
@@ -626,6 +647,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           onToggleFullscreen={() => setIsFullscreen(prev => !prev)}
         />
       )}
+      {!previewMode && <ShortcutHint />}
 
       {/* ── Floating fullscreen exit button ────────────────────────────────── */}
       {isFullscreen && (
@@ -796,7 +818,12 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                   key={`${selectedLesson.id}-${currentSlide}`}
                   role="region" aria-label="Slide content"
                   className="flex-1 overflow-hidden flex flex-col"
-                  style={{ animation: 'slideIn 0.25s ease-out' }}
+                  style={{
+                    animation: getSlideAnimation(
+                      currentSlideData?.kind === 'page' ? (currentSlideData.settings?.transition as string) : undefined,
+                      navDirection.current,
+                    ),
+                  }}
                 >
 
                   {/* TITLE SLIDE — full-height, non-scrollable */}

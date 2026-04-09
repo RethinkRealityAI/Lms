@@ -192,6 +192,56 @@ export function ImageGalleryEditor({ data, onChange }: BlockEditorProps<ImageGal
         </div>
       </div>
 
+      {/* Aspect Ratio */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-1">Aspect Ratio</label>
+        <div className="flex gap-1.5 flex-wrap">
+          {[
+            { label: 'Original', value: 'original' },
+            { label: '16:9', value: '16/9' },
+            { label: '4:3', value: '4/3' },
+            { label: '1:1', value: '1/1' },
+          ].map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange({ ...data, aspectRatio: opt.value } as any)}
+              className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+                ((data as any).aspectRatio ?? 'original') === opt.value
+                  ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Object Fit */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-1">Image Fit</label>
+        <div className="flex gap-1.5">
+          {[
+            { label: 'Cover', value: 'cover' },
+            { label: 'Contain', value: 'contain' },
+          ].map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange({ ...data, objectFit: opt.value } as any)}
+              className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+                ((data as any).objectFit ?? 'cover') === opt.value
+                  ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-medium text-gray-700">Images ({data.images.length})</label>

@@ -150,6 +150,21 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
         <p className="text-[10px] text-gray-400 mt-1">Full-page background behind slide content</p>
       </div>
 
+      {/* Transition */}
+      <div className="border-t border-gray-100" />
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-1.5">Slide Transition</label>
+        <select
+          value={(settings.transition as string) || 'crossfade'}
+          onChange={e => updateSettings({ transition: e.target.value })}
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent bg-white"
+        >
+          <option value="crossfade">Crossfade (default)</option>
+          <option value="slide-horizontal">Horizontal Slide</option>
+          <option value="fade-up">Fade Up</option>
+        </select>
+      </div>
+
       {/* Navigation Settings */}
       <div className="space-y-3 pt-4 border-t border-gray-100">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</p>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
@@ -12,7 +12,7 @@ function isLoadableUrl(url: string): boolean {
   return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:');
 }
 
-function ImageWithFallback({ src, alt, className }: { src: string; alt: string; className?: string }) {
+function ImageWithFallback({ src, alt, className, fitClass, imgStyle }: { src: string; alt: string; className?: string; fitClass?: string; imgStyle?: React.CSSProperties }) {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -40,7 +40,8 @@ function ImageWithFallback({ src, alt, className }: { src: string; alt: string; 
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        style={imgStyle}
+        className={`w-full h-full ${fitClass ?? 'object-cover'} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
     </div>
   );
@@ -57,6 +58,10 @@ function Caption({ text, className }: { text: string; className?: string }) {
 export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalleryData>) {
   const [current, setCurrent] = useState(0);
   const images = data.images ?? [];
+  const aspectRatio = (data as any).aspectRatio as string ?? 'original';
+  const objectFit = (data as any).objectFit as string ?? 'cover';
+  const aspectStyle = aspectRatio !== 'original' ? { aspectRatio: aspectRatio.replace('/', ' / ') } : {};
+  const fitClass = objectFit === 'contain' ? 'object-contain' : 'object-cover';
 
   if (images.length === 0) {
     return (
@@ -76,6 +81,8 @@ export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalle
           src={images[current].url}
           alt={images[current].alt ?? ''}
           className="w-full aspect-video rounded-xl overflow-hidden"
+          fitClass={fitClass}
+          imgStyle={aspectStyle}
         />
         {images[current].caption && (
           <Caption text={images[current].caption!} className="mt-2.5 text-sm text-gray-500 italic [&_p]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5" />
@@ -126,6 +133,8 @@ export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalle
             src={img.url}
             alt={img.alt ?? ''}
             className="aspect-[4/3] rounded-xl overflow-hidden"
+            fitClass={fitClass}
+            imgStyle={aspectStyle}
           />
           {img.caption && (
             <Caption text={img.caption} className="mt-1.5 text-xs text-gray-500 px-0.5 [&_p]:my-0.5" />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Trash2, Move, Copy } from 'lucide-react';
-import { SlideTypeIcon } from './slide-type-icon';
+import { SlideThumbnail } from './slide-thumbnail';
 import { useEditorStore } from './editor-store-context';
 import { MoveSlideDialog } from './move-slide-dialog';
 import type { Slide } from '@/types';
@@ -74,10 +74,7 @@ export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: Sl
           isSelected ? 'bg-[#DC2626] text-white' : 'hover:bg-gray-50 text-gray-600'
         }`}
       >
-        <SlideTypeIcon
-          type={slide.slide_type}
-          className={`w-3 h-3 shrink-0 ${isSelected ? 'text-white' : 'text-gray-400'}`}
-        />
+        <SlideThumbnail slide={slide} />
         <span className="text-xs truncate flex-1 min-w-0">
           {slide.title || slide.slide_type}
         </span>
