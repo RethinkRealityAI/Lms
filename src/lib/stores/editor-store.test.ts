@@ -474,4 +474,116 @@ describe('EditorStore', () => {
       expect(store.getState().courseTheme).toEqual({});
     });
   });
+
+  describe('moveSlideToLesson', () => {
+    beforeEach(() => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [{ id: 'm1', title: 'Module 1', course_id: 'c1', order_index: 0 }],
+        lessons: new Map([
+          ['m1', [
+            { id: 'l1', title: 'Lesson 1', module_id: 'm1', course_id: 'c1', order_index: 0 },
+            { id: 'l2', title: 'Lesson 2', module_id: 'm1', course_id: 'c1', order_index: 1 },
+          ]],
+        ]),
+        slides: new Map([
+          ['l1', [
+            { id: 's1', title: 'Slide 1', lesson_id: 'l1', order_index: 0, slide_type: 'content' } as any,
+            { id: 's2', title: 'Slide 2', lesson_id: 'l1', order_index: 1, slide_type: 'content' } as any,
+          ]],
+          ['l2', [
+            { id: 's3', title: 'Slide 3', lesson_id: 'l2', order_index: 0, slide_type: 'content' } as any,
+          ]],
+        ]),
+        blocks: new Map(),
+      });
+    });
+
+    it('moves a slide from one lesson to another', () => {
+      store.getState().moveSlideToLesson('s1', 'l1', 'l2');
+      const l1Slides = store.getState().slides.get('l1') ?? [];
+      const l2Slides = store.getState().slides.get('l2') ?? [];
+      expect(l1Slides).toHaveLength(1);
+      expect(l1Slides[0].id).toBe('s2');
+      expect(l2Slides).toHaveLength(2);
+      expect(l2Slides.some(s => s.id === 's1')).toBe(true);
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().moveSlideToLesson('s1', 'l1', 'l2');
+      expect(store.getState().isDirty).toBe(true);
+    });
+
+    it('reindexes source lesson slides', () => {
+      store.getState().moveSlideToLesson('s1', 'l1', 'l2');
+      const l1Slides = store.getState().slides.get('l1') ?? [];
+      expect(l1Slides[0].order_index).toBe(0);
+    });
+
+    it('does nothing for non-existent slide', () => {
+      store.getState().moveSlideToLesson('nonexistent', 'l1', 'l2');
+      expect(store.getState().slides.get('l1')).toHaveLength(2);
+    });
+
+    it('is undoable', () => {
+      store.getState().moveSlideToLesson('s1', 'l1', 'l2');
+      store.getState().undo();
+      expect(store.getState().slides.get('l1')).toHaveLength(2);
+      expect(store.getState().slides.get('l2')).toHaveLength(1);
+    });
+  });
+
+  describe('duplicateBlock', () => {
+    beforeEach(() => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map([
+          ['slide1', [
+            { id: 'b1', slide_id: 'slide1', block_type: 'rich_text', data: { html: '<p>Hello</p>' }, order_index: 0, is_visible: true },
+            { id: 'b2', slide_id: 'slide1', block_type: 'image_gallery', data: { url: 'img.jpg' }, order_index: 1, is_visible: true },
+          ]],
+        ]),
+      });
+    });
+
+    it('inserts a duplicate block after the source', () => {
+      store.getState().duplicateBlock('slide1', 'b1', 'b1-copy', { html: '<p>Hello</p>' });
+      const blocks = store.getState().blocks.get('slide1') ?? [];
+      expect(blocks).toHaveLength(3);
+      expect(blocks[1].id).toBe('b1-copy');
+      expect(blocks[1].data).toEqual({ html: '<p>Hello</p>' });
+    });
+
+    it('shifts subsequent blocks order_index', () => {
+      store.getState().duplicateBlock('slide1', 'b1', 'b1-copy', { html: '<p>Hello</p>' });
+      const blocks = store.getState().blocks.get('slide1') ?? [];
+      expect(blocks[0].order_index).toBe(0); // b1
+      expect(blocks[1].order_index).toBe(1); // b1-copy
+      expect(blocks[2].order_index).toBe(2); // b2 (shifted)
+    });
+
+    it('selects the new block', () => {
+      store.getState().duplicateBlock('slide1', 'b1', 'b1-copy', { html: '<p>Hello</p>' });
+      expect(store.getState().selectedEntity).toEqual({ type: 'block', id: 'b1-copy' });
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().duplicateBlock('slide1', 'b1', 'b1-copy', {});
+      expect(store.getState().isDirty).toBe(true);
+    });
+
+    it('does nothing for non-existent block', () => {
+      store.getState().duplicateBlock('slide1', 'nonexistent', 'copy', {});
+      expect(store.getState().blocks.get('slide1')).toHaveLength(2);
+    });
+
+    it('is undoable', () => {
+      store.getState().duplicateBlock('slide1', 'b1', 'b1-copy', {});
+      store.getState().undo();
+      expect(store.getState().blocks.get('slide1')).toHaveLength(2);
+    });
+  });
 });
