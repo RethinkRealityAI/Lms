@@ -379,15 +379,16 @@ export default function StudentQuizPage({
                     'w-full text-left px-4 py-3.5 rounded-xl border-2 text-sm font-medium transition-all bg-white text-slate-900 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2',
                     !showResult && !isSelected && 'border-slate-200 hover:border-[#2563EB] hover:shadow-sm',
                     !showResult && isSelected && 'border-[#2563EB] bg-blue-50 font-bold',
-                    showResult && isCorrectOption && 'border-green-500 bg-green-50',
+                    showResult && isCorrectOption && isSelected && 'border-green-500 bg-green-50',
                     showResult && isSelected && !isCorrectOption && 'border-red-500 bg-red-50',
-                    showResult && !isSelected && !isCorrectOption && 'opacity-40',
+                    // Fade ALL non-selected options equally — don't reveal correct answer
+                    showResult && !isSelected && 'opacity-40',
                     isAnimating && 'animate-[selectPop_0.2s_ease-in-out]',
                   )}
                 >
                   <span className="flex items-center justify-between gap-2">
                     <span><span className="font-bold mr-2 text-[#2563EB]">{String.fromCharCode(65 + i)}.</span>{option}</span>
-                    {showResult && isCorrectOption && <CheckCircle className="h-4 w-4 text-green-600 shrink-0" />}
+                    {showResult && isCorrectOption && isSelected && <CheckCircle className="h-4 w-4 text-green-600 shrink-0" />}
                     {showResult && isSelected && !isCorrectOption && <XCircle className="h-4 w-4 text-red-600 shrink-0" />}
                   </span>
                 </button>

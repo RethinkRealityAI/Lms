@@ -85,7 +85,8 @@ function MultipleChoiceViewer({
                 !submitted && isSelected && 'border-[#1E3A5F] bg-[#1E3A5F]/10 font-medium text-[#1E3A5F]',
                 showCorrect && 'border-green-500 bg-green-100 text-green-900 font-medium',
                 showWrong && 'border-red-500 bg-red-100 text-red-900 font-medium',
-                submitted && !isSelected && !isCorrectOption && 'opacity-40',
+                // Fade ALL non-selected options equally — don't reveal correct answer
+                submitted && !isSelected && 'opacity-40',
               )}
             >
               <span className="flex items-center justify-between gap-2">
