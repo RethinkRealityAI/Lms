@@ -36,18 +36,8 @@ export default async function StudentLayout({
   const navLinks = [
     {
       href: '/gansid/student',
-      label: 'Home',
+      label: 'My Courses',
       icon: 'BookOpen',
-    },
-    {
-      href: '/gansid/student/patient-organizations',
-      label: 'Patient Organizations',
-      icon: 'Users',
-    },
-    {
-      href: '/gansid/student/clinicians',
-      label: 'Clinicians',
-      icon: 'Stethoscope',
     },
     {
       href: '/gansid/student/progress',
@@ -63,16 +53,14 @@ export default async function StudentLayout({
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <div id="student-navbar">
-        <NavBar
-          links={navLinks}
-          userEmail={user.email || ''}
-          userName={fullName}
-          avatarUrl={avatarUrl}
-          title="GANSID LMS"
-        />
-      </div>
-      <main className="pt-24" id="student-main">
+      <NavBar
+        links={navLinks}
+        userEmail={user.email || ''}
+        userName={fullName}
+        avatarUrl={avatarUrl}
+        title="GANSID LMS"
+      />
+      <main className="pt-24">
         {children}
       </main>
     </div>
