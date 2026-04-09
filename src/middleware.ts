@@ -221,6 +221,8 @@ export const config = {
     "/:institutionSlug/admin/login",
     "/:institutionSlug/patient-organizations",
     "/:institutionSlug/clinicians",
+    "/:institutionSlug/privacy-policy",
+    "/:institutionSlug/terms-of-service",
     "/:institutionSlug",
   ],
 };

@@ -44,6 +44,11 @@ export default async function AdminLayout({
       icon: 'User',
     },
     {
+      href: '/admin/support',
+      label: 'Support',
+      icon: 'MessageSquare',
+    },
+    {
       href: '/admin/settings',
       label: 'Settings',
       icon: 'Settings',

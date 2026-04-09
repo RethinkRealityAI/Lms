@@ -21,6 +21,7 @@ import {
   User,
   Users,
   Stethoscope,
+  MessageSquare,
   type LucideIcon
 } from 'lucide-react';
 
@@ -35,6 +36,7 @@ const iconMap: Record<string, LucideIcon> = {
   User,
   Users,
   Stethoscope,
+  MessageSquare,
 };
 
 interface NavLink {

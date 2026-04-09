@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
-  BookOpen,
   Globe,
   Users,
   ArrowRight,
@@ -24,6 +23,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PublicNav } from '@/components/public-nav';
+import { PublicFooter } from '@/components/public-footer';
 import Image from 'next/image';
 
 export default function PatientOrganizationsPage() {
@@ -274,30 +274,12 @@ export default function PatientOrganizationsPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-auto py-16 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-3 mb-8 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110">
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <span className="text-2xl font-black tracking-tighter">
-              <span className="text-slate-900">GANSID</span> <span className="text-[#0099CA] font-light">LMS</span>
-            </span>
-          </div>
-          <p className="text-slate-500 font-medium mb-10 max-w-md mx-auto leading-relaxed">
-            Equipping patient advocacy organizations with the essential skills and knowledge needed to drive impactful change worldwide.
-          </p>
-          <div className="flex justify-center gap-8 mb-10">
-            <Link href="#" className="text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors">Privacy Policy</Link>
-            <Link href="#" className="text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors">Terms of Service</Link>
-            <Link href="#" className="text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors">Contact Support</Link>
-          </div>
-          <div className="text-xs font-black text-slate-300 uppercase tracking-[0.2em]">
-            &copy; 2026 Global Action Network for Sickle Cell and Other Inherited Blood Disorders. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <PublicFooter
+        brandName="GANSID"
+        brandAccent="LMS"
+        tagline="Equipping patient advocacy organizations with the essential skills and knowledge needed to drive impactful change worldwide."
+        copyright="&copy; 2026 Global Action Network for Sickle Cell and Other Inherited Blood Disorders. All rights reserved."
+      />
     </div>
   );
 }
