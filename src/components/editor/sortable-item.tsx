@@ -8,9 +8,10 @@ interface SortableItemProps {
   id: string;
   children: React.ReactNode;
   className?: string;
+  data?: Record<string, unknown>;
 }
 
-export function SortableItem({ id, children, className = '' }: SortableItemProps) {
+export function SortableItem({ id, children, className = '', data }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -18,7 +19,7 @@ export function SortableItem({ id, children, className = '' }: SortableItemProps
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, data });
 
   const style = {
     transform: CSS.Transform.toString(transform),

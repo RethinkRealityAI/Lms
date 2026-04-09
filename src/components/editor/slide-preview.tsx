@@ -2,7 +2,7 @@
 
 import { Suspense, useRef, useState, useEffect, useCallback } from 'react';
 import type { CSSProperties } from 'react';
-import { GripVertical, Trash2, X } from 'lucide-react';
+import { GripVertical, Trash2, X, Copy, CopyPlus, Move } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import RGL from 'react-grid-layout';
 const ReactGridLayout = RGL as any;
@@ -16,6 +16,7 @@ import {
   GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING,
   RESIZE_HANDLES, computeRowHeight, getBlockGridLayout,
 } from '@/lib/content/gridConstants';
+import { CopyBlockDialog } from './copy-block-dialog';
 import type { Slide } from '@/types';
 
 interface SlidePreviewProps {
@@ -24,7 +25,8 @@ interface SlidePreviewProps {
   onDeleteBlock?: (blockId: string) => void;
   onUpdateBlock?: (blockId: string, data: Record<string, unknown>) => void;
   onDuplicateBlock?: (blockId: string, slideId: string) => void;
-  onCopyBlockTo?: (blockId: string, slideId: string) => void;
+  onCopyBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
+  onMoveBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
   selectedBlockId?: string;
   /** Lesson title for the header */
   lessonTitle?: string;
@@ -44,7 +46,8 @@ export function SlidePreview({
   onDeleteBlock,
   onUpdateBlock,
   onDuplicateBlock,
-  onCopyBlockTo,
+  onCopyBlockToSlide,
+  onMoveBlockToSlide,
   selectedBlockId,
   lessonTitle = 'Untitled Lesson',
   lessonDescription,
@@ -73,6 +76,11 @@ export function SlidePreview({
   // Block context menu state
   const [blockContextMenu, setBlockContextMenu] = useState<{ x: number; y: number; blockId: string } | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+  // Copy/Move block dialog
+  const [copyMoveDialog, setCopyMoveDialog] = useState<{ blockId: string; mode: 'copy' | 'move' } | null>(null);
+  const modules = useEditorStore((s) => s.modules);
+  const allLessons = useEditorStore((s) => s.lessons);
+  const allSlides = useEditorStore((s) => s.slides);
 
   useEffect(() => {
     if (!blockContextMenu) return;
@@ -289,18 +297,32 @@ export function SlidePreview({
                   }}
                   className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
                 >
+                  <CopyPlus className="w-3.5 h-3.5" />
                   Duplicate
                 </button>
               )}
-              {onCopyBlockTo && (
+              {onCopyBlockToSlide && (
                 <button
                   onClick={() => {
-                    onCopyBlockTo(blockContextMenu.blockId, slide.id);
+                    setCopyMoveDialog({ blockId: blockContextMenu.blockId, mode: 'copy' });
                     setBlockContextMenu(null);
                   }}
                   className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
                 >
+                  <Copy className="w-3.5 h-3.5" />
                   Copy to...
+                </button>
+              )}
+              {onMoveBlockToSlide && (
+                <button
+                  onClick={() => {
+                    setCopyMoveDialog({ blockId: blockContextMenu.blockId, mode: 'move' });
+                    setBlockContextMenu(null);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  <Move className="w-3.5 h-3.5" />
+                  Move to...
                 </button>
               )}
               {onDeleteBlock && (
@@ -315,6 +337,37 @@ export function SlidePreview({
                 </button>
               )}
             </div>
+          )}
+
+          {/* Copy/Move block dialog */}
+          {copyMoveDialog && (
+            <CopyBlockDialog
+              modules={modules.map(m => ({ id: m.id, title: m.title }))}
+              lessons={(() => {
+                const map = new Map<string, { id: string; title: string }[]>();
+                for (const mod of modules) {
+                  const modLessons = allLessons.get(mod.id) ?? [];
+                  map.set(mod.id, modLessons.map(l => ({ id: l.id, title: l.title })));
+                }
+                return map;
+              })()}
+              slides={(() => {
+                const map = new Map<string, { id: string; order_index: number }[]>();
+                for (const [lessonId, slideList] of allSlides) {
+                  map.set(lessonId, slideList.map(s => ({ id: s.id, order_index: s.order_index })));
+                }
+                return map;
+              })()}
+              onCopy={(targetSlideId, targetLessonId) => {
+                if (copyMoveDialog.mode === 'copy') {
+                  onCopyBlockToSlide?.(copyMoveDialog.blockId, slide.id, targetSlideId, targetLessonId);
+                } else {
+                  onMoveBlockToSlide?.(copyMoveDialog.blockId, slide.id, targetSlideId, targetLessonId);
+                }
+                setCopyMoveDialog(null);
+              }}
+              onClose={() => setCopyMoveDialog(null)}
+            />
           )}
         </div>
       )}

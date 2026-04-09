@@ -33,9 +33,11 @@ export interface PreviewPanelProps {
   onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
   onDeleteBlock?: (blockId: string) => void;
   onDuplicateBlock?: (blockId: string, slideId: string) => void;
+  onCopyBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
+  onMoveBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
 }
 
-export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock }: PreviewPanelProps) {
+export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, onCopyBlockToSlide, onMoveBlockToSlide }: PreviewPanelProps) {
   const store = useContext(EditorStoreContext);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
@@ -212,6 +214,8 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock }:
                   if (selectedSlide) updateBlock(selectedSlide.id, blockId, { data });
                 }}
                 onDuplicateBlock={onDuplicateBlock}
+                onCopyBlockToSlide={onCopyBlockToSlide}
+                onMoveBlockToSlide={onMoveBlockToSlide}
                 lessonTitle={lessonTitle}
                 lessonDescription={lessonDescription}
                 titleImageUrl={titleImageUrl}

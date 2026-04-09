@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Move } from 'lucide-react';
+import { Trash2, Move, Copy } from 'lucide-react';
 import { SlideTypeIcon } from './slide-type-icon';
 import { useEditorStore } from './editor-store-context';
 import { MoveSlideDialog } from './move-slide-dialog';
@@ -11,9 +11,10 @@ interface SlideNodeProps {
   slide: Slide;
   lessonId: string;
   onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
+  onDuplicateSlide?: (slideId: string, lessonId: string) => void;
 }
 
-export function SlideNode({ slide, lessonId, onMoveSlide }: SlideNodeProps) {
+export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: SlideNodeProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const removeSlide = useEditorStore((s) => s.removeSlide);
@@ -98,6 +99,18 @@ export function SlideNode({ slide, lessonId, onMoveSlide }: SlideNodeProps) {
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onMouseDown={e => e.stopPropagation()}
         >
+          {onDuplicateSlide && (
+            <button
+              onClick={() => {
+                onDuplicateSlide(slide.id, lessonId);
+                setContextMenu(null);
+              }}
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              Duplicate
+            </button>
+          )}
           {onMoveSlide && (
             <button
               onClick={() => {

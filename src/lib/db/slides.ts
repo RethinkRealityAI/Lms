@@ -192,6 +192,77 @@ export async function moveSlideToLesson(
   return { success: true };
 }
 
+/**
+ * Duplicate a slide and all its blocks within the same lesson.
+ * Returns the new slide and its cloned blocks.
+ */
+export async function duplicateSlide(
+  supabase: SupabaseClient,
+  slideId: string,
+  lessonId: string,
+  institutionId: string,
+): Promise<{ slide: Slide; blocks: Array<{ id: string; slide_id: string; block_type: string; data: Record<string, unknown>; order_index: number; is_visible: boolean }> }> {
+  // 1. Get the source slide
+  const { data: sourceSlide, error: slideErr } = await supabase
+    .from('slides')
+    .select('*')
+    .eq('id', slideId)
+    .single();
+  if (slideErr || !sourceSlide) throw slideErr || new Error('Slide not found');
+
+  // 2. Get current max order_index in the lesson
+  const { data: existingSlides } = await supabase
+    .from('slides')
+    .select('order_index')
+    .eq('lesson_id', lessonId)
+    .is('deleted_at', null)
+    .order('order_index', { ascending: false })
+    .limit(1);
+  const nextIndex = (existingSlides?.[0]?.order_index ?? -1) + 1;
+
+  // 3. Create the duplicate slide
+  const newSlide = await createSlide(supabase, {
+    lesson_id: lessonId,
+    slide_type: sourceSlide.slide_type,
+    title: sourceSlide.title ? `${sourceSlide.title} (copy)` : undefined,
+    order_index: nextIndex,
+    settings: sourceSlide.settings,
+    canvas_data: sourceSlide.canvas_data,
+  }, institutionId);
+
+  // 4. Clone all blocks from the source slide
+  const { data: sourceBlocks } = await supabase
+    .from('lesson_blocks')
+    .select('block_type, data, order_index, is_visible')
+    .eq('slide_id', slideId)
+    .order('order_index', { ascending: true });
+
+  const clonedBlocks: Array<{ id: string; slide_id: string; block_type: string; data: Record<string, unknown>; order_index: number; is_visible: boolean }> = [];
+
+  if (sourceBlocks && sourceBlocks.length > 0) {
+    for (const block of sourceBlocks) {
+      const { data: newBlock, error: blockErr } = await supabase
+        .from('lesson_blocks')
+        .insert({
+          lesson_id: lessonId,
+          slide_id: newSlide.id,
+          block_type: block.block_type,
+          data: JSON.parse(JSON.stringify(block.data)),
+          order_index: block.order_index,
+          institution_id: institutionId,
+          is_visible: block.is_visible ?? true,
+        })
+        .select('id, slide_id, block_type, data, order_index, is_visible')
+        .single();
+      if (!blockErr && newBlock) {
+        clonedBlocks.push(newBlock);
+      }
+    }
+  }
+
+  return { slide: newSlide, blocks: clonedBlocks };
+}
+
 export async function getSlideTemplates(
   supabase: SupabaseClient,
   institutionId?: string

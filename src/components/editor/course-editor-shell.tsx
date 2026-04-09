@@ -14,7 +14,7 @@ import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
-import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide, moveSlideToLesson as dbMoveSlideToLesson } from '@/lib/db/slides';
+import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide, moveSlideToLesson as dbMoveSlideToLesson, duplicateSlide as dbDuplicateSlide } from '@/lib/db/slides';
 import { duplicateBlock as dbDuplicateBlock } from '@/lib/db/blocks';
 import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock, deleteBlock as dbDeleteBlock } from '@/lib/db/blocks';
 import { createModule as dbCreateModule, deleteModule as dbDeleteModule, updateModule as dbUpdateModule } from '@/lib/db/modules';
@@ -522,6 +522,126 @@ function EditorContent({ courseId }: { courseId: string }) {
     }
   }, [institutionId, store]);
 
+  // Slide duplication
+  const handleDuplicateSlide = useCallback(async (slideId: string, lessonId: string) => {
+    if (!institutionId || !store) return;
+    try {
+      const supabase = createClient();
+      const { slide: newSlide, blocks: newBlocks } = await dbDuplicateSlide(supabase, slideId, lessonId, institutionId);
+      // Add to store
+      const state = store.getState();
+      const existingSlides = [...(state.slides.get(lessonId) ?? [])];
+      existingSlides.push(newSlide);
+      const nextSlides = new Map(state.slides);
+      nextSlides.set(lessonId, existingSlides);
+
+      const nextBlocks = new Map(state.blocks);
+      nextBlocks.set(newSlide.id, newBlocks.map(b => ({
+        id: b.id,
+        slide_id: b.slide_id,
+        block_type: b.block_type,
+        data: b.data,
+        order_index: b.order_index,
+        is_visible: b.is_visible,
+      })));
+
+      state.selectEntity({ type: 'slide', id: newSlide.id });
+      // Use set via the store's internal mechanism — update slides and blocks directly
+      store.setState({ slides: nextSlides, blocks: nextBlocks, isDirty: true });
+      toast.success('Slide duplicated');
+    } catch {
+      toast.error('Failed to duplicate slide');
+    }
+  }, [institutionId, store]);
+
+  // Copy block to a different slide
+  const handleCopyBlockToSlide = useCallback(async (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => {
+    if (!institutionId || !store) return;
+    const state = store.getState();
+    const blockList = state.blocks.get(sourceSlideId);
+    const sourceBlock = blockList?.find(b => b.id === blockId);
+    if (!sourceBlock) return;
+
+    let lessonId = '';
+    for (const [lid, slideList] of state.slides.entries()) {
+      if (slideList.some(s => s.id === sourceSlideId)) { lessonId = lid; break; }
+    }
+
+    try {
+      const supabase = createClient();
+      const data = await dbDuplicateBlock(supabase, {
+        id: sourceBlock.id,
+        slide_id: sourceSlideId,
+        block_type: sourceBlock.block_type,
+        data: (sourceBlock.data ?? {}) as Record<string, unknown>,
+        order_index: sourceBlock.order_index,
+      }, lessonId, institutionId, targetSlideId, targetLessonId);
+
+      // Add to target slide in store
+      const targetBlocks = [...(state.blocks.get(targetSlideId) ?? []), {
+        id: data.id,
+        slide_id: data.slide_id,
+        block_type: data.block_type,
+        data: data.data,
+        order_index: data.order_index,
+        is_visible: data.is_visible,
+      }];
+      const newBlocks = new Map(state.blocks);
+      newBlocks.set(targetSlideId, targetBlocks);
+      store.setState({ blocks: newBlocks, isDirty: true });
+      toast.success('Block copied');
+    } catch {
+      toast.error('Failed to copy block');
+    }
+  }, [institutionId, store]);
+
+  // Move block to a different slide (copy + delete from source)
+  const handleMoveBlockToSlide = useCallback(async (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => {
+    if (!institutionId || !store) return;
+    const state = store.getState();
+    const blockList = state.blocks.get(sourceSlideId);
+    const sourceBlock = blockList?.find(b => b.id === blockId);
+    if (!sourceBlock) return;
+
+    let lessonId = '';
+    for (const [lid, slideList] of state.slides.entries()) {
+      if (slideList.some(s => s.id === sourceSlideId)) { lessonId = lid; break; }
+    }
+
+    try {
+      const supabase = createClient();
+      // 1. Create in target
+      const data = await dbDuplicateBlock(supabase, {
+        id: sourceBlock.id,
+        slide_id: sourceSlideId,
+        block_type: sourceBlock.block_type,
+        data: (sourceBlock.data ?? {}) as Record<string, unknown>,
+        order_index: sourceBlock.order_index,
+      }, lessonId, institutionId, targetSlideId, targetLessonId);
+
+      // 2. Delete from source
+      await dbDeleteBlock(supabase, blockId);
+
+      // 3. Update store: remove from source, add to target
+      const newBlocks = new Map(state.blocks);
+      const sourceBlocks = (newBlocks.get(sourceSlideId) ?? []).filter(b => b.id !== blockId);
+      newBlocks.set(sourceSlideId, sourceBlocks);
+      const targetBlocks = [...(newBlocks.get(targetSlideId) ?? []), {
+        id: data.id,
+        slide_id: data.slide_id,
+        block_type: data.block_type,
+        data: data.data,
+        order_index: data.order_index,
+        is_visible: data.is_visible,
+      }];
+      newBlocks.set(targetSlideId, targetBlocks);
+      store.setState({ blocks: newBlocks, isDirty: true });
+      toast.success('Block moved');
+    } catch {
+      toast.error('Failed to move block');
+    }
+  }, [institutionId, store]);
+
   const deleteEntityType =
     selectedEntity?.type === 'module' ||
     selectedEntity?.type === 'lesson' ||
@@ -549,6 +669,7 @@ function EditorContent({ courseId }: { courseId: string }) {
             onDeleteModule={handleRequestDeleteModule}
             onAddSlide={handleAddSlide}
             onMoveSlide={handleMoveSlide}
+            onDuplicateSlide={handleDuplicateSlide}
           />
           <PreviewPanel
             devicePreview={devicePreview}
@@ -558,6 +679,8 @@ function EditorContent({ courseId }: { courseId: string }) {
               setDeleteDialogOpen(true);
             }}
             onDuplicateBlock={handleDuplicateBlock}
+            onCopyBlockToSlide={handleCopyBlockToSlide}
+            onMoveBlockToSlide={handleMoveBlockToSlide}
           />
           <PropertiesPanel
             collapsed={propertiesCollapsed}
