@@ -46,6 +46,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const updateSlide = useEditorStore((s) => s.updateSlide);
   const addBlock = useEditorStore((s) => s.addBlock);
+  const reorderBlocks = useEditorStore((s) => s.reorderBlocks);
   const institutionId = useEditorStore((s) => s.institutionId);
 
   // Find the currently selected slide and its owning lesson
@@ -117,6 +118,25 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
 
   const selectedBlockId = selectedEntity?.type === 'block' ? selectedEntity.id : undefined;
   const updateBlock = useEditorStore((s) => s.updateBlock);
+
+  // --- Block reorder by arrow buttons ---
+  const handleMoveBlockUp = useCallback((blockId: string, slideId: string) => {
+    const slideBlocks = blocks.get(slideId) ?? [];
+    const idx = slideBlocks.findIndex(b => b.id === blockId);
+    if (idx <= 0) return;
+    const ids = slideBlocks.map(b => b.id);
+    [ids[idx - 1], ids[idx]] = [ids[idx], ids[idx - 1]];
+    reorderBlocks(slideId, ids);
+  }, [blocks, reorderBlocks]);
+
+  const handleMoveBlockDown = useCallback((blockId: string, slideId: string) => {
+    const slideBlocks = blocks.get(slideId) ?? [];
+    const idx = slideBlocks.findIndex(b => b.id === blockId);
+    if (idx === -1 || idx >= slideBlocks.length - 1) return;
+    const ids = slideBlocks.map(b => b.id);
+    [ids[idx], ids[idx + 1]] = [ids[idx + 1], ids[idx]];
+    reorderBlocks(slideId, ids);
+  }, [blocks, reorderBlocks]);
 
   // --- Canvas slide handlers ---
 
@@ -216,6 +236,8 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                 onDuplicateBlock={onDuplicateBlock}
                 onCopyBlockToSlide={onCopyBlockToSlide}
                 onMoveBlockToSlide={onMoveBlockToSlide}
+                onMoveBlockUp={handleMoveBlockUp}
+                onMoveBlockDown={handleMoveBlockDown}
                 lessonTitle={lessonTitle}
                 lessonDescription={lessonDescription}
                 titleImageUrl={titleImageUrl}

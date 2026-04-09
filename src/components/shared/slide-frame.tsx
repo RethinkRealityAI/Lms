@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 
 export interface SlideFrameProps {
   lessonTitle: string;
+  slideTitle?: string | null;
+  slideTitleColor?: string;
   currentSlide: number;
   totalSlides: number;
   children: ReactNode;
@@ -17,6 +19,8 @@ export interface SlideFrameProps {
 
 export function SlideFrame({
   lessonTitle,
+  slideTitle,
+  slideTitleColor,
   currentSlide,
   totalSlides,
   children,
@@ -33,9 +37,19 @@ export function SlideFrame({
     <div className="flex flex-col h-full bg-white overflow-hidden">
       <div className="px-5 pt-3 pb-3 shrink-0 border-b border-slate-100">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] truncate pr-4">
-            {lessonTitle}
-          </span>
+          <div className="truncate pr-4 min-w-0">
+            <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] block truncate">
+              {lessonTitle}
+            </span>
+            {slideTitle && (
+              <span
+                className="text-xs font-semibold block truncate mt-0.5"
+                style={{ color: slideTitleColor || '#64748b' }}
+              >
+                {slideTitle}
+              </span>
+            )}
+          </div>
           <span className="text-sm font-bold text-slate-500 shrink-0">
             {currentSlide} / {totalSlides}
           </span>

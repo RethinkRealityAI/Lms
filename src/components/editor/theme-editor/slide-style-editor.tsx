@@ -1,11 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+import { Image as ImageIcon } from 'lucide-react';
 import { ColorSwatch } from './color-swatch';
 import { useEditorStore } from '../editor-store-context';
+import { DropZoneUploader } from '../drop-zone-uploader';
 import type { Slide } from '@/types';
 
 interface SlideStyleEditorProps {
@@ -15,8 +13,6 @@ interface SlideStyleEditorProps {
 export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
   const slides = useEditorStore((s) => s.slides);
   const updateSlide = useEditorStore((s) => s.updateSlide);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
 
   let slide: Slide | undefined;
   let lessonId: string = '';
@@ -35,28 +31,6 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
     updateSlide(lessonId, slideId, {
       settings: { ...settings, ...changes },
     });
-  }
-
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const supabase = createClient();
-      const ext = file.name.split('.').pop();
-      const path = `slides/${slideId}/${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from('block-media').upload(path, file, { cacheControl: '3600', upsert: false });
-      if (error) throw error;
-      const { data: urlData } = supabase.storage.from('block-media').getPublicUrl(path);
-      updateSettings({ background_image: urlData.publicUrl });
-      toast.success('Background image uploaded');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      toast.error('Upload failed', { description: msg });
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
   }
 
   const BG_PRESETS = [
@@ -104,6 +78,40 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
         )}
       </div>
 
+      {/* Slide Title Color */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Slide Title Color</p>
+        <div className="flex gap-1.5 flex-wrap">
+          {[
+            { label: 'Slate', value: '#64748b' },
+            { label: 'Navy', value: '#1E3A5F' },
+            { label: 'Red', value: '#DC2626' },
+            { label: 'Teal', value: '#0099CA' },
+            { label: 'Black', value: '#0F172A' },
+          ].map((preset) => (
+            <button
+              key={preset.value}
+              onClick={() => updateSettings({ title_color: preset.value })}
+              className={`px-2 py-1 text-xs rounded-lg transition-colors border ${
+                ((settings.title_color as string) || '#64748b') === preset.value
+                  ? 'border-[#1E3A5F] text-[#1E3A5F] bg-blue-50'
+                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-2">
+          <ColorSwatch
+            label="Custom"
+            value={((settings.title_color as string) || '#64748b')}
+            onChange={(v) => updateSettings({ title_color: v })}
+          />
+        </div>
+        <p className="text-[10px] text-gray-400 mt-1">Color of the slide title shown under the lesson name</p>
+      </div>
+
       <div className="border-t border-gray-100" />
 
       {/* Background Image */}
@@ -111,41 +119,15 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
           <ImageIcon className="w-3 h-3 inline mr-1" />Background Image
         </p>
-        {bgImage ? (
-          <div className="relative rounded-lg overflow-hidden border border-gray-200">
-            <img src={bgImage} alt="Slide background" className="w-full h-24 object-cover" />
-            <button
-              type="button"
-              onClick={() => updateSettings({ background_image: null })}
-              className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 transition-colors"
-              title="Remove background image"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="w-full h-16 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-gray-300 hover:text-gray-500 transition-colors"
-          >
-            {uploading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <Upload className="w-4 h-4" />
-                <span className="text-[10px] font-medium">Upload image</span>
-              </>
-            )}
-          </button>
-        )}
-        <input
-          ref={fileInputRef}
-          type="file"
+        <DropZoneUploader
+          bucket="block-media"
+          pathPrefix={`slides/${slideId}/`}
           accept="image/*"
-          className="hidden"
-          onChange={handleImageUpload}
+          label="Drop image or click to upload"
+          currentUrl={bgImage ?? undefined}
+          onUpload={(url) => updateSettings({ background_image: url })}
+          onRemove={() => updateSettings({ background_image: null })}
+          previewMode="image"
         />
         <p className="text-[10px] text-gray-400 mt-1">Full-page background behind slide content</p>
       </div>

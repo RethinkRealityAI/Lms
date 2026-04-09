@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
 import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
+import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
@@ -40,7 +41,7 @@ interface SlideSettings {
 
 type Slide =
   | { kind: 'title' }
-  | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }
+  | { kind: 'page'; slideId: string; slideTitle?: string | null; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }
   | { kind: 'completion' };
 
 // ---------------------------------------------------------------------------
@@ -181,16 +182,20 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonBlocks, setLessonBlocks] = useState<Record<string, LessonBlock[]>>({});
-  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>>>({});
+  const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number; title?: string | null; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>>>({});
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
   const [pageLoading, setPageLoading] = useState(true);
   // Slide viewer
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [subPage, setSubPage] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [autoCompleteFired, setAutoCompleteFired] = useState<Record<string, boolean>>({});
   // Confetti — track which lessons have already shown the animation
   const confettiFiredRef = useRef<Record<string, boolean>>({});
   const navDirection = useRef<'forward' | 'backward'>('forward');
+  // Reset sub-page when slide changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => { setSubPage(0); }, [currentSlide, selectedLesson?.id]);
   const [showConfetti, setShowConfetti] = useState(false);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
@@ -296,15 +301,15 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           // Fetch slides to know their order and settings within each lesson
           const { data: slidesData } = await supabase
             .from('slides')
-            .select('id, lesson_id, order_index, settings, slide_type, canvas_data')
+            .select('id, lesson_id, order_index, title, settings, slide_type, canvas_data')
             .in('lesson_id', lessonIds)
             .order('order_index', { ascending: true });
 
           if (slidesData) {
-            const groupedSlides: Record<string, Array<{ id: string; order_index: number; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>> = {};
-            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>) {
+            const groupedSlides: Record<string, Array<{ id: string; order_index: number; title?: string | null; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>> = {};
+            for (const slide of slidesData as Array<{ id: string; lesson_id: string; order_index: number; title?: string | null; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>) {
               if (!groupedSlides[slide.lesson_id]) groupedSlides[slide.lesson_id] = [];
-              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index, settings: slide.settings, slide_type: slide.slide_type, canvas_data: slide.canvas_data });
+              groupedSlides[slide.lesson_id].push({ id: slide.id, order_index: slide.order_index, title: slide.title, settings: slide.settings, slide_type: slide.slide_type, canvas_data: slide.canvas_data });
             }
             setLessonSlidesMap(groupedSlides);
           }
@@ -448,7 +453,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     const allBlocks = lessonBlocks[selectedLesson.id] ?? [];
     const slides = lessonSlidesMap[selectedLesson.id] ?? [];
 
-    let pageSlides: Array<{ kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }> = [];
+    let pageSlides: Array<{ kind: 'page'; slideId: string; slideTitle?: string | null; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }> = [];
 
     if (slides.length > 0 && allBlocks.some(b => b.slide_id)) {
       // Group blocks by slide_id, then order slides by their order_index
@@ -461,7 +466,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       const sortedSlides = [...slides].sort((a, b) => a.order_index - b.order_index);
       pageSlides = sortedSlides
         .filter(s => s.slide_type === 'canvas' || (blocksBySlide[s.id]?.length ?? 0) > 0)
-        .map(s => ({ kind: 'page' as const, slideId: s.id, blocks: sortBlocks(blocksBySlide[s.id] ?? []), settings: s.settings, slideType: s.slide_type, canvasData: s.canvas_data }));
+        .map(s => ({ kind: 'page' as const, slideId: s.id, slideTitle: s.title, blocks: sortBlocks(blocksBySlide[s.id] ?? []), settings: s.settings, slideType: s.slide_type, canvasData: s.canvas_data }));
 
       // Any blocks without a slide_id get appended as a final page
       if (blocksBySlide['__no_slide__']?.length) {
@@ -786,12 +791,22 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             {selectedLesson ? (
               <div className="flex flex-col h-full">
 
-                {/* Top bar: lesson label + counter + progress bar */}
+                {/* Top bar: lesson label + slide title + counter + progress bar */}
                 <div className="px-5 pt-3 pb-3 shrink-0 border-b border-slate-100">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] truncate pr-4">
-                      {selectedLesson.title}
-                    </span>
+                    <div className="truncate pr-4 min-w-0">
+                      <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] block truncate">
+                        {selectedLesson.title}
+                      </span>
+                      {currentSlideData?.kind === 'page' && currentSlideData.slideTitle && (
+                        <span
+                          className="text-xs font-semibold block truncate mt-0.5"
+                          style={{ color: (currentSlideData.settings?.title_color as string) || '#64748b' }}
+                        >
+                          {currentSlideData.slideTitle}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-sm font-bold text-slate-500">
                         {currentSlide + 1} / {totalSlides}
@@ -852,8 +867,11 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     const bgStyle = getSlideBackground(currentSlideData.settings);
                     const backgroundImage = typeof currentSlideData.settings?.background_image === 'string'
                       ? currentSlideData.settings.background_image : null;
+                    const pages = splitBlocksIntoPages(currentSlideData.blocks);
+                    const hasPages = pages.length > 1;
+
                     return (
-                      <div className="relative flex-1 overflow-y-auto" style={bgStyle}>
+                      <div className="relative flex-1 flex flex-col overflow-hidden" style={bgStyle}>
                         {backgroundImage && (
                           <div
                             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -862,15 +880,31 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                             <div className="absolute inset-0 bg-black/20" />
                           </div>
                         )}
-                        <div className="relative z-10">
+                        <div className="relative z-10 flex-1 overflow-y-auto">
                           <SlideContentArea>
                             <GridBlockRenderer
-                              blocks={currentSlideData.blocks}
+                              blocks={hasPages ? pages[subPage] ?? pages[0] : currentSlideData.blocks}
                               lessonTitle={selectedLesson.title}
                               onQuizCorrect={handleQuizCorrect}
                             />
                           </SlideContentArea>
                         </div>
+                        {/* Page dots — only when slide has page breaks */}
+                        {hasPages && (
+                          <div className="relative z-10 shrink-0 flex items-center justify-center gap-2 py-1.5 bg-white/60 backdrop-blur-sm border-t border-gray-100">
+                            {pages.map((_, i) => (
+                              <button
+                                key={i}
+                                onClick={() => setSubPage(i)}
+                                className={`w-2 h-2 rounded-full transition-all ${
+                                  i === subPage ? 'bg-[#1E3A5F] scale-125' : 'bg-gray-300 hover:bg-gray-400'
+                                }`}
+                                aria-label={`Page ${i + 1}`}
+                              />
+                            ))}
+                            <span className="text-[10px] text-gray-400 ml-1">{subPage + 1}/{pages.length}</span>
+                          </div>
+                        )}
                       </div>
                     );
                   })()}
@@ -899,13 +933,13 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                 </div>
 
                 {/* Navigation Footer — always visible */}
-                <div className="shrink-0 flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
+                <div className="shrink-0 flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
                   {/* Left: Previous */}
                   <button
                     onClick={goPrev}
                     disabled={isFirstSlide}
                     aria-label="Previous slide"
-                    className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous
@@ -917,7 +951,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     {isCompletionSlide && hasQuiz && (
                       <button
                         onClick={() => selectedLesson && router.push(`/student/courses/${courseId}/lessons/${selectedLesson.id}/quiz`)}
-                        className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold border border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10 rounded-xl transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10 rounded-xl transition-colors"
                       >
                         <Play className="h-4 w-4" />
                         Take Quiz
@@ -931,7 +965,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                           onClick={() => selectLesson(nextLesson)}
                           disabled={!allQuizzesComplete}
                           aria-label="Next lesson"
-                          className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                          className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                         >
                           Next Lesson <ChevronRight className="h-4 w-4" />
                         </button>
@@ -939,7 +973,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         <button
                           onClick={() => router.push('/gansid/student')}
                           aria-label="Back to dashboard"
-                          className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#0F172A] hover:bg-[#1e293b] rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                          className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#0F172A] hover:bg-[#1e293b] rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                         >
                           Back to Dashboard
                         </button>
@@ -949,7 +983,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}
                         disabled={!navUrl && nextBlocked}
                         aria-label="Complete lesson"
-                        className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
                         {navLabel || 'Complete Lesson'} <ChevronRight className="h-4 w-4" />
                       </button>
@@ -958,7 +992,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}
                         disabled={!navUrl && nextBlocked}
                         aria-label="Next slide"
-                        className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
                         {navLabel || 'Next'} <ChevronRight className="h-4 w-4" />
                       </button>

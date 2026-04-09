@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Plus, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Plus, PanelLeftClose, PanelLeftOpen, FolderPlus } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -136,16 +136,21 @@ export function StructurePanel({
           onDragEnd={handleDragEnd}
         >
           {modules.length === 0 ? (
-            <div className="text-center py-10 px-4">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                <Plus className="w-5 h-5 text-gray-400" />
+            <div className="text-center py-12 px-5">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1E3A5F]/10 to-[#2563EB]/10 flex items-center justify-center mx-auto mb-4">
+                <FolderPlus className="w-7 h-7 text-[#1E3A5F]" />
               </div>
-              <p className="text-sm text-gray-500 mb-2">No modules yet</p>
+              <p className="text-sm font-semibold text-gray-700 mb-1">Start building your course</p>
+              <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+                Modules organize your course into sections.<br />
+                Each module contains lessons with slides.
+              </p>
               <button
                 onClick={() => setShowAddModule(true)}
-                className="text-sm text-[#1E3A5F] font-medium hover:underline"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#1E3A5F] rounded-lg hover:bg-[#162d4a] transition-colors shadow-sm"
               >
-                + Add first module
+                <Plus className="w-4 h-4" />
+                Add first module
               </button>
             </div>
           ) : (

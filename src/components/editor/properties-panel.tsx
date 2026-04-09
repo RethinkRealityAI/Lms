@@ -1,18 +1,17 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Settings, Type, FileText, Image as ImageIcon, Play, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, Upload, X, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
 import { BlockEditorPanel } from './block-editor-panel';
 import { DraggableBlockItem } from './dnd/draggable-block-item';
+import { DropZoneUploader } from './drop-zone-uploader';
 import { CourseThemeEditor } from './theme-editor/course-theme-editor';
 import { SlideStyleEditor } from './theme-editor/slide-style-editor';
+import { BLOCK_PRESETS } from '@/lib/content/block-presets';
 import type { EntitySelection } from '@/types';
 import type { LessonData } from '@/lib/stores/editor-store';
 import type { Slide } from '@/types';
@@ -20,7 +19,7 @@ import type { Slide } from '@/types';
 interface PropertiesPanelProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-  onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
+  onAddBlock?: (slideId: string, blockType: string, insertIndex?: number, presetData?: Record<string, unknown>) => void;
   onDeleteBlock?: () => void;
 }
 
@@ -33,6 +32,7 @@ const AVAILABLE_BLOCKS = [
   { type: 'callout', label: 'Callout', icon: HelpCircle, color: 'text-yellow-600 bg-yellow-50' },
   { type: 'pdf', label: 'PDF Viewer', icon: FileIcon, color: 'text-rose-500 bg-rose-50' },
   { type: 'iframe', label: 'Embed (iframe)', icon: Code, color: 'text-purple-500 bg-purple-50' },
+  { type: 'page_break', label: 'Page Break', icon: SeparatorHorizontal, color: 'text-slate-500 bg-slate-50' },
 ];
 
 function ModuleEditor({ moduleId }: { moduleId: string }) {
@@ -102,9 +102,6 @@ function ModuleEditor({ moduleId }: { moduleId: string }) {
 function LessonEditor({ lessonId }: { lessonId: string }) {
   const lessons = useEditorStore((s) => s.lessons);
   const updateLesson = useEditorStore((s) => s.updateLesson);
-  const supabase = createClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
 
   let lessonData: LessonData | undefined;
   let parentModuleId: string | undefined;
@@ -135,25 +132,6 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
     const trimmed = description.trim();
     if (trimmed !== (lessonData?.description ?? '') && parentModuleId) {
       updateLesson(parentModuleId, lessonId, { description: trimmed });
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !parentModuleId) return;
-    setUploading(true);
-    try {
-      const filePath = `lessons/${lessonId}/${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage.from('block-media').upload(filePath, file);
-      if (error) throw error;
-      const { data: urlData } = supabase.storage.from('block-media').getPublicUrl(filePath);
-      updateLesson(parentModuleId, lessonId, { title_image_url: urlData.publicUrl });
-      toast.success('Background image uploaded');
-    } catch (err: any) {
-      toast.error('Upload failed', { description: err.message });
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -201,41 +179,15 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
         <Label className="text-xs font-medium text-gray-600 flex items-center gap-1.5">
           <ImageIcon className="w-3 h-3" /> Title Background
         </Label>
-        {lessonData?.title_image_url ? (
-          <div className="relative rounded-lg overflow-hidden border border-gray-200">
-            <img src={lessonData.title_image_url} alt="Title background" className="w-full h-24 object-cover" />
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 transition-colors"
-              title="Remove background image"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="w-full h-20 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-gray-300 hover:text-gray-500 transition-colors"
-          >
-            {uploading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                <Upload className="w-4 h-4" />
-                <span className="text-[11px] font-medium">Upload image</span>
-              </>
-            )}
-          </button>
-        )}
-        <input
-          ref={fileInputRef}
-          type="file"
+        <DropZoneUploader
+          bucket="block-media"
+          pathPrefix={`lessons/${lessonId}/`}
           accept="image/*"
-          className="hidden"
-          onChange={handleImageUpload}
+          label="Drop image or click to upload"
+          currentUrl={lessonData?.title_image_url ?? undefined}
+          onUpload={(url) => parentModuleId && updateLesson(parentModuleId, lessonId, { title_image_url: url })}
+          onRemove={handleRemoveImage}
+          previewMode="image"
         />
         <p className="text-[10px] text-gray-400">Replaces the blue gradient on the title slide</p>
       </div>
@@ -340,6 +292,35 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
                 disabled={!activeSlideId}
               />
             ))}
+          </div>
+
+          {/* Presets — pre-filled block templates */}
+          <div className="mt-2 pt-4 border-t border-gray-100 space-y-3">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Presets</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Pre-filled templates — click to add</p>
+            </div>
+            <div className="space-y-1.5">
+              {BLOCK_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => onAddBlock?.(activeSlideId!, preset.blockType, undefined, preset.data)}
+                  disabled={!activeSlideId}
+                  className="w-full flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 bg-white
+                    shadow-sm hover:shadow-md hover:border-gray-200 hover:-translate-y-0.5
+                    active:scale-[0.98] transition-all duration-150 text-left
+                    disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className={`p-2 rounded-lg shrink-0 ${preset.color}`}>
+                    <preset.icon className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-gray-700 truncate">{preset.label}</p>
+                    <p className="text-[10px] text-gray-400 truncate">{preset.description}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       );

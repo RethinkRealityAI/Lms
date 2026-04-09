@@ -7,6 +7,7 @@ interface ShortcutHandlers {
   onDelete?: () => void;
   onPrevSlide?: () => void;
   onNextSlide?: () => void;
+  onShowShortcuts?: () => void;
 }
 
 function isEditableTarget(e: KeyboardEvent): boolean {
@@ -25,10 +26,18 @@ export function useKeyboardShortcuts({
   onDelete,
   onPrevSlide,
   onNextSlide,
+  onShowShortcuts,
 }: ShortcutHandlers) {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const ctrl = e.ctrlKey || e.metaKey;
+
+      // ? key — toggle shortcuts overlay (works even in editable targets)
+      if (e.key === '?' && !ctrl && onShowShortcuts) {
+        e.preventDefault();
+        onShowShortcuts();
+        return;
+      }
 
       if (ctrl && e.key === 's') {
         e.preventDefault();
@@ -56,5 +65,5 @@ export function useKeyboardShortcuts({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onSave, onUndo, onRedo, onDelete, onPrevSlide, onNextSlide]);
+  }, [onSave, onUndo, onRedo, onDelete, onPrevSlide, onNextSlide, onShowShortcuts]);
 }

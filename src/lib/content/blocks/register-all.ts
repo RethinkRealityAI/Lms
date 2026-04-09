@@ -8,6 +8,7 @@ import { ctaDataSchema } from './cta/schema';
 import { calloutDataSchema } from './callout/schema';
 import { quizInlineDataSchema } from './quiz-inline/schema';
 import { videoDataSchema } from './video/schema';
+import { pageBreakDataSchema } from './page-break/schema';
 
 registerBlockType({
   type: 'rich_text',
@@ -144,5 +145,21 @@ registerBlockType({
   defaultData: { contentKey: '' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/h5p/viewer')),
   EditorComponent: null,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'page_break',
+  label: 'Page Break',
+  description: 'Split slide content into viewer pages.',
+  icon: 'separator-horizontal',
+  category: 'layout',
+  dataSchema: pageBreakDataSchema,
+  defaultData: {},
+  ViewerComponent: React.lazy(() => import('@/components/blocks/page-break/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/page-break/editor').then((m) => ({ default: m.PageBreakEditor }))
+  ),
+  completionCriteria: () => true,
   version: 1,
 });

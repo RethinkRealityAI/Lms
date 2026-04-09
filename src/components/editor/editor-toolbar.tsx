@@ -1,7 +1,8 @@
 'use client';
 
-import { Save, Undo2, Redo2, Eye, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone } from 'lucide-react';
+import { Save, Undo2, Redo2, Eye, Play, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone, Keyboard } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
@@ -10,9 +11,21 @@ interface EditorToolbarProps {
   courseId?: string;
   devicePreview: DevicePreview;
   onDevicePreviewChange: (device: DevicePreview) => void;
+  onPreviewLesson?: () => void;
+  onShowShortcuts?: () => void;
 }
 
-export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreviewChange }: EditorToolbarProps) {
+const ACTION_LABELS: Record<string, string> = {
+  addModule: 'add module', removeModule: 'delete module', updateModule: 'module edit',
+  addLesson: 'add lesson', removeLesson: 'delete lesson', updateLesson: 'lesson edit',
+  addSlide: 'add slide', removeSlide: 'delete slide', updateSlide: 'slide edit',
+  addBlock: 'add block', removeBlock: 'delete block', updateBlock: 'block edit',
+  reorderBlocks: 'reorder blocks', duplicateBlock: 'duplicate block',
+  switchBlockType: 'change block type', deleteSelectedBlocks: 'delete blocks',
+  reorderSlides: 'reorder slides',
+};
+
+export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreviewChange, onPreviewLesson, onShowShortcuts }: EditorToolbarProps) {
   const router = useRouter();
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
@@ -20,6 +33,8 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
   const redo = useEditorStore((s) => s.redo);
   const undoCount = useEditorStore((s) => s.undoStack.length);
   const redoCount = useEditorStore((s) => s.redoStack.length);
+  const lastUndoAction = useEditorStore((s) => s.undoStack.at(-1));
+  const lastRedoAction = useEditorStore((s) => s.redoStack.at(-1));
   const courseStatus = useEditorStore((s) => s.courseStatus);
   const lastSaveError = useEditorStore((s) => s.lastSaveError);
   const isPublishing = useEditorStore((s) => s.isPublishing);
@@ -27,6 +42,18 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
   const publishCourse = useEditorStore((s) => s.publishCourse);
 
   const isPublished = courseStatus === 'published';
+
+  function handleUndo() {
+    const action = lastUndoAction;
+    undo();
+    if (action) toast('Undone', { description: ACTION_LABELS[action.type] ?? action.type, duration: 1500, position: 'bottom-center' });
+  }
+
+  function handleRedo() {
+    const action = lastRedoAction;
+    redo();
+    if (action) toast('Redone', { description: ACTION_LABELS[action.type] ?? action.type, duration: 1500, position: 'bottom-center' });
+  }
 
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-gray-100 shrink-0 h-12">
@@ -65,7 +92,7 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
         )}
         <div className="flex items-center gap-1">
         <button
-          onClick={undo}
+          onClick={handleUndo}
           disabled={undoCount === 0}
           className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors relative"
           title={`Undo (Ctrl+Z) — ${undoCount} action${undoCount !== 1 ? 's' : ''}`}
@@ -78,7 +105,7 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
           )}
         </button>
         <button
-          onClick={redo}
+          onClick={handleRedo}
           disabled={redoCount === 0}
           className="p-2 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           title="Redo (Ctrl+Shift+Z)"
@@ -87,11 +114,25 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
         </button>
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <button
+          onClick={onPreviewLesson}
+          className="p-2 rounded hover:bg-gray-100 transition-colors"
+          title="Preview lesson"
+        >
+          <Play className="w-4 h-4 text-gray-600" />
+        </button>
+        <button
           onClick={() => courseId && router.push(`/admin/courses/${courseId}/preview`)}
           className="p-2 rounded hover:bg-gray-100 transition-colors"
-          title="Preview as student"
+          title="Preview full course"
         >
           <Eye className="w-4 h-4 text-gray-600" />
+        </button>
+        <button
+          onClick={onShowShortcuts}
+          className="p-2 rounded hover:bg-gray-100 transition-colors"
+          title="Keyboard shortcuts (?)"
+        >
+          <Keyboard className="w-4 h-4 text-gray-600" />
         </button>
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <div className="flex items-center gap-0.5 bg-gray-50 rounded-lg p-0.5">

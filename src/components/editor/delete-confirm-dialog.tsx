@@ -29,40 +29,35 @@ export function DeleteConfirmDialog({
     return () => document.removeEventListener('keydown', handleKey);
   }, [open, onCancel]);
 
-  // Close if clicking outside the panel
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        onCancel();
-      }
-    }
-    // Delay to avoid the same click that opened it from closing it
-    const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 0);
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener('mousedown', handleClick);
-    };
-  }, [open, onCancel]);
-
   if (!open || !entityType) return null;
 
   return createPortal(
     <div
-      ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 bg-white border border-gray-200 shadow-xl rounded-xl px-4 py-3 animate-in slide-in-from-bottom-4 fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30"
+      onClick={onCancel}
     >
-      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-      <span className="text-sm text-gray-700">
-        Delete this {entityType}? This can&apos;t be undone.
-      </span>
-      <div className="flex items-center gap-2 ml-2">
-        <Button variant="outline" size="sm" onClick={onCancel} className="h-7 text-xs">
-          Cancel
-        </Button>
-        <Button variant="destructive" size="sm" onClick={onConfirm} className="h-7 text-xs">
-          Delete
-        </Button>
+      <div
+        ref={panelRef}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-xl shadow-2xl border border-gray-200 px-6 py-5 max-w-sm w-full mx-4 animate-in zoom-in-95 fade-in duration-150"
+      >
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+            <AlertTriangle className="w-4.5 h-4.5 text-red-500" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Delete {entityType}?</p>
+            <p className="text-xs text-gray-500 mt-0.5">This action can&apos;t be undone.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 justify-end">
+          <Button variant="outline" size="sm" onClick={onCancel} className="h-8 text-xs px-3">
+            Cancel
+          </Button>
+          <Button variant="destructive" size="sm" onClick={onConfirm} className="h-8 text-xs px-3">
+            Delete
+          </Button>
+        </div>
       </div>
     </div>,
     document.body,

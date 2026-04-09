@@ -222,3 +222,24 @@ describe('useKeyboardShortcuts — arrow key slide navigation', () => {
     expect(() => fireKeyDown('ArrowRight')).not.toThrow();
   });
 });
+
+describe('useKeyboardShortcuts — ? key (shortcuts overlay)', () => {
+  it('calls onShowShortcuts when ? is pressed', () => {
+    const onShowShortcuts = vi.fn();
+    renderHook(() => useKeyboardShortcuts({ onShowShortcuts }));
+    fireKeyDown('?');
+    expect(onShowShortcuts).toHaveBeenCalledOnce();
+  });
+
+  it('does not throw if onShowShortcuts is not provided', () => {
+    renderHook(() => useKeyboardShortcuts({}));
+    expect(() => fireKeyDown('?')).not.toThrow();
+  });
+
+  it('does not call onShowShortcuts when Ctrl+? is pressed', () => {
+    const onShowShortcuts = vi.fn();
+    renderHook(() => useKeyboardShortcuts({ onShowShortcuts }));
+    fireKeyDown('?', { ctrlKey: true });
+    expect(onShowShortcuts).not.toHaveBeenCalled();
+  });
+});

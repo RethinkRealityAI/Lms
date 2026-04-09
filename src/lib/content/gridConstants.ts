@@ -5,8 +5,8 @@
 
 export const GRID_COLS = 12;
 export const GRID_MARGIN: [number, number] = [4, 4];
-export const GRID_CONTAINER_PADDING: [number, number] = [8, 8];
-export const DEFAULT_ROW_HEIGHT = 20;
+export const GRID_CONTAINER_PADDING: [number, number] = [6, 6];
+export const DEFAULT_ROW_HEIGHT = 16;
 
 /** Resize handles for editor canvas — south edges and corners for height,
  *  east/west edges for width. */
@@ -17,7 +17,7 @@ export const DEFAULT_BLOCK_LAYOUT = {
   gridX: 0,
   gridY: 0,
   gridW: 12,
-  gridH: 6,
+  gridH: 3,
 } as const;
 
 /** Extract grid layout from block data, falling back to defaults */

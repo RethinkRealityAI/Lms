@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Loader2, Upload, Link } from 'lucide-react';
+import { useState } from 'react';
+import { Link, Upload } from 'lucide-react';
+import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { ImageGalleryData } from '@/lib/content/blocks/image-gallery/schema';
 
@@ -23,34 +23,6 @@ function ImageEntryEditor({
   onRemove: () => void;
 }) {
   const [entryMode, setEntryMode] = useState<'url' | 'upload'>('url');
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  async function handleFileUpload(file: File) {
-    setUploading(true);
-    setUploadError(null);
-    try {
-      const supabase = createClient();
-      const ext = file.name.split('.').pop();
-      const path = `images/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('block-media')
-        .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (uploadErr) throw uploadErr;
-      const { data: urlData } = supabase.storage.from('block-media').getPublicUrl(path);
-      onUpdate({ url: urlData.publicUrl });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setUploadError(
-        msg.includes('bucket') || msg.includes('not found')
-          ? 'Storage bucket "block-media" not found. Create it in Supabase Storage or use URL mode.'
-          : msg,
-      );
-    } finally {
-      setUploading(false);
-    }
-  }
 
   return (
     <div className="p-3 border border-gray-200 rounded-lg space-y-2">
@@ -92,48 +64,15 @@ function ImageEntryEditor({
           className={inputClass}
         />
       ) : (
-        <div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleFileUpload(file);
-            }}
-          />
-          {img.url ? (
-            <div className="relative rounded-lg overflow-hidden border border-gray-200">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt={img.alt ?? ''} className="w-full h-24 object-cover" />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs font-medium"
-              >
-                Replace
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="w-full flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-gray-200 rounded-lg py-4 hover:border-[#1E3A5F] hover:bg-gray-50 transition-colors disabled:opacity-50"
-            >
-              {uploading ? (
-                <Loader2 className="w-4 h-4 text-[#1E3A5F] animate-spin" />
-              ) : (
-                <Upload className="w-4 h-4 text-gray-400" />
-              )}
-              <span className="text-xs text-gray-500">
-                {uploading ? 'Uploading…' : 'Click to upload'}
-              </span>
-            </button>
-          )}
-          {uploadError && <p className="mt-1 text-xs text-red-600">{uploadError}</p>}
-        </div>
+        <DropZoneUploader
+          bucket="block-media"
+          pathPrefix="images/"
+          accept="image/*"
+          label="Drop image or click to upload"
+          currentUrl={img.url || undefined}
+          onUpload={(url) => onUpdate({ url })}
+          previewMode="image"
+        />
       )}
 
       <input

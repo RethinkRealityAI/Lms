@@ -45,7 +45,7 @@ describe('QuizInlineViewer', () => {
     render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} />);
     fireEvent.click(screen.getByText(/B\. 4/));
     fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
-    expect(screen.getByText('Correct!')).toBeInTheDocument();
+    expect(screen.getByText("That's correct!")).toBeInTheDocument();
   });
 
   it('does not show Try Again when the answer is correct', () => {
@@ -66,7 +66,7 @@ describe('QuizInlineViewer', () => {
     render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} />);
     fireEvent.click(screen.getByText(/C\. 5/));
     fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
-    expect(screen.getByText(/Incorrect/)).toBeInTheDocument();
+    expect(screen.getByText(/not quite/i)).toBeInTheDocument();
     // Should NOT reveal the correct answer
     expect(screen.queryByText(/correct answer is/i)).not.toBeInTheDocument();
   });
@@ -94,5 +94,67 @@ describe('QuizInlineViewer', () => {
     fireEvent.click(screen.getByRole('button', { name: /try again/i }));
     // Check Answer button should reappear and be disabled (no selection)
     expect(screen.getByRole('button', { name: /check answer/i })).toBeDisabled();
+  });
+});
+
+describe('QuizInlineViewer — custom feedback', () => {
+  it('shows custom correct reinforcement', () => {
+    const data = { ...QUIZ_DATA, feedback_correct: 'Well done, champion!' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText(/B\. 4/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText('Well done, champion!')).toBeInTheDocument();
+  });
+
+  it('shows custom incorrect reinforcement', () => {
+    const data = { ...QUIZ_DATA, feedback_incorrect: 'Try reviewing section 3.' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText(/A\. 3/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText('Try reviewing section 3.')).toBeInTheDocument();
+  });
+
+  it('shows explanation after answering correctly', () => {
+    const data = { ...QUIZ_DATA, explanation: 'Because 2+2=4 by basic addition.' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText(/B\. 4/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText('Because 2+2=4 by basic addition.')).toBeInTheDocument();
+  });
+
+  it('shows explanation after answering incorrectly', () => {
+    const data = { ...QUIZ_DATA, explanation: 'The answer is 4.' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText(/A\. 3/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText('The answer is 4.')).toBeInTheDocument();
+  });
+
+  it('does not show explanation before answering', () => {
+    const data = { ...QUIZ_DATA, explanation: 'Secret explanation' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    expect(screen.queryByText('Secret explanation')).not.toBeInTheDocument();
+  });
+
+  it('shows hint before answering', () => {
+    const data = { ...QUIZ_DATA, hint: 'Think about basic addition.' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    expect(screen.getByText('Think about basic addition.')).toBeInTheDocument();
+  });
+
+  it('hides hint after answering', () => {
+    const data = { ...QUIZ_DATA, hint: 'Think about basic addition.' };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText(/B\. 4/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.queryByText('Think about basic addition.')).not.toBeInTheDocument();
+  });
+
+  it('does not show feedback when show_feedback is false', () => {
+    const data = { ...QUIZ_DATA, show_feedback: false };
+    render(<QuizInlineViewer data={data} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText(/B\. 4/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.queryByText(/correct/i)).not.toBeInTheDocument();
   });
 });

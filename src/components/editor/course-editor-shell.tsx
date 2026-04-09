@@ -11,6 +11,8 @@ import { PropertiesPanel } from './properties-panel';
 import { EditorStatusBar } from './editor-status-bar';
 import { EditorDndContext } from './dnd/editor-dnd-context';
 import { DeleteConfirmDialog } from './delete-confirm-dialog';
+import { LessonPreviewDialog } from './lesson-preview-dialog';
+import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
@@ -65,6 +67,8 @@ function EditorContent({ courseId }: { courseId: string }) {
   const [structureCollapsed, setStructureCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
   const [devicePreview, setDevicePreview] = useState<DevicePreview>('desktop');
+  const [lessonPreviewOpen, setLessonPreviewOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   // ── Persistence: save ──────────────────────────────────────────────────────
 
@@ -263,7 +267,7 @@ function EditorContent({ courseId }: { courseId: string }) {
         defaultData.gridX = 0;
         defaultData.gridY = 0;
         defaultData.gridW = 12;
-        defaultData.gridH = 6;
+        defaultData.gridH = 3;
         const { createBlock: dbCreateBlock } = await import('@/lib/db/blocks');
         const blockResult = await dbCreateBlock(supabase, {
           lesson_id: lessonId,
@@ -293,7 +297,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   // ── Persistence: add block to a slide (DB-first) ──────────────────────────
 
-  const handleAddBlock = useCallback(async (slideId: string, blockType: string, insertIndex?: number) => {
+  const handleAddBlock = useCallback(async (slideId: string, blockType: string, insertIndex?: number, presetData?: Record<string, unknown>) => {
     if (!institutionId) return;
     try {
       const state = store!.getState();
@@ -321,7 +325,7 @@ function EditorContent({ courseId }: { courseId: string }) {
         }
       }
 
-      const defaultData = getDefaultBlockData(blockType);
+      const defaultData = presetData ? { ...presetData } : getDefaultBlockData(blockType);
 
       // Compute gridY so the new block appears below existing blocks
       // instead of overlapping at y=0
@@ -329,13 +333,13 @@ function EditorContent({ courseId }: { courseId: string }) {
       for (const b of existingBlocks) {
         const d = (b.data ?? {}) as Record<string, unknown>;
         const bY = typeof d.gridY === 'number' ? d.gridY : 0;
-        const bH = typeof d.gridH === 'number' ? d.gridH : 6;
+        const bH = typeof d.gridH === 'number' ? d.gridH : 3;
         nextGridY = Math.max(nextGridY, bY + bH);
       }
       defaultData.gridX = 0;
       defaultData.gridY = nextGridY;
       defaultData.gridW = 12;
-      defaultData.gridH = 6;
+      defaultData.gridH = 3;
 
       const result = await dbCreateBlock(supabase, {
         lesson_id: lessonId,
@@ -485,6 +489,7 @@ function EditorContent({ courseId }: { courseId: string }) {
     onDelete: handleDeleteKey,
     onPrevSlide: handlePrevSlide,
     onNextSlide: handleNextSlide,
+    onShowShortcuts: () => setShortcutsOpen((v) => !v),
   });
 
   // Warn on unsaved changes
@@ -679,7 +684,14 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   return (
     <>
-      <EditorToolbar onSave={saveNow} courseId={courseId} devicePreview={devicePreview} onDevicePreviewChange={setDevicePreview} />
+      <EditorToolbar
+        onSave={saveNow}
+        courseId={courseId}
+        devicePreview={devicePreview}
+        onDevicePreviewChange={setDevicePreview}
+        onPreviewLesson={() => setLessonPreviewOpen(true)}
+        onShowShortcuts={() => setShortcutsOpen(true)}
+      />
       <EditorDndContext
         onAddBlock={handleAddBlock}
         onReorderBlocks={handleReorderBlocks}
@@ -724,6 +736,15 @@ function EditorContent({ courseId }: { courseId: string }) {
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteDialogOpen(false)}
       />
+      {lessonPreviewOpen && (
+        <LessonPreviewDialog
+          courseId={courseId}
+          onClose={() => setLessonPreviewOpen(false)}
+        />
+      )}
+      {shortcutsOpen && (
+        <KeyboardShortcutsDialog onClose={() => setShortcutsOpen(false)} />
+      )}
     </>
   );
 }

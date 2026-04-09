@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
 
@@ -42,6 +43,20 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
     // If correct answer was this option, clear it
     const newCorrect = data.correct_answer === options[index] ? undefined : data.correct_answer;
     onChange({ ...data, options: updated, correct_answer: newCorrect });
+  }
+
+  function moveOptionUp(index: number) {
+    if (index <= 0) return;
+    const updated = [...options];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    onChange({ ...data, options: updated });
+  }
+
+  function moveOptionDown(index: number) {
+    if (index >= options.length - 1) return;
+    const updated = [...options];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
+    onChange({ ...data, options: updated });
   }
 
   function updateCategoryName(catIndex: number, name: string) {
@@ -182,13 +197,34 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
           )}
           <div className="space-y-2">
             {options.map((opt, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="flex items-center gap-1.5">
+                {/* Reorder arrows */}
+                <div className="flex flex-col shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => moveOptionUp(i)}
+                    disabled={i === 0}
+                    className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                    aria-label={`Move option ${i + 1} up`}
+                  >
+                    <ChevronUp className="w-3 h-3" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveOptionDown(i)}
+                    disabled={i === options.length - 1}
+                    className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
+                    aria-label={`Move option ${i + 1} down`}
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </div>
                 <input
                   type="radio"
                   name="correct_answer"
                   checked={data.correct_answer === opt}
                   onChange={() => onChange({ ...data, correct_answer: opt })}
-                  className="h-4 w-4 text-[#1E3A5F] border-gray-300 focus:ring-[#1E3A5F]"
+                  className="h-4 w-4 text-[#1E3A5F] border-gray-300 focus:ring-[#1E3A5F] shrink-0"
                   aria-label={`Set option ${i + 1} as correct answer`}
                 />
                 <input
@@ -308,18 +344,109 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
         </div>
       )}
 
-      {/* Show feedback toggle */}
-      <div className="flex items-center gap-2 pt-1">
-        <input
-          id="quiz-show-feedback"
-          type="checkbox"
-          checked={data.show_feedback ?? true}
-          onChange={(e) => onChange({ ...data, show_feedback: e.target.checked })}
-          className="h-4 w-4 rounded border-gray-300 text-[#1E3A5F] focus:ring-[#1E3A5F]"
-        />
-        <label htmlFor="quiz-show-feedback" className="text-sm text-gray-700">
-          Show feedback after answer
-        </label>
+      {/* ── Feedback & Options ──────────────────────────────────────── */}
+      <div className="border-t border-gray-100 pt-4 space-y-3">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Feedback & Options</p>
+
+        {/* Show feedback toggle */}
+        <div className="flex items-center gap-2">
+          <input
+            id="quiz-show-feedback"
+            type="checkbox"
+            checked={data.show_feedback ?? true}
+            onChange={(e) => onChange({ ...data, show_feedback: e.target.checked })}
+            className="h-4 w-4 rounded border-gray-300 text-[#1E3A5F] focus:ring-[#1E3A5F]"
+          />
+          <label htmlFor="quiz-show-feedback" className="text-sm text-gray-700">
+            Show feedback after answer
+          </label>
+        </div>
+
+        {/* Custom feedback messages — visible when feedback is enabled */}
+        {(data.show_feedback ?? true) && (
+          <div className="space-y-2 pl-6">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+                Correct Reinforcement
+              </label>
+              <input
+                type="text"
+                value={data.feedback_correct ?? ''}
+                onChange={(e) => onChange({ ...data, feedback_correct: e.target.value || undefined })}
+                placeholder="That's correct!"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+                Incorrect Reinforcement
+              </label>
+              <input
+                type="text"
+                value={data.feedback_incorrect ?? ''}
+                onChange={(e) => onChange({ ...data, feedback_incorrect: e.target.value || undefined })}
+                placeholder="Not quite..."
+                className={inputClass}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Explanation — shown after answering regardless of correctness */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Explanation (shown after answering)
+          </label>
+          <textarea
+            value={data.explanation ?? ''}
+            onChange={(e) => onChange({ ...data, explanation: e.target.value || undefined })}
+            placeholder="Optional: explain why the correct answer is right..."
+            rows={2}
+            className={`${inputClass} resize-y`}
+          />
+        </div>
+
+        {/* Hint */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Hint (shown before answering)
+          </label>
+          <input
+            type="text"
+            value={data.hint ?? ''}
+            onChange={(e) => onChange({ ...data, hint: e.target.value || undefined })}
+            placeholder="Optional: give students a nudge..."
+            className={inputClass}
+          />
+        </div>
+
+        {/* Shuffle options */}
+        <div className="flex items-center gap-2">
+          <input
+            id="quiz-shuffle"
+            type="checkbox"
+            checked={data.shuffle_options ?? false}
+            onChange={(e) => onChange({ ...data, shuffle_options: e.target.checked })}
+            className="h-4 w-4 rounded border-gray-300 text-[#1E3A5F] focus:ring-[#1E3A5F]"
+          />
+          <label htmlFor="quiz-shuffle" className="text-sm text-gray-700">
+            Shuffle answer order
+          </label>
+        </div>
+
+        {/* Time limit */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Time Limit (seconds, 0 = none)
+          </label>
+          <input
+            type="number"
+            min={0}
+            value={data.time_limit ?? 0}
+            onChange={(e) => onChange({ ...data, time_limit: parseInt(e.target.value) || 0 })}
+            className={`${inputClass} w-24`}
+          />
+        </div>
       </div>
     </div>
   );

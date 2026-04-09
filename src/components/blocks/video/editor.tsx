@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Loader2, Upload, Link } from 'lucide-react';
+import { useState } from 'react';
+import { Link, Upload } from 'lucide-react';
+import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { VideoData } from '@/lib/content/blocks/video/schema';
 
@@ -11,34 +11,6 @@ const inputClass =
 
 export function VideoEditor({ data, onChange }: BlockEditorProps<VideoData>) {
   const [mode, setMode] = useState<'url' | 'upload'>('url');
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  async function handleFileUpload(file: File) {
-    setUploading(true);
-    setUploadError(null);
-    try {
-      const supabase = createClient();
-      const ext = file.name.split('.').pop();
-      const path = `videos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('block-media')
-        .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (uploadErr) throw uploadErr;
-      const { data: urlData } = supabase.storage.from('block-media').getPublicUrl(path);
-      onChange({ ...data, url: urlData.publicUrl });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setUploadError(
-        msg.includes('bucket') || msg.includes('not found')
-          ? 'Storage bucket "block-media" not found. Create it in Supabase Storage or use URL mode.'
-          : msg,
-      );
-    } finally {
-      setUploading(false);
-    }
-  }
 
   return (
     <div className="space-y-4">
@@ -84,35 +56,16 @@ export function VideoEditor({ data, onChange }: BlockEditorProps<VideoData>) {
       ) : (
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Video File</label>
-          <input
-            ref={fileInputRef}
-            type="file"
+          <DropZoneUploader
+            bucket="block-media"
+            pathPrefix="videos/"
             accept="video/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleFileUpload(file);
-            }}
+            label="Drop video or click to upload"
+            hint=".mp4, .webm, .mov"
+            currentUrl={data.url || undefined}
+            onUpload={(url) => onChange({ ...data, url })}
+            previewMode="filename"
           />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-lg py-6 hover:border-[#1E3A5F] hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            {uploading ? (
-              <Loader2 className="w-5 h-5 text-[#1E3A5F] animate-spin" />
-            ) : (
-              <Upload className="w-5 h-5 text-gray-400" />
-            )}
-            <span className="text-xs text-gray-500">
-              {uploading ? 'Uploading…' : 'Click to upload a video file'}
-            </span>
-          </button>
-          {uploadError && <p className="mt-1 text-xs text-red-600">{uploadError}</p>}
-          {data.url && !uploadError && (
-            <p className="mt-1 text-xs text-green-700 truncate">Uploaded: {data.url}</p>
-          )}
         </div>
       )}
 

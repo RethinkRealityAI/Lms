@@ -75,4 +75,22 @@ describe('block registry', () => {
     expect(contentBlocks.length).toBeGreaterThan(0);
     expect(contentBlocks.every((b) => b.category === 'content')).toBe(true);
   });
+
+  it('supports layout category for page_break blocks', () => {
+    registerBlockType({
+      type: 'page_break',
+      label: 'Page Break',
+      description: 'Split content into pages',
+      icon: 'separator-horizontal',
+      category: 'layout',
+      dataSchema: z.object({}),
+      defaultData: {},
+      EditorComponent: null,
+      ViewerComponent: null,
+      version: 1,
+    });
+    const layoutBlocks = getBlockTypesByCategory('layout');
+    expect(layoutBlocks).toHaveLength(1);
+    expect(layoutBlocks[0].type).toBe('page_break');
+  });
 });

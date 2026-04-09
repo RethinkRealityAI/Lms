@@ -99,16 +99,28 @@ function MultipleChoiceViewer({
         })}
       </div>
 
+      {/* Hint — shown before submitting */}
+      {!submitted && data.hint && (
+        <p className="text-sm text-slate-500 italic px-1">{data.hint}</p>
+      )}
+
       {submitted && data.show_feedback && (
         <div className={cn(
           'flex items-start gap-2 text-sm sm:text-base font-medium rounded-lg px-3 py-2.5 sm:px-5 sm:py-3.5',
           isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         )}>
           {isCorrect ? (
-            <><CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /> Correct!</>
+            <><CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /> {data.feedback_correct || "That's correct!"}</>
           ) : (
-            <><XCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /><span>Incorrect. Try again!</span></>
+            <><XCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /><span>{data.feedback_incorrect || 'Not quite...'}</span></>
           )}
+        </div>
+      )}
+
+      {/* Explanation — shown after answering */}
+      {submitted && data.explanation && (
+        <div className="text-sm text-slate-600 bg-slate-50 rounded-lg px-3 py-2.5 sm:px-5 sm:py-3.5 border border-slate-100">
+          {data.explanation}
         </div>
       )}
 

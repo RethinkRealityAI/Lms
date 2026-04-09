@@ -25,9 +25,10 @@ describe('gridConstants', () => {
       expect(DEFAULT_BLOCK_LAYOUT.gridX).toBe(0);
     });
 
-    it('resize handles include edges and bottom corners', () => {
+    it('resize handles include edges, bottom edge, and bottom corners', () => {
       expect(RESIZE_HANDLES).toContain('e');
       expect(RESIZE_HANDLES).toContain('w');
+      expect(RESIZE_HANDLES).toContain('s');
       expect(RESIZE_HANDLES).toContain('se');
       expect(RESIZE_HANDLES).toContain('sw');
       // No top handles

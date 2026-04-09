@@ -12,10 +12,10 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.queryByText(/delete this/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/delete module/i)).not.toBeInTheDocument();
   });
 
-  it('shows "Delete this module?" when entityType is module', () => {
+  it('shows "Delete module?" when entityType is module', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -24,10 +24,10 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.getByText(/delete this module/i)).toBeInTheDocument();
+    expect(screen.getByText(/delete module/i)).toBeInTheDocument();
   });
 
-  it('shows "Delete this slide?" when entityType is slide', () => {
+  it('shows "Delete slide?" when entityType is slide', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -36,10 +36,10 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.getByText(/delete this slide/i)).toBeInTheDocument();
+    expect(screen.getByText(/delete slide/i)).toBeInTheDocument();
   });
 
-  it('shows "Delete this lesson?" when entityType is lesson', () => {
+  it('shows "Delete lesson?" when entityType is lesson', () => {
     render(
       <DeleteConfirmDialog
         open={true}
@@ -48,7 +48,7 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.getByText(/delete this lesson/i)).toBeInTheDocument();
+    expect(screen.getByText(/delete lesson/i)).toBeInTheDocument();
   });
 
   it('calls onCancel when Cancel button is clicked', () => {
@@ -88,6 +88,6 @@ describe('DeleteConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(screen.queryByText(/delete this/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/delete/i)).not.toBeInTheDocument();
   });
 });

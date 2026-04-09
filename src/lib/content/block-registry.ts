@@ -1,7 +1,7 @@
 import type { ZodType, ZodTypeDef } from 'zod';
 import type React from 'react';
 
-export type BlockCategory = 'content' | 'media' | 'interactive' | 'assessment' | 'navigation';
+export type BlockCategory = 'content' | 'media' | 'interactive' | 'assessment' | 'navigation' | 'layout';
 
 export interface BlockEditorProps<TData = Record<string, unknown>> {
   data: TData;

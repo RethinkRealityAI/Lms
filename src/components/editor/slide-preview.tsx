@@ -2,7 +2,7 @@
 
 import { Suspense, useRef, useState, useEffect, useCallback } from 'react';
 import type { CSSProperties } from 'react';
-import { GripVertical, Trash2, X, Copy, CopyPlus, Move } from 'lucide-react';
+import { GripVertical, Trash2, X, Copy, CopyPlus, Move, ChevronUp, ChevronDown, Layers } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import RGL from 'react-grid-layout';
 const ReactGridLayout = RGL as any;
@@ -29,6 +29,8 @@ interface SlidePreviewProps {
   onDuplicateBlock?: (blockId: string, slideId: string) => void;
   onCopyBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
   onMoveBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
+  onMoveBlockUp?: (blockId: string, slideId: string) => void;
+  onMoveBlockDown?: (blockId: string, slideId: string) => void;
   selectedBlockId?: string;
   /** Lesson title for the header */
   lessonTitle?: string;
@@ -50,6 +52,8 @@ export function SlidePreview({
   onDuplicateBlock,
   onCopyBlockToSlide,
   onMoveBlockToSlide,
+  onMoveBlockUp,
+  onMoveBlockDown,
   selectedBlockId,
   lessonTitle = 'Untitled Lesson',
   lessonDescription,
@@ -152,6 +156,8 @@ export function SlidePreview({
   return (
     <SlideFrame
       lessonTitle={lessonTitle}
+      slideTitle={slide.title}
+      slideTitleColor={(slide.settings as Record<string, unknown>)?.title_color as string | undefined}
       currentSlide={slideNumber}
       totalSlides={totalSlides}
     >
@@ -186,17 +192,22 @@ export function SlidePreview({
           <div className="relative z-10">
             {blocks.length === 0 ? (
               <SlideContentArea>
-                <div className={`flex items-center justify-center h-40 border-2 border-dashed rounded-xl text-sm transition-all duration-200 ${
+                <div className={`flex flex-col items-center justify-center py-16 border-2 border-dashed rounded-xl text-sm transition-all duration-200 ${
                   isOver
                     ? 'border-blue-400 bg-blue-50/60 text-blue-500 scale-[1.01]'
                     : 'border-gray-200 text-gray-400'
                 }`}>
-                  <div className="text-center">
-                    <p className="font-medium">{isOver ? 'Drop here to add' : 'No blocks on this slide'}</p>
-                    <p className="text-xs mt-1 opacity-70">
-                      {isOver ? 'Release to place the block' : 'Drag components from the panel or click to add'}
-                    </p>
+                  <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
+                    <Layers className="w-6 h-6 text-gray-300" />
                   </div>
+                  <p className="font-medium text-gray-500">
+                    {isOver ? 'Drop here to add' : 'Empty slide'}
+                  </p>
+                  <p className="text-xs mt-1.5 max-w-[220px] text-center leading-relaxed text-gray-400">
+                    {isOver
+                      ? 'Release to place the block'
+                      : 'Drag components from the right panel, or click one to add it here'}
+                  </p>
                 </div>
               </SlideContentArea>
             ) : (
@@ -262,6 +273,17 @@ export function SlidePreview({
                     }}
                   >
                     {/* Block content */}
+                    {block.block_type === 'page_break' ? (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="flex items-center gap-2 w-full px-3">
+                          <div className="flex-1 border-t-2 border-dashed border-slate-300" />
+                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                            {(block.data as any)?.label || 'Page Break'}
+                          </span>
+                          <div className="flex-1 border-t-2 border-dashed border-slate-300" />
+                        </div>
+                      </div>
+                    ) : (
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                       <Suspense fallback={<div className="p-4 text-sm text-slate-400">Loading...</div>}>
                         <LessonBlockRenderer
@@ -283,17 +305,40 @@ export function SlidePreview({
                         />
                       </Suspense>
                     </div>
+                    )}
 
-                    {/* Drag handle */}
+                    {/* Block toolbar — drag handle + reorder arrows + label */}
                     <div
-                      className={`block-drag-handle absolute top-1 left-1 z-10 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium cursor-grab active:cursor-grabbing backdrop-blur-sm transition-opacity ${
+                      className={`absolute top-1 left-1 z-10 inline-flex items-center gap-0.5 rounded backdrop-blur-sm transition-opacity ${
                         selectedBlockId === block.id
                           ? 'opacity-100 bg-[#1E3A5F]/80 text-white'
                           : 'opacity-0 group-hover:opacity-100 bg-black/50 text-white/80'
                       }`}
                     >
-                      <GripVertical className="w-3 h-3" />
-                      <span className="capitalize">{block.block_type.replace('_', ' ')}</span>
+                      <div className="block-drag-handle inline-flex items-center gap-0.5 px-1.5 py-0.5 cursor-grab active:cursor-grabbing text-[10px] font-medium">
+                        <GripVertical className="w-3 h-3" />
+                        <span className="capitalize">{block.block_type.replace('_', ' ')}</span>
+                      </div>
+                      {blocks.length > 1 && (
+                        <>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onMoveBlockUp?.(block.id, slide.id); }}
+                            disabled={blocks.indexOf(block) === 0}
+                            className="p-0.5 rounded hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Move up"
+                          >
+                            <ChevronUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onMoveBlockDown?.(block.id, slide.id); }}
+                            disabled={blocks.indexOf(block) === blocks.length - 1}
+                            className="p-0.5 rounded hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Move down"
+                          >
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </>
+                      )}
                     </div>
 
                     {/* Delete button */}
