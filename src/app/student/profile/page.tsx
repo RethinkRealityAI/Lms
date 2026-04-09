@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, CheckCircle, Award, BarChart3 } from 'lucide-react';
+import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, CheckCircle, Award, BarChart3, Briefcase, Building2, Globe } from 'lucide-react';
 import type { User as UserType } from '@/types';
 import { isAdminRole } from '@/lib/auth/roles';
 import type { StudentProgress } from '@/lib/db/analytics';
@@ -26,6 +26,9 @@ export default function ProfilePage() {
     full_name: '',
     bio: '',
     avatar_url: '',
+    occupation: '',
+    affiliation: '',
+    country: '',
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
@@ -53,6 +56,9 @@ export default function ProfilePage() {
           full_name: data.full_name || '',
           bio: data.bio || '',
           avatar_url: data.avatar_url || '',
+          occupation: data.occupation || '',
+          affiliation: data.affiliation || '',
+          country: data.country || '',
         });
       }
 
@@ -154,6 +160,9 @@ export default function ProfilePage() {
           full_name: trimmedName,
           bio: formData.bio.trim(),
           avatar_url: formData.avatar_url,
+          occupation: formData.occupation.trim() || null,
+          affiliation: formData.affiliation.trim() || null,
+          country: formData.country.trim() || null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -341,6 +350,56 @@ export default function ProfilePage() {
                     placeholder="e.g. Dr. Jane Smith"
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    maxLength={100}
+                    className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="occupation" className="text-xs font-black uppercase tracking-widest text-slate-400">Occupation</Label>
+                <div className="relative group">
+                  <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB]" />
+                  <Input
+                    id="occupation"
+                    type="text"
+                    placeholder="e.g. Healthcare Professional"
+                    value={formData.occupation}
+                    onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                    maxLength={100}
+                    className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="affiliation" className="text-xs font-black uppercase tracking-widest text-slate-400">Affiliation</Label>
+                <div className="relative group">
+                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB]" />
+                  <Input
+                    id="affiliation"
+                    type="text"
+                    placeholder="e.g. Sickle Cell Foundation"
+                    value={formData.affiliation}
+                    onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
+                    maxLength={150}
+                    className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="country" className="text-xs font-black uppercase tracking-widest text-slate-400">Country</Label>
+                <div className="relative group">
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB]" />
+                  <Input
+                    id="country"
+                    type="text"
+                    placeholder="e.g. Nigeria"
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                     maxLength={100}
                     className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
                   />
