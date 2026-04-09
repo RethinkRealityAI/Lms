@@ -219,6 +219,8 @@ export const config = {
     "/:institutionSlug/login",
     "/:institutionSlug/reset-password",
     "/:institutionSlug/admin/login",
+    "/:institutionSlug/patient-organizations",
+    "/:institutionSlug/clinicians",
     "/:institutionSlug",
   ],
 };

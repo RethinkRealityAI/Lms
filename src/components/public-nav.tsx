@@ -12,9 +12,10 @@ import { isAdminRole } from '@/lib/auth/roles';
 interface PublicNavProps {
   scrolled?: boolean;
   transparentInitially?: boolean;
+  hideAuth?: boolean;
 }
 
-export function PublicNav({ scrolled: forcedScrolled, transparentInitially = true }: PublicNavProps) {
+export function PublicNav({ scrolled: forcedScrolled, transparentInitially = true, hideAuth = false }: PublicNavProps) {
   const [user, setUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
@@ -155,9 +156,8 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/#overview" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Overview</Link>
-          <Link href="/#program" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Program</Link>
-          <Link href="/#approach" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Approach</Link>
+          <Link href="/gansid/patient-organizations" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Patient Organizations</Link>
+          <Link href="/gansid/clinicians" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Clinicians</Link>
           
           {!loading && user ? (
             <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
                 </Button>
               </div>
             </div>
-          ) : !loading ? (
+          ) : !loading && !hideAuth ? (
             <div className="flex items-center gap-4">
               <Button variant="ghost" asChild className={`rounded-full font-bold px-6 transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>
                 <Link href="/login">Sign In</Link>
@@ -227,26 +227,19 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
               </div>
             )}
             
-            <Link 
-              href="/#overview" 
+            <Link
+              href="/gansid/patient-organizations"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
             >
-              Overview
+              Patient Organizations
             </Link>
-            <Link 
-              href="/#program" 
+            <Link
+              href="/gansid/clinicians"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
             >
-              Program
-            </Link>
-            <Link 
-              href="/#approach" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
-            >
-              Approach
+              Clinicians
             </Link>
             
             <div className="pt-3 border-t border-slate-100 space-y-2">
@@ -258,8 +251,8 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
                       Go to Dashboard
                     </Link>
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full rounded-xl font-bold"
                     onClick={handleSignOut}
                   >
@@ -267,7 +260,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
                     Sign Out
                   </Button>
                 </>
-              ) : (
+              ) : !hideAuth ? (
                 <>
                   <Button asChild variant="outline" className="w-full rounded-xl font-bold">
                     <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
@@ -276,7 +269,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
                     <Link href="/login?tab=signup" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
