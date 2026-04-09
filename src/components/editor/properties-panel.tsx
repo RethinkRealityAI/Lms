@@ -243,6 +243,61 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
   );
 }
 
+function SlideEditor({ slideId }: { slideId: string }) {
+  const slides = useEditorStore((s) => s.slides);
+  const updateSlide = useEditorStore((s) => s.updateSlide);
+
+  let slideData: Slide | undefined;
+  let parentLessonId: string | undefined;
+  for (const [lessonId, slideList] of slides.entries()) {
+    slideData = slideList.find((s) => s.id === slideId);
+    if (slideData) {
+      parentLessonId = lessonId;
+      break;
+    }
+  }
+
+  const [title, setTitle] = useState(slideData?.title ?? '');
+
+  useEffect(() => {
+    setTitle(slideData?.title ?? '');
+  }, [slideId, slideData?.title]);
+
+  const handleTitleBlur = () => {
+    const trimmed = title.trim();
+    const current = slideData?.title ?? '';
+    if (trimmed !== current && parentLessonId) {
+      updateSlide(parentLessonId, slideId, { title: trimmed || null });
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Slide Properties</p>
+      <div className="space-y-1.5">
+        <Label htmlFor="slide-title" className="text-xs font-medium text-gray-600 flex items-center gap-1.5">
+          <Type className="w-3 h-3" /> Title
+        </Label>
+        <Input
+          id="slide-title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={handleTitleBlur}
+          onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+          className="h-9 text-sm"
+          placeholder="e.g. Introduction, Key Concepts..."
+          maxLength={200}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium text-gray-600">Type</Label>
+        <p className="text-sm font-medium text-gray-700 capitalize">{slideData?.slide_type ?? 'Unknown'}</p>
+      </div>
+      <SlideStyleEditor slideId={slideId} />
+    </div>
+  );
+}
+
 export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDeleteBlock }: PropertiesPanelProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
@@ -323,19 +378,7 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
     }
 
     if (entity.type === 'slide') {
-      let slideData: Slide | undefined;
-      for (const slideList of slides.values()) {
-        slideData = slideList.find((s) => s.id === entity.id);
-        if (slideData) break;
-      }
-      return (
-        <div className="space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Slide</p>
-          <p className="text-sm font-medium text-gray-700 capitalize">{slideData?.slide_type ?? 'Unknown type'}</p>
-          <p className="text-xs text-gray-500">{slideData?.title ?? '(untitled)'}</p>
-          <SlideStyleEditor slideId={entity.id} />
-        </div>
-      );
+      return <SlideEditor slideId={entity.id} />;
     }
 
     return null;

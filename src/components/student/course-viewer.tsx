@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
   ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
-  Minimize2,
+  Minimize2, Maximize2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -649,16 +649,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       )}
       {!previewMode && <ShortcutHint />}
 
-      {/* ── Floating fullscreen exit button ────────────────────────────────── */}
-      {isFullscreen && (
-        <button
-          onClick={() => setIsFullscreen(false)}
-          className="fixed bottom-6 right-6 z-[70] p-2 bg-black/40 hover:bg-black/60 text-white/70 hover:text-white rounded-lg backdrop-blur-sm transition-all"
-          title="Exit fullscreen (Esc)"
-        >
-          <Minimize2 className="w-5 h-5" />
-        </button>
-      )}
+      {/* Fullscreen toggle is now in the slide top bar next to slide counter */}
 
       {/* ── Dialogs ────────────────────────────────────────────────────────── */}
       <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
@@ -801,9 +792,18 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] truncate pr-4">
                       {selectedLesson.title}
                     </span>
-                    <span className="text-sm font-bold text-slate-500 shrink-0">
-                      {currentSlide + 1} / {totalSlides}
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-sm font-bold text-slate-500">
+                        {currentSlide + 1} / {totalSlides}
+                      </span>
+                      <button
+                        onClick={() => setIsFullscreen(prev => !prev)}
+                        className="p-1 text-slate-400 hover:text-[#1E3A5F] transition-colors rounded"
+                        title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Toggle fullscreen (F)'}
+                      >
+                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-[3px]"
                     role="progressbar" aria-valuenow={Math.round(((currentSlide + 1) / totalSlides) * 100)} aria-valuemin={0} aria-valuemax={100}

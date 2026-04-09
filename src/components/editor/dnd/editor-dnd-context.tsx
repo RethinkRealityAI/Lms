@@ -5,6 +5,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
   closestCenter,
@@ -14,6 +15,7 @@ import {
   type DragOverEvent,
   type CollisionDetection,
 } from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { BlockDragOverlay } from './block-drag-overlay';
 
 interface DragState {
@@ -61,6 +63,9 @@ export function EditorDndContext({
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -107,12 +112,13 @@ export function EditorDndContext({
 
       // Palette → Canvas: add new block at the drop position
       if (activeData?.source === 'palette') {
+        const overData = over.data.current;
         const targetIsCanvas =
-          over.id === 'slide-canvas' || over.data.current?.source === 'canvas';
+          over.id === 'slide-canvas' || overData?.source === 'canvas';
         if (targetIsCanvas) {
           // If dropped over a specific block, insert at that block's position
           let insertIndex: number | undefined;
-          if (over.id !== 'slide-canvas' && over.data.current?.source === 'canvas') {
+          if (over.id !== 'slide-canvas' && overData?.source === 'canvas') {
             const blocks = getSlideBlocks(activeSlideId);
             const overIndex = blocks.findIndex((b) => b.id === over.id);
             if (overIndex !== -1) {
@@ -128,7 +134,18 @@ export function EditorDndContext({
       if (activeData?.source === 'canvas' && active.id !== over.id) {
         const blocks = getSlideBlocks(activeSlideId);
         const oldIndex = blocks.findIndex((b) => b.id === active.id);
-        const newIndex = blocks.findIndex((b) => b.id === (over.id as string));
+        const overData = over.data.current;
+        let newIndex: number;
+
+        if (over.id === 'slide-canvas') {
+          // Dropped on canvas background — move to end
+          newIndex = blocks.length - 1;
+        } else if (overData?.source === 'canvas') {
+          newIndex = blocks.findIndex((b) => b.id === (over.id as string));
+        } else {
+          return;
+        }
+
         if (oldIndex === -1 || newIndex === -1) return;
 
         const reordered = [...blocks];

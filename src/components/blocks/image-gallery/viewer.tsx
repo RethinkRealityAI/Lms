@@ -12,13 +12,13 @@ function isLoadableUrl(url: string): boolean {
   return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:');
 }
 
-function ImageWithFallback({ src, alt, className, fitClass, imgStyle }: { src: string; alt: string; className?: string; fitClass?: string; imgStyle?: React.CSSProperties }) {
+function ImageWithFallback({ src, alt, className, fitClass, style }: { src: string; alt: string; className?: string; fitClass?: string; style?: React.CSSProperties }) {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   if (!isLoadableUrl(src) || error) {
     return (
-      <div className={`bg-gray-100 flex items-center justify-center ${className}`}>
+      <div className={`bg-gray-100 flex items-center justify-center ${className}`} style={style}>
         <div className="text-center p-4">
           <ImageOff className="w-8 h-8 text-gray-300 mx-auto mb-2" />
           <p className="text-xs text-gray-400">
@@ -30,7 +30,7 @@ function ImageWithFallback({ src, alt, className, fitClass, imgStyle }: { src: s
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={style}>
       {!loaded && (
         <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-lg" />
       )}
@@ -40,7 +40,6 @@ function ImageWithFallback({ src, alt, className, fitClass, imgStyle }: { src: s
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
-        style={imgStyle}
         className={`w-full h-full ${fitClass ?? 'object-cover'} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
     </div>
@@ -55,13 +54,30 @@ function Caption({ text, className }: { text: string; className?: string }) {
   return <p className={className}>{text}</p>;
 }
 
+/** Build the aspect-ratio style for the image container */
+function getAspectStyle(aspectRatio: string): React.CSSProperties {
+  if (aspectRatio === 'original') return {};
+  // Convert "16/9" → "16 / 9" for CSS aspect-ratio property
+  return { aspectRatio: aspectRatio.replace('/', ' / ') };
+}
+
+/** Fallback CSS class when aspect ratio is 'original' */
+function getAspectClass(aspectRatio: string, fallback: string): string {
+  return aspectRatio === 'original' ? fallback : '';
+}
+
 export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalleryData>) {
   const [current, setCurrent] = useState(0);
   const images = data.images ?? [];
   const aspectRatio = (data as any).aspectRatio as string ?? 'original';
   const objectFit = (data as any).objectFit as string ?? 'cover';
-  const aspectStyle = aspectRatio !== 'original' ? { aspectRatio: aspectRatio.replace('/', ' / ') } : {};
   const fitClass = objectFit === 'contain' ? 'object-contain' : 'object-cover';
+
+  // Container style — applied to the wrapper div, not the <img>
+  const aspectStyle = getAspectStyle(aspectRatio);
+  // Fallback class when user hasn't selected a custom aspect ratio
+  const sliderAspectClass = getAspectClass(aspectRatio, 'aspect-video');
+  const galleryAspectClass = getAspectClass(aspectRatio, 'aspect-[4/3]');
 
   if (images.length === 0) {
     return (
@@ -80,9 +96,9 @@ export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalle
         <ImageWithFallback
           src={images[current].url}
           alt={images[current].alt ?? ''}
-          className="w-full aspect-video rounded-xl overflow-hidden"
+          className={`w-full ${sliderAspectClass} rounded-xl overflow-hidden`}
           fitClass={fitClass}
-          imgStyle={aspectStyle}
+          style={aspectStyle}
         />
         {images[current].caption && (
           <Caption text={images[current].caption!} className="mt-2.5 text-sm text-gray-500 italic [&_p]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5" />
@@ -132,9 +148,9 @@ export default function ImageGalleryViewer({ data }: BlockViewerProps<ImageGalle
           <ImageWithFallback
             src={img.url}
             alt={img.alt ?? ''}
-            className="aspect-[4/3] rounded-xl overflow-hidden"
+            className={`${galleryAspectClass} rounded-xl overflow-hidden`}
             fitClass={fitClass}
-            imgStyle={aspectStyle}
+            style={aspectStyle}
           />
           {img.caption && (
             <Caption text={img.caption} className="mt-1.5 text-xs text-gray-500 px-0.5 [&_p]:my-0.5" />

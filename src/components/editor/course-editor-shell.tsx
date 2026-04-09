@@ -259,6 +259,11 @@ function EditorContent({ courseId }: { courseId: string }) {
       if (defaultBlockType) {
         // We do this immediately so by the time the user sees it, the block is already there.
         const defaultData = getDefaultBlockData(defaultBlockType);
+        // First block on a new slide — place at grid origin
+        defaultData.gridX = 0;
+        defaultData.gridY = 0;
+        defaultData.gridW = 12;
+        defaultData.gridH = 6;
         const { createBlock: dbCreateBlock } = await import('@/lib/db/blocks');
         const blockResult = await dbCreateBlock(supabase, {
           lesson_id: lessonId,
@@ -317,6 +322,21 @@ function EditorContent({ courseId }: { courseId: string }) {
       }
 
       const defaultData = getDefaultBlockData(blockType);
+
+      // Compute gridY so the new block appears below existing blocks
+      // instead of overlapping at y=0
+      let nextGridY = 0;
+      for (const b of existingBlocks) {
+        const d = (b.data ?? {}) as Record<string, unknown>;
+        const bY = typeof d.gridY === 'number' ? d.gridY : 0;
+        const bH = typeof d.gridH === 'number' ? d.gridH : 6;
+        nextGridY = Math.max(nextGridY, bY + bH);
+      }
+      defaultData.gridX = 0;
+      defaultData.gridY = nextGridY;
+      defaultData.gridW = 12;
+      defaultData.gridH = 6;
+
       const result = await dbCreateBlock(supabase, {
         lesson_id: lessonId,
         slide_id: slideId,
@@ -712,7 +732,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 function getDefaultBlockData(blockType: string): Record<string, unknown> {
   switch (blockType) {
     case 'rich_text':
-      return { html: '<p>Enter your text here...</p>' };
+      return { html: '' };
     case 'image_gallery':
       return { images: [] };
     case 'callout':
@@ -774,7 +794,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-x-0 bottom-0 top-24 z-[40] flex items-center justify-center bg-gray-100">
+      <div className="fixed inset-x-0 bottom-0 top-12 z-[40] flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-[#1E3A5F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-gray-500">Loading editor...</p>
@@ -785,7 +805,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
   if (error) {
     return (
-      <div className="fixed inset-x-0 bottom-0 top-24 z-[40] flex items-center justify-center bg-gray-100">
+      <div className="fixed inset-x-0 bottom-0 top-12 z-[40] flex items-center justify-center bg-gray-100">
         <div className="text-center max-w-sm">
           <p className="text-red-600 font-medium mb-2">Failed to load course</p>
           <p className="text-sm text-gray-500">{error}</p>
@@ -797,7 +817,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
   return (
     <EditorStoreContext.Provider value={store}>
       {/* Fixed full-viewport overlay — covers admin layout nav + padding */}
-      <div className="fixed inset-x-0 bottom-0 top-24 z-[40] flex flex-col bg-gray-100 overflow-hidden">
+      <div className="fixed inset-x-0 bottom-0 top-12 z-[40] flex flex-col bg-gray-100 overflow-hidden">
         <EditorContent courseId={courseId} />
       </div>
     </EditorStoreContext.Provider>

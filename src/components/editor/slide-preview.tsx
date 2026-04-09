@@ -115,28 +115,34 @@ export function SlidePreview({
     };
   }, [blockContextMenu]);
 
-  const handleLayoutChange = useCallback((newLayout: Array<{ i: string; x: number; y: number; w: number; h: number }>) => {
-    if (!onUpdateBlock) return;
-    for (const item of newLayout) {
-      const block = blocks.find(b => b.id === item.i);
-      if (!block) continue;
-      const currentGrid = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
-      if (
-        currentGrid.gridX !== item.x ||
-        currentGrid.gridY !== item.y ||
-        currentGrid.gridW !== item.w ||
-        currentGrid.gridH !== item.h
-      ) {
-        onUpdateBlock(block.id, {
-          ...(block.data as Record<string, unknown>),
-          gridX: item.x,
-          gridY: item.y,
-          gridW: item.w,
-          gridH: item.h,
-        });
+  // Persist grid positions only on user-initiated drag/resize stop.
+  // Using onLayoutChange causes a render loop: write → re-render → layout
+  // recalculated → onLayoutChange fires again with compacted positions.
+  const handleDragOrResizeStop = useCallback(
+    (layout: Array<{ i: string; x: number; y: number; w: number; h: number }>) => {
+      if (!onUpdateBlock) return;
+      for (const item of layout) {
+        const block = blocks.find(b => b.id === item.i);
+        if (!block) continue;
+        const currentGrid = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
+        if (
+          currentGrid.gridX !== item.x ||
+          currentGrid.gridY !== item.y ||
+          currentGrid.gridW !== item.w ||
+          currentGrid.gridH !== item.h
+        ) {
+          onUpdateBlock(block.id, {
+            ...(block.data as Record<string, unknown>),
+            gridX: item.x,
+            gridY: item.y,
+            gridW: item.w,
+            gridH: item.h,
+          });
+        }
       }
-    }
-  }, [blocks, onUpdateBlock]);
+    },
+    [blocks, onUpdateBlock],
+  );
 
   const isTitle = slide.slide_type === 'title';
   const settings = slide.settings as Record<string, unknown>;
@@ -195,12 +201,12 @@ export function SlidePreview({
               </SlideContentArea>
             ) : (
               <ReactGridLayout
-                layout={blocks.map((block, index) => {
+                layout={blocks.map((block) => {
                   const grid = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
                   return {
                     i: block.id,
                     x: grid.gridX,
-                    y: grid.gridY === 0 && index > 0 ? index * 2 : grid.gridY,
+                    y: grid.gridY,
                     w: grid.gridW,
                     h: grid.gridH,
                   };
@@ -215,17 +221,22 @@ export function SlidePreview({
                 draggableHandle=".block-drag-handle"
                 margin={GRID_MARGIN}
                 containerPadding={GRID_CONTAINER_PADDING}
-                onLayoutChange={handleLayoutChange as any}
                 onDrag={(_layout: any, _oldItem: any, newItem: any) => {
-                  const currentLayout = blocks.map((b, i) => {
+                  const currentLayout = blocks.map((b) => {
                     const g = getBlockGridLayout((b.data ?? {}) as Record<string, unknown>);
-                    return { i: b.id, x: g.gridX, y: g.gridY === 0 && i > 0 ? i * 2 : g.gridY, w: g.gridW, h: g.gridH };
+                    return { i: b.id, x: g.gridX, y: g.gridY, w: g.gridW, h: g.gridH };
                   });
                   const updated = currentLayout.map(l => l.i === newItem.i ? { ...l, x: newItem.x, y: newItem.y } : l);
                   setActiveGuides(computeAlignmentGuides(newItem.i, updated));
                 }}
-                onDragStop={() => setActiveGuides([])}
-                onResizeStop={() => setActiveGuides([])}
+                onDragStop={(layout: any) => {
+                  setActiveGuides([]);
+                  handleDragOrResizeStop(layout);
+                }}
+                onResizeStop={(layout: any) => {
+                  setActiveGuides([]);
+                  handleDragOrResizeStop(layout);
+                }}
               >
                 {blocks.map(block => (
                   <div

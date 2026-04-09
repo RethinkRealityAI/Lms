@@ -128,7 +128,7 @@ describe('duplicateBlock', () => {
       id: 'new-block',
       slide_id: 'slide-2',
       block_type: 'rich_text',
-      data: { html: '<p>Clone</p>', gridX: 0, gridY: 0, gridW: 12, gridH: 2 },
+      data: { html: '<p>Clone</p>', gridX: 0, gridY: 0, gridW: 12, gridH: 6 },
       order_index: 999,
       is_visible: true,
     };
@@ -153,7 +153,7 @@ describe('duplicateBlock', () => {
     expect(insertCall.data.gridX).toBe(0);
     expect(insertCall.data.gridY).toBe(0);
     expect(insertCall.data.gridW).toBe(12);
-    expect(insertCall.data.gridH).toBe(2);
+    expect(insertCall.data.gridH).toBe(6);
     expect(insertCall.slide_id).toBe('slide-2');
     expect(insertCall.lesson_id).toBe('lesson-2');
   });

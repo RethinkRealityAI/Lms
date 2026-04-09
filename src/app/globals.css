@@ -148,48 +148,199 @@
   @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
 }
 
-/* Preserve Tiptap formatting in the prose viewer */
-.rich-text-viewer.prose p:empty::before {
+/* ── Tiptap / Rich-text typography ──────────────────────────────────
+ * The project does NOT use @tailwindcss/typography so `prose` classes
+ * are inert.  These rules style headings, bold, lists, blockquotes etc.
+ * in both the Tiptap editor (.tiptap) and the read-only viewer
+ * (.rich-text-viewer).
+ */
+
+.tiptap,
+.rich-text-viewer {
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.tiptap > :first-child,
+.rich-text-viewer > :first-child {
+  margin-top: 0;
+}
+
+/* Headings */
+.tiptap h1,
+.rich-text-viewer h1 {
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.tiptap h2,
+.rich-text-viewer h2 {
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.tiptap h3,
+.rich-text-viewer h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 0.6em;
+  margin-bottom: 0.3em;
+}
+
+/* Inline marks */
+.tiptap strong,
+.rich-text-viewer strong {
+  font-weight: 700;
+}
+
+.tiptap em,
+.rich-text-viewer em {
+  font-style: italic;
+}
+
+.tiptap u,
+.rich-text-viewer u {
+  text-decoration: underline;
+}
+
+.tiptap s,
+.rich-text-viewer s {
+  text-decoration: line-through;
+}
+
+/* Paragraphs */
+.tiptap p,
+.rich-text-viewer p {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+.rich-text-viewer p:empty::before {
   content: '\00a0';
   display: block;
 }
 
-.rich-text-viewer.prose p:empty {
+.rich-text-viewer p:empty {
   min-height: 1em;
 }
 
-/* Honor inline text-align from Tiptap */
-.rich-text-viewer.prose p[style*="text-align"],
-.rich-text-viewer.prose h1[style*="text-align"],
-.rich-text-viewer.prose h2[style*="text-align"],
-.rich-text-viewer.prose h3[style*="text-align"] {
-  text-align: inherit;
+/* Lists */
+.tiptap ul,
+.rich-text-viewer ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
 }
 
-/* Honor inline color from Tiptap */
-.rich-text-viewer.prose span[style*="color"] {
+.tiptap ol,
+.rich-text-viewer ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+.tiptap li,
+.rich-text-viewer li {
+  margin-top: 0.15em;
+  margin-bottom: 0.15em;
+}
+
+.tiptap li > p,
+.rich-text-viewer li > p {
+  margin: 0;
+}
+
+/* Blockquote */
+.tiptap blockquote,
+.rich-text-viewer blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 1em;
+  margin-left: 0;
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
+  color: #475569;
+  font-style: italic;
+}
+
+/* Links */
+.tiptap a,
+.rich-text-viewer a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Horizontal rule */
+.tiptap hr,
+.rich-text-viewer hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 1em 0;
+}
+
+/* Code */
+.tiptap code,
+.rich-text-viewer code {
+  background-color: #f1f5f9;
+  padding: 0.15em 0.35em;
+  border-radius: 0.25em;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.tiptap pre,
+.rich-text-viewer pre {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  padding: 0.75em 1em;
+  border-radius: 0.5em;
+  overflow-x: auto;
+  margin: 0.6em 0;
+}
+
+.tiptap pre code,
+.rich-text-viewer pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875em;
   color: inherit;
 }
 
-/* Honor inline font-family from Tiptap */
-.rich-text-viewer.prose span[style*="font-family"] {
+/* Images inside rich text */
+.tiptap img,
+.rich-text-viewer img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5em;
+}
+
+/* Honor inline text-align from Tiptap */
+.rich-text-viewer p[style*="text-align"],
+.rich-text-viewer h1[style*="text-align"],
+.rich-text-viewer h2[style*="text-align"],
+.rich-text-viewer h3[style*="text-align"] {
+  text-align: inherit;
+}
+
+/* Honor inline style attributes (color, font-family, font-size) */
+.rich-text-viewer span[style*="color"] {
+  color: inherit;
+}
+
+.rich-text-viewer span[style*="font-family"] {
   font-family: inherit;
 }
 
-/* Honor inline font-size from Tiptap */
-.rich-text-viewer.prose span[style*="font-size"] {
+.rich-text-viewer span[style*="font-size"] {
   font-size: inherit;
-}
-
-/* Ensure list items render with proper markers */
-.rich-text-viewer.prose ul {
-  list-style-type: disc;
-  padding-left: 1.5em;
-}
-
-.rich-text-viewer.prose ol {
-  list-style-type: decimal;
-  padding-left: 1.5em;
 }
 
 /* Mobile: force grid blocks to full-width stack */

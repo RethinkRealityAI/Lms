@@ -106,7 +106,7 @@ export async function duplicateBlock(
     newData.gridX = 0;
     newData.gridY = 0;
     newData.gridW = 12;
-    newData.gridH = 2;
+    newData.gridH = 6;
   }
 
   return createBlock(supabase, {

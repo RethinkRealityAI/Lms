@@ -248,9 +248,9 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-xs font-medium text-gray-500 min-w-[100px] text-center tabular-nums">
+        <span className="text-xs font-medium text-gray-500 min-w-[100px] text-center truncate max-w-[260px]" title={selectedSlide?.title ?? undefined}>
           {selectedSlide
-            ? `Slide ${slideIndex + 1} of ${siblingSlides.length}`
+            ? `${slideIndex + 1}/${siblingSlides.length} — ${selectedSlide.title || selectedSlide.slide_type}`
             : 'No slide selected'
           }
         </span>
