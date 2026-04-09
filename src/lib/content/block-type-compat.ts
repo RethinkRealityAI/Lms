@@ -14,25 +14,38 @@ export function getCompatibleTypes(blockType: string): string[] {
   return [];
 }
 
-/** Transform block data when switching types */
+/** Preserve grid layout fields across type switches */
+function preserveGridLayout(oldData: Record<string, unknown>, newData: Record<string, unknown>): Record<string, unknown> {
+  const gridFields = ['gridX', 'gridY', 'gridW', 'gridH'] as const;
+  for (const field of gridFields) {
+    if (typeof oldData[field] === 'number') {
+      newData[field] = oldData[field];
+    }
+  }
+  return newData;
+}
+
+/** Transform block data when switching types. Preserves grid layout. */
 export function transformBlockData(
   fromType: string,
   toType: string,
   data: Record<string, unknown>,
 ): Record<string, unknown> {
+  let result: Record<string, unknown>;
+
   if (fromType === 'rich_text' && toType === 'callout') {
-    return { html: data.html ?? '', variant: 'info', title: 'Note' };
-  }
-  if (fromType === 'callout' && toType === 'rich_text') {
-    return { html: data.html ?? '' };
-  }
-  if (fromType === 'image_gallery' && toType === 'video') {
+    result = { html: data.html ?? '', variant: 'info', title: 'Note' };
+  } else if (fromType === 'callout' && toType === 'rich_text') {
+    result = { html: data.html ?? '' };
+  } else if (fromType === 'image_gallery' && toType === 'video') {
     const images = (data.images as Array<{ url?: string }>) ?? [];
-    return { url: images[0]?.url ?? '', caption: '' };
-  }
-  if (fromType === 'video' && toType === 'image_gallery') {
+    result = { url: images[0]?.url ?? '', caption: '' };
+  } else if (fromType === 'video' && toType === 'image_gallery') {
     const url = (data.url as string) ?? '';
-    return { images: url ? [{ url, alt: '', caption: '' }] : [], mode: 'gallery' };
+    result = { images: url ? [{ url, alt: '', caption: '' }] : [], mode: 'gallery' };
+  } else {
+    return data;
   }
-  return data;
+
+  return preserveGridLayout(data, result);
 }

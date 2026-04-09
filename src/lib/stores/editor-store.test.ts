@@ -586,4 +586,160 @@ describe('EditorStore', () => {
       expect(store.getState().blocks.get('slide1')).toHaveLength(2);
     });
   });
+
+  describe('switchBlockType', () => {
+    beforeEach(() => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map([
+          ['slide1', [
+            { id: 'b1', slide_id: 'slide1', block_type: 'rich_text', data: { html: '<p>Hello</p>' }, order_index: 0, is_visible: true },
+          ]],
+        ]),
+      });
+    });
+
+    it('switches block type and data', () => {
+      store.getState().switchBlockType('slide1', 'b1', 'callout', { html: '<p>Hello</p>', variant: 'info', title: 'Note' });
+      const block = store.getState().blocks.get('slide1')![0];
+      expect(block.block_type).toBe('callout');
+      expect(block.data).toEqual({ html: '<p>Hello</p>', variant: 'info', title: 'Note' });
+    });
+
+    it('marks store as dirty', () => {
+      store.getState().switchBlockType('slide1', 'b1', 'callout', {});
+      expect(store.getState().isDirty).toBe(true);
+    });
+
+    it('is undoable', () => {
+      store.getState().switchBlockType('slide1', 'b1', 'callout', {});
+      store.getState().undo();
+      expect(store.getState().blocks.get('slide1')![0].block_type).toBe('rich_text');
+    });
+  });
+
+  describe('multi-select blocks', () => {
+    beforeEach(() => {
+      store.getState().loadCourse({
+        courseId: 'c1',
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map([
+          ['slide1', [
+            { id: 'b1', slide_id: 'slide1', block_type: 'rich_text', data: { html: 'A', gridX: 0, gridY: 0, gridW: 6, gridH: 2 }, order_index: 0, is_visible: true },
+            { id: 'b2', slide_id: 'slide1', block_type: 'rich_text', data: { html: 'B', gridX: 6, gridY: 0, gridW: 6, gridH: 2 }, order_index: 1, is_visible: true },
+            { id: 'b3', slide_id: 'slide1', block_type: 'image_gallery', data: { images: [] }, order_index: 2, is_visible: true },
+          ]],
+        ]),
+      });
+    });
+
+    it('toggleBlockSelection adds and removes blocks', () => {
+      store.getState().toggleBlockSelection('b1');
+      expect(store.getState().selectedBlockIds.has('b1')).toBe(true);
+      store.getState().toggleBlockSelection('b2');
+      expect(store.getState().selectedBlockIds.size).toBe(2);
+      store.getState().toggleBlockSelection('b1');
+      expect(store.getState().selectedBlockIds.has('b1')).toBe(false);
+      expect(store.getState().selectedBlockIds.size).toBe(1);
+    });
+
+    it('clearBlockSelection empties the set', () => {
+      store.getState().toggleBlockSelection('b1');
+      store.getState().toggleBlockSelection('b2');
+      store.getState().clearBlockSelection();
+      expect(store.getState().selectedBlockIds.size).toBe(0);
+    });
+
+    it('deleteSelectedBlocks removes only selected', () => {
+      store.getState().toggleBlockSelection('b1');
+      store.getState().toggleBlockSelection('b3');
+      store.getState().deleteSelectedBlocks('slide1');
+      const blocks = store.getState().blocks.get('slide1') ?? [];
+      expect(blocks).toHaveLength(1);
+      expect(blocks[0].id).toBe('b2');
+      expect(store.getState().selectedBlockIds.size).toBe(0);
+    });
+
+    it('deleteSelectedBlocks is undoable', () => {
+      store.getState().toggleBlockSelection('b1');
+      store.getState().deleteSelectedBlocks('slide1');
+      store.getState().undo();
+      expect(store.getState().blocks.get('slide1')).toHaveLength(3);
+    });
+
+    it('duplicateSelectedBlocks creates clones', () => {
+      store.getState().toggleBlockSelection('b1');
+      store.getState().toggleBlockSelection('b2');
+      store.getState().duplicateSelectedBlocks('slide1');
+      const blocks = store.getState().blocks.get('slide1') ?? [];
+      expect(blocks).toHaveLength(5);
+      // New selection should be the clones
+      expect(store.getState().selectedBlockIds.size).toBe(2);
+      // Clones should not have the original IDs
+      expect(store.getState().selectedBlockIds.has('b1')).toBe(false);
+      expect(store.getState().selectedBlockIds.has('b2')).toBe(false);
+    });
+
+    describe('alignBlocks', () => {
+      it('align left sets all gridX to minimum', () => {
+        store.getState().toggleBlockSelection('b1');
+        store.getState().toggleBlockSelection('b2');
+        store.getState().alignBlocks('slide1', 'left');
+        const blocks = store.getState().blocks.get('slide1') ?? [];
+        const b1 = blocks.find(b => b.id === 'b1')!;
+        const b2 = blocks.find(b => b.id === 'b2')!;
+        expect((b1.data as any).gridX).toBe(0);
+        expect((b2.data as any).gridX).toBe(0);
+      });
+
+      it('align right sets all gridX+gridW to maximum', () => {
+        store.getState().toggleBlockSelection('b1');
+        store.getState().toggleBlockSelection('b2');
+        store.getState().alignBlocks('slide1', 'right');
+        const blocks = store.getState().blocks.get('slide1') ?? [];
+        const b1 = blocks.find(b => b.id === 'b1')!;
+        const b2 = blocks.find(b => b.id === 'b2')!;
+        // max right = 6 + 6 = 12
+        expect((b1.data as any).gridX + (b1.data as any).gridW).toBe(12);
+        expect((b2.data as any).gridX + (b2.data as any).gridW).toBe(12);
+      });
+
+      it('does nothing with fewer than 2 selected', () => {
+        store.getState().toggleBlockSelection('b1');
+        store.getState().alignBlocks('slide1', 'left');
+        // Should not crash or change anything
+        const blocks = store.getState().blocks.get('slide1') ?? [];
+        expect((blocks[0].data as any).gridX).toBe(0);
+      });
+
+      it('is undoable', () => {
+        store.getState().toggleBlockSelection('b1');
+        store.getState().toggleBlockSelection('b2');
+        store.getState().alignBlocks('slide1', 'left');
+        store.getState().undo();
+        const b2 = store.getState().blocks.get('slide1')!.find(b => b.id === 'b2')!;
+        expect((b2.data as any).gridX).toBe(6); // restored to original
+      });
+    });
+  });
+
+  describe('setSaveError', () => {
+    it('sets and clears the save error', () => {
+      store.getState().setSaveError('Network error');
+      expect(store.getState().lastSaveError).toBe('Network error');
+      store.getState().setSaveError(null);
+      expect(store.getState().lastSaveError).toBeNull();
+    });
+
+    it('markSaved clears the error', () => {
+      store.getState().setSaveError('Failed');
+      store.getState().markSaved();
+      expect(store.getState().lastSaveError).toBeNull();
+    });
+  });
 });
