@@ -9,11 +9,12 @@ const CANVA_SCOPES = [
   'asset:write',
   'asset:read',
   'profile:read',
+  'folder:read',
 ];
 
 export async function GET() {
   const clientId = process.env.CANVA_CLIENT_ID;
-  const redirectUri = `${process.env.NEXT_PUBLIC_SUPABASE_URL ? 'http://localhost:3001' : ''}/api/auth/canva/callback`;
+  const redirectUri = process.env.NEXT_PUBLIC_CANVA_REDIRECT_URI ?? 'http://127.0.0.1:3001/api/auth/canva/callback';
 
   if (!clientId) {
     return NextResponse.json({ error: 'Canva not configured' }, { status: 500 });
@@ -45,6 +46,9 @@ export async function GET() {
     state,
     scopes: CANVA_SCOPES,
   });
+
+  console.log('[Canva OAuth] Redirecting to Canva with redirect_uri:', redirectUri);
+  console.log('[Canva OAuth] Full authorize URL:', authorizeUrl);
 
   return NextResponse.redirect(authorizeUrl);
 }

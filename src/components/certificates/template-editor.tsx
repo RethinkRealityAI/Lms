@@ -1,14 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { CertificateRenderer } from './certificate-renderer';
-import { Paintbrush } from 'lucide-react';
+import { Paintbrush, FolderOpen, Search, ChevronLeft, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { CertificateTemplate, CertificateLayoutConfig, CertificateFieldConfig, CertificateData } from '@/types';
+
+interface CanvaBrowseItem {
+  id: string;
+  title?: string;
+  thumbnail?: { url: string; width: number; height: number };
+  type?: string;
+  folder?: { id: string; name: string; thumbnail?: { url: string } };
+  design?: { id: string; title?: string; thumbnail?: { url: string; width: number; height: number } };
+}
 
 interface TemplateEditorProps {
   template?: CertificateTemplate;
@@ -19,6 +29,7 @@ interface TemplateEditorProps {
     is_default: boolean;
   }) => Promise<void>;
   onCanvaDesign: (templateId?: string) => void;
+  onSelectCanvaDesign?: (designId: string) => void;
   saving?: boolean;
 }
 
@@ -38,10 +49,71 @@ const FIELD_LABELS: Record<string, string> = {
   institution_name: 'Institution Name',
 };
 
-export function TemplateEditor({ template, onSave, onCanvaDesign, saving }: TemplateEditorProps) {
+export function TemplateEditor({ template, onSave, onCanvaDesign, onSelectCanvaDesign, saving }: TemplateEditorProps) {
   const [name, setName] = useState(template?.name ?? '');
   const [description, setDescription] = useState(template?.description ?? '');
   const [isDefault, setIsDefault] = useState(template?.is_default ?? false);
+  const [showBrowser, setShowBrowser] = useState(false);
+  const [browseItems, setBrowseItems] = useState<CanvaBrowseItem[]>([]);
+  const [browseLoading, setBrowseLoading] = useState(false);
+  const [browseSearch, setBrowseSearch] = useState('');
+  const [browseFolderId, setBrowseFolderId] = useState<string | null>(null);
+  const [browseFolderName, setBrowseFolderName] = useState<string | null>(null);
+  const [browseNeedsAuth, setBrowseNeedsAuth] = useState(false);
+
+  const fetchDesigns = useCallback(async (query?: string, folderId?: string | null) => {
+    setBrowseLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (query) params.set('query', query);
+      if (folderId) params.set('folderId', folderId);
+      const resp = await fetch(`/api/canva/browse?${params}`);
+      const data = await resp.json();
+      if (data.needsAuth) {
+        setBrowseNeedsAuth(true);
+        setBrowseItems([]);
+        return;
+      }
+      if (data.error) {
+        toast.error(data.error);
+        setBrowseItems([]);
+        return;
+      }
+      setBrowseNeedsAuth(false);
+      setBrowseItems(data.items ?? []);
+    } catch {
+      toast.error('Failed to load Canva designs');
+    } finally {
+      setBrowseLoading(false);
+    }
+  }, []);
+
+  const handleOpenBrowser = () => {
+    setShowBrowser(true);
+    setBrowseFolderId(null);
+    setBrowseFolderName(null);
+    fetchDesigns();
+  };
+
+  const handleSearchDesigns = () => {
+    setBrowseFolderId(null);
+    setBrowseFolderName(null);
+    fetchDesigns(browseSearch || undefined);
+  };
+
+  const handleOpenFolder = (folderId: string, folderName: string) => {
+    setBrowseFolderId(folderId);
+    setBrowseFolderName(folderName);
+    fetchDesigns(undefined, folderId);
+  };
+
+  const handleSelectDesign = async (designId: string) => {
+    if (onSelectCanvaDesign) {
+      onSelectCanvaDesign(designId);
+    }
+    setShowBrowser(false);
+    toast.success('Design selected — exporting background...');
+  };
   const [layoutConfig, setLayoutConfig] = useState<CertificateLayoutConfig>(
     template?.layout_config ?? {
       width: 1056,
@@ -118,19 +190,140 @@ export function TemplateEditor({ template, onSave, onCanvaDesign, saving }: Temp
           <Label htmlFor="is-default">Set as institution default</Label>
         </div>
 
-        <div>
-          <Button
-            variant="outline"
-            onClick={() => onCanvaDesign(template?.id)}
-            className="w-full"
-          >
-            <Paintbrush className="h-4 w-4 mr-2" />
-            {template?.canva_design_id ? 'Edit Background in Canva' : 'Design Background in Canva'}
-          </Button>
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => onCanvaDesign(template?.id)}
+            >
+              <Paintbrush className="h-4 w-4 mr-1.5" />
+              {template?.canva_design_id ? 'Edit in Canva' : 'New Design'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleOpenBrowser}
+            >
+              <FolderOpen className="h-4 w-4 mr-1.5" />
+              Browse Designs
+            </Button>
+          </div>
           {template?.canva_design_url && (
-            <p className="text-xs text-green-600 mt-1">Canva background applied</p>
+            <p className="text-xs text-green-600">Canva background applied</p>
           )}
         </div>
+
+        {/* Canva Design Browser */}
+        {showBrowser && (
+          <div className="border rounded-xl p-4 space-y-3 bg-slate-50">
+            <div className="flex items-center justify-between">
+              <h4 className="font-bold text-sm text-slate-700">
+                {browseFolderName ? `Folder: ${browseFolderName}` : 'Your Canva Designs'}
+              </h4>
+              <Button size="sm" variant="ghost" onClick={() => setShowBrowser(false)} className="text-xs">
+                Close
+              </Button>
+            </div>
+
+            {browseFolderId && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => { setBrowseFolderId(null); setBrowseFolderName(null); fetchDesigns(browseSearch || undefined); }}
+                className="text-xs"
+              >
+                <ChevronLeft className="h-3 w-3 mr-1" />
+                Back to all designs
+              </Button>
+            )}
+
+            {!browseFolderId && (
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-slate-400" />
+                  <Input
+                    value={browseSearch}
+                    onChange={(e) => setBrowseSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchDesigns()}
+                    placeholder="Search designs..."
+                    className="pl-7 h-8 text-xs"
+                  />
+                </div>
+                <Button size="sm" onClick={handleSearchDesigns} className="h-8 text-xs bg-[#1E3A5F]">
+                  Search
+                </Button>
+              </div>
+            )}
+
+            {browseNeedsAuth && (
+              <div className="text-center py-6">
+                <p className="text-sm text-slate-500 mb-2">Connect your Canva account to browse designs</p>
+                <Button size="sm" onClick={() => window.open('/api/auth/canva', 'canva-auth', 'width=600,height=700,popup=yes')}>
+                  Connect Canva
+                </Button>
+              </div>
+            )}
+
+            {browseLoading && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+              </div>
+            )}
+
+            {!browseLoading && !browseNeedsAuth && browseItems.length === 0 && (
+              <p className="text-center text-sm text-slate-400 py-6">No designs found</p>
+            )}
+
+            {!browseLoading && !browseNeedsAuth && browseItems.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                {browseItems.map((item) => {
+                  // Folder item from folder listing
+                  if (item.type === 'folder' && item.folder) {
+                    return (
+                      <button
+                        key={item.folder.id}
+                        onClick={() => handleOpenFolder(item.folder!.id, item.folder!.name)}
+                        className="group border rounded-lg overflow-hidden hover:ring-2 hover:ring-[#1E3A5F] transition-all bg-white"
+                      >
+                        <div className="h-16 bg-slate-100 flex items-center justify-center">
+                          <FolderOpen className="h-8 w-8 text-slate-300" />
+                        </div>
+                        <p className="text-[10px] font-medium text-slate-600 p-1.5 truncate">{item.folder.name}</p>
+                      </button>
+                    );
+                  }
+
+                  // Design item — either from designs list or folder listing
+                  const designId = item.id ?? item.design?.id;
+                  const title = item.title ?? item.design?.title;
+                  const thumbnailUrl = item.thumbnail?.url ?? item.design?.thumbnail?.url;
+
+                  if (!designId) return null;
+
+                  return (
+                    <button
+                      key={designId}
+                      onClick={() => handleSelectDesign(designId)}
+                      className="group border rounded-lg overflow-hidden hover:ring-2 hover:ring-[#1E3A5F] transition-all bg-white"
+                    >
+                      {thumbnailUrl ? (
+                        <img
+                          src={thumbnailUrl}
+                          alt={title ?? 'Design'}
+                          className="h-16 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-16 bg-slate-100 flex items-center justify-center">
+                          <Paintbrush className="h-6 w-6 text-slate-300" />
+                        </div>
+                      )}
+                      <p className="text-[10px] font-medium text-slate-600 p-1.5 truncate">{title ?? 'Untitled'}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Field position editors */}
         <div className="space-y-4">

@@ -101,3 +101,71 @@ export async function exportCanvaDesign(
 
   throw new Error('Canva export timed out after 60 seconds');
 }
+
+export interface CanvaDesignItem {
+  id: string;
+  title?: string;
+  thumbnail?: { width: number; height: number; url: string };
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CanvaFolderItem {
+  type: 'design' | 'folder' | 'image';
+  design?: CanvaDesignItem;
+  folder?: { id: string; name: string; thumbnail?: { url: string } };
+}
+
+export async function listCanvaDesigns(
+  accessToken: string,
+  options?: { query?: string; limit?: number; continuation?: string }
+): Promise<{ items: CanvaDesignItem[]; continuation?: string }> {
+  const params = new URLSearchParams();
+  if (options?.query) params.set('query', options.query);
+  if (options?.limit) params.set('limit', String(options.limit));
+  if (options?.continuation) params.set('continuation', options.continuation);
+  params.set('ownership', 'owned');
+  params.set('sort_by', 'modified_descending');
+
+  const resp = await fetch(`${CANVA_API_BASE}/designs?${params}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(`Canva list designs failed: ${resp.status} ${body}`);
+  }
+
+  const data = await resp.json();
+  return {
+    items: data.items ?? [],
+    continuation: data.continuation,
+  };
+}
+
+export async function listCanvaFolderItems(
+  accessToken: string,
+  folderId: string,
+  options?: { limit?: number; continuation?: string; itemTypes?: string }
+): Promise<{ items: CanvaFolderItem[]; continuation?: string }> {
+  const params = new URLSearchParams();
+  if (options?.limit) params.set('limit', String(options.limit));
+  if (options?.continuation) params.set('continuation', options.continuation);
+  if (options?.itemTypes) params.set('item_types', options.itemTypes);
+  params.set('sort_by', 'modified_descending');
+
+  const resp = await fetch(`${CANVA_API_BASE}/folders/${folderId}/items?${params}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(`Canva list folder items failed: ${resp.status} ${body}`);
+  }
+
+  const data = await resp.json();
+  return {
+    items: data.items ?? [],
+    continuation: data.continuation,
+  };
+}

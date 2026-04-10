@@ -8,12 +8,15 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    console.error('[Canva designs] No Supabase user session found');
+    return NextResponse.json({ error: 'Not logged in — please refresh the page', needsAuth: false }, { status: 401 });
   }
 
+  console.log('[Canva designs] User:', user.id, '— checking Canva tokens');
   const accessToken = await getCanvaAccessToken(supabase, user.id);
   if (!accessToken) {
-    return NextResponse.json({ error: 'Canva not connected', needsAuth: true }, { status: 401 });
+    console.log('[Canva designs] No Canva tokens — needs auth');
+    return NextResponse.json({ error: 'Canva not connected', needsAuth: true }, { status: 200 });
   }
 
   const body = await request.json();
