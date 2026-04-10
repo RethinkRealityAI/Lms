@@ -371,14 +371,53 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           const { data: existingCert } = await supabase.from('certificates').select('id')
             .eq('user_id', user.id).eq('course_id', courseId).single();
           if (!existingCert) {
-            const { error: certError } = await supabase.from('certificates').insert([{
-              user_id: user.id, course_id: courseId, issued_at: new Date().toISOString(),
-            }]);
-            if (!certError) {
+            // Resolve certificate template
+            const { data: courseTemplate } = await supabase
+              .from('course_certificate_templates')
+              .select('template_id')
+              .eq('course_id', courseId)
+              .maybeSingle();
+
+            let templateId = courseTemplate?.template_id;
+            if (!templateId) {
+              // Fall back to institution default template
+              const { data: userData } = await supabase
+                .from('users')
+                .select('institution_id')
+                .eq('id', user.id)
+                .single();
+              if (userData?.institution_id) {
+                const { data: defaultTemplate } = await supabase
+                  .from('certificate_templates')
+                  .select('id')
+                  .eq('institution_id', userData.institution_id)
+                  .eq('is_default', true)
+                  .maybeSingle();
+                templateId = defaultTemplate?.id;
+              }
+            }
+
+            const { data: courseData } = await supabase
+              .from('courses')
+              .select('institution_id')
+              .eq('id', courseId)
+              .single();
+
+            const { data: newCert, error: certError } = await supabase.from('certificates').insert([{
+              user_id: user.id,
+              course_id: courseId,
+              institution_id: courseData?.institution_id ?? null,
+              template_id: templateId ?? null,
+              issued_at: new Date().toISOString(),
+            }]).select('id, certificate_number').single();
+
+            if (!certError && newCert) {
               toast.success('Course Completed! 🎉', {
                 description: 'A certificate has been issued. View it in your Certificates page.',
                 duration: 6000,
               });
+              // Pre-generate PDF (fire-and-forget)
+              fetch(`/api/certificates/${newCert.id}/pdf`).catch(() => {});
             }
           }
         }
