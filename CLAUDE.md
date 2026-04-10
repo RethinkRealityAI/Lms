@@ -79,6 +79,12 @@ src/
       callout/viewer.tsx
       video/viewer.tsx          # Responsive aspect-video, loading spinner, error state
       pdf/, iframe/, h5p/
+    certificates/                   # Certificate system components
+      certificate-renderer.tsx      # HTML renderer (Canva background + data fields overlay)
+      certificate-pdf-document.tsx  # @react-pdf/renderer PDF generator
+      certificate-preview-modal.tsx # Full-size preview with download/print/share actions
+      template-editor.tsx           # Template create/edit with live preview + field controls
+      award-certificate-modal.tsx   # Manual award: pick template, users/groups, reason
   lib/
     content/
       block-registry.ts         # Runtime Map of registered block types
@@ -102,6 +108,11 @@ src/
       progress.ts / enrollments.ts / users.ts / activity-log.ts
       groups.ts             # User group CRUD, membership management
       course-assignments.ts # Course assignment CRUD, visibility query
+      certificate-templates.ts # Template CRUD, course-template assignments
+      certificates.ts       # Certificate CRUD (award, revoke, detail queries)
+    canva/
+      auth.ts               # Canva OAuth PKCE helpers, token refresh
+      api.ts                # Canva REST API (designs, exports)
     auth/
     tenant/
     supabase/
@@ -134,9 +145,10 @@ institutions → courses → modules → lessons → lesson_blocks
                       ↘ course_user_assignments → users
                       ↘ course_group_assignments → user_groups
 users → progress (lesson_id)
-      → certificates (course_id)
+      → certificates (course_id, template_id)
       → course_reviews (course_id)
       → user_group_members → user_groups
+certificate_templates → course_certificate_templates → courses
 ```
 
 ### Key IDs (GANSID institution)
@@ -165,6 +177,8 @@ users → progress (lesson_id)
 | 019 | user_group_members_legacy_support | `user_group_members.user_id` nullable + `legacy_user_id` column with CHECK constraint (exactly one set) |
 | 020 | add_canvas_data_to_slides | `slides.canvas_data` jsonb column + updates `slides_slide_type_check` constraint to include `'canvas'` |
 | 021 | add_user_demographics_and_legacy_claim | `occupation`, `affiliation`, `country` on users + `claim_legacy_profile()` fn + updated `handle_new_user()` trigger |
+| 022 | canva_integration | Canva OAuth tokens on `users`, `canva_design_id`/`canva_design_url` on `slides` |
+| 023 | certificate_templates | `certificate_templates` + `course_certificate_templates` tables, `certificates` enhancements (template_id, awarded_by, certificate_number, pdf_url), auto-number trigger, default GANSID template seed |
 
 ### RLS Pattern — CRITICAL
 
@@ -525,6 +539,18 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 - [x] Migration 020: `canvas_data` jsonb column + CHECK constraint for `'canvas'` slide type
 - [x] Legacy user auto-claim: signup with matching email pre-fills occupation/affiliation/country, links legacy record, migrates group memberships
 - [x] User demographic fields (occupation, affiliation, country) on profile page for all users
+- [x] Canva Connect API OAuth flow (PKCE + token refresh) with API routes
+- [x] Canva design creation, export, and Supabase Storage upload pipeline
+- [x] Certificate template system: create, edit, preview, assign to courses, set institution default
+- [x] Certificate renderer: HTML component with Canva or default GANSID-branded backgrounds + data field overlay
+- [x] Certificate PDF generation via `@react-pdf/renderer` (server-side, cached in Supabase Storage)
+- [x] Admin certificates dashboard (`/admin/certificates`): Templates, Awarded, Course Assignments tabs
+- [x] Manual certificate awards: select template, users/groups, reason
+- [x] Certificate number auto-generation via Postgres trigger (`GANSID-2026-XXXXX`)
+- [x] Public certificate verification page (`/verify/[certificateNumber]`)
+- [x] Student certificates page: rendered thumbnails, PDF download, share verification link
+- [x] Course completion → certificate with template resolution + PDF pre-generation
+- [x] `canva-exports` Supabase Storage bucket for slide backgrounds, certificate backgrounds, and PDFs
 
 ### In Progress / Next
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
