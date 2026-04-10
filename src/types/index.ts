@@ -215,8 +215,14 @@ export interface Certificate {
   id: string;
   user_id: string;
   course_id: string;
+  institution_id?: string;
   issued_at: string;
   certificate_url?: string;
+  template_id?: string;
+  awarded_by?: string;
+  award_reason?: string;
+  certificate_number?: string;
+  pdf_url?: string;
   course?: Course;
 }
 
@@ -334,3 +340,4 @@ export interface UserInvitation {
 }
 
 export * from './groups';
+export * from './certificates';
