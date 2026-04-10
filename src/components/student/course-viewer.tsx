@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
   ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
-  Minimize2, Maximize2,
+  Minimize2, Maximize2, Download, Share2, ExternalLink,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -197,6 +197,9 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => { setSubPage(0); }, [currentSlide, selectedLesson?.id]);
   const [showConfetti, setShowConfetti] = useState(false);
+  // Certificate earned state — shown in congratulations modal
+  const [earnedCertificate, setEarnedCertificate] = useState<{ id: string; number: string } | null>(null);
+  const [showCertModal, setShowCertModal] = useState(false);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
   // Review modal
@@ -412,10 +415,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             }]).select('id, certificate_number').single();
 
             if (!certError && newCert) {
-              toast.success('Course Completed! 🎉', {
-                description: 'A certificate has been issued. View it in your Certificates page.',
-                duration: 6000,
-              });
+              setEarnedCertificate({ id: newCert.id, number: newCert.certificate_number ?? '' });
+              setShowCertModal(true);
               // Pre-generate PDF (fire-and-forget)
               fetch(`/api/certificates/${newCert.id}/pdf`).catch(() => {});
             }
@@ -725,6 +726,75 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
               {existingReviewId ? 'Update' : 'Submit'}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Certificate Earned Modal ─────────────────────────────────────── */}
+      <Dialog open={showCertModal} onOpenChange={setShowCertModal}>
+        <DialogContent className="sm:max-w-lg text-center">
+          <div className="flex flex-col items-center gap-5 py-4">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+              <Award className="h-14 w-14 text-amber-500" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                Congratulations!
+              </h2>
+              <p className="text-slate-500 mt-2 text-base">
+                You&apos;ve completed <span className="font-bold text-slate-700">{course.title}</span>!
+                Your certificate has been issued.
+              </p>
+              {earnedCertificate?.number && (
+                <p className="text-xs font-mono text-slate-400 mt-1.5">
+                  Certificate #{earnedCertificate.number}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button
+                onClick={() => {
+                  setShowCertModal(false);
+                  router.push('/gansid/student/certificates');
+                }}
+                className="bg-[#1E3A5F] hover:bg-[#162d4a] font-bold"
+              >
+                <ExternalLink className="h-4 w-4 mr-1.5" />
+                View in Certificates
+              </Button>
+              {earnedCertificate && (
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(`/api/certificates/${earnedCertificate.id}/pdf`, '_blank')}
+                  className="font-bold"
+                >
+                  <Download className="h-4 w-4 mr-1.5" />
+                  Download PDF
+                </Button>
+              )}
+              {earnedCertificate?.number && (
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${window.location.origin}/verify/${earnedCertificate.number}`
+                    );
+                    toast.success('Verification link copied!');
+                  }}
+                  className="font-bold"
+                >
+                  <Share2 className="h-4 w-4 mr-1.5" />
+                  Share
+                </Button>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              onClick={() => setShowCertModal(false)}
+              className="text-sm text-slate-400"
+            >
+              Continue Learning
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
