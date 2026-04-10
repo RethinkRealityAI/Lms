@@ -39,6 +39,11 @@ export default async function AdminLayout({
       icon: 'BarChart3',
     },
     {
+      href: '/admin/certificates',
+      label: 'Certificates',
+      icon: 'Award',
+    },
+    {
       href: '/admin/users',
       label: 'Users',
       icon: 'User',
