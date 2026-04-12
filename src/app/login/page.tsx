@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { BookOpen, Loader2, Mail, Lock, User, CheckCircle2, Globe, MailCheck, ArrowRight, Award, Clock, BookOpenCheck } from 'lucide-react';
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
-import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 
 const signInSchema = z.object({
@@ -79,7 +79,7 @@ function LoginContent() {
 
   // Resolve institution branding from URL path
   const branding: InstitutionBranding = useMemo(() => {
-    const slug = getInstitutionSlugFromPath(pathname);
+    const slug = resolveInstitutionSlug(pathname);
     return getInstitutionBranding(slug);
   }, [pathname]);
 
@@ -187,7 +187,7 @@ function LoginContent() {
 
         const role = data.user.user_metadata?.role || 'student';
         const fullName = data.user.user_metadata?.full_name || '';
-        const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+        const institutionSlug = resolveInstitutionSlug(pathname) || 'gansid';
 
         // Resolve institution_id from slug
         const { data: instData } = await supabase
@@ -298,7 +298,7 @@ function LoginContent() {
         return;
       }
 
-      const signupInstitutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+      const signupInstitutionSlug = resolveInstitutionSlug(pathname) || 'gansid';
 
       const { data, error } = await supabase.auth.signUp({
         email: formData.email.trim().toLowerCase(),
@@ -346,7 +346,7 @@ function LoginContent() {
       }
 
       // Best-effort: ensure institution membership exists for tenant-scoped access.
-      const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+      const institutionSlug = resolveInstitutionSlug(pathname) || 'gansid';
       try {
         const { data: institutionData } = await supabase
           .from('institutions')

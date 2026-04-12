@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
-import { withInstitutionPath, getInstitutionSlugFromPath } from '@/lib/tenant/path';
+import { withInstitutionPath, resolveInstitutionSlug } from '@/lib/tenant/path';
 import {
   LogOut,
   BookOpen,
@@ -64,7 +64,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
   const [scrolled, setScrolled] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
-  const institutionSlug = getInstitutionSlugFromPath(pathname) ?? 'gansid';
+  const institutionSlug = resolveInstitutionSlug(pathname);
   const logoUrl = INSTITUTION_LOGOS[institutionSlug];
 
   // Reset logo error state when institution changes

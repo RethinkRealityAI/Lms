@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { PublicNav } from '@/components/public-nav';
 import { PublicFooter } from '@/components/public-footer';
-import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 
 function GansidHero({ pathname }: { pathname: string }) {
@@ -345,7 +345,7 @@ function PlatformFeatures({ isScago }: { isScago: boolean }) {
 
 export default function Home() {
   const pathname = usePathname();
-  const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+  const institutionSlug = resolveInstitutionSlug(pathname) || 'gansid';
   const branding = getInstitutionBranding(institutionSlug);
   const isScago = institutionSlug === 'scago';
 

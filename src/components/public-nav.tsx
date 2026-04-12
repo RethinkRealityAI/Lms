@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, usePathname } from 'next/navigation';
 import { isAdminRole } from '@/lib/auth/roles';
-import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 
 interface PublicNavProps {
@@ -28,7 +28,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
   const supabase = createClient();
   const router = useRouter();
   const pathname = usePathname();
-  const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+  const institutionSlug = resolveInstitutionSlug(pathname);
   const branding = getInstitutionBranding(institutionSlug);
   const isScago = institutionSlug === 'scago';
 
@@ -172,9 +172,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          {isScago ? (
-            <Link href={withInstitutionPath('/login', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#0099CA]' : 'text-slate-300 hover:text-white'}`}>Modules</Link>
-          ) : (
+          {isScago ? null : (
             <>
               <Link href={withInstitutionPath('/patient-organizations', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Patient Organizations</Link>
               <Link href={withInstitutionPath('/clinicians', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Clinicians</Link>
@@ -249,15 +247,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
               </div>
             )}
             
-            {isScago ? (
-              <Link
-                href={withInstitutionPath('/login', pathname)}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold text-slate-600 hover:text-[#0099CA] py-2"
-              >
-                Modules
-              </Link>
-            ) : (
+            {isScago ? null : (
               <>
                 <Link
                   href={withInstitutionPath('/patient-organizations', pathname)}

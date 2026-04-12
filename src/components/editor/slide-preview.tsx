@@ -20,7 +20,7 @@ import {
 import { CopyBlockDialog } from './copy-block-dialog';
 import { MultiSelectToolbar } from './multi-select-toolbar';
 import { AlignmentGuides, computeAlignmentGuides } from './alignment-guides';
-import { getInstitutionSlugFromPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import type { Slide } from '@/types';
 
 interface SlidePreviewProps {
@@ -64,7 +64,7 @@ export function SlidePreview({
   totalSlides = 1,
 }: SlidePreviewProps) {
   const editorPathname = usePathname();
-  const institutionSlug = getInstitutionSlugFromPath(editorPathname) ?? 'gansid';
+  const institutionSlug = resolveInstitutionSlug(editorPathname);
   const blocks = useEditorStore((s) => s.blocks.get(slide.id) ?? []);
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: 'slide-canvas' });
 

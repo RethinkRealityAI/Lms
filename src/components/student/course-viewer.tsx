@@ -24,7 +24,7 @@ import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
-import { getInstitutionSlugFromPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 
 const CanvasSlideViewer = dynamic(
   () => import('./canvas-slide-viewer'),
@@ -212,7 +212,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
   const router = useRouter();
   const pathname = usePathname();
-  const institutionSlug = getInstitutionSlugFromPath(pathname) ?? 'gansid';
+  const institutionSlug = resolveInstitutionSlug(pathname);
   const supabase = createClient();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
