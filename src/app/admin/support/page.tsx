@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +43,28 @@ function timeAgo(dateStr: string): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+/** Resolve the current tenant's institution_id from the cookie set by middleware. */
+function useInstitutionId(supabase: ReturnType<typeof createClient>) {
+  const [institutionId, setInstitutionId] = useState<string | null>(null);
+  useEffect(() => {
+    const slugCookie = document.cookie
+      .split('; ')
+      .find((c) => c.startsWith('institution_slug='));
+    const slug = slugCookie?.split('=')[1];
+    if (slug) {
+      supabase
+        .from('institutions')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setInstitutionId(data.id);
+        });
+    }
+  }, [supabase]);
+  return institutionId;
+}
+
 export default function AdminSupportPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,23 +72,26 @@ export default function AdminSupportPage() {
   const [search, setSearch] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
   const supabase = createClient();
+  const institutionId = useInstitutionId(supabase);
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
+    if (!institutionId) return;
     setLoading(true);
     const { data, error } = await supabase
       .from('contact_submissions')
       .select('*')
+      .eq('institution_id', institutionId)
       .order('created_at', { ascending: false });
 
     if (!error && data) {
       setSubmissions(data);
     }
     setLoading(false);
-  };
+  }, [supabase, institutionId]);
 
   useEffect(() => {
-    fetchSubmissions();
-  }, []);
+    if (institutionId) fetchSubmissions();
+  }, [institutionId, fetchSubmissions]);
 
   const handleDelete = async (id: string) => {
     setDeleting(id);

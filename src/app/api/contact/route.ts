@@ -51,11 +51,26 @@ export async function POST(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
+  // Resolve institution from slug header/cookie set by middleware
+  const slugHeader = request.headers.get('x-institution-slug');
+  const slugCookie = request.cookies.get('institution_slug')?.value;
+  const slug = slugHeader || slugCookie || null;
+  let institutionId: string | null = null;
+  if (slug) {
+    const { data: inst } = await supabase
+      .from('institutions')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle();
+    institutionId = inst?.id ?? null;
+  }
+
   const { error: dbError } = await supabase.from('contact_submissions').insert({
     name: name.trim(),
     email: email.trim(),
     subject: subject.trim(),
     message: message.trim(),
+    institution_id: institutionId,
   });
 
   if (dbError) {

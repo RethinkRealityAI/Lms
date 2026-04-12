@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,29 @@ interface VerificationCode {
   expires_at: string | null;
   is_active: boolean;
   created_at: string;
+  institution_id: string | null;
+}
+
+/** Resolve the current tenant's institution_id from the cookie set by middleware. */
+function useInstitutionId(supabase: ReturnType<typeof createClient>) {
+  const [institutionId, setInstitutionId] = useState<string | null>(null);
+  useEffect(() => {
+    const slugCookie = document.cookie
+      .split('; ')
+      .find((c) => c.startsWith('institution_slug='));
+    const slug = slugCookie?.split('=')[1];
+    if (slug) {
+      supabase
+        .from('institutions')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setInstitutionId(data.id);
+        });
+    }
+  }, [supabase]);
+  return institutionId;
 }
 
 export default function AdminSettingsPage() {
@@ -40,16 +63,15 @@ export default function AdminSettingsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const supabase = createClient();
+  const institutionId = useInstitutionId(supabase);
 
-  useEffect(() => {
-    loadCodes();
-  }, []);
-
-  const loadCodes = async () => {
+  const loadCodes = useCallback(async () => {
+    if (!institutionId) return;
     setLoading(true);
     const { data, error } = await supabase
       .from('verification_codes')
       .select('*')
+      .eq('institution_id', institutionId)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -58,7 +80,11 @@ export default function AdminSettingsPage() {
       setCodes(data || []);
     }
     setLoading(false);
-  };
+  }, [supabase, institutionId]);
+
+  useEffect(() => {
+    if (institutionId) loadCodes();
+  }, [institutionId, loadCodes]);
 
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -100,6 +126,7 @@ export default function AdminSettingsPage() {
             expires_at: formData.expires_at || null,
             is_active: formData.is_active,
             created_by: user?.id,
+            institution_id: institutionId,
           }]);
 
         if (error) throw error;
