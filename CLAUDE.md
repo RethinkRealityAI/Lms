@@ -120,13 +120,24 @@ src/
       server.ts   # createClient() — server-side with next/headers (SERVER ONLY)
 
 scripts/
-  import-scorm/       # EdApp SCORM → seed JSON → SQL pipeline
+  import-scorm/       # EdApp SCORM → seed JSON → SQL pipeline (GANSID Modules 1-2)
     index.ts          # CLI entry: npx tsx scripts/import-scorm/index.ts <dir>
     extract.ts        # Reads .zip, parses config.json
     map-slides.ts     # Converts EdApp slides → MappedBlock[]
     map-quizzes.ts
     generate-seed.ts  # Writes .seed.json
     output/           # Generated SQL and seed files
+  import-markdown-modules/ # Markdown → SQL pipeline (GANSID Modules 3-10)
+    import.ts         # CLI: npx tsx scripts/import-markdown-modules/import.ts
+  import-scago/       # SCAGO Markdown → SQL pipeline (SCAGO Modules 1-13)
+    index.ts          # CLI: npx tsx scripts/import-scago/index.ts [--parse-only] [--module=N] [--legacy-users]
+    parse-markdown.ts # Parses SCAGO .md files → structured lesson/slide/block data
+    generate-sql.ts   # Converts parsed data → SQL INSERTs (dollar-quoted JSONB)
+    generate-content-sql.ts # Slides+blocks only, using existing lesson IDs
+    upload-images.ts  # Uploads images to scago-assets Supabase Storage bucket
+    import-legacy-users.ts  # CSV → legacy_users SQL
+    types.ts          # Shared TypeScript interfaces
+    output/           # Generated SQL files (gitignored)
 
 .claude/
   launch.json         # Dev server config — port 3001, autoPort: false (required for Supabase OAuth)
@@ -161,6 +172,15 @@ certificate_templates → course_certificate_templates → courses
 | Course: Fundraising Strategies | `823fe330-1df4-42ee-89af-d7df079958f5` |
 | Module 2 (Fundraising) | `9a681ce2-e300-404e-be2c-a081e6795ade` |
 
+### Key IDs (SCAGO institution)
+
+| Entity | UUID |
+|---|---|
+| institution | `ba52611f-9ad5-44b7-824e-97725a177336` |
+
+SCAGO has 13 courses (Modules 1–13), 49 lessons, ~253 slides, ~468 blocks.
+Legacy users: 2,868 imported from EdApp CSV.
+
 ### Applied Migrations (in order)
 
 | # | Name | Purpose |
@@ -179,6 +199,7 @@ certificate_templates → course_certificate_templates → courses
 | 021 | add_user_demographics_and_legacy_claim | `occupation`, `affiliation`, `country` on users + `claim_legacy_profile()` fn + updated `handle_new_user()` trigger |
 | 022 | canva_integration | Canva OAuth tokens on `users`, `canva_design_id`/`canva_design_url` on `slides` |
 | 023 | certificate_templates | `certificate_templates` + `course_certificate_templates` tables, `certificates` enhancements (template_id, awarded_by, certificate_number, pdf_url), auto-number trigger, default GANSID template seed |
+| 024 | scago_institution_and_admin | SCAGO institution row, `is_admin()` updated to recognize `platform_admin`/`institution_admin`, `tech@` upgraded to `platform_admin` |
 
 ### RLS Pattern — CRITICAL
 
@@ -193,11 +214,11 @@ CREATE POLICY "Admins can read all X" ON public.X FOR SELECT
   USING (EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.role = 'admin'));
 ```
 
-The `is_admin()` function:
+The `is_admin()` function (updated in migration 024):
 ```sql
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean LANGUAGE sql SECURITY DEFINER STABLE AS $$
-  SELECT EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin');
+  SELECT EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('admin', 'platform_admin', 'institution_admin'));
 $$;
 ```
 
@@ -208,10 +229,18 @@ $$;
 `src/middleware.ts` handles multi-tenancy:
 - `/gansid/student/*` → rewrites to `/student/*`
 - `/gansid/admin/*` → rewrites to `/admin/*`
+- `/scago/student/*` → rewrites to `/student/*`
+- `/scago/admin/*` → rewrites to `/admin/*`
 - Admin users hitting `/student/*` get redirected to `/admin`
 - Student users hitting `/admin/*` get redirected to `/student`
 
 Student URL for testing: `http://localhost:3001/gansid/student`
+SCAGO student URL: `http://localhost:3001/scago/student`
+SCAGO admin URL: `http://localhost:3001/scago/admin`
+
+**Supported tenant slugs:** `gansid`, `scago` (defined in `SUPPORTED_INSTITUTION_SLUGS`)
+**Admin dashboard filters courses by institution** via `getTenantContext()` — `/gansid/admin` shows GANSID courses, `/scago/admin` shows SCAGO courses.
+**`platform_admin` role** can access both tenants by switching the URL prefix.
 
 ---
 
@@ -551,8 +580,17 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 - [x] Student certificates page: rendered thumbnails, PDF download, share verification link
 - [x] Course completion → certificate with template resolution + PDF pre-generation
 - [x] `canva-exports` Supabase Storage bucket for slide backgrounds, certificate backgrounds, and PDFs
+- [x] SCAGO tenant: institution created (`ba52611f-9ad5-44b7-824e-97725a177336`), middleware routing works
+- [x] SCAGO course import: 13 courses, 49 lessons, 253 slides, 468 blocks from Markdown
+- [x] SCAGO legacy users: 2,868 imported from EdApp CSV
+- [x] Admin dashboard filters courses by tenant institution via `getTenantContext()`
+- [x] `is_admin()` updated to recognize `platform_admin` and `institution_admin` roles
+- [x] `platform_admin` role for cross-tenant admin access (`tech@sicklecellanemia.ca`)
+- [x] `scago-assets` Supabase Storage bucket (public read, authenticated upload)
+- [x] Markdown import pipeline (`scripts/import-scago/`) — reusable for future content updates
 
 ### In Progress / Next
+- [ ] SCAGO image upload: 313 images (142 MB) need uploading to `scago-assets` bucket (requires `SUPABASE_SERVICE_ROLE_KEY` or Supabase dashboard upload)
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
 - [ ] Phase 4: Quiz expansion (standalone quiz grading, scores, retry logic)
 - [ ] Phase 5: Multi-tenant polish, per-tenant branding
