@@ -123,9 +123,11 @@ export function generateSQL(modules: ParsedModule[], institutionId: string): str
 
           totalBlocks++;
 
-          const dataJson = JSON.stringify(block.data)
-            .replace(/\\/g, '\\\\')
-            .replace(/'/g, "''");
+          // Use dollar-quoting for JSONB to avoid escaping conflicts
+          const dataJson = JSON.stringify(block.data);
+          // Pick a dollar-quote tag that doesn't appear in the data
+          let tag = 'JDATA';
+          while (dataJson.includes(`$${tag}$`)) tag += 'X';
 
           lines.push(`INSERT INTO lesson_blocks (id, lesson_id, slide_id, institution_id, block_type, data, order_index, is_visible, settings, version)`);
           lines.push(`VALUES (`);
@@ -134,7 +136,7 @@ export function generateSQL(modules: ParsedModule[], institutionId: string): str
           lines.push(`  '${slideId}',`);
           lines.push(`  '${institutionId}',`);
           lines.push(`  '${block.kind}',`);
-          lines.push(`  '${dataJson}'::jsonb,`);
+          lines.push(`  $${tag}$${dataJson}$${tag}$::jsonb,`);
           lines.push(`  ${bi},`);
           lines.push(`  true,`);
           lines.push(`  '{}',`);
