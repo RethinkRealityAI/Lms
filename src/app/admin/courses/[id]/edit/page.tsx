@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,6 +39,7 @@ export default function EditCoursePage({
   const [initialLoading, setInitialLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   useEffect(() => {
@@ -109,7 +111,7 @@ export default function EditCoursePage({
         .eq('id', courseId);
       if (error) throw error;
       toast.success('Course updated');
-      router.push('/gansid/admin');
+      router.push(withInstitutionPath('/admin', pathname));
     } catch (err: any) {
       toast.error('Failed to update course', { description: err.message });
     } finally {
@@ -131,7 +133,7 @@ export default function EditCoursePage({
     <div className="max-w-2xl mx-auto px-4 sm:px-0">
       <div className="flex items-center gap-3 mb-6">
         <Link
-          href="/gansid/admin"
+          href={withInstitutionPath('/admin', pathname)}
           className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -293,7 +295,7 @@ export default function EditCoursePage({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push('/gansid/admin')}
+                onClick={() => router.push(withInstitutionPath('/admin', pathname))}
                 className="border-slate-300 text-slate-700 hover:bg-slate-50"
               >
                 Cancel
@@ -301,7 +303,7 @@ export default function EditCoursePage({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(`/gansid/admin/courses/${courseId}/editor`)}
+                onClick={() => router.push(withInstitutionPath(`/admin/courses/${courseId}/editor`, pathname))}
                 className="border-slate-300 text-slate-700 hover:bg-slate-50 ml-auto"
               >
                 Open Editor

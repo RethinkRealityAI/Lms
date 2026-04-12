@@ -95,7 +95,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
                 <BookOpen className="h-3.5 w-3.5" />
               </div>
               <h1 className="text-sm font-black tracking-tighter text-slate-900">
-                GANSID <span className="text-[#0099CA] font-light italic ml-0.5">{title.replace('GANSID ', '')}</span>
+                {title.split(' ')[0] || 'LMS'} <span className="text-[#0099CA] font-light italic ml-0.5">{title.split(' ').slice(1).join(' ') || 'Portal'}</span>
               </h1>
             </Link>
 

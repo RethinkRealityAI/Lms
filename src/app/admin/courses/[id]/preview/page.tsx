@@ -2,7 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowLeft, Eye, Pencil } from 'lucide-react';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import CourseViewer from '@/components/student/course-viewer';
 
 export default function AdminPreviewPage({
@@ -11,6 +13,7 @@ export default function AdminPreviewPage({
   params: Promise<{ id: string }>;
 }) {
   const params = React.use(paramsPromise);
+  const pathname = usePathname();
 
   return (
     // Fixed overlay covers the entire viewport including the admin nav
@@ -25,7 +28,7 @@ export default function AdminPreviewPage({
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/admin"
+            href={withInstitutionPath('/admin', pathname)}
             className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -34,7 +37,7 @@ export default function AdminPreviewPage({
           </Link>
           <div className="w-px h-4 bg-white/20" />
           <Link
-            href={`/admin/courses/${params.id}/editor`}
+            href={withInstitutionPath(`/admin/courses/${params.id}/editor`, pathname)}
             className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
           >
             <Pencil className="h-3.5 w-3.5" />

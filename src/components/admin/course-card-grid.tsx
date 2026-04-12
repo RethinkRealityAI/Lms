@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +48,7 @@ type ThumbnailMode = 'upload' | 'url';
 
 export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   // Modal state
@@ -226,7 +228,7 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
             }}
             onDragEnd={() => { setDragIdx(null); setDragOverIdx(null); }}
           >
-            <Link href={`/admin/courses/${course.id}/editor`}>
+            <Link href={withInstitutionPath(`/admin/courses/${course.id}/editor`, pathname)}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full overflow-hidden border border-slate-200 bg-white">
                 {/* Thumbnail */}
                 {course.thumbnail_url ? (
@@ -288,7 +290,7 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
                 <Pencil className="h-4 w-4 text-[#1E3A5F]" />
               </button>
               <Link
-                href={`/admin/courses/${course.id}/preview`}
+                href={withInstitutionPath(`/admin/courses/${course.id}/preview`, pathname)}
                 aria-label="Preview as student"
                 title="Preview as student"
                 className="bg-white/90 hover:bg-white rounded-lg p-1.5 shadow-sm border border-gray-200"

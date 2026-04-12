@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,6 +37,7 @@ export default function CreateCoursePage() {
   const [institutionId, setInstitutionId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   useEffect(() => {
@@ -191,7 +193,7 @@ export default function CreateCoursePage() {
         description: 'Opening editor...',
       });
 
-      router.push(`/admin/courses/${data.id}/editor`);
+      router.push(withInstitutionPath(`/admin/courses/${data.id}/editor`, pathname));
     } catch (error: any) {
       toast.error('Failed to create course', {
         description: error.message,

@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,7 @@ export default function LessonBlocksPage({
     contentKey: '',
   });
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   const selectedDefinition = useMemo(
@@ -107,7 +109,7 @@ export default function LessonBlocksPage({
 
   return (
     <div className="space-y-6 px-4 sm:px-0">
-      <Button variant="outline" onClick={() => router.push(`/gansid/admin/courses/${params.id}`)}>
+      <Button variant="outline" onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}`, pathname))}>
         Back to Course
       </Button>
 

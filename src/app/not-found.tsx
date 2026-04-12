@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BookOpen, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DEFAULT_INSTITUTION_SLUG } from '@/lib/tenant/path';
 
 export default function NotFound() {
   return (
@@ -16,13 +17,13 @@ export default function NotFound() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild className="bg-[#1E3A5F] hover:bg-[#162d4a] text-white font-bold">
-            <Link href="/gansid/student">
+            <Link href={`/${DEFAULT_INSTITUTION_SLUG}/student`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Link>
           </Button>
           <Button asChild variant="outline" className="border-slate-300 text-slate-700 font-bold hover:bg-slate-50">
-            <Link href="/gansid/admin">Admin Portal</Link>
+            <Link href={`/${DEFAULT_INSTITUTION_SLUG}/admin`}>Admin Portal</Link>
           </Button>
         </div>
       </div>

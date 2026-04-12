@@ -9,7 +9,7 @@ import { CourseCardGrid } from '@/components/admin/course-card-grid';
 
 export default async function AdminPage() {
   const supabase = await createClient();
-  const { institutionId } = await getTenantContext();
+  const { institutionId, institutionSlug } = await getTenantContext();
 
   let coursesQuery = supabase.from('courses').select('*, categories(name)');
   if (institutionId) {
@@ -33,7 +33,7 @@ export default async function AdminPage() {
             {courseCount}
           </Badge>
         </div>
-        <Link href="/admin/courses/create">
+        <Link href={`/${institutionSlug}/admin/courses/create`}>
           <Button className="bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-sm">
             <Plus className="mr-2 h-4 w-4" />
             Create Course
@@ -56,7 +56,7 @@ export default async function AdminPage() {
               <p className="text-slate-500 mb-6 text-center">
                 No courses yet. Create your first course to get started!
               </p>
-              <Link href="/admin/courses/create">
+              <Link href={`/${institutionSlug}/admin/courses/create`}>
                 <Button className="bg-[#DC2626] hover:bg-[#B91C1C] text-white">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Course

@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -48,6 +49,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
   const [loading, setLoading] = useState(false);
   const [lessonLoading, setLessonLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   useEffect(() => {
@@ -283,7 +285,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
       if (error) throw error;
 
       toast.success('Course deleted successfully');
-      router.push('/gansid/admin');
+      router.push(withInstitutionPath('/admin', pathname));
     } catch (error: any) {
       toast.error('Failed to delete course', {
         description: error.message,
@@ -320,7 +322,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
         </div>
         <div className="flex gap-2 shrink-0">
           <Button
-            onClick={() => router.push(`/gansid/admin/courses/${params.id}/editor`)}
+            onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/editor`, pathname))}
             className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white"
           >
             <PanelLeft className="mr-2 h-4 w-4" />
@@ -433,7 +435,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
                       variant="outline"
                       size="sm"
                       className="h-8 text-xs px-2.5"
-                      onClick={() => router.push(`/gansid/admin/courses/${params.id}/lessons/${lesson.id}/quiz`)}
+                      onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/lessons/${lesson.id}/quiz`, pathname))}
                     >
                       Manage Quiz
                     </Button>
@@ -441,7 +443,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
                       variant="outline"
                       size="sm"
                       className="h-8 text-xs px-2.5"
-                      onClick={() => router.push(`/gansid/admin/courses/${params.id}/lessons/${lesson.id}/blocks`)}
+                      onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/lessons/${lesson.id}/blocks`, pathname))}
                     >
                       Manage Blocks
                     </Button>

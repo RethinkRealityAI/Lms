@@ -1,8 +1,9 @@
 'use client';
 
 import { Save, Undo2, Redo2, Eye, Play, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone, Keyboard } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { useEditorStore } from './editor-store-context';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
@@ -27,6 +28,7 @@ const ACTION_LABELS: Record<string, string> = {
 
 export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreviewChange, onPreviewLesson, onShowShortcuts }: EditorToolbarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
   const undo = useEditorStore((s) => s.undo);
@@ -121,7 +123,7 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
           <Play className="w-4 h-4 text-gray-600" />
         </button>
         <button
-          onClick={() => courseId && router.push(`/admin/courses/${courseId}/preview`)}
+          onClick={() => courseId && router.push(withInstitutionPath(`/admin/courses/${courseId}/preview`, pathname))}
           className="p-2 rounded hover:bg-gray-100 transition-colors"
           title="Preview full course"
         >

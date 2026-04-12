@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { withInstitutionPath } from '@/lib/tenant/path';
 
 export default function AdminError({
   error,
@@ -12,6 +14,8 @@ export default function AdminError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const pathname = usePathname();
+
   useEffect(() => {
     console.error('Admin error:', error);
   }, [error]);
@@ -35,7 +39,7 @@ export default function AdminError({
           Try Again
         </Button>
         <Button asChild variant="outline" className="border-slate-300 text-slate-700 font-bold">
-          <Link href="/gansid/admin">
+          <Link href={withInstitutionPath('/admin', pathname)}>
             <Home className="mr-2 h-4 w-4" />
             Courses
           </Link>

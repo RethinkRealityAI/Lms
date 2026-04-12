@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
+import { getTenantContext } from '@/lib/tenant/server';
 
 export default async function AdminLayout({
   children,
@@ -11,6 +12,7 @@ export default async function AdminLayout({
   // based on auth state. Always render the full admin shell to guarantee
   // SSR ↔ client HTML consistency and prevent hydration mismatches.
   const supabase = await createClient();
+  const { institutionSlug } = await getTenantContext();
   const { data: { user } } = await supabase.auth.getUser();
 
   // Fetch profile (best-effort — falls back to empty strings if unavailable)
@@ -67,7 +69,7 @@ export default async function AdminLayout({
         userEmail={user?.email || ''}
         userName={fullName}
         avatarUrl={avatarUrl}
-        title="GANSID Faculty"
+        title={`${institutionSlug.toUpperCase()} Faculty`}
       />
       <main className="max-w-7xl mx-auto pt-16 pb-8 px-4 sm:px-6 lg:px-8">
         {children}
