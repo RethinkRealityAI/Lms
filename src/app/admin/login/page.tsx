@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { Lock, Mail, Loader2, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { PublicNav } from '@/components/public-nav';
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { withInstitutionPath } from '@/lib/tenant/path';
+import { getInstitutionBranding, getInstitutionSlugFromCookie } from '@/lib/tenant/branding';
 
 const adminSignInSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -33,12 +35,18 @@ export default function AdminLoginPage() {
     const pathname = usePathname();
     const supabase = createClient();
 
+    // Resolve institution branding from cookie (admin login uses cookie, not URL path)
+    const branding = useMemo(() => {
+        const slug = getInstitutionSlugFromCookie();
+        return getInstitutionBranding(slug);
+    }, []);
+
     // Check if user is already authenticated and is an admin
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
-                
+
                 if (user) {
                     const { data: userData, error: userError } = await supabase
                         .from('users')
@@ -215,24 +223,44 @@ export default function AdminLoginPage() {
     return (
         <div className="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900">
             <PublicNav transparentInitially={false} />
-            
+
             <div className="flex-1 flex items-center justify-center bg-white relative overflow-hidden pt-20">
-                {/* Dynamic Background Elements - matching Home Page */}
+                {/* Dynamic Background Elements - institution-aware */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-50 rounded-full blur-[120px] opacity-60" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
+                <div
+                    className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-60"
+                    style={{ backgroundColor: branding.acronym === 'SCAGO' ? '#E0F2FE' : '#FEF2F2' }}
+                />
+                <div
+                    className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-60"
+                    style={{ backgroundColor: branding.acronym === 'SCAGO' ? '#F0F9FF' : '#EFF6FF' }}
+                />
             </div>
 
             <Card className="w-full max-w-md bg-white/40 backdrop-blur-2xl border border-white/50 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] rounded-[3rem] relative z-10 overflow-hidden">
                 <CardHeader className="text-center space-y-1 pt-12 pb-8">
                     <div className="flex justify-center mb-6">
-                        <div className="w-20 h-20 bg-gradient-to-br from-[#1E3A5F] to-[#2563EB] rounded-3xl flex items-center justify-center border border-white/30 shadow-xl shadow-blue-100 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <ShieldCheck className="h-10 w-10 text-white" />
+                        {/* Institution logo */}
+                        <div className="flex flex-col items-center gap-4">
+                            <div
+                                className="w-20 h-20 rounded-3xl flex items-center justify-center border border-white/30 shadow-xl transform -rotate-3 hover:rotate-0 transition-transform duration-500"
+                                style={{ background: `linear-gradient(to bottom right, ${branding.primaryColor}, ${branding.accentColor})` }}
+                            >
+                                <ShieldCheck className="h-10 w-10 text-white" />
+                            </div>
+                            <Image
+                                src={branding.logoUrl}
+                                alt={`${branding.name} logo`}
+                                width={branding.logoDimensions.width}
+                                height={branding.logoDimensions.height}
+                                className="h-8 w-auto object-contain"
+                                priority
+                            />
                         </div>
                     </div>
                     <CardTitle className="text-3xl font-black text-slate-900 tracking-tight">Admin Portal</CardTitle>
                     <CardDescription className="text-slate-500 font-medium">
-                        Secure faculty access for GANSID administrators.
+                        {branding.adminDescription}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="px-10 pb-12">
@@ -244,7 +272,7 @@ export default function AdminLoginPage() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="admin@gansid.org"
+                                    placeholder={branding.adminEmailPlaceholder}
                                     className={`pl-12 h-14 bg-white/60 border-slate-200 rounded-2xl focus:ring-blue-100 focus:border-[#2563EB] transition-all font-medium ${errors.email ? 'border-red-500' : ''}`}
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -281,7 +309,12 @@ export default function AdminLoginPage() {
                             {errors.password && <p className="text-xs text-red-500 mt-1 font-bold">{errors.password}</p>}
                         </div>
 
-                        <Button type="submit" className="w-full h-14 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#1E3A5F] to-[#2563EB] hover:opacity-90 shadow-xl shadow-blue-100 mt-2 transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
+                        <Button
+                            type="submit"
+                            className="w-full h-14 rounded-2xl text-md font-black uppercase tracking-widest shadow-xl shadow-blue-100 mt-2 transition-all hover:scale-[1.02] active:scale-[0.98] hover:opacity-90"
+                            style={{ background: `linear-gradient(to right, ${branding.primaryColor}, ${branding.accentColor})` }}
+                            disabled={loading}
+                        >
                             {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Enter Secure Portal'}
                         </Button>
 

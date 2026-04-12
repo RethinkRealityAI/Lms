@@ -1,22 +1,22 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PublicNav } from '@/components/public-nav';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { BookOpen, Loader2, Mail, Lock, User, AlertCircle, CheckCircle2, Globe, MailCheck, ArrowRight } from 'lucide-react';
+import { BookOpen, Loader2, Mail, Lock, User, CheckCircle2, Globe, MailCheck, ArrowRight, Award, Clock, BookOpenCheck } from 'lucide-react';
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
+import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -43,6 +43,18 @@ const signUpSchema = z.object({
   path: ["verificationCode"],
 });
 
+/** Map feature icon names to Lucide components */
+function FeatureIcon({ icon, className }: { icon: string; className?: string }) {
+  switch (icon) {
+    case 'check': return <CheckCircle2 className={className} />;
+    case 'globe': return <Globe className={className} />;
+    case 'award': return <Award className={className} />;
+    case 'clock': return <Clock className={className} />;
+    case 'book': return <BookOpenCheck className={className} />;
+    default: return <CheckCircle2 className={className} />;
+  }
+}
+
 function LoginContent() {
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
   const [loading, setLoading] = useState(false);
@@ -64,6 +76,14 @@ function LoginContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // Resolve institution branding from URL path
+  const branding: InstitutionBranding = useMemo(() => {
+    const slug = getInstitutionSlugFromPath(pathname);
+    return getInstitutionBranding(slug);
+  }, [pathname]);
+
+  const isScago = branding.acronym === 'SCAGO';
 
   // Check for verification success or errors from callback
   useEffect(() => {
@@ -149,19 +169,19 @@ function LoginContent() {
 
       let userData = null;
       let userError = null;
-      
+
       // Try to get user profile
       const profileResult = await supabase
         .from('users')
         .select('role, full_name')
         .eq('id', data.user.id)
         .single();
-      
+
       userData = profileResult.data;
       userError = profileResult.error;
 
       // If profile doesn't exist, try to create it from user metadata.
-      // Include institution_id to prevent NULL institution → redirect loop.
+      // Include institution_id to prevent NULL institution -> redirect loop.
       if (userError || !userData) {
         console.log('Profile not found, attempting to create from metadata');
 
@@ -326,9 +346,6 @@ function LoginContent() {
       }
 
       // Best-effort: ensure institution membership exists for tenant-scoped access.
-      // The DB trigger (handle_new_user) creates the user profile with institution_id,
-      // so we only need to handle institution_memberships here.
-      // These are fire-and-forget — we don't block signup success on them.
       const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
       try {
         const { data: institutionData } = await supabase
@@ -350,7 +367,7 @@ function LoginContent() {
             ]);
         }
       } catch (membershipErr) {
-        // Non-critical — the DB trigger already sets institution_id on the user row
+        // Non-critical
         console.error('Institution membership setup (non-critical):', membershipErr);
       }
 
@@ -363,7 +380,7 @@ function LoginContent() {
         });
         router.replace(withInstitutionPath(formData.role === 'institution_admin' ? '/admin' : '/student', pathname));
       } else {
-        // Email verification required — show the verification modal
+        // Email verification required
         setVerificationEmail(formData.email.trim().toLowerCase());
         setShowVerificationModal(true);
       }
@@ -443,59 +460,99 @@ function LoginContent() {
   return (
     <div className="min-h-screen flex flex-col selection:bg-red-100 selection:text-red-900">
       <PublicNav transparentInitially={false} />
-      
+
       <div className="flex-1 flex items-center justify-center relative overflow-y-auto bg-white pt-16 pb-8">
-        {/* Dynamic Background Elements - matching Home Page */}
+        {/* Dynamic Background Elements */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-50 rounded-full blur-[120px] opacity-60" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
+        <div
+          className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-60"
+          style={{ backgroundColor: isScago ? '#E0F2FE' : '#FEF2F2' }}
+        />
+        <div
+          className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-60"
+          style={{ backgroundColor: isScago ? '#F0F9FF' : '#EFF6FF' }}
+        />
       </div>
 
       <div className="w-full max-w-[900px] flex flex-col md:flex-row shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] rounded-[2rem] overflow-hidden bg-white/40 backdrop-blur-2xl border border-white/50 m-3 relative z-10">
-        {/* Left Side: Brand/Marketing */}
-        <div className="hidden md:flex flex-col justify-between w-1/2 p-8 bg-gradient-to-br from-[#991B1B] to-[#DC2626] text-white relative">
+        {/* Left Side: Brand/Marketing — institution-aware */}
+        <div
+          className="hidden md:flex flex-col justify-between w-1/2 p-8 text-white relative"
+          style={{ background: `linear-gradient(to bottom right, ${branding.primaryColor}, ${branding.secondaryColor})` }}
+        >
           <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(135deg,white,transparent)] opacity-20" />
 
           <div className="relative">
-            <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center mb-4 border border-white/30 shadow-inner">
-              <BookOpen className="h-5 w-5 text-white" />
+            {/* Institution Logo */}
+            <div className="mb-5">
+              <Image
+                src={branding.logoUrl}
+                alt={`${branding.name} logo`}
+                width={branding.logoDimensions.width}
+                height={branding.logoDimensions.height}
+                className="h-12 w-auto object-contain brightness-0 invert"
+                priority
+              />
             </div>
-            <h1 className="text-3xl font-black tracking-tight mb-3 leading-tight">
-              GANSID <br />
-              <span className="font-light opacity-80 text-xl">Learning Portal</span>
+            <h1 className="text-2xl font-black tracking-tight mb-3 leading-tight">
+              {branding.programTitle}
             </h1>
-            <p className="text-white/80 text-base leading-relaxed max-w-sm font-medium">
-              Empowering healthcare providers through modular, evidence-based education in inherited blood disorders.
+            <p className="text-white/80 text-sm leading-relaxed max-w-sm font-medium">
+              {branding.description}
             </p>
+
+            {/* Highlight chips */}
+            {branding.highlights.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {branding.highlights.map((h) => (
+                  <span
+                    key={h}
+                    className="inline-flex items-center px-3 py-1 text-xs font-bold bg-white/20 backdrop-blur-md rounded-full border border-white/20"
+                  >
+                    {h}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="relative mt-6 space-y-3">
-            <div className="flex items-center gap-3 text-sm font-bold bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+            {branding.features.map((f) => (
+              <div key={f.label} className="flex items-center gap-3 text-sm font-bold bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
+                <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shadow-lg shrink-0">
+                  <FeatureIcon icon={f.icon} className="h-3.5 w-3.5 text-white" />
+                </div>
+                <span>{f.label}</span>
               </div>
-              <span>Expert-led clinical courses</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm font-bold bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shadow-lg">
-                <Globe className="h-3.5 w-3.5 text-white" />
-              </div>
-              <span>Global community network</span>
-            </div>
+            ))}
           </div>
 
-          <p className="relative text-[10px] opacity-50 font-black uppercase tracking-widest leading-tight pt-[5px] pb-[5px]">
-            © 2026 Global Action Network for Sickle Cell and Other Inherited Blood Disorders
-          </p>
+          {/* Contact + copyright */}
+          <div className="relative mt-6 space-y-1">
+            {branding.contactEmail && (
+              <p className="text-[11px] opacity-70 font-bold">
+                {branding.contactEmail}
+                {branding.contactPhone ? ` | ${branding.contactPhone}` : ''}
+              </p>
+            )}
+            <p className="text-[10px] opacity-50 font-black uppercase tracking-widest leading-tight">
+              {branding.copyright}
+            </p>
+          </div>
         </div>
 
         {/* Right Side: Form */}
         <div className="flex-1 p-6 md:p-8 bg-white/60 overflow-y-auto max-h-[calc(100vh-6rem)]">
+          {/* Mobile header with institution branding */}
           <div className="md:hidden flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg">
-              <BookOpen className="h-4 w-4" />
-            </div>
-            <span className="text-lg font-black text-slate-900 tracking-tighter">GANSID</span>
+            <Image
+              src={branding.logoUrl}
+              alt={`${branding.name} logo`}
+              width={branding.logoDimensions.width}
+              height={branding.logoDimensions.height}
+              className="h-9 w-auto object-contain"
+              priority
+            />
           </div>
 
           <div className="mb-5">
@@ -519,7 +576,9 @@ function LoginContent() {
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
-                className="rounded-xl font-bold data-[state=active]:!bg-[#DC2626] data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
+                className="rounded-xl font-bold data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
+                style={{ ['--tw-bg-opacity' as any]: undefined }}
+                data-accent={branding.secondaryColor}
               >
                 Sign Up
               </TabsTrigger>
@@ -536,7 +595,7 @@ function LoginContent() {
                     <Input
                       id="signin-email"
                       type="email"
-                      placeholder="doctor@hospital.org"
+                      placeholder={branding.emailPlaceholder}
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className={`pl-12 h-11 bg-white border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] transition-all font-medium ${errors.email ? 'border-red-500' : ''}`}
@@ -572,7 +631,12 @@ function LoginContent() {
                   {errors.password && <p className="text-xs text-red-500 mt-1 font-bold">{errors.password}</p>}
                 </div>
 
-                <Button type="submit" className="w-full h-12 rounded-xl text-md font-bold bg-[#2563EB] hover:bg-[#1D4ED8] shadow-xl shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full h-12 rounded-xl text-md font-bold shadow-xl shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  style={{ backgroundColor: branding.accentColor }}
+                  disabled={loading}
+                >
                   {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Sign In'}
                 </Button>
               </form>
@@ -584,7 +648,7 @@ function LoginContent() {
                     <>
                       <h3 className="text-sm font-black text-slate-900 mb-2 uppercase tracking-wider">Reset Password</h3>
                       <p className="text-xs text-slate-600 mb-4 font-medium">
-                        Enter your clinical email and we'll send a secure reset link.
+                        Enter your email and we&apos;ll send a secure reset link.
                       </p>
                       <form onSubmit={handleForgotPassword} className="space-y-3">
                         <div className="relative group">
@@ -629,7 +693,7 @@ function LoginContent() {
                       </div>
                       <h3 className="text-sm font-black text-slate-900 mb-1 uppercase tracking-wider">Check Your Inbox</h3>
                       <p className="text-xs text-slate-600 mb-4 font-medium leading-relaxed">
-                        We've sent a secure password reset link to <br /><strong className="text-slate-900">{resetEmail}</strong>
+                        We&apos;ve sent a secure password reset link to <br /><strong className="text-slate-900">{resetEmail}</strong>
                       </p>
                       <Button
                         type="button"
@@ -706,7 +770,7 @@ function LoginContent() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className={`pl-11 h-11 bg-white border-slate-200 rounded-xl font-medium focus:ring-red-100 focus:border-[#DC2626] ${errors.email ? 'border-red-500' : ''}`}
-                      placeholder="clinician@hospital.org"
+                      placeholder={branding.emailPlaceholder}
                     />
                   </div>
                   {errors.email && <p className="text-xs text-red-500 mt-1 font-bold">{errors.email}</p>}
@@ -726,7 +790,7 @@ function LoginContent() {
                     />
                   </div>
                   {errors.password && <p className="text-xs text-red-500 mt-1 font-bold">{errors.password}</p>}
-                  
+
                   {/* Password Requirements Display */}
                   <div className="mt-2 p-3 bg-slate-50/50 rounded-xl border border-slate-100">
                     <p className="text-[10px] font-black text-[#0F172A] mb-2 uppercase tracking-widest">Security Requirements:</p>
@@ -767,7 +831,12 @@ function LoginContent() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 rounded-xl font-black uppercase tracking-widest bg-[#DC2626] hover:bg-[#991B1B] shadow-xl shadow-red-100 mt-2 transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-red-100 mt-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  style={{ backgroundColor: branding.secondaryColor }}
+                  disabled={loading}
+                >
                   {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Create Account'}
                 </Button>
               </form>
@@ -780,7 +849,10 @@ function LoginContent() {
       {/* Email Verification Modal */}
       <Dialog open={showVerificationModal} onOpenChange={setShowVerificationModal}>
         <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl p-0 overflow-hidden [&>button]:text-white [&>button]:hover:text-white/80">
-          <div className="bg-gradient-to-br from-[#DC2626] to-[#991B1B] px-8 pt-8 pb-6 text-center">
+          <div
+            className="px-8 pt-8 pb-6 text-center"
+            style={{ background: `linear-gradient(to bottom right, ${branding.primaryColor}, ${branding.secondaryColor})` }}
+          >
             <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-lg">
               <MailCheck className="h-8 w-8 text-white" />
             </div>
@@ -804,14 +876,20 @@ function LoginContent() {
 
             <div className="space-y-2.5 text-sm text-slate-600">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs font-black text-[#DC2626]">1</span>
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                  style={{ backgroundColor: `${branding.secondaryColor}20` }}
+                >
+                  <span className="text-xs font-black" style={{ color: branding.secondaryColor }}>1</span>
                 </div>
                 <p className="font-medium">Open the email and click the verification link</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs font-black text-[#DC2626]">2</span>
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                  style={{ backgroundColor: `${branding.secondaryColor}20` }}
+                >
+                  <span className="text-xs font-black" style={{ color: branding.secondaryColor }}>2</span>
                 </div>
                 <p className="font-medium">Return here and sign in with your credentials</p>
               </div>
@@ -833,7 +911,8 @@ function LoginContent() {
                   verificationCode: '',
                 });
               }}
-              className="w-full h-12 rounded-xl font-bold text-md bg-[#2563EB] hover:bg-[#1D4ED8] shadow-xl shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98] gap-2"
+              className="w-full h-12 rounded-xl font-bold text-md shadow-xl shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98] gap-2"
+              style={{ backgroundColor: branding.accentColor }}
             >
               Got It — Sign In
               <ArrowRight className="h-4 w-4" />
@@ -852,4 +931,3 @@ export default function LoginPage() {
     </Suspense>
   );
 }
-
