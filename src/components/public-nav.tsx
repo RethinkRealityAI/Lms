@@ -6,8 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BookOpen, LogOut, Menu, X, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { isAdminRole } from '@/lib/auth/roles';
+import { getInstitutionSlugFromPath, withInstitutionPath } from '@/lib/tenant/path';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 
 interface PublicNavProps {
   scrolled?: boolean;
@@ -25,6 +27,10 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
   const router = useRouter();
+  const pathname = usePathname();
+  const institutionSlug = getInstitutionSlugFromPath(pathname) || 'gansid';
+  const branding = getInstitutionBranding(institutionSlug);
+  const isScago = institutionSlug === 'scago';
 
   useEffect(() => {
     if (forcedScrolled !== undefined) return;
@@ -120,7 +126,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
     setUser(null);
     setUserRole(null);
     setMobileMenuOpen(false);
-    router.push('/');
+    router.push(withInstitutionPath('/', pathname));
     router.refresh();
   };
 
@@ -145,19 +151,35 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
           : 'bg-white border-b border-slate-100 py-4'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <span className={`text-2xl font-black tracking-tighter transition-colors ${scrolled || !transparentInitially ? 'text-slate-900' : 'text-white'}`}>
-            GANSID <span className="text-[#0099CA] font-light">LMS</span>
-          </span>
+        <Link href={withInstitutionPath('/', pathname)} className="flex items-center gap-3 group">
+          {isScago ? (
+            <img
+              src={branding.logoUrl}
+              alt={branding.fullName}
+              className="h-10 w-auto"
+            />
+          ) : (
+            <>
+              <div className="w-11 h-11 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
+                <BookOpen className="h-6 w-6" />
+              </div>
+              <span className={`text-2xl font-black tracking-tighter transition-colors ${scrolled || !transparentInitially ? 'text-slate-900' : 'text-white'}`}>
+                {branding.acronym} <span className="text-[#0099CA] font-light">LMS</span>
+              </span>
+            </>
+          )}
         </Link>
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/gansid/patient-organizations" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Patient Organizations</Link>
-          <Link href="/gansid/clinicians" className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Clinicians</Link>
+          {isScago ? (
+            <Link href={withInstitutionPath('/login', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#0099CA]' : 'text-slate-300 hover:text-white'}`}>Modules</Link>
+          ) : (
+            <>
+              <Link href={withInstitutionPath('/patient-organizations', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Patient Organizations</Link>
+              <Link href={withInstitutionPath('/clinicians', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Clinicians</Link>
+            </>
+          )}
           
           {!loading && user ? (
             <div className="flex items-center gap-3">
@@ -187,11 +209,11 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
             </div>
           ) : !loading && !hideAuth ? (
             <div className="flex items-center gap-4">
-              <Button variant="ghost" asChild className={`rounded-full font-bold px-6 transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>
-                <Link href="/login">Sign In</Link>
+              <Button variant="ghost" asChild className={`rounded-full font-bold px-6 transition-colors ${scrolled || !transparentInitially ? `text-slate-600 hover:text-[${isScago ? branding.accentColor : '#DC2626'}]` : 'text-slate-300 hover:text-white'}`}>
+                <Link href={withInstitutionPath('/login', pathname)}>Sign In</Link>
               </Button>
-              <Button asChild className="rounded-full px-6 font-bold shadow-lg shadow-red-100 bg-[#DC2626] hover:bg-[#991B1B] transition-all transform hover:scale-105">
-                <Link href="/login?tab=signup">Get Started</Link>
+              <Button asChild className={`rounded-full px-6 font-bold shadow-lg transition-all transform hover:scale-105 ${isScago ? 'bg-[#1E3A5F] hover:bg-[#152d4a] shadow-blue-100' : 'bg-[#DC2626] hover:bg-[#991B1B] shadow-red-100'}`}>
+                <Link href={withInstitutionPath('/login?tab=signup', pathname)}>Get Started</Link>
               </Button>
             </div>
           ) : null}
@@ -227,20 +249,32 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
               </div>
             )}
             
-            <Link
-              href="/gansid/patient-organizations"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
-            >
-              Patient Organizations
-            </Link>
-            <Link
-              href="/gansid/clinicians"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
-            >
-              Clinicians
-            </Link>
+            {isScago ? (
+              <Link
+                href={withInstitutionPath('/login', pathname)}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold text-slate-600 hover:text-[#0099CA] py-2"
+              >
+                Modules
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href={withInstitutionPath('/patient-organizations', pathname)}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
+                >
+                  Patient Organizations
+                </Link>
+                <Link
+                  href={withInstitutionPath('/clinicians', pathname)}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
+                >
+                  Clinicians
+                </Link>
+              </>
+            )}
             
             <div className="pt-3 border-t border-slate-100 space-y-2">
               {user ? (
@@ -263,10 +297,10 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
               ) : !hideAuth ? (
                 <>
                   <Button asChild variant="outline" className="w-full rounded-xl font-bold">
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
+                    <Link href={withInstitutionPath('/login', pathname)} onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
                   </Button>
-                  <Button asChild className="w-full rounded-xl font-bold bg-[#DC2626] hover:bg-[#991B1B]">
-                    <Link href="/login?tab=signup" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                  <Button asChild className={`w-full rounded-xl font-bold ${isScago ? 'bg-[#1E3A5F] hover:bg-[#152d4a]' : 'bg-[#DC2626] hover:bg-[#991B1B]'}`}>
+                    <Link href={withInstitutionPath('/login?tab=signup', pathname)} onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </>
               ) : null}
