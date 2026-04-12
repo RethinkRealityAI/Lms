@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal } from 'lucide-react';
+import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal, Paintbrush } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -12,6 +12,7 @@ import { DropZoneUploader } from './drop-zone-uploader';
 import { CourseThemeEditor } from './theme-editor/course-theme-editor';
 import { SlideStyleEditor } from './theme-editor/slide-style-editor';
 import { BLOCK_PRESETS } from '@/lib/content/block-presets';
+import { CanvaDesignPicker } from './canva-design-picker';
 import type { EntitySelection } from '@/types';
 import type { LessonData } from '@/lib/stores/editor-store';
 import type { Slide } from '@/types';
@@ -292,6 +293,26 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
                 disabled={!activeSlideId}
               />
             ))}
+          </div>
+
+          {/* Canva Design — import as image block */}
+          <div className="mt-2 pt-4 border-t border-gray-100 space-y-3">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Canva</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Create or import a design as an image</p>
+            </div>
+            <CanvaDesignPicker
+              entityType="slide"
+              entityId={activeSlideId!}
+              onSelect={(imageUrl) => {
+                if (imageUrl && activeSlideId) {
+                  onAddBlock?.(activeSlideId, 'image_gallery', undefined, {
+                    images: [{ url: imageUrl, alt: 'Canva design', caption: '' }],
+                    mode: 'gallery',
+                  });
+                }
+              }}
+            />
           </div>
 
           {/* Presets — pre-filled block templates */}

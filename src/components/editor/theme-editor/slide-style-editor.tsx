@@ -1,9 +1,10 @@
 'use client';
 
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, Paintbrush } from 'lucide-react';
 import { ColorSwatch } from './color-swatch';
 import { useEditorStore } from '../editor-store-context';
 import { DropZoneUploader } from '../drop-zone-uploader';
+import { CanvaDesignPicker } from '../canva-design-picker';
 import type { Slide } from '@/types';
 
 interface SlideStyleEditorProps {
@@ -130,6 +131,23 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
           previewMode="image"
         />
         <p className="text-[10px] text-gray-400 mt-1">Full-page background behind slide content</p>
+      </div>
+
+      {/* Canva Design as Background */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+          <Paintbrush className="w-3 h-3 inline mr-1" />Design with Canva
+        </p>
+        <CanvaDesignPicker
+          entityType="slide"
+          entityId={slideId}
+          onSelect={(imageUrl) => {
+            if (imageUrl) {
+              updateSettings({ background_image: imageUrl, canva_design_url: imageUrl });
+            }
+          }}
+        />
+        <p className="text-[10px] text-gray-400 mt-1">Create or import a Canva design as slide background</p>
       </div>
 
       {/* Transition */}
