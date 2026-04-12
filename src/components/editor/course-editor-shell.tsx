@@ -786,11 +786,29 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
         setIsLoading(true);
         const supabase = createClient();
 
-        // Get current user's institution
+        // Get current user's institution — prefer tenant context (cookie) over user profile
+        // so platform_admin can edit courses in any tenant
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('Not authenticated');
 
-        const institutionId = await getUserInstitutionId(supabase, user.id);
+        let institutionId: string | null = null;
+
+        // Try tenant context from cookie (set by middleware from URL slug)
+        const slugCookie = document.cookie.split('; ').find(c => c.startsWith('institution_slug='));
+        const tenantSlug = slugCookie?.split('=')[1];
+        if (tenantSlug) {
+          const { data: inst } = await supabase
+            .from('institutions')
+            .select('id')
+            .eq('slug', tenantSlug)
+            .maybeSingle();
+          if (inst) institutionId = inst.id;
+        }
+
+        // Fall back to user's own institution
+        if (!institutionId) {
+          institutionId = await getUserInstitutionId(supabase, user.id);
+        }
         if (!institutionId) throw new Error('No institution found for user');
 
         const data = await loadEditorCourseData(supabase, courseId, institutionId);

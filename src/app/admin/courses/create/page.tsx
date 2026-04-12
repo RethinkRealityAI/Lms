@@ -57,7 +57,23 @@ export default function CreateCoursePage() {
   const loadInstitutionId = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const id = await getUserInstitutionId(supabase, user.id);
+
+    // Prefer tenant context (cookie from URL slug) so platform_admin creates
+    // courses in the correct institution
+    let id: string | null = null;
+    const slugCookie = document.cookie.split('; ').find(c => c.startsWith('institution_slug='));
+    const tenantSlug = slugCookie?.split('=')[1];
+    if (tenantSlug) {
+      const { data: inst } = await supabase
+        .from('institutions')
+        .select('id')
+        .eq('slug', tenantSlug)
+        .maybeSingle();
+      if (inst) id = inst.id;
+    }
+    if (!id) {
+      id = await getUserInstitutionId(supabase, user.id);
+    }
     setInstitutionId(id);
   };
 
@@ -123,7 +139,21 @@ export default function CreateCoursePage() {
         return;
       }
 
-      const institutionId = await getUserInstitutionId(supabase, user.id);
+      // Prefer tenant context for platform_admin
+      let institutionId: string | null = null;
+      const slugCookie = document.cookie.split('; ').find(c => c.startsWith('institution_slug='));
+      const tenantSlug = slugCookie?.split('=')[1];
+      if (tenantSlug) {
+        const { data: inst } = await supabase
+          .from('institutions')
+          .select('id')
+          .eq('slug', tenantSlug)
+          .maybeSingle();
+        if (inst) institutionId = inst.id;
+      }
+      if (!institutionId) {
+        institutionId = await getUserInstitutionId(supabase, user.id);
+      }
       if (!institutionId) {
         toast.error('No institution found', {
           description: 'Your account is not linked to an institution. Contact an administrator.',
