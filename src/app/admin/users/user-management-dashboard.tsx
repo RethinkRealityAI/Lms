@@ -824,6 +824,8 @@ function PendingInvitesTab({ invitations }: { invitations: UserInvitation[] }) {
 // Tab 3: Legacy Users
 // ---------------------------------------------------------------------------
 
+const LEGACY_PAGE_SIZE = 50;
+
 function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institutionId: string }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -831,6 +833,7 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
   const [showImport, setShowImport] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [bulkSending, setBulkSending] = useState(false);
+  const [page, setPage] = useState(0);
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -841,6 +844,12 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
       (u.country || '').toLowerCase().includes(q)
     );
   });
+
+  const totalPages = Math.ceil(filtered.length / LEGACY_PAGE_SIZE);
+  const paged = filtered.slice(page * LEGACY_PAGE_SIZE, (page + 1) * LEGACY_PAGE_SIZE);
+
+  // Reset to first page when search changes
+  useEffect(() => { setPage(0); }, [search]);
 
   const uninvitedCount = users.filter((u) => !u.invited_at && !u.linked_user_id).length;
 
@@ -854,10 +863,16 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
   };
 
   const toggleAll = () => {
-    if (selected.size === filtered.length) {
-      setSelected(new Set());
+    const pagedIds = paged.map((u) => u.id);
+    const allPagedSelected = pagedIds.every(id => selected.has(id));
+    if (allPagedSelected) {
+      setSelected(prev => {
+        const next = new Set(prev);
+        pagedIds.forEach(id => next.delete(id));
+        return next;
+      });
     } else {
-      setSelected(new Set(filtered.map((u) => u.id)));
+      setSelected(prev => new Set([...prev, ...pagedIds]));
     }
   };
 
@@ -992,7 +1007,7 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
                     <th className="py-3 px-4 w-10">
                       <input
                         type="checkbox"
-                        checked={selected.size === filtered.length && filtered.length > 0}
+                        checked={selected.size === paged.length && paged.length > 0}
                         onChange={toggleAll}
                         className="rounded border-slate-300"
                       />
@@ -1009,7 +1024,7 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((u) => {
+                  {paged.map((u) => {
                     const canInvite = !u.invited_at && !u.linked_user_id;
                     return (
                       <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
@@ -1071,6 +1086,56 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
                   })}
                 </tbody>
               </table>
+
+              {/* Pagination controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-500 font-medium">
+                    Showing {page * LEGACY_PAGE_SIZE + 1}–{Math.min((page + 1) * LEGACY_PAGE_SIZE, filtered.length)} of {filtered.length} users
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={page === 0}
+                      onClick={() => setPage(0)}
+                      className="text-xs px-2"
+                    >
+                      First
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={page === 0}
+                      onClick={() => setPage(p => p - 1)}
+                      className="text-xs px-2"
+                    >
+                      Prev
+                    </Button>
+                    <span className="text-xs font-bold text-slate-700 px-2">
+                      Page {page + 1} of {totalPages}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={page >= totalPages - 1}
+                      onClick={() => setPage(p => p + 1)}
+                      className="text-xs px-2"
+                    >
+                      Next
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={page >= totalPages - 1}
+                      onClick={() => setPage(totalPages - 1)}
+                      className="text-xs px-2"
+                    >
+                      Last
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
