@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
 import { isAdminRole } from '@/lib/auth/roles';
+import { getTenantContext } from '@/lib/tenant/server';
 
 export default async function StudentLayout({
   children,
@@ -9,6 +10,7 @@ export default async function StudentLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
+  const { institutionSlug } = await getTenantContext();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -58,7 +60,7 @@ export default async function StudentLayout({
         userEmail={user.email || ''}
         userName={fullName}
         avatarUrl={avatarUrl}
-        title="GANSID LMS"
+        title={`${institutionSlug.toUpperCase()} LMS`}
       />
       <main className="pt-16">
         {children}

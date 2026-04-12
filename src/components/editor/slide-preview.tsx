@@ -2,6 +2,7 @@
 
 import { Suspense, useRef, useState, useEffect, useCallback } from 'react';
 import type { CSSProperties } from 'react';
+import { usePathname } from 'next/navigation';
 import { GripVertical, Trash2, X, Copy, CopyPlus, Move, ChevronUp, ChevronDown, Layers } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import RGL from 'react-grid-layout';
@@ -19,6 +20,7 @@ import {
 import { CopyBlockDialog } from './copy-block-dialog';
 import { MultiSelectToolbar } from './multi-select-toolbar';
 import { AlignmentGuides, computeAlignmentGuides } from './alignment-guides';
+import { getInstitutionSlugFromPath } from '@/lib/tenant/path';
 import type { Slide } from '@/types';
 
 interface SlidePreviewProps {
@@ -61,6 +63,8 @@ export function SlidePreview({
   slideNumber = 1,
   totalSlides = 1,
 }: SlidePreviewProps) {
+  const editorPathname = usePathname();
+  const institutionSlug = getInstitutionSlugFromPath(editorPathname) ?? 'gansid';
   const blocks = useEditorStore((s) => s.blocks.get(slide.id) ?? []);
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: 'slide-canvas' });
 
@@ -167,6 +171,7 @@ export function SlidePreview({
           lessonTitle={lessonTitle}
           lessonDescription={lessonDescription}
           titleImageUrl={titleImageUrl}
+          institutionSlug={institutionSlug}
         />
       )}
 

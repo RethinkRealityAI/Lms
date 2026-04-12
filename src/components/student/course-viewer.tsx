@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +24,7 @@ import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
+import { getInstitutionSlugFromPath } from '@/lib/tenant/path';
 
 const CanvasSlideViewer = dynamic(
   () => import('./canvas-slide-viewer'),
@@ -210,6 +211,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [existingReviewId, setExistingReviewId] = useState<string | null>(null);
 
   const router = useRouter();
+  const pathname = usePathname();
+  const institutionSlug = getInstitutionSlugFromPath(pathname) ?? 'gansid';
   const supabase = createClient();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -957,6 +960,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       lessonDescription={selectedLesson.description}
                       titleImageUrl={selectedLesson.title_image_url}
                       courseDate={course?.created_at ? new Date(course.created_at).toLocaleDateString('en-CA', { year: 'numeric', month: 'long' }) : null}
+                      institutionSlug={institutionSlug}
                     />
                   )}
 

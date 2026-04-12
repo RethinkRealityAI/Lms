@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
-import { withInstitutionPath } from '@/lib/tenant/path';
+import { withInstitutionPath, getInstitutionSlugFromPath } from '@/lib/tenant/path';
 import {
   LogOut,
   BookOpen,
@@ -53,10 +53,24 @@ interface NavBarProps {
   title: string;
 }
 
+const INSTITUTION_LOGOS: Record<string, string> = {
+  gansid: 'https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/logos/gansid-logo.png',
+  scago: 'https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/logos/scago-logo.png',
+};
+
 export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  const institutionSlug = getInstitutionSlugFromPath(pathname) ?? 'gansid';
+  const logoUrl = INSTITUTION_LOGOS[institutionSlug];
+
+  // Reset logo error state when institution changes
+  useEffect(() => {
+    setLogoError(false);
+  }, [institutionSlug]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,9 +105,18 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
         <div className="flex justify-between h-12 items-center">
           <div className="flex items-center gap-6">
             <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-2 group shrink-0">
-              <div className="w-7 h-7 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-lg flex items-center justify-center text-white shadow-md group-hover:rotate-6 transition-transform duration-300">
-                <BookOpen className="h-3.5 w-3.5" />
-              </div>
+              {logoUrl && !logoError ? (
+                <img
+                  src={logoUrl}
+                  alt={`${institutionSlug.toUpperCase()} logo`}
+                  className="h-7 w-7 rounded-lg object-contain shadow-md group-hover:rotate-6 transition-transform duration-300"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <div className="w-7 h-7 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-lg flex items-center justify-center text-white shadow-md group-hover:rotate-6 transition-transform duration-300">
+                  <BookOpen className="h-3.5 w-3.5" />
+                </div>
+              )}
               <h1 className="text-sm font-black tracking-tighter text-slate-900">
                 {title.split(' ')[0] || 'LMS'} <span className="text-[#0099CA] font-light italic ml-0.5">{title.split(' ').slice(1).join(' ') || 'Portal'}</span>
               </h1>
