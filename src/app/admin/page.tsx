@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { getTenantContext } from '@/lib/tenant/server';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,9 +9,16 @@ import { CourseCardGrid } from '@/components/admin/course-card-grid';
 
 export default async function AdminPage() {
   const supabase = await createClient();
+  const { institutionId } = await getTenantContext();
+
+  let coursesQuery = supabase.from('courses').select('*, categories(name)');
+  if (institutionId) {
+    coursesQuery = coursesQuery.eq('institution_id', institutionId);
+  }
+  coursesQuery = coursesQuery.order('display_order', { ascending: true });
 
   const [{ data: courses }, { data: categories }] = await Promise.all([
-    supabase.from('courses').select('*, categories(name)').order('display_order', { ascending: true }),
+    coursesQuery,
     supabase.from('categories').select('id, name').order('name'),
   ]);
 
