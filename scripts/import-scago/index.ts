@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 import fs from 'fs';
 import path from 'path';
 import { SCAGO_MODULES, parseModule, warnings } from './parse-markdown';
