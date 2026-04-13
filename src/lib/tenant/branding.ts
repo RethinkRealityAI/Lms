@@ -38,6 +38,8 @@ export interface InstitutionBranding {
   accentColor: string;
   /** Highlight/secondary accent color (backgrounds, badges) */
   highlightColor?: string;
+  /** Optional tertiary accent (e.g. GANSID orange) */
+  orangeAccent?: string;
   /** Email placeholder for login forms */
   emailPlaceholder: string;
   /** Admin email placeholder */
@@ -63,13 +65,15 @@ const GANSID_BRANDING: InstitutionBranding = {
     { icon: 'check', label: 'Expert-led clinical courses' },
     { icon: 'globe', label: 'Global community network' },
   ],
-  contactEmail: 'info@gansid.org',
+  contactEmail: 'admin@inheritedblooddisorders.world',
   copyright: '\u00A9 2026 Global Action Network for Sickle Cell and Other Inherited Blood Disorders',
-  primaryColor: '#991B1B',
+  primaryColor: '#1A3C6E',
   secondaryColor: '#DC2626',
-  accentColor: '#2563EB',
+  accentColor: '#0099CA',
+  highlightColor: '#0099CA',
+  orangeAccent: '#E87722',
   emailPlaceholder: 'doctor@hospital.org',
-  adminEmailPlaceholder: 'admin@gansid.org',
+  adminEmailPlaceholder: 'admin@inheritedblooddisorders.world',
   adminDescription: 'Secure faculty access for GANSID administrators.',
 };
 

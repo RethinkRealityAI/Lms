@@ -9,8 +9,8 @@ const INSTITUTION_BRANDING: Record<string, { name: string; tagline: string; init
     tagline: 'Global Action Network for Sickle Cell & Inherited Blood Disorders',
     initial: 'G',
     learning: 'GANSID Learning',
-    gradientFrom: '#1E3A5F',
-    gradientTo: '#2563EB',
+    gradientFrom: '#1A3C6E',
+    gradientTo: '#0099CA',
   },
   scago: {
     name: 'SCAGO',

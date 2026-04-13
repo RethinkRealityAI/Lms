@@ -39,7 +39,7 @@ describe('getInstitutionBranding', () => {
 
   it('returns correct brand colors for gansid', () => {
     const b = getInstitutionBranding('gansid');
-    expect(b.primaryColor).toBe('#991B1B');
+    expect(b.primaryColor).toBe('#1A3C6E');
     expect(b.secondaryColor).toBe('#DC2626');
   });
 
