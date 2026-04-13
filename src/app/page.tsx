@@ -319,10 +319,10 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
             {SCAGO_MODULES.map((mod) => (
               <div
                 key={mod.number}
-                className="group relative rounded-[1.5rem] overflow-hidden hover:-translate-y-2 transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_20px_60px_rgb(200,38,42,0.15)]"
+                className="group relative flex flex-col rounded-[1.5rem] overflow-hidden hover:-translate-y-2 transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_20px_60px_rgb(200,38,42,0.15)]"
               >
                 {/* Glassmorphic card body */}
-                <div className="relative bg-white/70 backdrop-blur-xl border border-white/60 p-6 pb-0">
+                <div className="relative flex-1 bg-white/70 backdrop-blur-xl border border-white/60 border-b-0 p-6 pb-0">
                   {/* Subtle gradient glow behind card */}
                   <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#C8262A]/5 rounded-full blur-3xl group-hover:bg-[#C8262A]/10 transition-colors duration-500" />
                   <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#F0E7CC]/40 rounded-full blur-2xl" />
