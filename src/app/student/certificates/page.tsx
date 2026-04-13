@@ -16,6 +16,7 @@ export default function CertificatesPage() {
   const [certificates, setCertificates] = useState<CertificateWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewCert, setPreviewCert] = useState<CertificateWithDetails | null>(null);
+  const [institutionName, setInstitutionName] = useState('');
   const supabase = createClient();
 
   useEffect(() => {
@@ -26,6 +27,21 @@ export default function CertificatesPage() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      // Fetch user's institution name for certificate display
+      const { data: userData } = await supabase
+        .from('users')
+        .select('institution_id')
+        .eq('id', user.id)
+        .single();
+      if (userData?.institution_id) {
+        const { data: inst } = await supabase
+          .from('institutions')
+          .select('name, description')
+          .eq('id', userData.institution_id)
+          .single();
+        if (inst) setInstitutionName(inst.description || inst.name);
+      }
+
       const { data, error } = await supabase
         .from('certificates')
         .select(`
@@ -51,7 +67,8 @@ export default function CertificatesPage() {
       await navigator.clipboard.writeText(url);
       toast.success('Verification link copied to clipboard');
     } else {
-      const message = `I've completed ${cert.course?.title ?? 'a course'} through GANSID's Capacity Building Curriculum! 🎓`;
+      const instLabel = institutionName || 'our Learning Platform';
+      const message = `I've completed ${cert.course?.title ?? 'a course'} through ${instLabel}!`;
       await navigator.clipboard.writeText(message);
       toast.success('Copied to clipboard!');
     }
@@ -64,7 +81,7 @@ export default function CertificatesPage() {
       month: 'long', day: 'numeric', year: 'numeric',
     }),
     certificate_number: cert.certificate_number ?? '',
-    institution_name: 'Global Action Network for Sickle Cell & Other Inherited Blood Disorders',
+    institution_name: institutionName || 'Unknown Institution',
   });
 
   return (

@@ -3,6 +3,7 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { createClient } from '@/lib/supabase/server';
 import { getCertificateById } from '@/lib/db/certificates';
 import { getDefaultCertificateTemplate } from '@/lib/db/certificate-templates';
+import { getInstitutionName } from '@/lib/db/institutions';
 import { CertificatePdfDocument } from '@/components/certificates/certificate-pdf-document';
 import type { CertificateData } from '@/types';
 import React from 'react';
@@ -36,6 +37,8 @@ export async function GET(
     return NextResponse.json({ error: 'No certificate template found' }, { status: 404 });
   }
 
+  const institutionName = await getInstitutionName(supabase, cert.institution_id);
+
   const certData: CertificateData = {
     student_name: cert.user?.full_name ?? cert.user?.email ?? 'Student',
     course_title: cert.course?.title,
@@ -45,7 +48,7 @@ export async function GET(
       year: 'numeric',
     }),
     certificate_number: cert.certificate_number ?? cert.id.slice(0, 8),
-    institution_name: 'Global Action Network for Sickle Cell & Other Inherited Blood Disorders',
+    institution_name: institutionName,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

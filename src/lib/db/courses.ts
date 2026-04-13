@@ -103,11 +103,12 @@ export async function publishCourse(
   });
 }
 
-export async function getPublishedCourses(supabase: SupabaseClient): Promise<Course[]> {
+export async function getPublishedCourses(supabase: SupabaseClient, institutionId: string): Promise<Course[]> {
   const { data, error } = await supabase
     .from('courses')
     .select('*, category:categories(*)')
     .eq('status', 'published')
+    .eq('institution_id', institutionId)
     .order('created_at', { ascending: false });
   if (error) return [];
   return (data ?? []) as Course[];

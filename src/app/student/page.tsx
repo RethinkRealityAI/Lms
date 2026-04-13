@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { getUserInstitutionId } from '@/lib/db/users';
 import { getVisibleCourseIds } from '@/lib/db/course-assignments';
+import { getTenantContext } from '@/lib/tenant/server';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -23,21 +25,27 @@ const MODULE_ORDER: Record<string, number> = {
 
 export default async function StudentPage() {
   const supabase = await createClient();
+  const { institutionSlug, institutionId: tenantInstitutionId } = await getTenantContext();
+  const branding = getInstitutionBranding(institutionSlug);
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect('/gansid/login');
+  if (!user) redirect(`/${institutionSlug}/login`);
 
   let institutionId = await getUserInstitutionId(supabase, user.id);
 
-  // Self-heal: if institution_id is missing, set it to GANSID (default) instead of
-  // redirect-looping to /login (which middleware bounces back here for authenticated users).
-  if (!institutionId) {
-    const GANSID_INSTITUTION_ID = '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a';
+  // Self-heal: if institution_id is missing, use the tenant context (derived from URL slug)
+  // instead of redirect-looping to /login (which middleware bounces back here for authenticated users).
+  if (!institutionId && tenantInstitutionId) {
     await supabase
       .from('users')
-      .update({ institution_id: GANSID_INSTITUTION_ID })
+      .update({ institution_id: tenantInstitutionId })
       .eq('id', user.id);
-    institutionId = GANSID_INSTITUTION_ID;
+    institutionId = tenantInstitutionId;
+  }
+
+  // If we still have no institution, redirect to login — something is very wrong
+  if (!institutionId) {
+    redirect(`/${institutionSlug}/login`);
   }
 
   // Fetch user's display name
@@ -131,7 +139,7 @@ export default async function StudentPage() {
               {firstName ? `Welcome back, ${firstName}` : 'Capacity Building Curriculum'}
             </h2>
             <p className="text-slate-400 text-xs font-medium">
-              {sortedCourses.length} modules · GANSID Patient Advocacy Training
+              {sortedCourses.length} modules · {branding.programTitle}
             </p>
           </div>
 
@@ -205,7 +213,7 @@ export default async function StudentPage() {
               const isComplete = isEnrolled && progressPercent === 100;
 
               return (
-                <Link key={course.id} href={`/gansid/student/courses/${course.id}`}
+                <Link key={course.id} href={`/${institutionSlug}/student/courses/${course.id}`}
                   className="rounded-xl focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:outline-none">
                   <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full overflow-hidden border border-slate-200 bg-white flex flex-col">
 

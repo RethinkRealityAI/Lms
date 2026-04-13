@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { withInstitutionPath } from '@/lib/tenant/path';
+import { withInstitutionPath, resolveInstitutionSlug } from '@/lib/tenant/path';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -63,8 +63,7 @@ export default function CreateCoursePage() {
     // Prefer tenant context (cookie from URL slug) so platform_admin creates
     // courses in the correct institution
     let id: string | null = null;
-    const slugCookie = document.cookie.split('; ').find(c => c.startsWith('institution_slug='));
-    const tenantSlug = slugCookie?.split('=')[1];
+    const tenantSlug = resolveInstitutionSlug();
     if (tenantSlug) {
       const { data: inst } = await supabase
         .from('institutions')
@@ -143,13 +142,12 @@ export default function CreateCoursePage() {
 
       // Prefer tenant context for platform_admin
       let institutionId: string | null = null;
-      const slugCookie = document.cookie.split('; ').find(c => c.startsWith('institution_slug='));
-      const tenantSlug = slugCookie?.split('=')[1];
-      if (tenantSlug) {
+      const submitSlug = resolveInstitutionSlug();
+      if (submitSlug) {
         const { data: inst } = await supabase
           .from('institutions')
           .select('id')
-          .eq('slug', tenantSlug)
+          .eq('slug', submitSlug)
           .maybeSingle();
         if (inst) institutionId = inst.id;
       }

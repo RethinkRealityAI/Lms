@@ -1,6 +1,7 @@
 import React from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { getCertificateByNumber } from '@/lib/db/certificates';
+import { getInstitutionName } from '@/lib/db/institutions';
 import { CheckCircle2, XCircle, Award } from 'lucide-react';
 
 export default async function VerifyPage({
@@ -11,6 +12,9 @@ export default async function VerifyPage({
   const params = React.use(paramsPromise);
   const supabase = await createClient();
   const cert = await getCertificateByNumber(supabase, params.certificateNumber);
+  const institutionLabel = cert
+    ? await getInstitutionName(supabase, cert.institution_id)
+    : 'Learning Management System';
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -76,7 +80,7 @@ export default async function VerifyPage({
         )}
 
         <p className="text-xs text-slate-400 pt-4 border-t">
-          Issued by GANSID Learning Management System
+          Issued by {institutionLabel}
         </p>
       </div>
     </div>

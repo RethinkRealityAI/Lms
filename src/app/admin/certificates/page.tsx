@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { getCertificateTemplates, getCourseCertificateAssignments } from '@/lib/db/certificate-templates';
 import { getIssuedCertificates } from '@/lib/db/certificates';
+import { getInstitutionName } from '@/lib/db/institutions';
 import { CertificatesDashboard } from './certificates-dashboard';
 
 export default async function CertificatesPage() {
@@ -18,10 +19,11 @@ export default async function CertificatesPage() {
   const institutionId = userData?.institution_id;
   if (!institutionId) return <p className="p-8">No institution found.</p>;
 
-  const [templates, certificates, assignments] = await Promise.all([
+  const [templates, certificates, assignments, institutionName] = await Promise.all([
     getCertificateTemplates(supabase, institutionId),
     getIssuedCertificates(supabase, institutionId),
     getCourseCertificateAssignments(supabase, institutionId),
+    getInstitutionName(supabase, institutionId),
   ]);
 
   const { data: courses } = await supabase
@@ -37,6 +39,7 @@ export default async function CertificatesPage() {
       assignments={assignments}
       courses={courses ?? []}
       institutionId={institutionId}
+      institutionName={institutionName}
     />
   );
 }

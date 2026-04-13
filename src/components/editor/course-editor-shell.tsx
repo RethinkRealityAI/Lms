@@ -16,6 +16,7 @@ import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide, moveSlideToLesson as dbMoveSlideToLesson, duplicateSlide as dbDuplicateSlide } from '@/lib/db/slides';
 import { duplicateBlock as dbDuplicateBlock } from '@/lib/db/blocks';
 import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock, deleteBlock as dbDeleteBlock } from '@/lib/db/blocks';
@@ -794,8 +795,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
         let institutionId: string | null = null;
 
         // Try tenant context from cookie (set by middleware from URL slug)
-        const slugCookie = document.cookie.split('; ').find(c => c.startsWith('institution_slug='));
-        const tenantSlug = slugCookie?.split('=')[1];
+        const tenantSlug = resolveInstitutionSlug();
         if (tenantSlug) {
           const { data: inst } = await supabase
             .from('institutions')

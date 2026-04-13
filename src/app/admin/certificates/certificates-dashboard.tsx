@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,22 +23,37 @@ interface Props {
   assignments: (CourseCertificateTemplate & { course_title: string; template_name: string })[];
   courses: Pick<Course, 'id' | 'title'>[];
   institutionId: string;
+  institutionName?: string;
 }
 
 type Tab = 'templates' | 'awarded' | 'assignments';
 
-const SAMPLE_DATA: CertificateData = {
-  student_name: 'Jane Doe',
-  course_title: 'Fundamentals of Effective Advocacy',
-  completion_date: 'April 9, 2026',
-  certificate_number: 'GANSID-2026-00001',
-  institution_name: 'Global Action Network for Sickle Cell & Other Inherited Blood Disorders',
-};
-
-export function CertificatesDashboard({ templates: initialTemplates, certificates: initialCerts, assignments: initialAssignments, courses, institutionId }: Props) {
+export function CertificatesDashboard({ templates: initialTemplates, certificates: initialCerts, assignments: initialAssignments, courses, institutionId, institutionName: initialInstitutionName }: Props) {
   const router = useRouter();
   const supabase = createClient();
+  const [instName, setInstName] = useState(initialInstitutionName ?? '');
   const [tab, setTab] = useState<Tab>('templates');
+
+  // Fetch institution name if not provided via prop
+  useEffect(() => {
+    if (instName) return;
+    supabase
+      .from('institutions')
+      .select('name, description')
+      .eq('id', institutionId)
+      .single()
+      .then(({ data }) => {
+        if (data) setInstName(data.description || data.name);
+      });
+  }, [institutionId]);
+
+  const sampleData: CertificateData = {
+    student_name: 'Jane Doe',
+    course_title: 'Fundamentals of Effective Advocacy',
+    completion_date: 'April 9, 2026',
+    certificate_number: 'CERT-2026-00001',
+    institution_name: instName || 'Unknown Institution',
+  };
   const [templates, setTemplates] = useState(initialTemplates);
   const [certificates, setCertificates] = useState(initialCerts);
   const [assignments, setAssignments] = useState(initialAssignments);
@@ -287,7 +302,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
             {templates.map((t) => (
               <Card key={t.id} className="group hover:shadow-lg transition-shadow overflow-hidden">
                 <div className="bg-slate-100 p-3 flex justify-center">
-                  <CertificateRenderer template={t} data={SAMPLE_DATA} scale={0.25} showQR={false} />
+                  <CertificateRenderer template={t} data={sampleData} scale={0.25} showQR={false} />
                 </div>
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between">
@@ -494,7 +509,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
           open
           onClose={() => setPreviewTemplate(null)}
           template={previewTemplate}
-          data={SAMPLE_DATA}
+          data={sampleData}
           isSample
         />
       )}
@@ -508,7 +523,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
             course_title: previewCert.course?.title,
             completion_date: new Date(previewCert.issued_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
             certificate_number: previewCert.certificate_number ?? '',
-            institution_name: 'Global Action Network for Sickle Cell & Other Inherited Blood Disorders',
+            institution_name: instName || 'Unknown Institution',
           }}
           certificateId={previewCert.id}
         />

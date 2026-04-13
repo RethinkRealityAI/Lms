@@ -14,7 +14,7 @@ export default async function StudentLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/gansid/login');
+    redirect(`/${institutionSlug}/login`);
   }
 
   // Get user data from database
@@ -26,28 +26,28 @@ export default async function StudentLayout({
 
   // Check role from profile or fallback to metadata
   const role = userData?.role || user.user_metadata?.role;
-  
+
   if (isAdminRole(role)) {
     redirect('/admin');
   }
-  
+
   // Use profile data or fallback to metadata
   const fullName = userData?.full_name || user.user_metadata?.full_name;
   const avatarUrl = userData?.avatar_url;
 
   const navLinks = [
     {
-      href: '/gansid/student',
+      href: `/${institutionSlug}/student`,
       label: 'My Courses',
       icon: 'BookOpen',
     },
     {
-      href: '/gansid/student/progress',
+      href: `/${institutionSlug}/student/progress`,
       label: 'Progress',
       icon: 'TrendingUp',
     },
     {
-      href: '/gansid/student/certificates',
+      href: `/${institutionSlug}/student/certificates`,
       label: 'Certificates',
       icon: 'Award',
     },
