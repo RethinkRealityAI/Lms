@@ -45,8 +45,8 @@ describe('getInstitutionBranding', () => {
 
   it('returns correct brand colors for scago', () => {
     const b = getInstitutionBranding('scago');
-    expect(b.primaryColor).toBe('#1E3A5F');
-    expect(b.secondaryColor).toBe('#0099CA');
+    expect(b.primaryColor).toBe('#C8262A');
+    expect(b.secondaryColor).toBe('#1A1A1A');
   });
 
   it('includes expected structural fields', () => {
