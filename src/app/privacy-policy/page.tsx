@@ -2,31 +2,45 @@
 
 import Link from 'next/link';
 import { BookOpen, ArrowLeft } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { PublicNav } from '@/components/public-nav';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 
 export default function PrivacyPolicyPage() {
+  const pathname = usePathname();
+  const institutionSlug = resolveInstitutionSlug(pathname);
+  const branding = getInstitutionBranding(institutionSlug);
+  const isScago = institutionSlug === 'scago';
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <PublicNav transparentInitially={false} />
 
       <main className="flex-1 pt-32 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors mb-8">
+          <Link href={withInstitutionPath('/', pathname)} className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors mb-8">
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
 
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Privacy Policy</h1>
-          <p className="text-sm text-slate-400 font-bold mb-12">Last updated: April 8, 2026</p>
+          <p className="text-sm text-slate-400 font-bold mb-12">Last updated: April 12, 2026</p>
 
           <div className="prose prose-slate prose-lg max-w-none [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-slate-800 [&_p]:text-slate-600 [&_p]:leading-relaxed [&_li]:text-slate-600 [&_ul]:space-y-2">
 
             <h2>1. Introduction</h2>
             <p>
-              This Privacy Policy describes how our e-learning platform (&ldquo;Platform&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;) collects, uses,
+              This Privacy Policy describes how {branding.fullName} (&ldquo;Platform&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;) collects, uses,
               and protects your personal information when you use our services. We are committed to safeguarding your
               privacy and ensuring the security of your data.
             </p>
+            {isScago && (
+              <p>
+                {branding.fullName} is a registered Canadian charity (Charitable Registration #: 83332 0872 RR 0001)
+                located at {branding.contactAddress}.
+              </p>
+            )}
 
             <h2>2. Information We Collect</h2>
             <h3>Account Information</h3>
@@ -36,6 +50,7 @@ export default function PrivacyPolicyPage() {
               <li>Email address</li>
               <li>Password (stored in encrypted form &mdash; we never store or have access to your plaintext password)</li>
               <li>Organization affiliation (if provided)</li>
+              {isScago && <li>Occupation and professional designation (if provided)</li>}
             </ul>
 
             <h3>Learning Activity Data</h3>
@@ -46,6 +61,7 @@ export default function PrivacyPolicyPage() {
               <li>Quiz responses and scores</li>
               <li>Certificates earned</li>
               <li>Course reviews and ratings you submit</li>
+              {isScago && <li>Mainpro+ credit completion records for continuing education tracking</li>}
             </ul>
 
             <h3>Technical Data</h3>
@@ -60,6 +76,7 @@ export default function PrivacyPolicyPage() {
             <ul>
               <li>Provide and maintain your account and access to course materials</li>
               <li>Track your learning progress and issue certificates of completion</li>
+              {isScago && <li>Track and verify Mainpro+ continuing education credit eligibility</li>}
               <li>Communicate important updates about the Platform or your enrolled courses</li>
               <li>Respond to support requests you submit through our contact form</li>
               <li>Improve the quality and relevance of our educational content</li>
@@ -68,8 +85,14 @@ export default function PrivacyPolicyPage() {
               We do <strong>not</strong> sell, rent, or share your personal information with third parties for
               marketing purposes. We do not use your data for advertising.
             </p>
+            {isScago && (
+              <p>
+                <strong>Important:</strong> {branding.fullName} does not share individual learning data with employers
+                or other third parties. Your education records remain confidential between you and SCAGO.
+              </p>
+            )}
 
-            <h2>4. Data Security</h2>
+            <h2>4. Data Storage &amp; Security</h2>
             <p>
               We take the security of your data seriously and implement industry-standard measures to protect it:
             </p>
@@ -80,6 +103,12 @@ export default function PrivacyPolicyPage() {
               <li><strong>Secure authentication:</strong> We use Supabase Authentication with secure session management, token-based access, and automatic session expiration</li>
               <li><strong>Minimal data collection:</strong> We only collect information that is necessary for the operation of the Platform</li>
             </ul>
+            {isScago && (
+              <p>
+                Data is stored on Supabase cloud infrastructure. While Supabase operates globally distributed infrastructure,
+                we have configured our project to prioritize data residency considerations appropriate for Canadian users.
+              </p>
+            )}
 
             <h2>5. Data Retention</h2>
             <p>
@@ -134,10 +163,28 @@ export default function PrivacyPolicyPage() {
             </p>
             <p>
               <strong>Email:</strong>{' '}
-              <a href="mailto:tech@sicklecellanemia.ca" className="text-[#0099CA] hover:text-[#DC2626] font-bold no-underline">
-                tech@sicklecellanemia.ca
+              <a href={`mailto:${branding.contactEmail}`} className="text-[#0099CA] hover:text-[#DC2626] font-bold no-underline">
+                {branding.contactEmail}
               </a>
             </p>
+            {branding.contactPhone && (
+              <p>
+                <strong>Phone:</strong>{' '}
+                <a href={`tel:${branding.contactPhone.replace(/[^+\d]/g, '')}`} className="text-[#0099CA] hover:text-[#DC2626] font-bold no-underline">
+                  {branding.contactPhone}
+                </a>
+              </p>
+            )}
+            {branding.contactAddress && (
+              <p>
+                <strong>Address:</strong> {branding.contactAddress}
+              </p>
+            )}
+            {isScago && (
+              <p>
+                <strong>Charitable Registration #:</strong> 83332 0872 RR 0001
+              </p>
+            )}
           </div>
         </div>
       </main>
@@ -150,11 +197,12 @@ export default function PrivacyPolicyPage() {
               <BookOpen className="h-4 w-4" />
             </div>
             <span className="text-lg font-black tracking-tighter">
-              <span className="text-slate-900">E-Learning</span> <span className="text-[#0099CA] font-light">Platform</span>
+              <span className="text-slate-900">{isScago ? 'SCAGO' : 'E-Learning'}</span>{' '}
+              <span className="text-[#0099CA] font-light">{isScago ? 'Education' : 'Platform'}</span>
             </span>
           </div>
           <div className="text-xs font-black text-slate-300 uppercase tracking-[0.2em]">
-            &copy; 2026 All rights reserved.
+            {branding.copyright}
           </div>
         </div>
       </footer>

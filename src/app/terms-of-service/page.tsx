@@ -2,31 +2,45 @@
 
 import Link from 'next/link';
 import { BookOpen, ArrowLeft } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { PublicNav } from '@/components/public-nav';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 
 export default function TermsOfServicePage() {
+  const pathname = usePathname();
+  const institutionSlug = resolveInstitutionSlug(pathname);
+  const branding = getInstitutionBranding(institutionSlug);
+  const isScago = institutionSlug === 'scago';
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <PublicNav transparentInitially={false} />
 
       <main className="flex-1 pt-32 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors mb-8">
+          <Link href={withInstitutionPath('/', pathname)} className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-[#DC2626] transition-colors mb-8">
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
 
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Terms of Service</h1>
-          <p className="text-sm text-slate-400 font-bold mb-12">Last updated: April 8, 2026</p>
+          <p className="text-sm text-slate-400 font-bold mb-12">Last updated: April 12, 2026</p>
 
           <div className="prose prose-slate prose-lg max-w-none [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-slate-800 [&_p]:text-slate-600 [&_p]:leading-relaxed [&_li]:text-slate-600 [&_ul]:space-y-2">
 
             <h2>1. Acceptance of Terms</h2>
             <p>
-              By accessing or using this e-learning platform (&ldquo;Platform&rdquo;), you agree to be bound by these
+              By accessing or using the {branding.fullName} e-learning platform (&ldquo;Platform&rdquo;), you agree to be bound by these
               Terms of Service (&ldquo;Terms&rdquo;). If you do not agree to these Terms, you may not use the Platform.
-              These Terms constitute a legally binding agreement between you and the Platform operators.
+              These Terms constitute a legally binding agreement between you and {branding.fullName}.
             </p>
+            {isScago && (
+              <p>
+                {branding.fullName} is a registered Canadian charity (Charitable Registration #: 83332 0872 RR 0001)
+                operating from {branding.contactAddress}.
+              </p>
+            )}
 
             <h2>2. Account Registration</h2>
             <p>
@@ -47,8 +61,8 @@ export default function TermsOfServicePage() {
             <h2>3. Intellectual Property &amp; Content Restrictions</h2>
             <p>
               All course content, training materials, modules, quizzes, images, text, graphics, logos, and
-              other materials available on the Platform (&ldquo;Content&rdquo;) are the intellectual property of their
-              respective creators and are protected by copyright, trademark, and other intellectual property laws.
+              other materials available on the Platform (&ldquo;Content&rdquo;) are the intellectual property of {branding.fullName} and
+              their respective creators and are protected by copyright, trademark, and other intellectual property laws.
             </p>
             <h3>You may NOT:</h3>
             <ul>
@@ -75,6 +89,18 @@ export default function TermsOfServicePage() {
               Certificates are non-transferable and are issued solely to the account holder who completed the
               course requirements. Misrepresenting certificate status or forging certificates is strictly prohibited.
             </p>
+            {isScago && (
+              <>
+                <h3>Mainpro+ Credit Certification</h3>
+                <p>
+                  Certain modules on this Platform are accredited by the College of Family Physicians of Canada (CFPC)
+                  for Mainpro+ continuing education credits. To be eligible for Mainpro+ credits, you must complete
+                  the full module including all lessons and assessments. Credit eligibility is determined by the CFPC
+                  accreditation standards and {branding.fullName} makes no guarantee of credit acceptance by
+                  any individual licensing body.
+                </p>
+              </>
+            )}
 
             <h2>5. Acceptable Use</h2>
             <p>When using the Platform, you agree not to:</p>
@@ -88,7 +114,7 @@ export default function TermsOfServicePage() {
               <li>Impersonate another person or entity</li>
             </ul>
 
-            <h2>6. Content Accuracy</h2>
+            <h2>6. Content Accuracy &amp; Medical Disclaimer</h2>
             <p>
               We strive to ensure that all educational content on the Platform is accurate, current, and
               evidence-based. However, course content is provided for educational purposes only and should
@@ -100,6 +126,13 @@ export default function TermsOfServicePage() {
               are not liable for clinical outcomes resulting from the application of concepts learned through
               the courses.
             </p>
+            {isScago && (
+              <p>
+                <strong>Important:</strong> The educational content provided by {branding.fullName} does not constitute
+                medical advice. All clinical information is intended for educational purposes only. Healthcare providers
+                must rely on their own professional judgment and institutional guidelines when making clinical decisions.
+              </p>
+            )}
 
             <h2>7. Availability &amp; Modifications</h2>
             <p>
@@ -116,17 +149,25 @@ export default function TermsOfServicePage() {
               implied warranties of merchantability, fitness for a particular purpose, and non-infringement.
             </p>
             <p>
-              In no event shall we be liable for any indirect, incidental, special, consequential, or punitive
+              In no event shall {branding.fullName} be liable for any indirect, incidental, special, consequential, or punitive
               damages arising out of or related to your use of the Platform, even if we have been advised of
               the possibility of such damages.
             </p>
 
             <h2>9. Governing Law</h2>
-            <p>
-              These Terms shall be governed by and construed in accordance with the laws of the State of
-              Delaware, United States, without regard to its conflict of law provisions. Any disputes arising
-              from these Terms shall be resolved in the courts of Delaware.
-            </p>
+            {isScago ? (
+              <p>
+                These Terms shall be governed by and construed in accordance with the laws of the Province of Ontario
+                and the federal laws of Canada applicable therein. Any disputes arising from these Terms shall be
+                resolved in the courts of Ontario, Canada.
+              </p>
+            ) : (
+              <p>
+                These Terms shall be governed by and construed in accordance with the laws of the State of
+                Delaware, United States, without regard to its conflict of law provisions. Any disputes arising
+                from these Terms shall be resolved in the courts of Delaware.
+              </p>
+            )}
 
             <h2>10. Changes to These Terms</h2>
             <p>
@@ -141,10 +182,28 @@ export default function TermsOfServicePage() {
             </p>
             <p>
               <strong>Email:</strong>{' '}
-              <a href="mailto:tech@sicklecellanemia.ca" className="text-[#0099CA] hover:text-[#DC2626] font-bold no-underline">
-                tech@sicklecellanemia.ca
+              <a href={`mailto:${branding.contactEmail}`} className="text-[#0099CA] hover:text-[#DC2626] font-bold no-underline">
+                {branding.contactEmail}
               </a>
             </p>
+            {branding.contactPhone && (
+              <p>
+                <strong>Phone:</strong>{' '}
+                <a href={`tel:${branding.contactPhone.replace(/[^+\d]/g, '')}`} className="text-[#0099CA] hover:text-[#DC2626] font-bold no-underline">
+                  {branding.contactPhone}
+                </a>
+              </p>
+            )}
+            {branding.contactAddress && (
+              <p>
+                <strong>Address:</strong> {branding.contactAddress}
+              </p>
+            )}
+            {isScago && (
+              <p>
+                <strong>Charitable Registration #:</strong> 83332 0872 RR 0001
+              </p>
+            )}
           </div>
         </div>
       </main>
@@ -157,11 +216,12 @@ export default function TermsOfServicePage() {
               <BookOpen className="h-4 w-4" />
             </div>
             <span className="text-lg font-black tracking-tighter">
-              <span className="text-slate-900">E-Learning</span> <span className="text-[#0099CA] font-light">Platform</span>
+              <span className="text-slate-900">{isScago ? 'SCAGO' : 'E-Learning'}</span>{' '}
+              <span className="text-[#0099CA] font-light">{isScago ? 'Education' : 'Platform'}</span>
             </span>
           </div>
           <div className="text-xs font-black text-slate-300 uppercase tracking-[0.2em]">
-            &copy; 2026 All rights reserved.
+            {branding.copyright}
           </div>
         </div>
       </footer>

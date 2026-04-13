@@ -14,6 +14,8 @@ import {
   BookOpen,
   Phone,
   Mail,
+  MapPin,
+  Heart,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
@@ -235,72 +237,181 @@ function ScagoHero({ pathname, branding }: { pathname: string; branding: ReturnT
   );
 }
 
+const SCAGO_MODULES = [
+  { number: 1, title: 'Fundamentals of Sickle Cell Disease', lessons: 5, description: 'Introduction to Sickle Cell Disease, how it\'s diagnosed, and the basic biology of the disease.', authors: 'Karen Fleming' },
+  { number: 2, title: 'Ontario Health Quality Standards for SCD', lessons: 2, description: 'Ontario Health\'s Sickle Cell Disease Quality Standards \u2014 statements, implementation and impact.', authors: 'Karen Fleming, Carol Kennedy-Yee, Health Quality Ontario Team' },
+  { number: 3, title: 'Acute Pain in Sickle Cell Disease', lessons: 5, description: 'Pathophysiology of pain, pain management strategies, and the unique challenges of managing pain in SCD.', authors: 'Dr. Robert Klaassen, Karen Fleming, Dr. Sarah Patterson' },
+  { number: 4, title: 'Transfusions, Hydroxyurea & Provincial Drug Coverage', lessons: 3, description: 'Complexities of transfusions for patients with SCD and the use of Hydroxyurea as a treatment option.', authors: 'Dr. Jacob Pendergrast, Karen Fleming' },
+  { number: 5, title: 'Common Complications in Sickle Cell Disease', lessons: 5, description: 'Five common complications in SCD and the best practices for managing them.', authors: 'Dr. Uma Athale, Karen Fleming, Dr. Meghna Dua, Dr. Suzan Williams' },
+  { number: 6, title: 'Successful Transitions for Adolescents and Young Adults', lessons: 4, description: 'Defining transitions, highlighting barriers faced by AYAs with SCD, and strategies to support them.', authors: 'James Bradley, Fairuz Karim, Jaspreet Randhawa, Karen Fleming' },
+  { number: 7, title: 'Moving Towards Anti-Oppressive, Anti-Racist Healthcare', lessons: 4, description: 'Reflect on how power and privilege influence the healthcare of individuals with SCD.', authors: 'Dr. Ewurabena Simpson, Karen Fleming, Dr. Madeleine Verhovsek' },
+  { number: 8, title: 'Sustainable Advocacy in Sickle Cell Disease', lessons: 4, description: 'The need for advocacy as a sustainable practice to improve the care of individuals with SCD.', authors: 'Stefan Branov, Lanre Tunji Ajayi, Karen Fleming, Dr. Sandra Newton' },
+  { number: 9, title: 'Fertility, Contraception, and Pregnancy in SCD', lessons: 4, description: 'Fertility challenges and contraception options for individuals with Sickle Cell Disease.', authors: 'Dr. Nadine Shehata, Dr. Claire Jones, Karen Fleming' },
+  { number: 10, title: 'Mental Health and Wellness in SCD', lessons: 3, description: 'Definition of mental health, the impact of SCD on mental wellness, and strategies to support mental health.', authors: 'Sarah Rashid, Sinthu Srikanthan, Karen Fleming, Dr. Sandra Newton' },
+  { number: 11, title: 'Latest Innovations in Sickle Cell Disease', lessons: 3, description: 'Current and upcoming research studies for the treatment of Sickle Cell Disease.', authors: 'Dr. Kevin Kuo, Dr. Seethal Jacob, Dr. Sarah Patterson, Karen Fleming' },
+  { number: 12, title: 'Prevention of SCD and The Truth About Sickle Cell Trait', lessons: 2, description: 'Importance of prevention counseling and information on the current state of gene therapy for SCD.', authors: 'Simone Griffith, Karen Fleming' },
+  { number: 13, title: 'Partnering with Primary Care Providers', lessons: 4, description: 'Challenges PCPs face in caring for patients with SCD and strategies for effective collaboration.', authors: 'Karen Fleming' },
+];
+
 function ScagoProgram({ pathname, branding }: { pathname: string; branding: ReturnType<typeof getInstitutionBranding> }) {
   return (
-    <section id="programs" className="py-20 bg-white relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-[#1E3A5F] font-black tracking-widest uppercase text-sm mb-4">HCP Education Program</h2>
-          <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
-            Comprehensive SCD training for <span className="text-[#0099CA]">healthcare providers</span>
-          </h3>
-        </div>
+    <>
+      {/* Program Overview */}
+      <section id="programs" className="py-20 bg-white relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-[#C8262A] font-black tracking-widest uppercase text-sm mb-4">HCP Education Program</h2>
+            <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
+              Comprehensive SCD training for <span className="text-[#0099CA]">healthcare providers</span>
+            </h3>
+          </div>
 
-        <div className="max-w-2xl mx-auto">
-          <Link href={withInstitutionPath('/login?tab=signup', pathname)} className="group block">
-            <div className="h-full p-10 rounded-[3rem] bg-gradient-to-br from-blue-50 to-teal-50/30 border border-blue-100 hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-1 transition-all duration-300">
-              <div className="w-16 h-16 bg-[#1E3A5F]/10 rounded-2xl flex items-center justify-center mb-6">
-                <Stethoscope className="h-8 w-8 text-[#1E3A5F]" />
+          <div className="max-w-3xl mx-auto mb-16 space-y-6">
+            <div className="p-8 rounded-2xl bg-gradient-to-br from-[#F0E7CC]/40 to-white border border-[#F0E7CC]">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 shrink-0 bg-[#C8262A]/10 rounded-xl flex items-center justify-center">
+                  <Heart className="h-6 w-6 text-[#C8262A]" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-black text-slate-900 mb-2">Program Goal</h4>
+                  <p className="text-slate-600 font-medium leading-relaxed">
+                    The collective goal of these lessons is to improve the knowledge, skills, and actions of healthcare
+                    providers who care for people with sickle cell disease to reduce health inequities and improve access
+                    to safe, equitable care.
+                  </p>
+                </div>
               </div>
-              <h4 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-[#1E3A5F] transition-colors">
-                Sickle Cell Disease Education for HCPs
-              </h4>
-              <p className="text-slate-600 font-medium leading-relaxed mb-6">
-                SCAGO is a leading charitable patient organization providing evidence-based support to families with sickle cell disease across Ontario. This program offers 13 modules with micro-lessons under 10 minutes, covering diagnosis, acute and chronic management, psychosocial care, and more.
-              </p>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {['13 Modules', 'Mainpro+ Credits', 'Micro-Lessons', 'Evidence-Based', 'Self-Paced'].map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-white rounded-full text-xs font-bold text-[#1E3A5F] border border-blue-100">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-6 mb-6 text-sm text-slate-500 font-medium">
-                {branding.features.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    {f.icon === 'check' && <Award className="h-4 w-4 text-[#0099CA]" />}
-                    {f.icon === 'clock' && <Clock className="h-4 w-4 text-[#0099CA]" />}
-                    {f.icon === 'book' && <BookOpen className="h-4 w-4 text-[#0099CA]" />}
-                    {f.icon === 'award' && <Award className="h-4 w-4 text-[#0099CA]" />}
-                    <span>{f.label}</span>
-                  </div>
-                ))}
-              </div>
-              <span className="inline-flex items-center gap-2 text-sm font-black text-[#1E3A5F] group-hover:gap-3 transition-all uppercase tracking-wider">
-                Start Learning <ArrowRight className="h-4 w-4" />
-              </span>
             </div>
-          </Link>
-        </div>
 
-        {/* Contact info */}
-        <div className="mt-12 text-center">
-          <p className="text-slate-500 font-medium mb-4">Questions about the program?</p>
-          <div className="flex flex-wrap justify-center gap-6 text-sm font-bold text-[#1E3A5F]">
-            <a href={`mailto:${branding.contactEmail}`} className="flex items-center gap-2 hover:text-[#0099CA] transition-colors">
-              <Mail className="h-4 w-4" />
+            <div className="p-8 rounded-2xl bg-gradient-to-br from-blue-50/40 to-white border border-blue-100">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+                  <Users className="h-6 w-6 text-[#1E3A5F]" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-black text-slate-900 mb-2">Who Is This For?</h4>
+                  <p className="text-slate-600 font-medium leading-relaxed">
+                    These educational lessons are geared towards those who are new to taking care of people with sickle cell
+                    disease or those who want to have a better understanding of sickle cell disease, including the lived
+                    experiences of our patients.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Module Cards */}
+      <section className="py-20 bg-slate-50 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-[#C8262A] font-black tracking-widest uppercase text-sm mb-4">The Curriculum</h2>
+            <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
+              Our <span className="text-[#C8262A]">13 Modules</span>
+            </h3>
+            <p className="text-slate-500 font-medium mt-4 max-w-2xl mx-auto">
+              Each module contains micro-lessons under 10 minutes, designed for busy healthcare professionals.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SCAGO_MODULES.map((mod) => (
+              <div
+                key={mod.number}
+                className="group bg-white rounded-2xl border border-slate-200 hover:border-[#C8262A]/30 hover:shadow-xl hover:shadow-red-50 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-11 h-11 shrink-0 bg-[#C8262A] rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-red-200/50">
+                      {mod.number}
+                    </div>
+                    <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-[#C8262A] transition-colors">
+                      {mod.title}
+                    </h4>
+                  </div>
+                  <p className="text-sm text-slate-500 leading-relaxed mb-4">
+                    {mod.description}
+                  </p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F0E7CC]/60 rounded-full text-xs font-bold text-[#8B6914]">
+                      <BookOpen className="h-3 w-3" />
+                      {mod.lessons} {mod.lessons === 1 ? 'lesson' : 'lessons'}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#C8262A]/5 rounded-full text-xs font-bold text-[#C8262A]">
+                      <Award className="h-3 w-3" />
+                      1 Mainpro+ credit
+                    </span>
+                  </div>
+                  <div className="pt-3 border-t border-slate-100">
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      <span className="font-bold text-slate-500">Authors:</span> {mod.authors}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Accreditation + CTA */}
+          <div className="mt-16 text-center">
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white rounded-2xl border border-slate-200 shadow-sm mb-8">
+              <Award className="h-5 w-5 text-[#C8262A]" />
+              <p className="text-sm font-bold text-slate-700">
+                Accredited by the College of Family Physicians of Canada for up to <span className="text-[#C8262A]">13 Mainpro+</span> credits
+              </p>
+            </div>
+
+            <div className="block">
+              <Button size="lg" asChild className="h-16 rounded-2xl px-12 text-lg font-bold shadow-2xl shadow-red-200 bg-[#C8262A] hover:bg-[#a01f22] active:scale-95 transition-all">
+                <Link href={withInstitutionPath('/login?tab=signup', pathname)}>
+                  Start Learning <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact section */}
+      <section className="py-16 bg-white border-t border-slate-100">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-2xl font-black text-slate-900 mb-2">Got a Question?</h3>
+          <p className="text-slate-500 font-medium mb-8">
+            We are happy to help with any questions about the program.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-8">
+            <a
+              href={`mailto:${branding.contactEmail}`}
+              className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#C8262A]/30 hover:bg-red-50/30 transition-all text-sm font-bold text-[#1E3A5F] hover:text-[#C8262A]"
+            >
+              <Mail className="h-5 w-5" />
               {branding.contactEmail}
             </a>
             {branding.contactPhone && (
-              <a href={`tel:${branding.contactPhone.replace(/[^+\d]/g, '')}`} className="flex items-center gap-2 hover:text-[#0099CA] transition-colors">
-                <Phone className="h-4 w-4" />
+              <a
+                href={`tel:${branding.contactPhone.replace(/[^+\d]/g, '')}`}
+                className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#C8262A]/30 hover:bg-red-50/30 transition-all text-sm font-bold text-[#1E3A5F] hover:text-[#C8262A]"
+              >
+                <Phone className="h-5 w-5" />
                 {branding.contactPhone}
               </a>
             )}
           </div>
+
+          {branding.contactAddress && (
+            <div className="flex items-center justify-center gap-2 text-sm text-slate-500 font-medium mb-2">
+              <MapPin className="h-4 w-4" />
+              {branding.contactAddress}
+            </div>
+          )}
+          <p className="text-xs text-slate-400 font-bold">
+            Charitable Registration #: 83332 0872 RR 0001
+          </p>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
