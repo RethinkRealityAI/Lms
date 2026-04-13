@@ -130,6 +130,29 @@ export function CertificateRenderer({
           )}
         </div>
 
+        {/* Logo */}
+        {template.layout_config.logo?.url && (
+          <div style={{
+            position: 'absolute',
+            ...(template.layout_config.logo.position === 'top-left' ? { top: 40, left: 40 } :
+              template.layout_config.logo.position === 'top-right' ? { top: 40, right: 40 } :
+              template.layout_config.logo.position === 'bottom-left' ? { bottom: 40, left: 40 } :
+              { bottom: 40, right: 40 }),
+            opacity: template.layout_config.logo.opacity ?? 1,
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={template.layout_config.logo.url}
+              alt=""
+              style={{
+                width: template.layout_config.logo.width ?? 120,
+                height: template.layout_config.logo.height ?? 'auto',
+                objectFit: 'contain',
+              }}
+            />
+          </div>
+        )}
+
         {/* QR Code */}
         {showQR && data.certificate_number && (
           <div style={{ position: 'absolute', bottom: 30, right: 30 }}>

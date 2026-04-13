@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { CertificateRenderer } from './certificate-renderer';
 import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { createClient } from '@/lib/supabase/client';
 import { Paintbrush, FolderOpen, Search, ChevronLeft, Loader2, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -35,13 +36,16 @@ interface TemplateEditorProps {
   saving?: boolean;
 }
 
-const SAMPLE_DATA: CertificateData = {
-  student_name: 'Jane Doe',
-  course_title: 'Fundamentals of Effective Advocacy',
-  completion_date: 'April 9, 2026',
-  certificate_number: 'GANSID-2026-00001',
-  institution_name: 'Global Action Network for Sickle Cell & Other Inherited Blood Disorders',
-};
+function getSampleData(slug: string): CertificateData {
+  const branding = getInstitutionBranding(slug);
+  return {
+    student_name: 'Jane Doe',
+    course_title: slug === 'scago' ? 'Fundamentals of Sickle Cell Disease' : 'Fundamentals of Effective Advocacy',
+    completion_date: 'April 12, 2026',
+    certificate_number: `${slug.toUpperCase()}-2026-00001`,
+    institution_name: branding.fullName,
+  };
+}
 
 const FIELD_LABELS: Record<string, string> = {
   student_name: 'Student Name',
@@ -591,6 +595,129 @@ export function TemplateEditor({ template, onSave, onCanvaDesign, onSelectCanvaD
           </div>
         </div>
 
+        {/* Logo */}
+        <div className="space-y-3 border rounded-xl p-4 bg-slate-50/50">
+          <h3 className="font-bold text-sm text-slate-700">Logo</h3>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Logo URL</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={layoutConfig.logo?.url ?? ''}
+                  onChange={(e) => setLayoutConfig(prev => ({
+                    ...prev,
+                    logo: { ...prev.logo, url: e.target.value, position: prev.logo?.position ?? 'top-left' },
+                  }))}
+                  placeholder="Paste logo URL or upload below"
+                  className="h-8 text-xs flex-1"
+                />
+                <label className="shrink-0">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const supabase = (await import('@/lib/supabase/client')).createClient();
+                      const path = `certificate-logos/${Date.now()}-${file.name}`;
+                      const { error } = await supabase.storage.from('canva-exports').upload(path, file, { upsert: true });
+                      if (error) { toast.error('Upload failed'); return; }
+                      const { data: urlData } = supabase.storage.from('canva-exports').getPublicUrl(path);
+                      setLayoutConfig(prev => ({
+                        ...prev,
+                        logo: { ...prev.logo, url: urlData.publicUrl, position: prev.logo?.position ?? 'top-left' },
+                      }));
+                      toast.success('Logo uploaded');
+                    }}
+                  />
+                  <Button variant="outline" size="sm" className="h-8 text-xs cursor-pointer" asChild>
+                    <span>Upload</span>
+                  </Button>
+                </label>
+              </div>
+              {/* Use institution default logo */}
+              {!layoutConfig.logo?.url && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => {
+                    const b = getInstitutionBranding(resolveInstitutionSlug());
+                    setLayoutConfig(prev => ({
+                      ...prev,
+                      logo: { url: b.logoUrl, position: prev.logo?.position ?? 'top-left', width: 120 },
+                    }));
+                  }}
+                >
+                  Use {resolveInstitutionSlug().toUpperCase()} logo
+                </Button>
+              )}
+            </div>
+            {layoutConfig.logo?.url && (
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <Label className="text-xs">Position</Label>
+                  <select
+                    value={layoutConfig.logo.position ?? 'top-left'}
+                    onChange={(e) => setLayoutConfig(prev => ({
+                      ...prev,
+                      logo: { ...prev.logo!, position: e.target.value as any },
+                    }))}
+                    className="w-full h-8 text-xs border rounded px-1"
+                  >
+                    <option value="top-left">Top Left</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-right">Bottom Right</option>
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-xs">Width (px)</Label>
+                  <Input
+                    type="number"
+                    value={layoutConfig.logo.width ?? 120}
+                    onChange={(e) => setLayoutConfig(prev => ({
+                      ...prev,
+                      logo: { ...prev.logo!, width: Number(e.target.value) },
+                    }))}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Opacity</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={layoutConfig.logo.opacity ?? 1}
+                    onChange={(e) => setLayoutConfig(prev => ({
+                      ...prev,
+                      logo: { ...prev.logo!, opacity: Number(e.target.value) },
+                    }))}
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
+            )}
+            {layoutConfig.logo?.url && (
+              <div className="flex items-center gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={layoutConfig.logo.url} alt="Logo preview" className="h-10 w-auto object-contain rounded border bg-white p-1" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-red-500 h-7"
+                  onClick={() => setLayoutConfig(prev => ({ ...prev, logo: undefined }))}
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Field position editors */}
         <div className="space-y-4">
           <h3 className="font-bold text-sm text-slate-700">Field Positions</h3>
@@ -672,7 +799,7 @@ export function TemplateEditor({ template, onSave, onCanvaDesign, onSelectCanvaD
           <CertificateRenderer
             key={`${canvaDesignUrl ?? 'no-canva'}-${layoutConfig.background?.type ?? 'default'}-${layoutConfig.background?.imageUrl ?? ''}`}
             template={previewTemplate}
-            data={SAMPLE_DATA}
+            data={getSampleData(resolveInstitutionSlug())}
             scale={0.5}
             showQR={false}
             institutionSlug={resolveInstitutionSlug()}

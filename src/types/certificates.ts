@@ -16,11 +16,22 @@ export interface CertificateBackgroundConfig {
   imageUrl?: string;
 }
 
+export type LogoPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+export interface CertificateLogoConfig {
+  url: string;
+  position: LogoPosition;
+  width?: number;
+  height?: number;
+  opacity?: number;
+}
+
 export interface CertificateLayoutConfig {
   width: number;
   height: number;
   orientation: 'landscape' | 'portrait';
   background?: CertificateBackgroundConfig;
+  logo?: CertificateLogoConfig;
   fields: {
     student_name: CertificateFieldConfig;
     course_title: CertificateFieldConfig;
