@@ -315,39 +315,53 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
             {SCAGO_MODULES.map((mod) => (
               <div
                 key={mod.number}
-                className="group bg-white rounded-2xl border border-slate-200 hover:border-[#C8262A]/30 hover:shadow-xl hover:shadow-red-50 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                className="group relative rounded-[1.5rem] overflow-hidden hover:-translate-y-2 transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_20px_60px_rgb(200,38,42,0.15)]"
               >
-                <div className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-11 h-11 shrink-0 bg-[#C8262A] rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-red-200/50">
-                      {mod.number}
+                {/* Glassmorphic card body */}
+                <div className="relative bg-white/70 backdrop-blur-xl border border-white/60 p-6 pb-0">
+                  {/* Subtle gradient glow behind card */}
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#C8262A]/5 rounded-full blur-3xl group-hover:bg-[#C8262A]/10 transition-colors duration-500" />
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#F0E7CC]/40 rounded-full blur-2xl" />
+
+                  <div className="relative z-10">
+                    {/* Module number + title */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-12 h-12 shrink-0 bg-gradient-to-br from-[#C8262A] to-[#8B1A1A] rounded-2xl flex items-center justify-center text-white font-black text-base shadow-lg shadow-red-300/40 group-hover:shadow-red-400/50 group-hover:scale-110 transition-all duration-300">
+                        {mod.number}
+                      </div>
+                      <h4 className="text-[15px] font-black text-slate-900 leading-snug pt-1 group-hover:text-[#C8262A] transition-colors duration-300">
+                        {mod.title}
+                      </h4>
                     </div>
-                    <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-[#C8262A] transition-colors">
-                      {mod.title}
-                    </h4>
-                  </div>
-                  <p className="text-sm text-slate-500 leading-relaxed mb-4">
-                    {mod.description}
-                  </p>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F0E7CC]/60 rounded-full text-xs font-bold text-[#8B6914]">
-                      <BookOpen className="h-3 w-3" />
-                      {mod.lessons} {mod.lessons === 1 ? 'lesson' : 'lessons'}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#C8262A]/5 rounded-full text-xs font-bold text-[#C8262A]">
-                      <Award className="h-3 w-3" />
-                      1 Mainpro+ credit
-                    </span>
-                  </div>
-                  <div className="pt-3 border-t border-slate-100">
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      <span className="font-bold text-slate-500">Authors:</span> {mod.authors}
+
+                    {/* Description */}
+                    <p className="text-sm text-slate-500 leading-relaxed mb-5">
+                      {mod.description}
                     </p>
+
+                    {/* Badges */}
+                    <div className="flex items-center gap-2.5 mb-5">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F0E7CC]/70 backdrop-blur-sm rounded-full text-xs font-bold text-[#7A5F10] border border-[#F0E7CC]">
+                        <BookOpen className="h-3 w-3" />
+                        {mod.lessons} {mod.lessons === 1 ? 'lesson' : 'lessons'}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C8262A]/5 backdrop-blur-sm rounded-full text-xs font-bold text-[#C8262A] border border-[#C8262A]/10">
+                        <Award className="h-3 w-3" />
+                        1 Mainpro+
+                      </span>
+                    </div>
                   </div>
+                </div>
+
+                {/* Red footer with author info */}
+                <div className="bg-gradient-to-r from-[#C8262A] to-[#9B1E21] px-6 py-3.5">
+                  <p className="text-[11px] text-white/70 font-medium leading-relaxed">
+                    <span className="text-white font-bold">Authors:</span> {mod.authors}
+                  </p>
                 </div>
               </div>
             ))}
