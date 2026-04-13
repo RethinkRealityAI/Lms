@@ -334,13 +334,29 @@ There is **no** `SUPABASE_SERVICE_ROLE_KEY`. Use the **Supabase MCP** (`execute_
 
 ## Brand Colours
 
+All brand colours are defined in `src/lib/tenant/branding.ts`. Each institution has its own palette.
+
+### GANSID
+
 | Token | Hex | Usage |
 |---|---|---|
-| Red | `#DC2626` | Active lesson, progress bar, lesson title header, "Next Lesson" button |
-| Dark navy | `#1E3A5F` | Primary action buttons (Next, Check Answer), title slide gradient start |
+| Dark blue (primary) | `#1A3C6E` | Headers, nav, title slide gradient start, primary action buttons |
+| Red (secondary) | `#DC2626` | Active lesson, progress bar, CTAs, "Next Lesson" button, sickle cell accent |
+| Light blue / teal (highlight) | `#0099CA` | Course progress bar, badges, title slide gradient end |
+| Orange (tertiary) | `#E87722` | Occasional accent — used sparingly |
 | Near-black | `#0F172A` | Navbar, course header, "Back to Dashboard" button |
-| Teal | `#0099CA` | Overall course progress bar in course header |
-| Blue | `#2563EB` | Legacy accent (quiz page, some outlines) — prefer navy for new UI |
+| Contact | `admin@inheritedblooddisorders.world` | |
+
+### SCAGO
+
+| Token | Hex | Usage |
+|---|---|---|
+| Red (primary) | `#C8262A` | Buttons, title slide gradient start, primary accent |
+| Near-black (secondary) | `#1A1A1A` | Title slide gradient end, dark backgrounds |
+| Cream (highlight) | `#F0E7CC` | Badges, soft backgrounds, highlighted elements |
+| Black | `#000000` | Text, headers |
+| White | `#FFFFFF` | Backgrounds, card surfaces |
+| Contact | `hcp@sicklecellanemia.ca` | |
 
 ---
 
