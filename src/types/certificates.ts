@@ -7,10 +7,20 @@ export interface CertificateFieldConfig {
   align: 'left' | 'center' | 'right';
 }
 
+export interface CertificateBackgroundConfig {
+  type: 'default' | 'solid' | 'gradient' | 'image';
+  color?: string;
+  gradientFrom?: string;
+  gradientTo?: string;
+  gradientDirection?: string;
+  imageUrl?: string;
+}
+
 export interface CertificateLayoutConfig {
   width: number;
   height: number;
   orientation: 'landscape' | 'portrait';
+  background?: CertificateBackgroundConfig;
   fields: {
     student_name: CertificateFieldConfig;
     course_title: CertificateFieldConfig;

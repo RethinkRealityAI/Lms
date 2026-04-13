@@ -56,7 +56,7 @@ function fieldStyle(config: CertificateFieldConfig, containerWidth: number): Sty
     position: 'absolute',
     top: config.y,
     fontSize: config.fontSize,
-    fontWeight: config.fontWeight === 'bold' ? 700 : 400,
+    fontWeight: config.fontWeight === 'bold' ? 700 : config.fontWeight ? Number(config.fontWeight) || 400 : 400,
     color: config.color,
     fontFamily: 'Times-Roman',
   };
@@ -75,19 +75,39 @@ interface CertificatePdfDocumentProps {
 }
 
 export function CertificatePdfDocument({ template, data }: CertificatePdfDocumentProps) {
-  const { width, height, fields } = template.layout_config;
+  const { width, height, fields, background: bgConfig } = template.layout_config;
+
+  const renderBackground = () => {
+    if (template.canva_design_url) {
+      return <Image src={template.canva_design_url} style={styles.backgroundImage} />;
+    }
+    if (bgConfig?.type === 'solid') {
+      return (
+        <View style={{ ...styles.defaultBg, backgroundColor: bgConfig.color ?? '#1E3A5F' }} />
+      );
+    }
+    if (bgConfig?.type === 'gradient') {
+      // react-pdf does not support CSS linear-gradient; approximate with the "from" color
+      return (
+        <View style={{ ...styles.defaultBg, backgroundColor: bgConfig.gradientFrom ?? '#1A3C6E' }} />
+      );
+    }
+    if (bgConfig?.type === 'image' && bgConfig.imageUrl) {
+      return <Image src={bgConfig.imageUrl} style={styles.backgroundImage} />;
+    }
+    // Default themed background
+    return (
+      <View style={styles.defaultBg}>
+        <Text style={styles.headerText}>Certificate of Completion</Text>
+        <View style={styles.bottomStripe} />
+      </View>
+    );
+  };
 
   return (
     <Document>
       <Page size={[width, height]} style={styles.page}>
-        {template.canva_design_url ? (
-          <Image src={template.canva_design_url} style={styles.backgroundImage} />
-        ) : (
-          <View style={styles.defaultBg}>
-            <Text style={styles.headerText}>Certificate of Completion</Text>
-            <View style={styles.bottomStripe} />
-          </View>
-        )}
+        {renderBackground()}
 
         {fields.student_name && (
           <Text style={fieldStyle(fields.student_name, width)}>{data.student_name}</Text>

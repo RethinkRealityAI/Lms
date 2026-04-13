@@ -50,7 +50,7 @@ export function CertificateRenderer({
   showQR = true,
   institutionSlug,
 }: CertificateRendererProps) {
-  const { width, height, fields } = template.layout_config;
+  const { width, height, fields, background: bgConfig } = template.layout_config;
   const hasCanvaBackground = !!template.canva_design_url;
 
   return (
@@ -77,6 +77,27 @@ export function CertificateRenderer({
         {hasCanvaBackground ? (
           <img
             src={template.canva_design_url!}
+            alt=""
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        ) : bgConfig?.type === 'solid' ? (
+          <div style={{ position: 'absolute', inset: 0, background: bgConfig.color ?? '#1E3A5F' }} />
+        ) : bgConfig?.type === 'gradient' ? (
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: `linear-gradient(${bgConfig.gradientDirection ?? '135deg'}, ${bgConfig.gradientFrom ?? '#1A3C6E'}, ${bgConfig.gradientTo ?? '#0F172A'})`,
+          }} />
+        ) : bgConfig?.type === 'image' && bgConfig.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={bgConfig.imageUrl}
             alt=""
             style={{
               position: 'absolute',
