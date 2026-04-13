@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Award, Download, Eye, Share2 } from 'lucide-react';
 import { CertificateRenderer } from '@/components/certificates/certificate-renderer';
 import { CertificatePreviewModal } from '@/components/certificates/certificate-preview-modal';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import type { CertificateWithDetails, CertificateTemplate, CertificateData } from '@/types';
 
 export default function CertificatesPage() {
@@ -141,7 +142,7 @@ export default function CertificatesPage() {
                 <Card key={cert.id} className="group hover:-translate-y-1 hover:shadow-xl transition-all duration-300 border-none shadow-md bg-white overflow-hidden">
                   {template ? (
                     <div className="bg-slate-100 p-4 flex justify-center">
-                      <CertificateRenderer template={template} data={certData} scale={0.35} showQR={false} />
+                      <CertificateRenderer template={template} data={certData} scale={0.35} showQR={false} institutionSlug={resolveInstitutionSlug()} />
                     </div>
                   ) : (
                     <div className="bg-gradient-to-br from-[#1E3A5F] to-[#0F172A] h-48 flex items-center justify-center">

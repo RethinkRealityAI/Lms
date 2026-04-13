@@ -12,6 +12,7 @@ import { revokeCertificates } from '@/lib/db/certificates';
 import { CertificateRenderer } from '@/components/certificates/certificate-renderer';
 import { CertificatePreviewModal } from '@/components/certificates/certificate-preview-modal';
 import { TemplateEditor } from '@/components/certificates/template-editor';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { AwardCertificateModal } from '@/components/certificates/award-certificate-modal';
 import { toast } from 'sonner';
 import { Award, Plus, Pencil, Trash2, Search, Download, Eye } from 'lucide-react';
@@ -302,7 +303,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
             {templates.map((t) => (
               <Card key={t.id} className="group hover:shadow-lg transition-shadow overflow-hidden">
                 <div className="bg-slate-100 p-3 flex justify-center">
-                  <CertificateRenderer template={t} data={sampleData} scale={0.25} showQR={false} />
+                  <CertificateRenderer template={t} data={sampleData} scale={0.25} showQR={false} institutionSlug={resolveInstitutionSlug()} />
                 </div>
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between">

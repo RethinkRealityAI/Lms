@@ -9,6 +9,7 @@ interface CertificateRendererProps {
   scale?: number;
   className?: string;
   showQR?: boolean;
+  institutionSlug?: string;
 }
 
 function FieldText({
@@ -47,6 +48,7 @@ export function CertificateRenderer({
   scale = 1,
   className = '',
   showQR = true,
+  institutionSlug,
 }: CertificateRendererProps) {
   const { width, height, fields } = template.layout_config;
   const hasCanvaBackground = !!template.canva_design_url;
@@ -85,7 +87,7 @@ export function CertificateRenderer({
             }}
           />
         ) : (
-          <DefaultBackground width={width} height={height} />
+          <DefaultBackground width={width} height={height} institutionSlug={institutionSlug} />
         )}
 
         {/* Data fields layer */}
@@ -124,13 +126,31 @@ export function CertificateRenderer({
   );
 }
 
-function DefaultBackground({ width, height }: { width: number; height: number }) {
+// Institution-specific certificate color schemes
+const CERT_THEMES: Record<string, { gradient: string; accent: string; border: string; stripe: string }> = {
+  gansid: {
+    gradient: 'linear-gradient(135deg, #1A3C6E 0%, #0F172A 100%)',
+    accent: '#D4A843',
+    border: '#DC2626',
+    stripe: '#DC2626',
+  },
+  scago: {
+    gradient: 'linear-gradient(135deg, #C8262A 0%, #1A1A1A 100%)',
+    accent: '#F0E7CC',
+    border: '#F0E7CC',
+    stripe: '#C8262A',
+  },
+};
+
+function DefaultBackground({ width, height, institutionSlug }: { width: number; height: number; institutionSlug?: string }) {
+  const theme = CERT_THEMES[institutionSlug ?? 'gansid'] ?? CERT_THEMES.gansid;
+
   return (
     <div
       style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(135deg, #1E3A5F 0%, #0F172A 100%)',
+        background: theme.gradient,
       }}
     >
       {/* Decorative border */}
@@ -140,9 +160,9 @@ function DefaultBackground({ width, height }: { width: number; height: number })
         fill="none"
       >
         <rect x="20" y="20" width={width - 40} height={height - 40} rx="4"
-          stroke="#D4A843" strokeWidth="2" />
+          stroke={theme.accent} strokeWidth="2" />
         <rect x="30" y="30" width={width - 60} height={height - 60} rx="2"
-          stroke="#DC2626" strokeWidth="1" strokeOpacity="0.4" />
+          stroke={theme.border} strokeWidth="1" strokeOpacity="0.4" />
       </svg>
 
       {/* Header text */}
@@ -152,7 +172,7 @@ function DefaultBackground({ width, height }: { width: number; height: number })
         left: '50%',
         transform: 'translateX(-50%)',
         textAlign: 'center',
-        color: '#D4A843',
+        color: theme.accent,
         fontSize: 14,
         letterSpacing: '0.3em',
         textTransform: 'uppercase',
@@ -169,17 +189,17 @@ function DefaultBackground({ width, height }: { width: number; height: number })
         transform: 'translateX(-50%)',
         width: 200,
         height: 1,
-        background: 'linear-gradient(90deg, transparent, #D4A843, transparent)',
+        background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
       }} />
 
-      {/* Bottom red stripe */}
+      {/* Bottom stripe */}
       <div style={{
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
         height: 6,
-        background: '#DC2626',
+        background: theme.stripe,
         borderRadius: '0 0 4px 4px',
       }} />
     </div>

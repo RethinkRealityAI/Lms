@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { CertificateRenderer } from './certificate-renderer';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { Paintbrush, FolderOpen, Search, ChevronLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CertificateTemplate, CertificateLayoutConfig, CertificateFieldConfig, CertificateData } from '@/types';
@@ -394,6 +395,7 @@ export function TemplateEditor({ template, onSave, onCanvaDesign, onSelectCanvaD
             data={SAMPLE_DATA}
             scale={0.5}
             showQR={false}
+            institutionSlug={resolveInstitutionSlug()}
           />
         </div>
       </div>

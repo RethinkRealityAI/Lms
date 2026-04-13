@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { CertificateRenderer } from './certificate-renderer';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { Download, Printer, Link2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CertificateTemplate, CertificateData } from '@/types';
@@ -86,6 +87,7 @@ export function CertificatePreviewModal({
             data={data}
             scale={0.85}
             showQR={!isSample}
+            institutionSlug={resolveInstitutionSlug()}
           />
         </div>
       </DialogContent>
