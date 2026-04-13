@@ -36,6 +36,8 @@ export interface InstitutionBranding {
   secondaryColor: string;
   /** Accent color for interactive elements */
   accentColor: string;
+  /** Highlight/secondary accent color (backgrounds, badges) */
+  highlightColor?: string;
   /** Email placeholder for login forms */
   emailPlaceholder: string;
   /** Admin email placeholder */
@@ -94,9 +96,10 @@ const SCAGO_BRANDING: InstitutionBranding = {
   contactPhone: '416-745-4267',
   contactAddress: '330-5109 Steeles Ave W., North York, ON M9L 2Y8',
   copyright: '\u00A9 2026 Sickle Cell Awareness Group of Ontario',
-  primaryColor: '#1E3A5F',
-  secondaryColor: '#0099CA',
-  accentColor: '#0099CA',
+  primaryColor: '#C8262A',
+  secondaryColor: '#1A1A1A',
+  accentColor: '#C8262A',
+  highlightColor: '#F0E7CC',
   emailPlaceholder: 'clinician@hospital.ca',
   adminEmailPlaceholder: 'admin@sicklecellanemia.ca',
   adminDescription: 'Secure faculty access for SCAGO administrators.',

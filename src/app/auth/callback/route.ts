@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
         const role = userData?.role || 'student';
         const destination = ADMIN_ROLES.has(role)
-          ? '/admin'
+          ? `/${institutionSlug}/admin`
           : `/${institutionSlug}/student`;
 
         return NextResponse.redirect(new URL(destination, requestUrl.origin));

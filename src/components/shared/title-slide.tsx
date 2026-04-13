@@ -3,18 +3,22 @@
 // ---------------------------------------------------------------------------
 // Institution branding map
 // ---------------------------------------------------------------------------
-const INSTITUTION_BRANDING: Record<string, { name: string; tagline: string; initial: string; learning: string }> = {
+const INSTITUTION_BRANDING: Record<string, { name: string; tagline: string; initial: string; learning: string; gradientFrom: string; gradientTo: string }> = {
   gansid: {
     name: 'GANSID',
     tagline: 'Global Action Network for Sickle Cell & Inherited Blood Disorders',
     initial: 'G',
     learning: 'GANSID Learning',
+    gradientFrom: '#1E3A5F',
+    gradientTo: '#2563EB',
   },
   scago: {
     name: 'SCAGO',
     tagline: 'Sickle Cell Awareness Group of Ontario',
     initial: 'S',
     learning: 'SCAGO Learning',
+    gradientFrom: '#C8262A',
+    gradientTo: '#1A1A1A',
   },
 };
 
@@ -37,7 +41,7 @@ export function TitleSlide({ lessonTitle, lessonDescription, titleImageUrl, cour
         {titleImageUrl ? (
           <img src={titleImageUrl} alt="" className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#1E3A5F] to-[#2563EB]" />
+          <div className="w-full h-full" style={{ background: `linear-gradient(to bottom right, ${branding.gradientFrom}, ${branding.gradientTo})` }} />
         )}
         <div className="absolute inset-0 bg-black/40" />
         <div
