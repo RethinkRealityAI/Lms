@@ -200,6 +200,8 @@ Legacy users: 2,868 imported from EdApp CSV.
 | 022 | canva_integration | Canva OAuth tokens on `users`, `canva_design_id`/`canva_design_url` on `slides` |
 | 023 | certificate_templates | `certificate_templates` + `course_certificate_templates` tables, `certificates` enhancements (template_id, awarded_by, certificate_number, pdf_url), auto-number trigger, default GANSID template seed |
 | 024 | scago_institution_and_admin | SCAGO institution row, `is_admin()` updated to recognize `platform_admin`/`institution_admin`, `tech@` upgraded to `platform_admin` |
+| 025 | fix_platform_admin_cross_tenant_rls | Slides/slide_templates/activity_log RLS allows `platform_admin` cross-tenant access |
+| 026 | add_institution_id_to_contact_submissions | `institution_id` column on `contact_submissions`, backfilled to GANSID |
 
 ### RLS Pattern — CRITICAL
 
@@ -363,7 +365,7 @@ When `previewMode={true}`:
 
 ```ts
 type Slide =
-  | { kind: 'title' }               // Hero gradient + lesson title + description + GANSID attribution
+  | { kind: 'title' }               // Hero gradient + lesson title + description + institution attribution
   | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }
   | { kind: 'completion' }          // Award icon + confetti animation; nav buttons are in the footer
 ```
@@ -514,10 +516,64 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 13. **Rich text sanitizer strips relative image paths** — SCORM-imported HTML may contain `<img src="fit_content_assets/...">` with relative paths that can't load. The sanitizer in `rich-text/viewer.tsx` removes `<img>` tags whose `src` doesn't start with `http://`, `https://`, or `data:`.
 14. **tldraw components must be dynamically imported** with `ssr: false` — tldraw requires browser APIs and will crash during SSR. Always use `next/dynamic`.
 15. **Navigation is viewer chrome, not block content** — Slide navigation (Next/Previous/Complete) is built into the course-viewer footer. Do not use CTA blocks for navigation. Slide settings (`nav_label`, `nav_url`) control button labels and external links.
+16. **NEVER hardcode institution names, slugs, or UUIDs in components** — Always resolve from tenant context. Use `resolveInstitutionSlug()` in client components, `getTenantContext()` in server components. Fetch institution metadata (name, description) from the `institutions` table, not string literals.
+17. **Client components must use `resolveInstitutionSlug(pathname)` for tenant detection** — `usePathname()` returns the rewritten path (no slug) after middleware. `resolveInstitutionSlug()` falls back to the `institution_slug` cookie (always set by middleware). Never use `getInstitutionSlugFromPath()` alone in client components.
+18. **All navigation links must use `withInstitutionPath()`** — This function reads the cookie fallback automatically. Never hardcode `/gansid/admin/...` or `/admin/...` paths in JSX.
+19. **All `lib/db/` query functions that return institution-scoped data must accept `institutionId` parameter** — Do not return cross-institution data. The caller resolves institution via `getTenantContext()` or cookie.
+20. **`platform_admin` role bypasses institution scoping** — RLS policies on slides/slide_templates/activity_log allow `platform_admin` full access. The `is_admin()` SQL function recognizes `admin`, `platform_admin`, `institution_admin`.
+21. **Institution branding lives in `src/lib/tenant/branding.ts`** — Logos, colors, taglines, program descriptions. Title slides, nav bars, login pages, and landing pages all read from this config. Add new institutions here.
 
 ---
 
-## Current Implementation Status (as of 2026-04-08)
+## Multi-Tenancy Architecture
+
+### How Tenant Context Flows
+
+```
+Browser URL: /scago/admin/courses/123/editor
+    ↓
+Middleware (src/middleware.ts):
+  1. Extracts "scago" from URL
+  2. Sets cookie: institution_slug=scago
+  3. Sets header: x-institution-slug=scago
+  4. Rewrites URL to: /admin/courses/123/editor
+    ↓
+Server Components:
+  getTenantContext() reads header → queries institutions table → returns { institutionSlug, institutionId }
+    ↓
+Client Components:
+  resolveInstitutionSlug(pathname) → tries pathname (null after rewrite) → reads cookie → returns "scago"
+  withInstitutionPath('/admin/courses', pathname) → prepends /scago → returns "/scago/admin/courses"
+```
+
+### Key Files
+
+| File | Purpose |
+|---|---|
+| `src/middleware.ts` | Extracts slug from URL, sets cookie + header, rewrites URL |
+| `src/lib/tenant/path.ts` | `resolveInstitutionSlug()`, `withInstitutionPath()`, `getInstitutionSlugFromCookie()` |
+| `src/lib/tenant/server.ts` | `getTenantContext()` — server-only, reads header/cookie → queries DB |
+| `src/lib/tenant/branding.ts` | Institution logos, colors, names, descriptions, contact info |
+
+### Roles
+
+| Role | Scope | Notes |
+|---|---|---|
+| `student` | Single institution | Sees courses from their `institution_id` only |
+| `admin` | Single institution | Manages courses/users for their `institution_id` |
+| `institution_admin` | Single institution | Same as admin |
+| `platform_admin` | All institutions | Switches tenant via URL prefix (`/scago/admin` vs `/gansid/admin`) |
+
+### Storage Buckets
+
+| Bucket | Institution | Purpose |
+|---|---|---|
+| `canva-exports` | GANSID | Slide backgrounds, certificate backgrounds, PDFs, logos |
+| `scago-assets` | SCAGO | Course images (313 files), logos |
+
+---
+
+## Current Implementation Status (as of 2026-04-12)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -588,20 +644,27 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 - [x] `platform_admin` role for cross-tenant admin access (`tech@sicklecellanemia.ca`)
 - [x] `scago-assets` Supabase Storage bucket (public read, authenticated upload)
 - [x] Markdown import pipeline (`scripts/import-scago/`) — reusable for future content updates
+- [x] SCAGO images uploaded: 313 images (142 MB) to `scago-assets` bucket, URLs updated in all blocks
+- [x] Institution-aware branding: title slides, nav bar logos, login pages, landing pages
+- [x] `resolveInstitutionSlug()` — cookie-based fallback for tenant detection after middleware rewrite
+- [x] All admin navigation uses `withInstitutionPath()` — no hardcoded institution paths
+- [x] Analytics, Settings, Support pages filter by institution
+- [x] RLS policies allow `platform_admin` cross-tenant access on slides/templates/activity_log
+- [x] Legacy users pagination (50 per page) + fetch all rows (bypasses 1,000 limit)
+- [x] Broken quiz blocks fixed (17 total — options added or converted to rich_text)
+- [x] Multi-tenancy unit tests for path resolution, branding, cookie fallback
 
 ### In Progress / Next
-- [ ] SCAGO image upload: 313 images (142 MB) need uploading to `scago-assets` bucket (requires `SUPABASE_SERVICE_ROLE_KEY` or Supabase dashboard upload)
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
 - [ ] Phase 4: Quiz expansion (standalone quiz grading, scores, retry logic)
-- [ ] Phase 5: Multi-tenant polish, per-tenant branding
 - [ ] Phase 6: Advanced blocks (hotspot, sequence, drag-and-drop)
 - [ ] Phase 7: Hardening — error boundaries, accessibility audit, performance
 
 ### Known Gaps
 - `CourseViewer` still makes direct Supabase calls (should go through `lib/db/`)
 - `src/app/admin/courses/[id]/page.tsx` same issue
-- No `SUPABASE_SERVICE_ROLE_KEY` — seed scripts must use MCP
 - SCORM-imported images: inline relative paths (`fit_content_assets/...`) are stripped by the rich text sanitizer; the actual images exist as separate `image_gallery` blocks with working EdApp CDN URLs. A future data migration could upload them to Supabase Storage.
+- Categories are global (no `institution_id` column) — shared across institutions by design
 
 ---
 
@@ -609,8 +672,8 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 
 | Email | Role | Password |
 |---|---|---|
-| `tech@sicklecellanemia.ca` | admin | (in Supabase auth) |
+| `tech@sicklecellanemia.ca` | platform_admin | (in Supabase auth) |
 
 Supabase user ID for `tech@sicklecellanemia.ca`: `485e3136-1337-41c3-b8a2-d0d98accb541`
 
-**Required:** This user must have `institution_id = '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a'` set in `public.users` — otherwise the course editor throws "No institution found for user".
+**Note:** This user has `institution_id = '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a'` (GANSID) but role `platform_admin` grants access to all institutions. Tenant context is determined by the URL prefix, not the user's institution_id.
