@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { getTenantContext } from '@/lib/tenant/server';
 import { getCertificateTemplates, getCourseCertificateAssignments } from '@/lib/db/certificate-templates';
 import { getIssuedCertificates } from '@/lib/db/certificates';
 import { getInstitutionName } from '@/lib/db/institutions';
@@ -10,13 +11,20 @@ export default async function CertificatesPage() {
 
   if (!user) return null;
 
-  const { data: userData } = await supabase
-    .from('users')
-    .select('institution_id')
-    .eq('id', user.id)
-    .single();
+  // Use tenant context (from URL slug) so platform_admin sees the right institution
+  const { institutionId: tenantInstitutionId } = await getTenantContext();
 
-  const institutionId = userData?.institution_id;
+  // Fall back to user's own institution if tenant context unavailable
+  let institutionId = tenantInstitutionId;
+  if (!institutionId) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('institution_id')
+      .eq('id', user.id)
+      .single();
+    institutionId = userData?.institution_id;
+  }
+
   if (!institutionId) return <p className="p-8">No institution found.</p>;
 
   const [templates, certificates, assignments, institutionName] = await Promise.all([
