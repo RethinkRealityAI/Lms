@@ -153,11 +153,10 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <Link href={withInstitutionPath('/', pathname)} className="flex items-center gap-3 group">
           {isScago ? (
-            <img
-              src={branding.logoUrl}
-              alt={branding.fullName}
-              className="h-10 w-auto"
-            />
+            <span className="text-lg font-black tracking-tight">
+              <span className="text-[#C8262A]">SCAGO</span>
+              <span className="text-slate-400 font-light ml-1">Learning</span>
+            </span>
           ) : (
             <>
               <div className="w-11 h-11 bg-gradient-to-br from-[#991B1B] to-[#DC2626] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform duration-300">
@@ -210,7 +209,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
               <Button variant="ghost" asChild className={`rounded-full font-bold px-6 transition-colors ${scrolled || !transparentInitially ? `text-slate-600 hover:text-[${isScago ? branding.accentColor : '#DC2626'}]` : 'text-slate-300 hover:text-white'}`}>
                 <Link href={withInstitutionPath('/login', pathname)}>Sign In</Link>
               </Button>
-              <Button asChild className={`rounded-full px-6 font-bold shadow-lg transition-all transform hover:scale-105 ${isScago ? 'bg-[#1E3A5F] hover:bg-[#152d4a] shadow-blue-100' : 'bg-[#DC2626] hover:bg-[#991B1B] shadow-red-100'}`}>
+              <Button asChild className={`rounded-full px-6 font-bold shadow-lg transition-all transform hover:scale-105 ${isScago ? 'bg-[#C8262A] hover:bg-[#a01f22] shadow-red-100' : 'bg-[#DC2626] hover:bg-[#991B1B] shadow-red-100'}`}>
                 <Link href={withInstitutionPath('/login?tab=signup', pathname)}>Get Started</Link>
               </Button>
             </div>
@@ -289,7 +288,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
                   <Button asChild variant="outline" className="w-full rounded-xl font-bold">
                     <Link href={withInstitutionPath('/login', pathname)} onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
                   </Button>
-                  <Button asChild className={`w-full rounded-xl font-bold ${isScago ? 'bg-[#1E3A5F] hover:bg-[#152d4a]' : 'bg-[#DC2626] hover:bg-[#991B1B]'}`}>
+                  <Button asChild className={`w-full rounded-xl font-bold ${isScago ? 'bg-[#C8262A] hover:bg-[#a01f22]' : 'bg-[#DC2626] hover:bg-[#991B1B]'}`}>
                     <Link href={withInstitutionPath('/login?tab=signup', pathname)} onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </>

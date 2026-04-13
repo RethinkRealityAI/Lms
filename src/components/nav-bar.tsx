@@ -105,7 +105,12 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
         <div className="flex justify-between h-12 items-center">
           <div className="flex items-center gap-6">
             <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-2 group shrink-0">
-              {logoUrl && !logoError ? (
+              {institutionSlug === 'scago' ? (
+                <span className="text-sm font-black tracking-tight">
+                  <span className="text-[#C8262A]">SCAGO</span>
+                  <span className="text-slate-400 font-light ml-1">Learning</span>
+                </span>
+              ) : logoUrl && !logoError ? (
                 <img
                   src={logoUrl}
                   alt={`${institutionSlug.toUpperCase()} logo`}
@@ -117,9 +122,11 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
                   <BookOpen className="h-3.5 w-3.5" />
                 </div>
               )}
-              <h1 className="text-sm font-black tracking-tighter text-slate-900">
-                {title.split(' ')[0] || 'LMS'} <span className="text-[#0099CA] font-light italic ml-0.5">{title.split(' ').slice(1).join(' ') || 'Portal'}</span>
-              </h1>
+              {institutionSlug !== 'scago' && (
+                <h1 className="text-sm font-black tracking-tighter text-slate-900">
+                  {title.split(' ')[0] || 'LMS'} <span className="text-[#0099CA] font-light italic ml-0.5">{title.split(' ').slice(1).join(' ') || 'Portal'}</span>
+                </h1>
+              )}
             </Link>
 
             <div className="hidden md:flex items-center gap-0.5">

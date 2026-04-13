@@ -161,8 +161,8 @@ function ScagoHero({ pathname, branding }: { pathname: string; branding: ReturnT
   return (
     <section className="relative pt-36 pb-16 overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-50 rounded-full blur-[120px] opacity-60" />
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-50 rounded-full blur-[120px] opacity-60" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#F0E7CC] rounded-full blur-[120px] opacity-60" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
@@ -181,24 +181,24 @@ function ScagoHero({ pathname, branding }: { pathname: string; branding: ReturnT
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tight">
               Sickle Cell Disease <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1E3A5F] to-[#0099CA]">Education Program</span> <br />
-              <span className="text-[#0099CA] text-3xl md:text-4xl">for Healthcare Providers</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#C8262A] to-[#1A1A1A]">Education Program</span> <br />
+              <span className="text-[#C8262A] text-3xl md:text-4xl">for Healthcare Providers</span>
             </h1>
             <p className="text-xl text-slate-600 mb-6 leading-relaxed max-w-xl font-medium">
               {branding.description}
             </p>
             <div className="flex flex-wrap gap-3 mb-8">
               {branding.highlights.map((h) => (
-                <span key={h} className="px-4 py-2 bg-[#1E3A5F]/10 rounded-full text-sm font-bold text-[#1E3A5F] border border-[#1E3A5F]/20">
+                <span key={h} className="px-4 py-2 bg-[#F0E7CC] rounded-full text-sm font-bold text-[#C8262A] border border-[#C8262A]/20">
                   {h}
                 </span>
               ))}
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Button size="lg" asChild className="w-full sm:w-auto h-16 rounded-2xl px-10 text-lg font-bold shadow-2xl shadow-blue-200 bg-[#1E3A5F] hover:bg-[#152d4a] active:scale-95 transition-all">
+              <Button size="lg" asChild className="w-full sm:w-auto h-16 rounded-2xl px-10 text-lg font-bold shadow-2xl shadow-red-200 bg-[#C8262A] hover:bg-[#a01f22] active:scale-95 transition-all">
                 <Link href={withInstitutionPath('/login?tab=signup', pathname)}>Get Started <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto h-16 rounded-2xl px-10 text-lg font-bold border-2 border-[#1E3A5F]/20 hover:border-[#1E3A5F]/40 text-[#1E3A5F]">
+              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto h-16 rounded-2xl px-10 text-lg font-bold border-2 border-[#1A1A1A] hover:border-[#1A1A1A] text-[#C8262A] bg-[#1A1A1A]">
                 <Link href={withInstitutionPath('/login', pathname)}>Sign In</Link>
               </Button>
             </div>
@@ -220,7 +220,7 @@ function ScagoHero({ pathname, branding }: { pathname: string; branding: ReturnT
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
                   <div className="text-white">
                     <div className="flex items-center gap-2 mb-2">
-                      <Stethoscope className="h-5 w-5 text-[#0099CA]" />
+                      <Stethoscope className="h-5 w-5 text-[#C8262A]" />
                       <span className="font-bold">Evidence-Based SCD Education</span>
                     </div>
                     <p className="text-sm text-white/80">13 modules with micro-lessons under 10 minutes, designed for busy clinicians.</p>
@@ -228,8 +228,8 @@ function ScagoHero({ pathname, branding }: { pathname: string; branding: ReturnT
                 </div>
               </div>
             </div>
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-100/50 rounded-full blur-2xl animate-pulse" />
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100/50 rounded-full blur-2xl animate-pulse delay-700" />
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#F0E7CC]/50 rounded-full blur-2xl animate-pulse" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-red-100/50 rounded-full blur-2xl animate-pulse delay-700" />
           </motion.div>
         </div>
       </div>
@@ -262,7 +262,7 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
           <div className="text-center mb-12">
             <h2 className="text-[#C8262A] font-black tracking-widest uppercase text-sm mb-4">HCP Education Program</h2>
             <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
-              Comprehensive SCD training for <span className="text-[#0099CA]">healthcare providers</span>
+              Comprehensive SCD training for <span className="text-[#C8262A]">healthcare providers</span>
             </h3>
           </div>
 
@@ -283,10 +283,10 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
               </div>
             </div>
 
-            <div className="p-8 rounded-2xl bg-gradient-to-br from-blue-50/40 to-white border border-blue-100">
+            <div className="p-8 rounded-2xl bg-gradient-to-br from-[#F0E7CC]/40 to-white border border-[#F0E7CC]">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
-                  <Users className="h-6 w-6 text-[#1E3A5F]" />
+                <div className="w-12 h-12 shrink-0 bg-[#C8262A]/10 rounded-xl flex items-center justify-center">
+                  <Users className="h-6 w-6 text-[#C8262A]" />
                 </div>
                 <div>
                   <h4 className="text-lg font-black text-slate-900 mb-2">Who Is This For?</h4>
@@ -384,7 +384,7 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
           <div className="grid sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-8">
             <a
               href={`mailto:${branding.contactEmail}`}
-              className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#C8262A]/30 hover:bg-red-50/30 transition-all text-sm font-bold text-[#1E3A5F] hover:text-[#C8262A]"
+              className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#C8262A]/30 hover:bg-red-50/30 transition-all text-sm font-bold text-[#1A1A1A] hover:text-[#C8262A]"
             >
               <Mail className="h-5 w-5" />
               {branding.contactEmail}
@@ -392,7 +392,7 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
             {branding.contactPhone && (
               <a
                 href={`tel:${branding.contactPhone.replace(/[^+\d]/g, '')}`}
-                className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#C8262A]/30 hover:bg-red-50/30 transition-all text-sm font-bold text-[#1E3A5F] hover:text-[#C8262A]"
+                className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#C8262A]/30 hover:bg-red-50/30 transition-all text-sm font-bold text-[#1A1A1A] hover:text-[#C8262A]"
               >
                 <Phone className="h-5 w-5" />
                 {branding.contactPhone}
@@ -420,7 +420,7 @@ function PlatformFeatures({ isScago }: { isScago: boolean }) {
     <section className="py-16 bg-white border-t border-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="p-12 md:p-20 rounded-[4rem] bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
-          <div className={`absolute top-0 right-0 w-96 h-96 ${isScago ? 'bg-blue-600/20' : 'bg-red-600/20'} rounded-full blur-[100px]`} />
+          <div className={`absolute top-0 right-0 w-96 h-96 ${isScago ? 'bg-red-600/20' : 'bg-red-600/20'} rounded-full blur-[100px]`} />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#0099CA]/20 rounded-full blur-[100px]" />
 
           <div className="relative z-10 max-w-3xl mx-auto text-center">
@@ -461,7 +461,7 @@ export default function Home() {
   const isScago = institutionSlug === 'scago';
 
   return (
-    <div className={`min-h-screen bg-white flex flex-col ${isScago ? 'selection:bg-blue-100 selection:text-blue-900' : 'selection:bg-red-100 selection:text-red-900'}`}>
+    <div className={`min-h-screen bg-white flex flex-col ${isScago ? 'selection:bg-red-100 selection:text-red-900' : 'selection:bg-red-100 selection:text-red-900'}`}>
       <PublicNav />
 
       {isScago ? (
