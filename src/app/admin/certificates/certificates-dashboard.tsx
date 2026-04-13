@@ -71,7 +71,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
 
   const refresh = useCallback(() => router.refresh(), [router]);
 
-  const handleSaveTemplate = async (data: { name: string; description: string; layout_config: any; is_default: boolean }) => {
+  const handleSaveTemplate = async (data: { name: string; description: string; layout_config: any; is_default: boolean; canva_design_url?: string | null; canva_design_id?: string | null }) => {
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();

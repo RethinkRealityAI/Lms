@@ -30,6 +30,8 @@ interface TemplateEditorProps {
     description: string;
     layout_config: CertificateLayoutConfig;
     is_default: boolean;
+    canva_design_url?: string | null;
+    canva_design_id?: string | null;
   }) => Promise<void>;
   onCanvaDesign: (templateId?: string) => void;
   onSelectCanvaDesign?: (designId: string) => void;
@@ -207,7 +209,18 @@ export function TemplateEditor({ template, onSave, onCanvaDesign, onSelectCanvaD
   };
 
   const handleSubmit = async () => {
-    await onSave({ name, description, layout_config: layoutConfig, is_default: isDefault });
+    // If background is not Canva, clear Canva design fields so the renderer
+    // doesn't keep showing the old Canva background
+    const bgType = layoutConfig.background?.type;
+    const clearCanva = bgType && bgType !== 'default' && !canvaDesignUrl;
+    await onSave({
+      name,
+      description,
+      layout_config: layoutConfig,
+      is_default: isDefault,
+      canva_design_url: clearCanva ? null : (canvaDesignUrl || undefined),
+      canva_design_id: clearCanva ? null : undefined,
+    });
   };
 
   const previewTemplate: CertificateTemplate = {
