@@ -202,6 +202,7 @@ Legacy users: 2,868 imported from EdApp CSV.
 | 024 | scago_institution_and_admin | SCAGO institution row, `is_admin()` updated to recognize `platform_admin`/`institution_admin`, `tech@` upgraded to `platform_admin` |
 | 025 | fix_platform_admin_cross_tenant_rls | Slides/slide_templates/activity_log RLS allows `platform_admin` cross-tenant access |
 | 026 | add_institution_id_to_contact_submissions | `institution_id` column on `contact_submissions`, backfilled to GANSID |
+| 027 | handle_new_user_institution_aware | `handle_new_user` trigger reads `institution_slug` from signup metadata and assigns correct `institution_id` (fixes new SCAGO signups landing with NULL institution) |
 
 ### RLS Pattern — CRITICAL
 
@@ -589,7 +590,7 @@ Client Components:
 
 ---
 
-## Current Implementation Status (as of 2026-04-12)
+## Current Implementation Status (as of 2026-04-13)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -669,6 +670,27 @@ Client Components:
 - [x] Legacy users pagination (50 per page) + fetch all rows (bypasses 1,000 limit)
 - [x] Broken quiz blocks fixed (17 total — options added or converted to rich_text)
 - [x] Multi-tenancy unit tests for path resolution, branding, cookie fallback
+- [x] Signup flow institution-aware: `handle_new_user` trigger (migration 027) reads `institution_slug` from signup metadata, assigns correct `institution_id` for new users
+- [x] Auth callback redirects to `/{slug}/admin` or `/{slug}/student` based on institution cookie
+- [x] Privacy Policy and Terms of Service institution-aware — SCAGO includes charitable registration (#83332 0872 RR 0001), Mainpro+ credit terms, medical disclaimer, Ontario governing law
+- [x] SCAGO landing page: full 13-module curriculum with glassmorphic cards, red author footer, Mainpro+ accreditation banner, contact section
+- [x] Brand colors corrected per institution identity:
+  - GANSID: primary dark blue `#1A3C6E`, red `#DC2626`, teal `#0099CA`, orange `#E87722`
+  - SCAGO: primary red `#C8262A`, near-black `#1A1A1A`, cream `#F0E7CC`
+  - Contact emails: `admin@inheritedblooddisorders.world` (GANSID), `hcp@sicklecellanemia.ca` (SCAGO)
+- [x] SCAGO nav bar shows text-only "SCAGO Learning" (logo removed — white background didn't render well on dark nav)
+- [x] Certificate templates institution-aware:
+  - Default SCAGO certificate template seeded with cream/red color scheme
+  - `CertificateRenderer` uses institution-specific color themes (GANSID navy-gold, SCAGO red-cream)
+  - Certificate number trigger generates institution-prefixed IDs (`SCAGO-2026-XXXXX`)
+- [x] Certificate template editor — full customization:
+  - Background modes: Default theme, Solid Color, Gradient (from/to + direction), Image upload, Canva
+  - Direct image upload to `canva-exports` bucket under `certificate-backgrounds/`
+  - Logo config: URL, position (top-left/right, bottom-left/right), width, opacity; "Use SCAGO/GANSID logo" quick button
+  - Font weight control on all text fields (Light, Normal, Semibold, Bold, Extra Bold)
+  - Live preview updates instantly; `key` prop forces re-mount on background type changes
+  - Save clears `canva_design_url` when background type changes (prevents renderer priority issue)
+- [x] Certificate dashboard uses `getTenantContext()` — Templates, Awarded, and Course Assignments tabs all filter by tenant URL slug (not user's profile institution_id)
 
 ### In Progress / Next
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
