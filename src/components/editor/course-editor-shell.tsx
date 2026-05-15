@@ -24,6 +24,11 @@ import { createModule as dbCreateModule, deleteModule as dbDeleteModule, updateM
 import { createLesson as dbCreateLesson, deleteLesson as dbDeleteLesson, updateLesson as dbUpdateLesson } from '@/lib/db/lessons';
 import { useAutoSave } from '@/lib/hooks/use-auto-save';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
+import {
+  GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING,
+  DEFAULT_BLOCK_LAYOUT, computeRowHeight,
+  type DropPos,
+} from '@/lib/content/gridConstants';
 import type { ModuleData, LessonData, BlockData } from '@/lib/stores/editor-store';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
@@ -298,7 +303,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   // ── Persistence: add block to a slide (DB-first) ──────────────────────────
 
-  const handleAddBlock = useCallback(async (slideId: string, blockType: string, insertIndex?: number, presetData?: Record<string, unknown>) => {
+  const handleAddBlock = useCallback(async (slideId: string, blockType: string, dropPos?: DropPos, presetData?: Record<string, unknown>) => {
     if (!institutionId) return;
     try {
       const state = store!.getState();
@@ -313,34 +318,36 @@ function EditorContent({ courseId }: { courseId: string }) {
 
       const supabase = createClient();
       const existingBlocks = state.blocks.get(slideId) ?? [];
-      const orderIndex = insertIndex != null ? insertIndex : existingBlocks.length;
-
-      // If inserting in the middle, shift subsequent blocks' order_index
-      if (insertIndex != null && insertIndex < existingBlocks.length) {
-        const blocksToShift = existingBlocks.filter(b => b.order_index >= insertIndex);
-        for (const b of blocksToShift) {
-          await supabase
-            .from('lesson_blocks')
-            .update({ order_index: b.order_index + 1 })
-            .eq('id', b.id);
-        }
-      }
+      const orderIndex = existingBlocks.length;
 
       const defaultData = presetData ? { ...presetData } : getDefaultBlockData(blockType);
+      const blockGridW = typeof defaultData.gridW === 'number' ? defaultData.gridW : GRID_COLS;
+      const blockGridH = typeof defaultData.gridH === 'number' ? defaultData.gridH : DEFAULT_BLOCK_LAYOUT.gridH;
 
-      // Compute gridY so the new block appears below existing blocks
-      // instead of overlapping at y=0
-      let nextGridY = 0;
-      for (const b of existingBlocks) {
-        const d = (b.data ?? {}) as Record<string, unknown>;
-        const bY = typeof d.gridY === 'number' ? d.gridY : 0;
-        const bH = typeof d.gridH === 'number' ? d.gridH : 3;
-        nextGridY = Math.max(nextGridY, bY + bH);
+      if (dropPos) {
+        // Place at the pointer's drop position within the canvas grid
+        const colWidth = (dropPos.canvasWidth - GRID_CONTAINER_PADDING[0] * 2 - GRID_MARGIN[0] * (GRID_COLS - 1)) / GRID_COLS;
+        const rowHeight = computeRowHeight(dropPos.canvasHeight);
+        const rawCol = (dropPos.relX - GRID_CONTAINER_PADDING[0]) / (colWidth + GRID_MARGIN[0]);
+        const rawRow = (dropPos.relY - GRID_CONTAINER_PADDING[1]) / (rowHeight + GRID_MARGIN[1]);
+        defaultData.gridX = Math.max(0, Math.min(GRID_COLS - blockGridW, Math.floor(rawCol)));
+        defaultData.gridY = Math.max(0, Math.floor(rawRow));
+        defaultData.gridW = blockGridW;
+        defaultData.gridH = blockGridH;
+      } else {
+        // Stack below all existing blocks (click-to-add path)
+        let nextGridY = 0;
+        for (const b of existingBlocks) {
+          const d = (b.data ?? {}) as Record<string, unknown>;
+          const bY = typeof d.gridY === 'number' ? d.gridY : 0;
+          const bH = typeof d.gridH === 'number' ? d.gridH : DEFAULT_BLOCK_LAYOUT.gridH;
+          nextGridY = Math.max(nextGridY, bY + bH);
+        }
+        defaultData.gridX = 0;
+        defaultData.gridY = nextGridY;
+        defaultData.gridW = blockGridW;
+        defaultData.gridH = blockGridH;
       }
-      defaultData.gridX = 0;
-      defaultData.gridY = nextGridY;
-      defaultData.gridW = 12;
-      defaultData.gridH = 3;
 
       const result = await dbCreateBlock(supabase, {
         lesson_id: lessonId,
@@ -713,7 +720,6 @@ function EditorContent({ courseId }: { courseId: string }) {
           />
           <PreviewPanel
             devicePreview={devicePreview}
-            onAddBlock={handleAddBlock}
             onDeleteBlock={(blockId) => {
               selectEntity({ type: 'block', id: blockId });
               setDeleteDialogOpen(true);

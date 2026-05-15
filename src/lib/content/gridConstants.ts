@@ -3,6 +3,14 @@
  * and the student viewer (CSS Grid) so the two always stay in sync.
  */
 
+/** Pointer-drop position relative to the canvas — passed from the DnD context to handleAddBlock */
+export interface DropPos {
+  relX: number;
+  relY: number;
+  canvasWidth: number;
+  canvasHeight: number;
+}
+
 export const GRID_COLS = 12;
 export const GRID_MARGIN: [number, number] = [4, 4];
 export const GRID_CONTAINER_PADDING: [number, number] = [6, 6];

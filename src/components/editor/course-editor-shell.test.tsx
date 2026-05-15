@@ -9,12 +9,32 @@ vi.mock('@/lib/supabase/client', () => ({
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null }),
     },
-    from: vi.fn(),
+    from: vi.fn().mockImplementation((table: string) => {
+      // The editor shell queries institutions to resolve institution_id from the tenant slug
+      if (table === 'institutions') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'inst-1' }, error: null }),
+            }),
+          }),
+        };
+      }
+      return {
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: null, error: null }),
+            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+          }),
+        }),
+      };
+    }),
   })),
 }));
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({ push: vi.fn() })),
+  usePathname: vi.fn(() => '/gansid/admin/courses/course-1/editor'),
 }));
 
 vi.mock('@/lib/db/users', () => ({

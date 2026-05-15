@@ -158,3 +158,116 @@ describe('QuizInlineViewer — custom feedback', () => {
     expect(screen.queryByText(/correct/i)).not.toBeInTheDocument();
   });
 });
+
+// ─── SelectAll quiz type ───────────────────────────────────────────────────────
+
+const SELECT_ALL_DATA = {
+  question_type: 'select_all' as const,
+  question: 'Which are primary colours?',
+  options: ['Red', 'Green', 'Blue', 'Purple'],
+  correct_answer: 'Red; Blue',
+  show_feedback: true,
+};
+
+describe('QuizInlineViewer — select_all', () => {
+  it('renders the question', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    expect(screen.getByText('Which are primary colours?')).toBeInTheDocument();
+  });
+
+  it('renders all options as buttons', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    expect(screen.getByText('Red')).toBeInTheDocument();
+    expect(screen.getByText('Green')).toBeInTheDocument();
+    expect(screen.getByText('Blue')).toBeInTheDocument();
+    expect(screen.getByText('Purple')).toBeInTheDocument();
+  });
+
+  it('shows "Select all that apply" instruction by default', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    expect(screen.getByText('Select all that apply')).toBeInTheDocument();
+  });
+
+  it('Check Answer is disabled until at least one option is selected', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    expect(screen.getByRole('button', { name: /check answer/i })).toBeDisabled();
+  });
+
+  it('enables Check Answer after selecting an option', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Red'));
+    expect(screen.getByRole('button', { name: /check answer/i })).not.toBeDisabled();
+  });
+
+  it('shows correct feedback when all correct options are selected', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Red'));
+    fireEvent.click(screen.getByText('Blue'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText("That's correct!")).toBeInTheDocument();
+  });
+
+  it('shows incorrect feedback when wrong options are chosen', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Green'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText(/not quite/i)).toBeInTheDocument();
+  });
+
+  it('shows incorrect feedback when only a subset of correct options are chosen', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Red')); // only one of two correct
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByText(/not quite/i)).toBeInTheDocument();
+  });
+
+  it('calls onComplete when fully correct answer is submitted', () => {
+    const onComplete = vi.fn();
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} onComplete={onComplete} />);
+    fireEvent.click(screen.getByText('Red'));
+    fireEvent.click(screen.getByText('Blue'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(onComplete).toHaveBeenCalledOnce();
+  });
+
+  it('does not call onComplete when answer is incomplete', () => {
+    const onComplete = vi.fn();
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} onComplete={onComplete} />);
+    fireEvent.click(screen.getByText('Red'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(onComplete).not.toHaveBeenCalled();
+  });
+
+  it('does not call onComplete multiple times on re-render', () => {
+    const onComplete = vi.fn();
+    const { rerender } = render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} onComplete={onComplete} />);
+    fireEvent.click(screen.getByText('Red'));
+    fireEvent.click(screen.getByText('Blue'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    rerender(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} onComplete={onComplete} />);
+    expect(onComplete).toHaveBeenCalledOnce();
+  });
+
+  it('shows Try Again after incorrect submission', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Purple'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+  });
+
+  it('resets to initial state after Try Again', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Purple'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    fireEvent.click(screen.getByRole('button', { name: /try again/i }));
+    expect(screen.getByRole('button', { name: /check answer/i })).toBeDisabled();
+  });
+
+  it('does not show Try Again after correct submission', () => {
+    render(<QuizInlineViewer data={SELECT_ALL_DATA} block={DEFAULT_BLOCK} />);
+    fireEvent.click(screen.getByText('Red'));
+    fireEvent.click(screen.getByText('Blue'));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument();
+  });
+});

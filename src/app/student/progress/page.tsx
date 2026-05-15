@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -11,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Trophy, Target, BookOpen, TrendingUp, ClipboardList, GraduationCap } from 'lucide-react';
 
 export default function StudentProgressPage() {
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [allLessons, setAllLessons] = useState<any[]>([]);
@@ -150,7 +153,7 @@ export default function StudentProgressPage() {
               Enroll in a course to start tracking your learning journey. Your progress, quiz scores, and completed lessons will appear here.
             </p>
             <Button asChild className="bg-[#DC2626] hover:bg-[#B91C1C] font-bold px-8 rounded-xl h-12 shadow-lg shadow-red-100">
-              <Link href="/gansid/student">Browse Courses</Link>
+              <Link href={withInstitutionPath('/student', pathname)}>Browse Courses</Link>
             </Button>
           </CardContent>
         </Card>

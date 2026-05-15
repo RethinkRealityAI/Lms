@@ -2,8 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowLeft, Maximize2, User, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { withInstitutionPath } from '@/lib/tenant/path';
 
 interface LessonNavbarProps {
   courseTitle: string;
@@ -18,19 +20,21 @@ export function LessonNavbar({
   isFullscreen,
   onToggleFullscreen,
 }: LessonNavbarProps) {
+  const pathname = usePathname();
+
   if (isFullscreen) return null;
 
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = '/gansid/student/login';
+    window.location.href = withInstitutionPath('/login', pathname);
   };
 
   return (
     <nav className="h-10 bg-[#0F172A] flex items-center px-4 shrink-0 z-50">
       {/* Left: Back to courses */}
       <Link
-        href="/gansid/student"
+        href={withInstitutionPath('/student', pathname)}
         className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors shrink-0"
       >
         <ArrowLeft className="w-4 h-4" />

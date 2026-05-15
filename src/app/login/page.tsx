@@ -195,7 +195,11 @@ function LoginContent() {
           .select('id')
           .eq('slug', institutionSlug)
           .maybeSingle();
-        const institutionId = instData?.id || '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a'; // GANSID fallback
+        if (!instData?.id) {
+          console.error('Could not resolve institution for slug:', institutionSlug);
+          userData = { role: role, full_name: fullName };
+        } else {
+        const institutionId = instData.id;
 
         const { error: createError } = await supabase
           .from('users')
@@ -223,6 +227,7 @@ function LoginContent() {
         } else {
           userData = { role: role, full_name: fullName };
         }
+        } // end else (institution resolved)
       }
 
       const finalRole = normalizeRole(userData?.role || 'student');

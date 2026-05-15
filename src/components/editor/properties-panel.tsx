@@ -16,11 +16,12 @@ import { CanvaDesignPicker } from './canva-design-picker';
 import type { EntitySelection } from '@/types';
 import type { LessonData } from '@/lib/stores/editor-store';
 import type { Slide } from '@/types';
+import type { DropPos } from '@/lib/content/gridConstants';
 
 interface PropertiesPanelProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-  onAddBlock?: (slideId: string, blockType: string, insertIndex?: number, presetData?: Record<string, unknown>) => void;
+  onAddBlock?: (slideId: string, blockType: string, dropPos?: DropPos, presetData?: Record<string, unknown>) => void;
   onDeleteBlock?: () => void;
 }
 

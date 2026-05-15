@@ -30,7 +30,6 @@ const CanvasSlideEditor = dynamic(
 
 export interface PreviewPanelProps {
   devicePreview: DevicePreview;
-  onAddBlock?: (slideId: string, blockType: string, insertIndex?: number) => void;
   onDeleteBlock?: (blockId: string) => void;
   onDuplicateBlock?: (blockId: string, slideId: string) => void;
   onCopyBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;

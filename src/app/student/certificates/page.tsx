@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,10 +11,11 @@ import { toast } from 'sonner';
 import { Award, Download, Eye, Share2 } from 'lucide-react';
 import { CertificateRenderer } from '@/components/certificates/certificate-renderer';
 import { CertificatePreviewModal } from '@/components/certificates/certificate-preview-modal';
-import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import type { CertificateWithDetails, CertificateTemplate, CertificateData } from '@/types';
 
 export default function CertificatesPage() {
+  const pathname = usePathname();
   const [certificates, setCertificates] = useState<CertificateWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewCert, setPreviewCert] = useState<CertificateWithDetails | null>(null);
@@ -128,7 +130,7 @@ export default function CertificatesPage() {
                 Complete your enrolled courses to receive official certification.
               </p>
               <Button asChild className="bg-[#2563EB] hover:bg-[#1D4ED8] font-bold px-8 rounded-xl h-12">
-                <Link href="/student">Browse Courses</Link>
+                <Link href={withInstitutionPath('/student', pathname)}>Browse Courses</Link>
               </Button>
             </CardContent>
           </Card>

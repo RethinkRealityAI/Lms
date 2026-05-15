@@ -17,6 +17,7 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { BlockDragOverlay } from './block-drag-overlay';
+import type { DropPos } from '@/lib/content/gridConstants';
 
 interface DragState {
   type: 'palette' | 'reorder';
@@ -34,7 +35,7 @@ export interface DropTarget {
 
 interface EditorDndContextProps {
   children: React.ReactNode;
-  onAddBlock: (slideId: string, blockType: string, insertIndex?: number) => void;
+  onAddBlock: (slideId: string, blockType: string, dropPos?: DropPos) => void;
   onReorderBlocks: (slideId: string, blockIds: string[]) => void;
   getSlideBlocks: (slideId: string) => { id: string }[];
   activeSlideId: string | null;
@@ -42,10 +43,8 @@ interface EditorDndContextProps {
 
 // Use pointerWithin for palette drops (large zone), closestCenter for reorder precision
 const collisionDetection: CollisionDetection = (args) => {
-  // If dragging from palette, use pointerWithin (easier to hit the canvas)
   const pointerCollisions = pointerWithin(args);
   if (pointerCollisions.length > 0) return pointerCollisions;
-  // Fallback to closestCenter for reorder scenarios
   return closestCenter(args);
 };
 
@@ -110,22 +109,28 @@ export function EditorDndContext({
 
       const activeData = active.data.current;
 
-      // Palette → Canvas: add new block at the drop position
+      // Palette → Canvas: add new block at the pointer drop position
       if (activeData?.source === 'palette') {
-        const overData = over.data.current;
         const targetIsCanvas =
-          over.id === 'slide-canvas' || overData?.source === 'canvas';
+          over.id === 'slide-canvas' || over.data.current?.source === 'canvas';
         if (targetIsCanvas) {
-          // If dropped over a specific block, insert at that block's position
-          let insertIndex: number | undefined;
-          if (over.id !== 'slide-canvas' && overData?.source === 'canvas') {
-            const blocks = getSlideBlocks(activeSlideId);
-            const overIndex = blocks.findIndex((b) => b.id === over.id);
-            if (overIndex !== -1) {
-              insertIndex = overIndex;
-            }
+          // Compute pointer position relative to the canvas droppable rect.
+          // over.rect is a ClientRect with the canvas bounding box.
+          // activatorEvent holds the original pointerdown coords; delta is total movement.
+          let dropPos: DropPos | undefined;
+          const rect = over.rect;
+          if (rect && event.activatorEvent) {
+            const ae = event.activatorEvent as PointerEvent;
+            const finalX = ae.clientX + event.delta.x;
+            const finalY = ae.clientY + event.delta.y;
+            dropPos = {
+              relX: Math.max(0, finalX - rect.left),
+              relY: Math.max(0, finalY - rect.top),
+              canvasWidth: rect.width,
+              canvasHeight: rect.height,
+            };
           }
-          onAddBlock(activeSlideId, activeData.blockType as string, insertIndex);
+          onAddBlock(activeSlideId, activeData.blockType as string, dropPos);
         }
         return;
       }
@@ -138,7 +143,6 @@ export function EditorDndContext({
         let newIndex: number;
 
         if (over.id === 'slide-canvas') {
-          // Dropped on canvas background — move to end
           newIndex = blocks.length - 1;
         } else if (overData?.source === 'canvas') {
           newIndex = blocks.findIndex((b) => b.id === (over.id as string));

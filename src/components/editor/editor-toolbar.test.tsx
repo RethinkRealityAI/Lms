@@ -13,6 +13,7 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => '/gansid/admin/courses/course-1/editor',
 }));
 
 vi.mock('@/lib/supabase/client', () => ({

@@ -24,7 +24,7 @@ import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
-import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 
 const CanvasSlideViewer = dynamic(
   () => import('./canvas-slide-viewer'),
@@ -368,7 +368,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
         const { error } = await supabase.from('progress').upsert([{
           user_id: user.id, lesson_id: selectedLesson.id,
           completed: true, completed_at: new Date().toISOString(),
-        }]);
+        }], { onConflict: 'user_id,lesson_id' });
         if (error) throw error;
         toast.success('Progress saved', { duration: 2000 });
 
@@ -554,10 +554,16 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     });
   }, [selectedLesson]);
 
+  // Only gate on quiz blocks with an interactive question type.
+  // Blocks with null/unknown types render a non-interactive placeholder and can never
+  // fire onComplete, so including them would permanently block lesson completion.
+  const INTERACTIVE_QUIZ_TYPES = new Set(['multiple_choice', 'true_false', 'categorize', 'select_all']);
   const currentLessonQuizBlockIds = React.useMemo(() => {
     if (!selectedLesson) return [];
     const blocks = lessonBlocks[selectedLesson.id] ?? [];
-    return blocks.filter(b => b.block_type === 'quiz_inline').map(b => b.id);
+    return blocks
+      .filter(b => b.block_type === 'quiz_inline' && INTERACTIVE_QUIZ_TYPES.has(b.data?.question_type as string))
+      .map(b => b.id);
   }, [selectedLesson, lessonBlocks]);
 
   const allQuizzesComplete = currentLessonQuizBlockIds.length === 0 ||
@@ -651,7 +657,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       <div className="p-8 max-w-lg mx-auto">
         <Card><CardContent className="py-12 text-center">
           <p className="text-muted-foreground mb-4">Course not found.</p>
-          <Button onClick={() => router.push('/gansid/student')}>Back to Courses</Button>
+          <Button onClick={() => router.push(withInstitutionPath('/student', pathname))}>Back to Courses</Button>
         </CardContent></Card>
       </div>
     );
@@ -757,7 +763,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
               <Button
                 onClick={() => {
                   setShowCertModal(false);
-                  router.push('/gansid/student/certificates');
+                  router.push(withInstitutionPath('/student/certificates', pathname));
                 }}
                 className="bg-[#1E3A5F] hover:bg-[#162d4a] font-bold"
               >
@@ -1063,7 +1069,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                     {/* Take Quiz in footer when on completion slide with quizzes */}
                     {isCompletionSlide && hasQuiz && (
                       <button
-                        onClick={() => selectedLesson && router.push(`/student/courses/${courseId}/lessons/${selectedLesson.id}/quiz`)}
+                        onClick={() => selectedLesson && router.push(withInstitutionPath(`/student/courses/${courseId}/lessons/${selectedLesson.id}/quiz`, pathname))}
                         className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10 rounded-xl transition-colors"
                       >
                         <Play className="h-4 w-4" />
@@ -1084,7 +1090,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         </button>
                       ) : (
                         <button
-                          onClick={() => router.push('/gansid/student')}
+                          onClick={() => router.push(withInstitutionPath('/student', pathname))}
                           aria-label="Back to dashboard"
                           className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#0F172A] hover:bg-[#1e293b] rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                         >
