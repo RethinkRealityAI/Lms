@@ -554,15 +554,30 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     });
   }, [selectedLesson]);
 
-  // Only gate on quiz blocks with an interactive question type.
-  // Blocks with null/unknown types render a non-interactive placeholder and can never
-  // fire onComplete, so including them would permanently block lesson completion.
+  // Only gate on quiz blocks that are (a) interactive type, (b) visible, and (c) answerable.
+  // Invisible blocks never render. Blocks with missing correct_answer or no options can never
+  // fire onComplete — including them would permanently block lesson completion.
   const INTERACTIVE_QUIZ_TYPES = new Set(['multiple_choice', 'true_false', 'categorize', 'select_all']);
   const currentLessonQuizBlockIds = React.useMemo(() => {
     if (!selectedLesson) return [];
     const blocks = lessonBlocks[selectedLesson.id] ?? [];
     return blocks
-      .filter(b => b.block_type === 'quiz_inline' && INTERACTIVE_QUIZ_TYPES.has(b.data?.question_type as string))
+      .filter(b => {
+        if (b.block_type !== 'quiz_inline') return false;
+        if (b.is_visible === false) return false;
+        const qt = b.data?.question_type as string;
+        if (!INTERACTIVE_QUIZ_TYPES.has(qt)) return false;
+        // Ensure the quiz is actually answerable
+        if (qt === 'multiple_choice' || qt === 'true_false' || qt === 'select_all') {
+          const hasOptions = (b.data?.options as unknown[])?.length > 0;
+          const hasAnswer = !!(b.data?.correct_answer as string);
+          return hasOptions && hasAnswer;
+        }
+        if (qt === 'categorize') {
+          return (b.data?.categories as unknown[])?.length > 0;
+        }
+        return true;
+      })
       .map(b => b.id);
   }, [selectedLesson, lessonBlocks]);
 
