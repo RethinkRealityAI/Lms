@@ -16,3 +16,4 @@ export * from './course-assignments';
 export * from './certificate-templates';
 export * from './certificates';
 export * from './institutions';
+export * from './surveys';
