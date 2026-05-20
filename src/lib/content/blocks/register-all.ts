@@ -9,6 +9,7 @@ import { calloutDataSchema } from './callout/schema';
 import { quizInlineDataSchema } from './quiz-inline/schema';
 import { videoDataSchema } from './video/schema';
 import { pageBreakDataSchema } from './page-break/schema';
+import { surveyDataSchema } from './survey/schema';
 
 registerBlockType({
   type: 'rich_text',
@@ -159,6 +160,22 @@ registerBlockType({
   ViewerComponent: React.lazy(() => import('@/components/blocks/page-break/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/page-break/editor').then((m) => ({ default: m.PageBreakEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'survey',
+  label: 'Survey',
+  description: 'Likert-scale and free-text feedback form.',
+  icon: 'clipboard-list',
+  category: 'interactive',
+  dataSchema: surveyDataSchema,
+  defaultData: { questions: [] },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/survey/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/survey/editor').then((m) => ({ default: m.SurveyEditor }))
   ),
   completionCriteria: () => true,
   version: 1,

@@ -1,9 +1,47 @@
 'use client';
 
 import { useRef } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, AlertTriangle } from 'lucide-react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
+
+/** Validate quiz config — returns issues that would cause the quiz to be
+ *  skipped by the completion gate (so it won't block students, but also
+ *  won't count as a real quiz). Mirrors course-viewer gate logic. */
+function getQuizIssues(data: QuizInlineData): string[] {
+  const issues: string[] = [];
+  const qt = data.question_type;
+  if (!qt) {
+    issues.push('Question type is not set');
+    return issues;
+  }
+  if (!data.question || !data.question.trim()) {
+    issues.push('Question text is empty');
+  }
+  if (qt === 'multiple_choice' || qt === 'select_all') {
+    const opts = data.options ?? [];
+    if (opts.length === 0) issues.push('No answer options added');
+    else if (opts.some((o) => !o.trim())) issues.push('One or more answer options are blank');
+    if (!data.correct_answer) {
+      issues.push(qt === 'select_all'
+        ? 'Correct answers not selected'
+        : 'Correct answer not selected');
+    } else if (qt === 'multiple_choice' && opts.length > 0 && !opts.includes(data.correct_answer)) {
+      issues.push('Correct answer no longer matches any option');
+    }
+  } else if (qt === 'true_false') {
+    if (!data.correct_answer) issues.push('Correct answer not selected (True or False)');
+  } else if (qt === 'categorize') {
+    const cats = data.categories ?? [];
+    if (cats.length === 0) issues.push('No categories added');
+    else {
+      if (cats.some((c) => !c.name.trim())) issues.push('One or more categories have no name');
+      if (cats.some((c) => c.items.length === 0)) issues.push('One or more categories have no items');
+      if (cats.some((c) => c.items.some((it) => !it.trim()))) issues.push('One or more category items are blank');
+    }
+  }
+  return issues;
+}
 
 const inputClass =
   'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent';
@@ -127,9 +165,28 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
   }
 
   const displayOptions = data.question_type === 'true_false' ? TRUE_FALSE_OPTIONS : options;
+  const issues = getQuizIssues(data);
 
   return (
     <div className="space-y-4">
+      {/* Incomplete-quiz warning — surfaces config that would cause the
+          completion gate to skip this quiz (so it doesn't block students). */}
+      {issues.length > 0 && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 flex gap-2.5"
+          role="alert"
+          aria-live="polite">
+          <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-xs text-amber-900 leading-relaxed">
+            <p className="font-semibold mb-1">This quiz is incomplete and will not count toward lesson completion:</p>
+            <ul className="list-disc list-inside space-y-0.5">
+              {issues.map((issue) => (
+                <li key={issue}>{issue}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {/* Question type selector */}
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-2">Question Type</label>
