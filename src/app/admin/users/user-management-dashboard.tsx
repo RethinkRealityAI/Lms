@@ -42,6 +42,7 @@ import { toast } from 'sonner';
 import Papa from 'papaparse';
 import { createClient } from '@/lib/supabase/client';
 import { GroupsTab } from '@/components/admin/groups-tab';
+import { UserDetailDialog } from '@/components/admin/user-detail-dialog';
 import type { LegacyUser, UserInvitation } from '@/types';
 import type { ActiveUser } from '@/lib/db/users';
 
@@ -574,6 +575,8 @@ function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institu
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [userGroupMap, setUserGroupMap] = useState<Record<string, string[]>>({});
+  const [detailUser, setDetailUser] = useState<ActiveUser | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   useEffect(() => {
     async function loadUserGroups() {
@@ -605,6 +608,7 @@ function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institu
   });
 
   return (
+    <>
     <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.04)] bg-white mt-4">
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -687,6 +691,7 @@ function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institu
                     </td>
                     <td className="text-right py-3 px-4">
                       <ActionMenu>
+                        <ActionItem onClick={() => { setDetailUser(u); setDetailOpen(true); }}>View Reviews & Surveys</ActionItem>
                         <ActionItem onClick={() => toast.info('Edit Details \u2014 Coming soon')}>Edit Details</ActionItem>
                         <ActionItem onClick={() => toast.info('Reset Password \u2014 Coming soon')}>Reset Password</ActionItem>
                         <ActionItem onClick={() => toast.info('Remove from Course \u2014 Coming soon')}>Remove from Course</ActionItem>
@@ -700,6 +705,13 @@ function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institu
         )}
       </CardContent>
     </Card>
+    <UserDetailDialog
+      user={detailUser}
+      institutionId={institutionId}
+      open={detailOpen}
+      onOpenChange={setDetailOpen}
+    />
+    </>
   );
 }
 

@@ -7,6 +7,7 @@ import {
   getCompletionTrend,
   getStudentProgress,
 } from '@/lib/db/analytics';
+import { getSurveyAnalyticsBundle } from '@/lib/db/surveys';
 import { AnalyticsDashboard } from './analytics-dashboard';
 
 export default async function AnalyticsPage() {
@@ -21,13 +22,14 @@ export default async function AnalyticsPage() {
     );
   }
 
-  const [platform, courses, enrollmentTrend, completionTrend, students] =
+  const [platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics] =
     await Promise.all([
       getPlatformStats(supabase, institutionId),
       getCourseStats(supabase, institutionId),
       getEnrollmentTrend(supabase, institutionId),
       getCompletionTrend(supabase, institutionId),
       getStudentProgress(supabase, institutionId),
+      getSurveyAnalyticsBundle(supabase, institutionId),
     ]);
 
   return (
@@ -37,6 +39,7 @@ export default async function AnalyticsPage() {
       enrollmentTrend={enrollmentTrend}
       completionTrend={completionTrend}
       students={students}
+      surveyAnalytics={surveyAnalytics}
     />
   );
 }

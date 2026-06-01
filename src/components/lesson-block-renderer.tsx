@@ -7,14 +7,17 @@ import '@/lib/content/blocks/register-all';
 import { BlockErrorBoundary } from '@/components/blocks/block-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import type { BlockViewerContext } from '@/lib/content/block-registry';
+
 interface LessonBlockRendererProps {
   block: LessonBlock;
   lessonTitle: string;
+  context?: BlockViewerContext;
   onComplete?: () => void;
   onQuizCorrect?: (blockId: string) => void;
 }
 
-export function LessonBlockRenderer({ block, lessonTitle, onComplete, onQuizCorrect }: LessonBlockRendererProps) {
+export function LessonBlockRenderer({ block, lessonTitle, context, onComplete, onQuizCorrect }: LessonBlockRendererProps) {
   if (!block.is_visible) return null;
 
   const definition = getBlockType(block.block_type);
@@ -43,6 +46,7 @@ export function LessonBlockRenderer({ block, lessonTitle, onComplete, onQuizCorr
             title: block.title ?? lessonTitle,
             is_visible: block.is_visible,
           }}
+          context={context}
           onComplete={handleComplete}
         />
       </Suspense>

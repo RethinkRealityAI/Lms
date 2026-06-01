@@ -15,4 +15,7 @@ export * from './groups';
 export * from './course-assignments';
 export * from './certificate-templates';
 export * from './certificates';
+export * from './programs';
 export * from './institutions';
+export * from './surveys';
+export * from './survey-templates';

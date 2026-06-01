@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
+import type { BlockViewerContext } from '@/lib/content/block-registry';
 import { LessonBlockRenderer, createFallbackBlockFromLesson } from '@/components/lesson-block-renderer';
 import { sortBlocks } from '@/lib/content/lesson-blocks';
 import dynamic from 'next/dynamic';
@@ -115,10 +116,11 @@ function getSlideBackground(settings?: SlideSettings): React.CSSProperties {
 // ---------------------------------------------------------------------------
 // Grid Block Renderer — CSS Grid for blocks with grid positions, vertical stack for legacy
 // ---------------------------------------------------------------------------
-function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect }: {
+function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, context }: {
   blocks: LessonBlock[];
   lessonTitle?: string;
   onQuizCorrect?: (blockId: string) => void;
+  context?: BlockViewerContext;
 }) {
   if (!blocks.length) return null;
 
@@ -132,7 +134,7 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect }: {
     return (
       <div className="flex flex-col gap-4">
         {blocks.map(block => (
-          <LessonBlockRenderer key={block.id} block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} />
+          <LessonBlockRenderer key={block.id} block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} context={context} />
         ))}
       </div>
     );
@@ -160,7 +162,7 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect }: {
               gridRow: `${layout.gridY + 1} / ${layout.gridY + layout.gridH + 1}`,
             }}
           >
-            <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} />
+            <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} context={context} />
           </div>
         );
       })}
@@ -553,6 +555,13 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       return { ...prev, [selectedLesson.id]: next };
     });
   }, [selectedLesson]);
+
+  const blockContext = React.useMemo<BlockViewerContext>(() => ({
+    courseId,
+    lessonId: selectedLesson?.id,
+    institutionId: course?.institution_id ?? undefined,
+    previewMode,
+  }), [courseId, selectedLesson?.id, course?.institution_id, previewMode]);
 
   // Only gate on quiz blocks with an interactive question type.
   // Blocks with null/unknown types render a non-interactive placeholder and can never
@@ -1005,6 +1014,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                               blocks={hasPages ? pages[subPage] ?? pages[0] : currentSlideData.blocks}
                               lessonTitle={selectedLesson.title}
                               onQuizCorrect={handleQuizCorrect}
+                              context={blockContext}
                             />
                           </SlideContentArea>
                         </div>

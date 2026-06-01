@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal, Paintbrush } from 'lucide-react';
+import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal, Paintbrush, ClipboardList } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -31,6 +31,7 @@ const AVAILABLE_BLOCKS = [
   { type: 'video', label: 'Video', icon: Video, color: 'text-red-500 bg-red-50' },
   { type: 'cta', label: 'Button', icon: Square, color: 'text-indigo-500 bg-indigo-50' },
   { type: 'quiz_inline', label: 'Quiz', icon: CheckSquare, color: 'text-orange-500 bg-orange-50' },
+  { type: 'survey', label: 'Survey', icon: ClipboardList, color: 'text-violet-600 bg-violet-50' },
   { type: 'callout', label: 'Callout', icon: HelpCircle, color: 'text-yellow-600 bg-yellow-50' },
   { type: 'pdf', label: 'PDF Viewer', icon: FileIcon, color: 'text-rose-500 bg-rose-50' },
   { type: 'iframe', label: 'Embed (iframe)', icon: Code, color: 'text-purple-500 bg-purple-50' },

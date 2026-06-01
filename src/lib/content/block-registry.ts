@@ -9,9 +9,17 @@ export interface BlockEditorProps<TData = Record<string, unknown>> {
   onChange: (data: TData) => void;
 }
 
+export interface BlockViewerContext {
+  courseId?: string;
+  lessonId?: string;
+  institutionId?: string;
+  previewMode?: boolean;
+}
+
 export interface BlockViewerProps<TData = Record<string, unknown>> {
   data: TData;
   block: { id: string; title?: string; is_visible: boolean };
+  context?: BlockViewerContext;
   onComplete?: () => void;
 }
 

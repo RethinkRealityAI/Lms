@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Clock,
   Star,
+  ClipboardList,
 } from 'lucide-react';
 import type {
   PlatformStats,
@@ -24,6 +25,12 @@ import type {
   CompletionTrend,
   StudentProgress,
 } from '@/lib/db/analytics';
+import type {
+  CourseSurveySummary,
+  SurveyBlockSummary,
+  SurveyResponseWithMeta,
+} from '@/lib/db/surveys';
+import { SurveysAnalyticsTab } from '@/components/admin/surveys-analytics-tab';
 
 interface Props {
   platform: PlatformStats | null;
@@ -31,6 +38,11 @@ interface Props {
   enrollmentTrend: EnrollmentTrend[];
   completionTrend: CompletionTrend[];
   students: StudentProgress[];
+  surveyAnalytics: {
+    summaries: CourseSurveySummary[];
+    blocksByCourse: Record<string, SurveyBlockSummary[]>;
+    responsesByBlock: Record<string, SurveyResponseWithMeta[]>;
+  };
 }
 
 function StatCard({
@@ -271,7 +283,7 @@ function StudentLeaderboard({ students }: { students: StudentProgress[] }) {
   );
 }
 
-export function AnalyticsDashboard({ platform, courses, enrollmentTrend, completionTrend, students }: Props) {
+export function AnalyticsDashboard({ platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics }: Props) {
   const raw = platform ?? {
     total_institutions: 0,
     total_users: 0,
@@ -358,6 +370,10 @@ export function AnalyticsDashboard({ platform, courses, enrollmentTrend, complet
             <Users className="h-4 w-4 mr-2" />
             Student Progress
           </TabsTrigger>
+          <TabsTrigger value="surveys" className="rounded-lg font-bold text-sm px-4">
+            <ClipboardList className="h-4 w-4 mr-2" />
+            Surveys
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses">
@@ -386,6 +402,14 @@ export function AnalyticsDashboard({ platform, courses, enrollmentTrend, complet
               <StudentLeaderboard students={students} />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="surveys">
+          <SurveysAnalyticsTab
+            summaries={surveyAnalytics.summaries}
+            blocksByCourse={surveyAnalytics.blocksByCourse}
+            responsesByBlock={surveyAnalytics.responsesByBlock}
+          />
         </TabsContent>
       </Tabs>
     </div>

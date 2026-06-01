@@ -9,6 +9,7 @@ import { calloutDataSchema } from './callout/schema';
 import { quizInlineDataSchema } from './quiz-inline/schema';
 import { videoDataSchema } from './video/schema';
 import { pageBreakDataSchema } from './page-break/schema';
+import { surveyDataSchema } from './survey/schema';
 
 registerBlockType({
   type: 'rich_text',
@@ -145,6 +146,26 @@ registerBlockType({
   defaultData: { contentKey: '' },
   ViewerComponent: React.lazy(() => import('@/components/blocks/h5p/viewer')),
   EditorComponent: null,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'survey',
+  label: 'Survey',
+  description: 'Multi-question survey with mixed question types and saved responses.',
+  icon: 'clipboard-list',
+  category: 'assessment',
+  dataSchema: surveyDataSchema,
+  defaultData: {
+    title: 'Survey',
+    submit_label: 'Submit Survey',
+    questions: [],
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/survey/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/survey/editor').then((m) => ({ default: m.SurveyEditor }))
+  ),
+  completionCriteria: () => true,
   version: 1,
 });
 
