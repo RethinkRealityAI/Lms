@@ -8,9 +8,6 @@ export const DISPLAY_SIZE_CLASS: Record<ImageGalleryDisplaySize, string> = {
   xl: 'max-h-64 sm:max-h-80',
 };
 
-/** Applied on the `<img>` so wrappers stay content-sized (no empty flex gap). */
-export const DISPLAY_SIZE_IMG_CLASS: Record<ImageGalleryDisplaySize, string> = DISPLAY_SIZE_CLASS;
-
 export const DISPLAY_SIZE_LABEL: Record<ImageGalleryDisplaySize, string> = {
   sm: 'Small',
   md: 'Medium',

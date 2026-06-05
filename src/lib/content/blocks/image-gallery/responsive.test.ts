@@ -39,6 +39,15 @@ describe('resolveImageLayout', () => {
     expect(mobile.widthPreset).toBe('md');  // explicit mobile override beats the full default
   });
 
+  it('mobile inherits an explicit tablet width; otherwise defaults to full', () => {
+    // explicit tablet width, no mobile override → mobile inherits tablet
+    const withTablet = base({ widthPreset: 'md', responsive: { tablet: { widthPreset: 'lg' } } });
+    expect(resolveImageLayout(withTablet, 'mobile').widthPreset).toBe('lg');
+    // desktop width set, but tablet NOT explicitly overridden → mobile still defaults to full
+    const noTablet = base({ widthPreset: 'md' });
+    expect(resolveImageLayout(noTablet, 'mobile').widthPreset).toBe('full');
+  });
+
   it('handles legacy data with missing base fields', () => {
     const r = resolveImageLayout({ images: [] } as unknown as ImageGalleryData, 'desktop');
     expect(r).toMatchObject({ objectFit: 'contain', displaySize: 'md', columns: 2, widthPreset: 'full', align: 'center' });

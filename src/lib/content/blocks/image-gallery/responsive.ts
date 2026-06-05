@@ -59,7 +59,8 @@ export function resolveImageLayout(data: ImageGalleryData, bp: ImageBreakpoint):
     objectFit: mobileOv.objectFit ?? tablet.objectFit,
     displaySize: mobileOv.displaySize ?? tablet.displaySize,
     columns: mobileOv.columns ?? 1,
-    widthPreset: mobileOv.widthPreset ?? 'full',
+    // Inherit an explicit tablet width; otherwise default mobile to full-width.
+    widthPreset: mobileOv.widthPreset ?? (tabletOv.widthPreset !== undefined ? tablet.widthPreset : 'full'),
     align: mobileOv.align ?? tablet.align,
   };
 }

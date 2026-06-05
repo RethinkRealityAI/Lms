@@ -27,8 +27,8 @@ export const imageGalleryDataSchema = z.object({
   mode: z.enum(['single', 'gallery', 'slider', 'carousel']).default('single'),
   /** Grid mode only: stack vertically vs. lay out side-by-side in columns. */
   gridLayout: z.enum(['stacked', 'sideBySide']).default('sideBySide').optional(),
-  /** Grid mode only: number of columns when side-by-side (2, 3, or 4). */
-  columns: z.number().int().min(2).max(4).default(2).optional(),
+  /** Grid mode only: number of columns when side-by-side (1–4). */
+  columns: z.number().int().min(1).max(4).default(2).optional(),
   /** CSS aspect-ratio value: 'original' | '16/9' | '4/3' | '1/1' */
   aspectRatio: z.string().optional(),
   /** CSS object-fit — defaults to contain so full images show in the grid. */
