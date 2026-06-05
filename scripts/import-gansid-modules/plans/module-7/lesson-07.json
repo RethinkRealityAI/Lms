@@ -89,18 +89,18 @@
           "title": null,
           "data": {
             "columns": [
-              { "key": "letter", "label": "Letter" },
-              { "key": "meaning", "label": "Meaning" },
-              { "key": "question", "label": "Key Question" }
+              { "id": "col-letter", "label": "Letter", "align": "left" },
+              { "id": "col-meaning", "label": "Meaning", "align": "left" },
+              { "id": "col-question", "label": "Key Question", "align": "left" }
             ],
             "rows": [
-              { "cells": { "letter": "S", "meaning": "Specific", "question": "Anyone can understand what is trying to be achieved." } },
-              { "cells": { "letter": "M", "meaning": "Measurable", "question": "Can you see what success would look like?" } },
-              { "cells": { "letter": "A", "meaning": "Achievable", "question": "Does this objective match the capacity of your organization?" } },
-              { "cells": { "letter": "R", "meaning": "Realistic", "question": "Can this be done in the space/time you have set out for it?" } },
-              { "cells": { "letter": "T", "meaning": "Timebound", "question": "When do you see this objective being achieved?" } },
-              { "cells": { "letter": "I", "meaning": "Inclusive", "question": "Does this objective serve the community?" } },
-              { "cells": { "letter": "E", "meaning": "Equitable", "question": "Are we insuring that the objective prioritizes equity in the community?" } }
+              { "id": "row-s", "cells": { "col-letter": "S", "col-meaning": "Specific", "col-question": "Anyone can understand what is trying to be achieved." } },
+              { "id": "row-m", "cells": { "col-letter": "M", "col-meaning": "Measurable", "col-question": "Can you see what success would look like?" } },
+              { "id": "row-a", "cells": { "col-letter": "A", "col-meaning": "Achievable", "col-question": "Does this objective match the capacity of your organization?" } },
+              { "id": "row-r", "cells": { "col-letter": "R", "col-meaning": "Realistic", "col-question": "Can this be done in the space/time you have set out for it?" } },
+              { "id": "row-t", "cells": { "col-letter": "T", "col-meaning": "Timebound", "col-question": "When do you see this objective being achieved?" } },
+              { "id": "row-i", "cells": { "col-letter": "I", "col-meaning": "Inclusive", "col-question": "Does this objective serve the community?" } },
+              { "id": "row-e", "cells": { "col-letter": "E", "col-meaning": "Equitable", "col-question": "Are we insuring that the objective prioritizes equity in the community?" } }
             ],
             "first_column_header": true,
             "gridX": 0,

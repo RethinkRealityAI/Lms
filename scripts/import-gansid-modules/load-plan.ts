@@ -36,6 +36,8 @@
 import fs from 'fs';
 import path from 'path';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { normalizeTableData } from '../../src/lib/content/blocks/table/normalize';
+import type { TableData } from '../../src/lib/content/blocks/table/schema';
 
 const GANSID_INSTITUTION_ID = '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a';
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
@@ -91,6 +93,7 @@ function validate(plan: Plan): string[] {
         const d = b.data as { columns?: Array<Record<string, unknown>>; rows?: Array<{ cells?: Record<string, string> }> };
         for (const c of d.columns ?? []) {
           if (!('label' in c)) errs.push(`slide ${s.orderIndex} block ${b.orderIndex}: table column missing 'label' (use label, not header)`);
+          if ('key' in c && !('id' in c)) errs.push(`slide ${s.orderIndex} block ${b.orderIndex}: table column uses 'key' — use 'id' (loader auto-fixes on insert)`);
         }
         for (const r of d.rows ?? []) {
           for (const [k, v] of Object.entries(r.cells ?? {})) {
@@ -118,6 +121,12 @@ function normalizeImageGalleryData(data: Record<string, unknown>): Record<string
   d.displaySize = 'lg';
   delete d.aspectRatio;
   return d;
+}
+
+function normalizeBlockData(blockType: string, data: Record<string, unknown>): Record<string, unknown> {
+  if (blockType === 'image_gallery') return normalizeImageGalleryData(data);
+  if (blockType === 'table') return normalizeTableData(data as TableData) as Record<string, unknown>;
+  return data;
 }
 
 async function loadPlan(supabase: SupabaseClient, plan: Plan, dry: boolean) {
@@ -165,10 +174,7 @@ async function loadPlan(supabase: SupabaseClient, plan: Plan, dry: boolean) {
   for (const s of plan.slides) {
     const slideId = slideIdByOrder.get(s.orderIndex);
     for (const b of s.blocks) {
-      const data =
-        b.blockType === 'image_gallery' && b.data
-          ? normalizeImageGalleryData(b.data as Record<string, unknown>)
-          : b.data;
+      const data = b.data ? normalizeBlockData(b.blockType, b.data as Record<string, unknown>) : b.data;
       blockRows.push({
         lesson_id: plan.lessonId,
         slide_id: slideId,

@@ -391,14 +391,14 @@
           "title": null,
           "data": {
             "columns": [
-              { "key": "component", "label": "Component" },
-              { "key": "description", "label": "Description" }
+              { "id": "col-component", "label": "Component", "align": "left" },
+              { "id": "col-description", "label": "Description", "align": "left" }
             ],
             "rows": [
-              { "cells": { "component": "Self-Awareness", "description": "Recognizing your own emotions and their impact." } },
-              { "cells": { "component": "Self-Regulation", "description": "Managing your emotions and impulses constructively." } },
-              { "cells": { "component": "Empathy", "description": "Understanding and sharing the feelings of others." } },
-              { "cells": { "component": "Social Skills", "description": "Building and managing healthy relationships." } }
+              { "id": "row-self-awareness", "cells": { "col-component": "Self-Awareness", "col-description": "Recognizing your own emotions and their impact." } },
+              { "id": "row-self-regulation", "cells": { "col-component": "Self-Regulation", "col-description": "Managing your emotions and impulses constructively." } },
+              { "id": "row-empathy", "cells": { "col-component": "Empathy", "col-description": "Understanding and sharing the feelings of others." } },
+              { "id": "row-social-skills", "cells": { "col-component": "Social Skills", "col-description": "Building and managing healthy relationships." } }
             ],
             "first_column_header": true,
             "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3

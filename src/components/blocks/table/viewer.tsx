@@ -4,6 +4,7 @@ import { useMemo, type CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { TableData } from '@/lib/content/blocks/table/schema';
+import { normalizeTableData } from '@/lib/content/blocks/table/normalize';
 import { BLOCK_CONTENT_SHELL, SURFACE_HEADING, surfaceMutedClass } from '@/lib/content/block-surface-tokens';
 
 /** Pick black or white text for legibility on a given hex background. */
@@ -26,8 +27,9 @@ const ALIGN_CLASS: Record<string, string> = {
 };
 
 export default function TableViewer({ data }: BlockViewerProps<TableData>) {
-  const columns = useMemo(() => data.columns ?? [], [data.columns]);
-  const rows = useMemo(() => data.rows ?? [], [data.rows]);
+  const normalized = useMemo(() => normalizeTableData(data), [data]);
+  const columns = normalized.columns ?? [];
+  const rows = normalized.rows ?? [];
   const striped = data.striped ?? true;
   const firstColHeader = data.first_column_header ?? false;
   const compact = data.density === 'compact';

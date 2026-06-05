@@ -31,16 +31,16 @@
           "title": null,
           "data": {
             "columns": [
-              { "key": "component", "label": "Component" },
-              { "key": "definition", "label": "Definition" },
-              { "key": "example", "label": "Example" }
+              { "id": "col-component", "label": "Component", "align": "left" },
+              { "id": "col-definition", "label": "Definition", "align": "left" },
+              { "id": "col-example", "label": "Example", "align": "left" }
             ],
             "rows": [
-              { "cells": { "component": "Inputs", "definition": "Resources that your organization brings to the project.", "example": "Budget, Personnel, Materials" } },
-              { "cells": { "component": "Activities", "definition": "Specific actions taken by your organization.", "example": "Conducting training workshops." } },
-              { "cells": { "component": "Outputs", "definition": "Tangible products or services produced as a result of activities.", "example": "Number of new clients signed." } },
-              { "cells": { "component": "Outcomes", "definition": "Short to medium-term changes or benefits for stakeholders.", "example": "Improved knowledge and skills among staff members as a result of a training session." } },
-              { "cells": { "component": "Impact", "definition": "Long-term changes or broader effects on the community or system.", "example": "Increased employment rates due to improved skills." } }
+              { "id": "row-inputs", "cells": { "col-component": "Inputs", "col-definition": "Resources that your organization brings to the project.", "col-example": "Budget, Personnel, Materials" } },
+              { "id": "row-activities", "cells": { "col-component": "Activities", "col-definition": "Specific actions taken by your organization.", "col-example": "Conducting training workshops." } },
+              { "id": "row-outputs", "cells": { "col-component": "Outputs", "col-definition": "Tangible products or services produced as a result of activities.", "col-example": "Number of new clients signed." } },
+              { "id": "row-outcomes", "cells": { "col-component": "Outcomes", "col-definition": "Short to medium-term changes or benefits for stakeholders.", "col-example": "Improved knowledge and skills among staff members as a result of a training session." } },
+              { "id": "row-impact", "cells": { "col-component": "Impact", "col-definition": "Long-term changes or broader effects on the community or system.", "col-example": "Increased employment rates due to improved skills." } }
             ],
             "first_column_header": true,
             "gridX": 0,

@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Plus, Trash2, ChevronUp, ChevronDown, AlignLeft, AlignCenter, AlignRight, Columns3, Rows3 } from 'lucide-react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
-import type { TableData, TableColumn, TableRow } from '@/lib/content/blocks/table/schema';
+import type { TableData, TableColumn } from '@/lib/content/blocks/table/schema';
+import { normalizeTableData } from '@/lib/content/blocks/table/normalize';
 
 const inputClass =
   'w-full px-2.5 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent';
@@ -19,21 +21,21 @@ const ALIGN_OPTS = [
 ];
 
 export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
-  const columns = data.columns ?? [];
-  const rows = data.rows ?? [];
+  const normalized = useMemo(() => normalizeTableData(data), [data]);
+  const columns = normalized.columns ?? [];
+  const rows = normalized.rows ?? [];
+  const patch = (next: Partial<TableData>) => onChange({ ...normalized, ...next });
 
   // ── Columns ────────────────────────────────────────────────────────────────
-  const updateColumn = (id: string, patch: Partial<TableColumn>) =>
-    onChange({ ...data, columns: columns.map((c) => (c.id === id ? { ...c, ...patch } : c)) });
+  const updateColumn = (id: string, patchCol: Partial<TableColumn>) =>
+    patch({ columns: columns.map((c) => (c.id === id ? { ...c, ...patchCol } : c)) });
 
   const addColumn = () =>
-    onChange({ ...data, columns: [...columns, { id: newId('col'), label: '', align: 'left' }] });
+    patch({ columns: [...columns, { id: newId('col'), label: '', align: 'left' }] });
 
   const removeColumn = (id: string) =>
-    onChange({
-      ...data,
+    patch({
       columns: columns.filter((c) => c.id !== id),
-      // Tidy up any orphaned cell values for the removed column.
       rows: rows.map((r) => {
         const { [id]: _drop, ...rest } = r.cells ?? {};
         return { ...r, cells: rest };
@@ -45,22 +47,21 @@ export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
     if (j < 0 || j >= columns.length) return;
     const next = [...columns];
     [next[i], next[j]] = [next[j], next[i]];
-    onChange({ ...data, columns: next });
+    patch({ columns: next });
   };
 
   // ── Rows ───────────────────────────────────────────────────────────────────
-  const addRow = () => onChange({ ...data, rows: [...rows, { id: newId('row'), cells: {} }] });
-  const removeRow = (id: string) => onChange({ ...data, rows: rows.filter((r) => r.id !== id) });
+  const addRow = () => patch({ rows: [...rows, { id: newId('row'), cells: {} }] });
+  const removeRow = (id: string) => patch({ rows: rows.filter((r) => r.id !== id) });
   const moveRow = (i: number, dir: -1 | 1) => {
     const j = i + dir;
     if (j < 0 || j >= rows.length) return;
     const next = [...rows];
     [next[i], next[j]] = [next[j], next[i]];
-    onChange({ ...data, rows: next });
+    patch({ rows: next });
   };
   const setCell = (rowId: string, colId: string, value: string) =>
-    onChange({
-      ...data,
+    patch({
       rows: rows.map((r) => (r.id === rowId ? { ...r, cells: { ...r.cells, [colId]: value } } : r)),
     });
 
@@ -71,12 +72,12 @@ export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Title (optional)</label>
           <input type="text" value={data.title ?? ''} placeholder="e.g. Symptom comparison"
-            onChange={(e) => onChange({ ...data, title: e.target.value || undefined })} className={inputClass} />
+            onChange={(e) => patch({ title: e.target.value || undefined })} className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Description (optional)</label>
           <input type="text" value={data.description ?? ''} placeholder="A short line introducing the table"
-            onChange={(e) => onChange({ ...data, description: e.target.value || undefined })} className={inputClass} />
+            onChange={(e) => patch({ description: e.target.value || undefined })} className={inputClass} />
         </div>
       </div>
 
@@ -166,18 +167,18 @@ export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
         <label className="flex items-center justify-between cursor-pointer">
           <span className="text-xs text-gray-600">Striped rows</span>
           <input type="checkbox" checked={data.striped ?? true}
-            onChange={(e) => onChange({ ...data, striped: e.target.checked })} className="accent-[#1A3C6E] w-4 h-4" />
+            onChange={(e) => patch({ striped: e.target.checked })} className="accent-[#1A3C6E] w-4 h-4" />
         </label>
         <label className="flex items-center justify-between cursor-pointer">
           <span className="text-xs text-gray-600">Bold first column</span>
           <input type="checkbox" checked={data.first_column_header ?? false}
-            onChange={(e) => onChange({ ...data, first_column_header: e.target.checked })} className="accent-[#1A3C6E] w-4 h-4" />
+            onChange={(e) => patch({ first_column_header: e.target.checked })} className="accent-[#1A3C6E] w-4 h-4" />
         </label>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-600">Density</span>
           <div className="flex rounded-lg overflow-hidden border border-gray-200">
             {(['comfortable', 'compact'] as const).map((d) => (
-              <button key={d} type="button" onClick={() => onChange({ ...data, density: d })}
+              <button key={d} type="button" onClick={() => patch({ density: d })}
                 className={`px-3 py-1 text-xs font-semibold capitalize transition-all ${(data.density ?? 'comfortable') === d ? 'bg-[#1A3C6E] text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}>
                 {d}
               </button>
@@ -190,7 +191,7 @@ export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">Footnote (optional)</label>
         <input type="text" value={data.footnote ?? ''} placeholder="e.g. Source: WHO, 2024"
-          onChange={(e) => onChange({ ...data, footnote: e.target.value || undefined })} className={inputClass} />
+          onChange={(e) => patch({ footnote: e.target.value || undefined })} className={inputClass} />
       </div>
 
       {/* Appearance */}
@@ -204,7 +205,7 @@ export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
           return (
             <div key={rowDef.key} className="flex items-center gap-2">
               <input type="color" value={val || rowDef.fallback}
-                onChange={(e) => onChange({ ...data, [rowDef.key]: e.target.value })}
+                onChange={(e) => patch({ [rowDef.key]: e.target.value })}
                 className="h-8 w-9 shrink-0 rounded border border-gray-200 cursor-pointer bg-white p-0.5"
                 aria-label={`${rowDef.label} colour`} />
               <div className="min-w-0 flex-1">
@@ -212,7 +213,7 @@ export function TableEditor({ data, onChange }: BlockEditorProps<TableData>) {
                 <p className="text-[10px] text-gray-400 leading-tight truncate">{rowDef.hint}</p>
               </div>
               {val && (
-                <button type="button" onClick={() => onChange({ ...data, [rowDef.key]: undefined })}
+                <button type="button" onClick={() => patch({ [rowDef.key]: undefined })}
                   className="text-[10px] font-medium text-gray-400 hover:text-red-500 shrink-0">Reset</button>
               )}
             </div>

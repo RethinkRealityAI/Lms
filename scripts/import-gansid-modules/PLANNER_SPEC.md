@@ -56,7 +56,7 @@ v2 incorporates corrections from the Module 3 review. **Fidelity is the top prio
 |---|---|
 | Paragraphs / headings | `rich_text` (verbatim text, clean HTML) |
 | Bullet / numbered / step list, learning objectives | `content_list` |
-| Table | `table` (ALWAYS) — columns use `label` (NOT `header`); cells are PLAIN TEXT (no HTML/markdown). Use `first_column_header: true` to emphasize the first column instead of bold markup. |
+| Table | `table` (ALWAYS) — columns use `id` + `label` (NOT `key` or `header`); each row needs an `id`; cells keyed by column `id`. Cells are PLAIN TEXT (no HTML/markdown). Use `first_column_header: true` to emphasize the first column instead of bold markup. |
 | Tip / Note / info-box | `callout` |
 | Single image | `image_gallery` with `mode: "single"` (full width), **no** `aspectRatio` (original), `objectFit: "contain"`, `displaySize: "lg"` |
 | Multiple images | `image_gallery` mode gallery, interspersed |
