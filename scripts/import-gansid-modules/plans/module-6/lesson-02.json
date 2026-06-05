@@ -1,0 +1,55 @@
+{
+  "lessonId": "d316c081-41ce-4cf4-8015-d9fa84c0ed48",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Learning Objectives",
+  "lessonDescription": "Following completion of this module, patient organizations will be able to:",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Following completion of this module, patient organizations will be able to:",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Learn how to build a culture of openness, transparency, and inclusivity.</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Improve their engagement with public audiences through contexts of in-person and virtual meetings.</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Elevate their social media presence.</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Apply critical thinking skills from the knowledge gained in this course module to their locality or country based on the case studies presented.</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -1,0 +1,32 @@
+{
+  "lessonId": "b9bfaf42-7cf4-402b-b09a-ac07e09fdf8e",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Introduction",
+  "lessonDescription": "Effective grant proposals boost your chances of securing funds for daily operations and programs. In this module, learners will acquire the skills to effectively approach grant writing to ensure their organization's sustainability and growth.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Introduction to Grant Writing",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective grant proposals boost your chances of securing funds for daily operations and programs. In this module, learners will acquire the skills to effectively approach grant writing to ensure their organization's sustainability and growth.</p><p><em>Author: Lanre Tunji-Ajayi M.S.M | Image credits: Canva</em></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

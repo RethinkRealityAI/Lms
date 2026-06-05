@@ -1,0 +1,61 @@
+{
+  "lessonId": "78339ca5-fb42-403b-a890-1ec1591f8b11",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Recap Module 2: Fundraising Strategies that Drive Results",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Matching gift arrangements, with the company matching any dollars donated by their employees with an equivalent donation, is an example of corporate partnership.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! Matching gift arrangements where a company matches employee donations are indeed an example of a corporate partnership.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Major gifts are the largest donations an organization receives from a single source in a single fiscal year.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! Major gifts are defined as the largest donations an organization receives from a single source in a single fiscal year.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? In Peer-to-Peer fundraising, donors have direct access to friends, family members, coworkers, and other peers that may have never heard of your organization.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! In Peer-to-Peer fundraising, donors leverage their personal networks — including friends, family, coworkers, and peers — many of whom may never have heard of the organization before.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

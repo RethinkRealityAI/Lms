@@ -1,0 +1,171 @@
+{
+  "lessonId": "5a4fb917-d142-4509-a075-86e6cab7486d",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Recap Module 5: Project Management",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of the Monitoring and Controlling Phase in project management?",
+            "options": [
+              "Track project performance and address variances from the plan",
+              "Define project scope and requirements",
+              "Implement the project plan by executing tasks and activities",
+              "Complete project deliverables and obtain formal acceptance"
+            ],
+            "correct_answer": "Track project performance and address variances from the plan",
+            "show_feedback": true,
+            "feedback_correct": "The Monitoring and Controlling Phase is used to track project performance and address variances from the plan.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of the RACI matrix in project management?",
+            "options": [
+              "To clarify roles and responsibilities for tasks or decisions",
+              "To track project progress and make adjustments as needed",
+              "To handle unexpected problems and find creative solutions",
+              "To communicate effectively with the project team and foster a positive working environment"
+            ],
+            "correct_answer": "To clarify roles and responsibilities for tasks or decisions",
+            "show_feedback": true,
+            "feedback_correct": "The RACI matrix is used to clarify roles and responsibilities for tasks or decisions within a project.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of conducting a needs assessment in healthcare projects?",
+            "options": [
+              "To identify specific needs, preferences, and challenges faced by individuals, families, or communities",
+              "To analyze demographic data and community health indicators",
+              "To establish clear and measurable objectives for the project",
+              "To involve individuals, groups, or organizations with a vested interest in the project"
+            ],
+            "correct_answer": "To identify specific needs, preferences, and challenges faced by individuals, families, or communities",
+            "show_feedback": true,
+            "feedback_correct": "A needs assessment is conducted to identify specific needs, preferences, and challenges faced by individuals, families, or communities.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can an implementation plan contribute to the success of a healthcare project?",
+            "options": [
+              "By outlining specific activities, timelines, and responsibilities required to achieve project objectives",
+              "By involving individuals, groups, or organizations with a vested interest or influence",
+              "By establishing clear and measurable objectives for the project",
+              "By assessing resource needs and constraints"
+            ],
+            "correct_answer": "By outlining specific activities, timelines, and responsibilities required to achieve project objectives",
+            "show_feedback": true,
+            "feedback_correct": "An implementation plan contributes to success by outlining the specific activities, timelines, and responsibilities required to achieve project objectives.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can stakeholder engagement contribute to the success of a healthcare project?",
+            "options": [
+              "By involving individuals, groups, or organizations with a vested interest or influence",
+              "By conducting surveys, interviews, or focus groups",
+              "By establishing clear and measurable objectives for the project",
+              "By assessing resource needs and constraints"
+            ],
+            "correct_answer": "By involving individuals, groups, or organizations with a vested interest or influence",
+            "show_feedback": true,
+            "feedback_correct": "Stakeholder engagement contributes to success by involving individuals, groups, or organizations with a vested interest or influence in the project.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which phase of project management involves coordinating tasks and assigning roles to team members?",
+            "options": [
+              "Putting Plans into Action",
+              "Understanding the Basics",
+              "Planning Like a Pro",
+              "Reflecting and Improving"
+            ],
+            "correct_answer": "Putting Plans into Action",
+            "show_feedback": true,
+            "feedback_correct": "The 'Putting Plans into Action' (Execution) phase involves coordinating tasks and assigning roles to team members.",
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the main goal of the Planning Phase in project management?",
+            "options": [
+              "Define project scope, deliverables, and requirements",
+              "Implement the project plan by executing tasks and activities",
+              "Track project performance and address variances from the plan",
+              "Complete all project deliverables and obtain formal acceptance"
+            ],
+            "correct_answer": "Define project scope, deliverables, and requirements",
+            "show_feedback": true,
+            "feedback_correct": "The main goal of the Planning Phase is to define project scope, deliverables, and requirements.",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which phase of project management involves identifying stakeholders and establishing communication channels?",
+            "options": [
+              "Initiation Phase",
+              "Planning Phase",
+              "Execution Phase",
+              "Closing Phase"
+            ],
+            "correct_answer": "Initiation Phase",
+            "show_feedback": true,
+            "feedback_correct": "The Initiation Phase involves identifying stakeholders and establishing communication channels.",
+            "gridX": 0, "gridY": 7, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -1,0 +1,163 @@
+{
+  "lessonId": "db509fee-91cd-4328-a50a-7cdc5c0c9a50",
+  "lessonOrderIndex": 5,
+  "lessonTitle": "Concept Note Development",
+  "lessonDescription": "The 4 Key Ingredients of an Effective Concept Note",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "The 4 Key Ingredients of an Effective Concept Note",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>The 4 Key Ingredients of an Effective Concept Note</h2>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_06_Lesson_5_Concept_Note_Development/0001-5529726424111794426_g3i47h.png",
+                "alt": "The 4 Key Ingredients of an Effective Concept Note",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_06_Lesson_5_Concept_Note_Development/0001-2877106241511257338_vwiyuv.png",
+                "alt": "Concept note component illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_06_Lesson_5_Concept_Note_Development/0001-3469329593610822021_jd155z.png",
+                "alt": "Concept note component illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              { "id": "col-component", "label": "Component", "align": "left" },
+              { "id": "col-description", "label": "Description", "align": "left" }
+            ],
+            "rows": [
+              { "id": "row-1", "cells": { "col-component": "Background", "col-description": "The problem or need you are trying to address." } },
+              { "id": "row-2", "cells": { "col-component": "Objective", "col-description": "What you want to achieve \u2014 your goal." } },
+              { "id": "row-3", "cells": { "col-component": "Rationale", "col-description": "How you plan to carry out the work (the approach and resources needed)." } },
+              { "id": "row-4", "cells": { "col-component": "Next Steps", "col-description": "What comes after stakeholder buy-in \u2014 immediate actions to move forward." } }
+            ],
+            "striped": true,
+            "first_column_header": true,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Example Concept Note: Webinar Series on Mental Health",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p><strong>Project: Webinar Series on Mental Health</strong></p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_06_Lesson_5_Concept_Note_Development/0001-7219702182777061528_u0al1s.png",
+                "alt": "Example Concept Note: Webinar Series on Mental Health",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>A. Background</h3><p>Many people with inherited blood disorders suffer from mental health issues due to the diagnosis, stigma around the disease, and the health and lifestyle challenges that come with managing the disease. Our members have noted that mental health is one of their top concerns but they lack understanding of how to address mental health challenges and where to go to seek services.</p><h3>B. Objective</h3><p>Host 2 webinars for the community on mental health including experts providing advice on where to seek care</p><h3>C. Rationale</h3><p>The organization will host the two webinars in November 2024 that will invite community members, experts, providers, and advocates to discuss mental health challenges and be provided with resources on where to seek care. The costs will be just for the Zoom link.</p><h3>D. Next Steps</h3><p>Seek stakeholder buy-in, schedule the sessions, and begin planning the agenda for the two webinars.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? One key part of a concept note is the problem you are trying to address.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! The background section of the concept note describes the problem you are trying to address \u2014 it is one of the four key ingredients.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? The rationale includes what is being achieved.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! The rationale describes HOW you will carry out the work (the approach and resources). What is being achieved is described in the Objective section.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

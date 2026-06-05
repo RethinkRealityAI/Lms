@@ -1,0 +1,70 @@
+{
+  "lessonId": "d2d9333e-6ecf-4a3b-83e1-7b0ded21e194",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Context",
+  "lessonDescription": "Strategic work plans are vital, especially for nonprofit organizations as it allows them to set up a blueprint for their project and stay organized. Work Plans also help to obtain approval or stakeholders as well as figuring out a timeline, budget and to ensure success.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Context to Developing Impactful Strategic Work Plans",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Strategic work plans are vital, especially for nonprofit organizations as it allows them to set up a blueprint for their project and stay organized. Work Plans also help to obtain approval or stakeholders as well as figuring out a timeline, budget and to ensure success.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_04_Lesson_3_Context_to_Developing_Impactful_Strategic_and_Work_/0001-1269319010263853659_c6k7lm.png",
+                "alt": "Context to Developing Impactful Strategic Work Plans",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>Work plans are crucial for nonprofit organizations as it equips them with the ability to plan ahead, ensuring a smooth and well functioning event/program.</p>",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

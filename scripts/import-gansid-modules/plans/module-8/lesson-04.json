@@ -1,0 +1,440 @@
+{
+  "lessonId": "f9baa134-7d3f-44c0-9100-2b4dc4b115e1",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Grant Writing",
+  "lessonDescription": "Grant writing is the process of applying for funding provided by a private, corporate, or government grant maker. Grant seeking is highly competitive. It is especially difficult when requesting support for a new program or organization for the first time. There are several types of grants, including: Program and Project Grants, General Operating Grants, Capital Grants, Capacity Building, and Endowment Grants.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Who Provides Grants?",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/0001-2953665274603856648_m4ovcw.png",
+                "alt": "Grant writing hero illustration",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Private Sector</strong></p><ul><li>Foundations</li><li>Trusts</li><li>Corporations</li></ul><p><strong>Public Sector</strong></p><ul><li>Federal</li><li>Provincial/State</li><li>Municipal/Local</li></ul>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "5 Types of Grants",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_a-black-family-smiling-and-being-informed_siftmz.jpg",
+                "alt": "Program and project grants illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_a-hospital-space-with-doctors-and-nurses-smiling_hgz4c6.jpg",
+                "alt": "General operating grants illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_a-constructer-building-an-office-space_byiu7v.jpg",
+                "alt": "Capital grants illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_training-workers-in-an-office-space_wgucwc.jpg",
+                "alt": "Capacity building grants illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_volunteers-in-an-office_rwi4os.jpg",
+                "alt": "Endowment grant illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>Program and Project Grants</strong></p><p>Projects and programs are different. Programs are ongoing, while projects are for a set time. In a project-specific proposal, the grant application is focused on a single need that, once addressed, will bring about a specific outcome to meet that one need. Make sure to tailor the application to what the funder is funding. Include a detailed and transparent budget with your application.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>General Operating Grants</strong></p><p>A stable source of funding to offset the cost of running an organization. Addresses urgent, developing, and day-to-day needs. Funders usually want to know that a nonprofit can deliver on the promises made within the grant narrative. This assurance may include evidence of a strong board, stable volunteers, strategic plan and workplan, and other infrastructure to support your nonprofit's work.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Capital Grants</strong></p><p>Time specific for capital projects (e.g over 1-2 years). Grant category offers funding for building construction; building renovation, refurbishing, or maintenance; or land purchases. Capital grants also support the purchase of large equipment such as furnishings or building materials.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Capacity Building Grants</strong></p><p>Capacity building grants focus on the inner workings of the organization. This includes the running of the organization through operations and administrative tasks. Funding defrays costs connected to starting and growing an organization such as strategic planning, training, coaching, and professional development, and human resources. Capacity building grants for nonprofits build organizational effectiveness.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Endowment Grant</strong></p><p>Endowment fund are established to fund charitable and nonprofit institutions such as churches, hospitals, and universities. It is an investment portfolio with the initial capital deriving from donations and typically structured with intact principals and investment income available for use. Endowment funds consist of cash, equities, bonds, and other types of securities that can generate investment income.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Must-Haves Before Starting a Grant Application",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Organizational History, Mission, and Impact</p>", "animation": "none" },
+              { "html": "<p>Identify the Gap: Know how your organization tends to fill this gap.</p>", "animation": "none" },
+              { "html": "<p>Organizational Documents: Financial Statements, Operating Budget, Incorporation Documents</p>", "animation": "none" },
+              { "html": "<p>Grant Maker: Know past, current, and prospective grant makers who could support your application</p>", "animation": "none" },
+              { "html": "<p>Alignment: Ensure a strong alignment between your needs and the grant maker's goals &amp; strategies</p>", "animation": "none" },
+              { "html": "<p>Disbursement plan: How you intend to use the funds</p>", "animation": "none" },
+              { "html": "<p>Reporting Plan to the funders and your board</p>", "animation": "none" },
+              { "html": "<p>Utilize worksheets to help you break down your thoughts and ideas</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "The Proposal: Effective Elements",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_someone-in-an-office-writing-a-cover-letter-that-h_mo3jxx.jpg",
+                "alt": "Cover letter writing illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_a-target-symbol-on-a-computer-surrounded-by-graphs_vismjb.jpg",
+                "alt": "Project objectives and goals illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_someone-in-an-office-creating-a-detailed-budget-on_dujcxs.jpg",
+                "alt": "Detailed budget creation illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_someone-in-an-office-creating-a-timeline-for-a-pro_bgkgcx.jpg",
+                "alt": "Project timeline creation illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_papers-with-graphs-and-letters-on-someones-office-_gfvxmg.jpg",
+                "alt": "Office papers and reports illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_papers-with-graphs-and-letters-on-someones-office--2_gwewx1.jpg",
+                "alt": "Office papers and graphs illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>Cover Letter/Executive Summary</strong></p><p>Briefly introduce yourself, your organization, and your proposal with title of project including the gap the project aims fill to the grant maker.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Project Purpose</strong></p><p>Clearly provide the aim/s of the project. The reason for its existence, or simply put, the ambition or dream pursued by the project.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Objectives</strong></p><p>The measurable goals that the project will achieve. It could be tangible (e.g. assets or intangible, increased motivation). Most important, objectives must be attainable, time-bound &amp; specific.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Budget</strong></p><p>Create a detailed budget covering expenses such as personnel, supplies, and overhead costs.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>High-Level Tactics</strong></p><p>Establish the strategies and methods that you will use to achieve the stated objectives and within budget.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Milestones</strong></p><p>Provide step-by-step progress points of the project life and the expected timelines to achieve each milestone.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Evaluation</strong></p><p>Provide a plan of evaluation that will track if the project objectives/goals are being met throughout the entire timeline.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Outcomes</strong></p><p>Outcomes are the desired goals of the project (e.g, more families with SCD have improved disease management knowledge).</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Project Deliverables</strong></p><p>Results of project activities, i.e. what comes out of a project\u2013the outputs that contributes to achieving outcomes (e.g project plans, reports, trainings) (e.g. 200 people will receive training).</p><p><strong>Project Measurement</strong></p><p>Tangible measures that will indicate success (e.g. 200 families will enroll in the disease management program; keeping within budget, finishing by timeline, etc.).</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "The Close and the Win",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_reimagine_A-middleaged-Caucasian-man-with-short-dark-hair-an_jpt7th.jpg",
+                "alt": "Grant writing professional illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_reimagine_Scattered-financial-documents-and-charts-on-a-desk_voonv3.jpg",
+                "alt": "Financial documents on a desk illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>The Close</strong></p><p>Make a formal request for your award at the end of your proposal. Sign and submit the proposal in the name of the head of the organization. Clearly show all contact information. The grant writer's name should not appear on the grant except if he/she is the head of the organization. Prepare for a report to the funders and your board as well as an audit (larger organizations).</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>The Win</strong></p><p>Detach award money (restricted use) from all other funds. Use the appropriate public relations. Thank the grant maker as appropriate. Keep your grant maker informed if changes to your project occur.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "When Your Grant Application is Rejected",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/pikaso_texttoimage_two-diverse-people-meeting-in-an-office_bb1me3.jpg",
+                "alt": "Two people meeting in an office illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-8/images/Module_8_Grant_Writing/Lesson_05_Lesson_4_Grant_Writing/0001-5026447004411136882_sqlphi.png",
+                "alt": "Grant rejection illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Don't Take it Personally. Meet with grant officer to find out what the application is missing.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Offer any additional information needed to change the prospect's mind.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Keep the door open and look out for the next opportunity to submit your grant, bearing in mind why the first application failed.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>Every rejection is a learning opportunity. Use the feedback to strengthen your next application.</p>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Projects help programs to achieve its aims.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! A program is a collection of projects, and it is these projects that help programs to be successful.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Capital grants can also be used for operations.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! Capital grants are specifically for capital projects such as purchasing or renovating buildings. They may also be used for large equipment or building materials \u2014 not general operations.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? General operating grants are always restricted.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! As a matter of fact, most operating grants are unrestricted. It is important to be clear on the restriction around the grant with the grant maker.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Reporting after receiving funding is not very important.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! It is important to let the funder know how you have utilized their funds and the impact. You should also provide a report to the community you serve, perhaps during your annual general meeting.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

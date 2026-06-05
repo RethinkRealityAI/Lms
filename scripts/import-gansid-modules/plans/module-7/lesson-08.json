@@ -1,0 +1,223 @@
+{
+  "lessonId": "24525d59-4e83-48fb-8ac0-f80d270c089a",
+  "lessonOrderIndex": 8,
+  "lessonTitle": "Logical Framework",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "The Logical Framework",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The logical framework is an excellent tool to help project managers in: Confirming activities of the project Seeing ways you could measure success Developing the skeleton of the project proposal</p><p>The logical framework will help you in deciding best course of action, understanding risks, and appreciating what you may assume will be done to have a successful project.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              { "key": "component", "label": "Component" },
+              { "key": "definition", "label": "Definition" },
+              { "key": "example", "label": "Example" }
+            ],
+            "rows": [
+              { "cells": { "component": "Inputs", "definition": "Resources that your organization brings to the project.", "example": "Budget, Personnel, Materials" } },
+              { "cells": { "component": "Activities", "definition": "Specific actions taken by your organization.", "example": "Conducting training workshops." } },
+              { "cells": { "component": "Outputs", "definition": "Tangible products or services produced as a result of activities.", "example": "Number of new clients signed." } },
+              { "cells": { "component": "Outcomes", "definition": "Short to medium-term changes or benefits for stakeholders.", "example": "Improved knowledge and skills among staff members as a result of a training session." } },
+              { "cells": { "component": "Impact", "definition": "Long-term changes or broader effects on the community or system.", "example": "Increased employment rates due to improved skills." } }
+            ],
+            "first_column_header": true,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Logical Framework Example: Community Health Fair",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p><strong>Example — Community Health Fair:</strong> Inputs: volunteers, venue, budget. Activities: health screenings, education booths. Outputs: number of people screened. Outcomes: increased health awareness. Impact: improved community health outcomes.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-1991023969577382944_igim75.png",
+                "alt": "Logical framework example: community health fair — slide 1",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-2130635557262723680_rnlqfx.png",
+                "alt": "Logical framework example: community health fair — slide 2",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-2130635560805246549_lipqcc.png",
+                "alt": "Logical framework example: community health fair — slide 3",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-214353921663312208_gjvczr.png",
+                "alt": "Logical framework example: community health fair — slide 4",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-2286009739521640918_aj8e1f.png",
+                "alt": "Logical framework example: community health fair — slide 5",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-3897172511797603124_i18hak.png",
+                "alt": "Logical framework example: community health fair — slide 6",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-4614370752300118885_egvclh.png",
+                "alt": "Logical framework example: community health fair — slide 7",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-5282029397601641408_ak8b2c.png",
+                "alt": "Logical framework example: community health fair — slide 8",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-5587148275983083291_ixkqkn.png",
+                "alt": "Logical framework example: community health fair — slide 9",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-7140890146384901861_rwfx3p.png",
+                "alt": "Logical framework example: community health fair — slide 10",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-7906502080942256441_m73zaz.png",
+                "alt": "Logical framework example: community health fair — slide 11",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_09_Lesson_8_Work_Plan_Logical_Framework/0001-867375862860804391_tn9wyd.png",
+                "alt": "Logical framework example: community health fair — slide 12",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the difference between a concept note and a work plan?",
+            "options": [
+              "A concept note is for getting stakeholders while a work plan is how this will be achieved",
+              "A work plan is for getting stakeholders while a concept note is how this will be achieved",
+              "They are the same."
+            ],
+            "correct_answer": "A concept note is for getting stakeholders while a work plan is how this will be achieved",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The concept note is the initial document used to gain stakeholder buy-in. The work plan is the detailed roadmap for how you will achieve the approved idea.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false?\n\nStatement: The logical framework does not help see ways to measure success.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! One of the main benefits of a logical framework is that it helps you identify ways to measure success at each level — from outputs to impact.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What are some of the parts of a logical framework?",
+            "options": [
+              "Inputs, activities, outputs, outcomes, impact",
+              "Only looks at the amount of participants and trainees",
+              "This is where you decide the reason of the activity"
+            ],
+            "correct_answer": "Inputs, activities, outputs, outcomes, impact",
+            "show_feedback": true,
+            "feedback_correct": "Correct! A logical framework includes: Inputs, Activities, Outputs, Outcomes, and Impact.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

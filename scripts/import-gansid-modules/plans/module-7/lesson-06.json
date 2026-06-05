@@ -1,0 +1,150 @@
+{
+  "lessonId": "7ae67436-3425-46b6-ad8c-7604bfb1138b",
+  "lessonOrderIndex": 6,
+  "lessonTitle": "Translating Your Concept Note to a Work Plan",
+  "lessonDescription": "Once stakeholders have approved your concept note, it's time to develop your work plan.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Steps to Translate Your Concept Note",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Once stakeholders have approved your concept note, it\u2019s time to develop your work plan. Follow these steps:</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_07_Lesson_6_Translating_Concept_Note_to_Work_Plan/0001-2919890442535626626_y2slop.png",
+                "alt": "Strategy for Converting Your Concept Note into a Work Plan",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_07_Lesson_6_Translating_Concept_Note_to_Work_Plan/0001-1245677286710823488_jqoohg.png",
+                "alt": "Work plan translation step illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p><strong>Expand the Background:</strong> Turn the background into a detailed problem statement with supporting data and evidence.</p>", "animation": "none" },
+              { "html": "<p><strong>Expand the Rationale:</strong> Develop the rationale into a full implementation plan with activities, timelines, and responsibilities.</p>", "animation": "none" },
+              { "html": "<p><strong>Formalize the Objectives:</strong> Ensure all objectives are SMART-IE (Specific, Measurable, Achievable, Realistic, Timebound, Inclusive, Equitable).</p>", "animation": "none" },
+              { "html": "<p><strong>Add a Budget:</strong> Develop a detailed budget that covers all project costs.</p>", "animation": "none" },
+              { "html": "<p><strong>Define Evaluation:</strong> Establish clear metrics and methods to measure success throughout the project.</p>", "animation": "none" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_07_Lesson_6_Translating_Concept_Note_to_Work_Plan/0001-1392044269760724427_zsa8is.png",
+                "alt": "Work plan translation step illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_07_Lesson_6_Translating_Concept_Note_to_Work_Plan/0001-4876704481384242316_gtpmst.png",
+                "alt": "Work plan translation step illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_07_Lesson_6_Translating_Concept_Note_to_Work_Plan/0001-7650921850519104462_bn5yhq.png",
+                "alt": "Work plan translation step illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>Remember: The work plan is the detailed roadmap for how you will achieve what was agreed upon in the concept note.</p>",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What should be worked on after the concept note has been approved?",
+            "options": [
+              "Work on work plan",
+              "Revise concept plan",
+              "Start buying supplies right away"
+            ],
+            "correct_answer": "Work on work plan",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Once the concept note has been approved by stakeholders, you move on to developing the full work plan.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? When working on the work plan, expand the rationale.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! When transitioning from a concept note to a work plan, you should expand the rationale into a full implementation plan with detailed activities, timelines, and responsibilities.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

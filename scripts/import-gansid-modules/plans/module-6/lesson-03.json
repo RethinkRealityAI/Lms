@@ -1,0 +1,83 @@
+{
+  "lessonId": "4da823f7-25b8-482b-b050-1d4d3c6ffed6",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Context to the Effective Communication Module",
+  "lessonDescription": "Effective communication is an essential skill for leaders in patient advocacy organizations to ensure the efficient use of resources, successful execution of projects and tasks, and proper management of teams.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Context to Effective Communication",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective communication is an essential skill for leaders in patient advocacy organizations to ensure the efficient use of resources, successful execution of projects and tasks, and proper management of teams.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_04_Lesson_3_Context_to_the_Effective_Communication_Module/0001-675969075565917147_otswo5.png",
+                "alt": "Context to Effective Communication",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Communication is a multi-faceted skill that encompasses internal exchanges within your organization and external interactions with partners, government or community representatives, and patients.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>In this module, we provide you with the tools to handle frequent scenarios where effective communication can make or break a situation.</p>",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -1,0 +1,106 @@
+{
+  "lessonId": "b3309818-40f1-4f0d-b436-4feb5f82d461",
+  "lessonOrderIndex": 9,
+  "lessonTitle": "Budget, Timeline, and Ensuring Success",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Budget and Timeline Checklist",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Before embarking on any project, it's essential to reflect deeply on your budget and timeline. This ensures alignment with organizational goals and stakeholder expectations.</p><h3>Budget</h3><ul><li>Are you realistic about the costs?</li><li>Do you have a breakdown of where the costs will go?</li><li>Are the costs within donors' expectations?</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Timeline</h3><ul><li>Is the timeline feasible for your organization?</li><li>Are you rushing the process?</li><li>Does your timeline reflect other competing priorities among your organization or stakeholders?</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>Always ask: Is this feasible for my organization to do?</p>",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false?\n\nStatement: It is alright if you do not have a breakdown of where costs go.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! Remember to always have a detailed breakdown of where costs go. This is essential for accountability to stakeholders and donors.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is most important?",
+            "options": [
+              "Having a budget, timeline and ensuring success",
+              "Making the most amount of money possible",
+              "Getting your project out as soon as possible"
+            ],
+            "correct_answer": "Having a budget, timeline and ensuring success",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Having a realistic budget, a feasible timeline, and a plan for ensuring success are the most important elements of project planning.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

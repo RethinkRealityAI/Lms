@@ -1,0 +1,396 @@
+{
+  "lessonId": "7f6aba1f-e9ca-4a27-8ea0-4d3ec6a82fa6",
+  "lessonOrderIndex": 5,
+  "lessonTitle": "Project Management Fundamentals",
+  "lessonDescription": "Project management fundamentals serve as the cornerstone for successful project execution. These principles guide project managers through every stage of a project, from initiation to completion.\n\nThink of managing a project like planning a journey — each step below maps a key concept to something familiar:",
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Fundamentals: Understanding to Planning",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<h2>Overview</h2><p>Project management fundamentals serve as the cornerstone for successful project execution. These principles guide project managers through every stage of a project, from initiation to completion.</p><p>Think of managing a project like planning a journey — each step below maps a key concept to something familiar:</p><h2>1. Understanding the Basics</h2><p>First, you need to grasp what project management is all about. Think of it as learning the language of project management — the terms, concepts, and principles that form the foundation of every successful project.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<h2>2. Planning Like a Pro</h2><p>Next, you'll learn how to plan your journey. This involves:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "content_list",
+          "orderIndex": 2,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Setting clear goals</p>"
+              },
+              {
+                "html": "<p>Making a timeline</p>"
+              },
+              {
+                "html": "<p>Figuring out what resources you'll need along the way</p>"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 3,
+          "data": {
+            "html": "<h2>3. Putting Plans into Action</h2><p>Once your plan is ready, it's time to hit the road! This involves:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "content_list",
+          "orderIndex": 4,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Coordinating tasks</p>"
+              },
+              {
+                "html": "<p>Assigning roles to team members</p>"
+              },
+              {
+                "html": "<p>Ensuring everyone knows what they're doing</p>"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "The RACI Matrix",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<p><strong>The RACI Matrix</strong> (Responsible, Accountable, Consulted, Informed) is a key tool used in this phase to clarify roles and responsibilities for every task or decision in the project.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "table",
+          "orderIndex": 1,
+          "data": {
+            "columns": [
+              {
+                "id": "col-role",
+                "label": "Role",
+                "align": "left"
+              },
+              {
+                "id": "col-meaning",
+                "label": "Meaning",
+                "align": "left"
+              }
+            ],
+            "rows": [
+              {
+                "id": "row-r",
+                "cells": {
+                  "col-role": "R — Responsible",
+                  "col-meaning": "The person who does the work"
+                }
+              },
+              {
+                "id": "row-a",
+                "cells": {
+                  "col-role": "A — Accountable",
+                  "col-meaning": "The person ultimately answerable for the outcome"
+                }
+              },
+              {
+                "id": "row-c",
+                "cells": {
+                  "col-role": "C — Consulted",
+                  "col-meaning": "People whose input is sought"
+                }
+              },
+              {
+                "id": "row-i",
+                "cells": {
+                  "col-role": "I — Informed",
+                  "col-meaning": "People kept up-to-date on progress"
+                }
+              }
+            ],
+            "striped": true,
+            "first_column_header": true,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Monitoring, Challenges, Teamwork & Reflection",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<h2>4. Monitoring Progress</h2><p>As you travel, you'll want to keep an eye on your map to make sure you're on the right track. In project management, this means:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "content_list",
+          "orderIndex": 1,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Checking in regularly to see how things are going</p>"
+              },
+              {
+                "html": "<p>Making adjustments as needed</p>"
+              },
+              {
+                "html": "<p>Tracking against your original plan</p>"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 2,
+          "data": {
+            "html": "<h2>5. Dealing with Challenges</h2><p>Just like any journey, you might encounter obstacles along the way. Effective project managers:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "content_list",
+          "orderIndex": 3,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Handle unexpected problems calmly</p>"
+              },
+              {
+                "html": "<p>Stay calm under pressure</p>"
+              },
+              {
+                "html": "<p>Find creative solutions to keep the project moving forward</p>"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 4,
+          "data": {
+            "html": "<h2>6. Working with Others</h2><p>Projects are rarely solo adventures. Success requires:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "content_list",
+          "orderIndex": 5,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Communicating effectively with your team</p>"
+              },
+              {
+                "html": "<p>Delegating tasks appropriately</p>"
+              },
+              {
+                "html": "<p>Fostering a positive working environment</p>"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 5,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 6,
+          "data": {
+            "html": "<h2>7. Reflecting and Improving</h2><p>Finally, once you reach your destination, take some time to reflect on your journey:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "content_list",
+          "orderIndex": 7,
+          "data": {
+            "items": [
+              {
+                "html": "<p>What went well?</p>"
+              },
+              {
+                "html": "<p>What could have been better?</p>"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 7,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 8,
+          "data": {
+            "html": "<p>This retrospective process helps you learn from your experiences and become an even better project manager in the future.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 8,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 0,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of the RACI matrix in project management?",
+            "options": [
+              "To clarify roles and responsibilities for tasks or decisions",
+              "To track project progress and make adjustments as needed",
+              "To handle unexpected problems and find creative solutions",
+              "To communicate effectively with the project team and foster a positive working environment"
+            ],
+            "correct_answer": "To clarify roles and responsibilities for tasks or decisions",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The RACI matrix (Responsible, Accountable, Consulted, Informed) is specifically designed to clarify roles and responsibilities for every task or decision in the project, reducing confusion and improving coordination.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 1,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which phase of project management fundamentals involves coordinating tasks and assigning roles to team members?",
+            "options": [
+              "Putting Plans into Action",
+              "Understanding the Basics",
+              "Planning Like a Pro",
+              "Reflecting and Improving"
+            ],
+            "correct_answer": "Putting Plans into Action",
+            "show_feedback": true,
+            "feedback_correct": "Correct! 'Putting Plans into Action' is the phase where you coordinate tasks, assign roles to team members, and ensure everyone knows what they're doing.",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

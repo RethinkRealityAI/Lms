@@ -1,0 +1,35 @@
+{
+  "lessonId": "aac6d33c-5ff1-4b7b-8fa2-7811c6ad8b20",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Introduction",
+  "lessonDescription": "In this module, learners will acquire essential project management skills tailored for patient advocacy organizations. You'll learn how to effectively plan, execute, and evaluate projects that enhance patient support and advocacy efforts. This module provides the tools to transform organizational goals into impactful, well-managed projects.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Introduction",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>In this module, learners will acquire essential project management skills tailored for patient advocacy organizations. You'll learn how to effectively plan, execute, and evaluate projects that enhance patient support and advocacy efforts. This module provides the tools to transform organizational goals into impactful, well-managed projects.</strong></p><p><em>Author: Ayokanmi Ogbimi, PMP | Image credits: Canva</em></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

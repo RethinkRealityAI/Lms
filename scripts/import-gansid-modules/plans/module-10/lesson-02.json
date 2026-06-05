@@ -1,0 +1,214 @@
+{
+  "lessonId": "f96eb396-3255-4da1-a389-f513fddf1f92",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Recap Module 3: Volunteer Management",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What else is volunteer engagement referred to as?",
+            "options": [
+              "Volunteer management",
+              "Volunteer coordination",
+              "Volunteer administration",
+              "Volunteer sleuthing"
+            ],
+            "correct_answer": "Volunteer management",
+            "show_feedback": true,
+            "feedback_correct": "Volunteer engagement is also referred to as volunteer management.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following is NOT one of the four key activities in the recruitment phase?",
+            "options": [
+              "Training volunteers",
+              "Identifying your needs",
+              "Sourcing volunteers",
+              "Defining the application process"
+            ],
+            "correct_answer": "Training volunteers",
+            "show_feedback": true,
+            "feedback_correct": "Training volunteers is not part of the recruitment phase — it comes later in onboarding. The four recruitment activities are: identifying needs, sourcing volunteers, defining the application process, and selecting volunteers.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is an effective way to provide orientation to new volunteers?",
+            "options": [
+              "Assign a mentor or partner, such as a senior volunteer or a leader",
+              "Have them start working immediately without any introduction",
+              "Give them a volunteer handbook and leave them to read it on their own.",
+              "Conduct a formal training session once a year"
+            ],
+            "correct_answer": "Assign a mentor or partner, such as a senior volunteer or a leader",
+            "show_feedback": true,
+            "feedback_correct": "Assigning a mentor or partner — such as a senior volunteer or leader — is an effective way to provide orientation to new volunteers.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Who is responsible for recognizing volunteers within an organization?",
+            "options": [
+              "Everyone in the organization",
+              "Only the volunteer manager",
+              "Only the organization's CEO",
+              "Only the human resources department"
+            ],
+            "correct_answer": "Everyone in the organization",
+            "show_feedback": true,
+            "feedback_correct": "Everyone in the organization is responsible for recognizing volunteers — not just managers or leadership.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key trend in volunteering that organizations should be aware of?",
+            "options": [
+              "Volunteers are increasingly seeking short-term involvement",
+              "Volunteers prefer long-term, indefinite commitments",
+              "Volunteers are less interested in organizational goals",
+              "Volunteers expect financial compensation"
+            ],
+            "correct_answer": "Volunteers are increasingly seeking short-term involvement",
+            "show_feedback": true,
+            "feedback_correct": "A key trend is that volunteers are increasingly seeking short-term, flexible involvement rather than long-term open-ended commitments.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "When should an evaluation of a volunteer take place?",
+            "options": [
+              "At various times throughout their tenure, depending on their role",
+              "Only at the end of their volunteer tenure",
+              "Once a year, during the annual performance review",
+              "Only if there are issues with their performance"
+            ],
+            "correct_answer": "At various times throughout their tenure, depending on their role",
+            "show_feedback": true,
+            "feedback_correct": "Evaluations should take place at various times throughout a volunteer's tenure, depending on their specific role and responsibilities.",
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to have an evaluation process for volunteers?",
+            "options": [
+              "To collect fees for their participation",
+              "To provide opportunities to give and receive information about their experience",
+              "To lengthen their volunteering period",
+              "To compare volunteers against each other"
+            ],
+            "correct_answer": "To provide opportunities to give and receive information about their experience",
+            "show_feedback": true,
+            "feedback_correct": "The evaluation process is important because it provides opportunities to give and receive information about the volunteer's experience, leading to improvement for both the volunteer and the organization.",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can mentorship serve as a component of stewardship?",
+            "options": [
+              "By providing formal training sessions to all volunteers",
+              "By transferring knowledge and wisdom through a structured or informal relationship",
+              "By conducting performance reviews for volunteers",
+              "By organizing large-scale volunteer events"
+            ],
+            "correct_answer": "By transferring knowledge and wisdom through a structured or informal relationship",
+            "show_feedback": true,
+            "feedback_correct": "Mentorship serves as stewardship by transferring knowledge and wisdom through structured or informal relationships between experienced and newer volunteers.",
+            "gridX": 0, "gridY": 7, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 8,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following is an example of FORMAL volunteer recognition?",
+            "options": [
+              "Award ceremonies like Distinguished Volunteer Award ceremonies",
+              "Saying 'thank you' at the completion of a task",
+              "Including volunteers in staff celebrations"
+            ],
+            "correct_answer": "Award ceremonies like Distinguished Volunteer Award ceremonies",
+            "show_feedback": true,
+            "feedback_correct": "Award ceremonies like Distinguished Volunteer Award ceremonies are examples of formal volunteer recognition.",
+            "gridX": 0, "gridY": 8, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 9,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which type of orientation focuses on helping the volunteer understand how their role fits into the larger context of the organization?",
+            "options": [
+              "System",
+              "Social",
+              "Operational",
+              "Position"
+            ],
+            "correct_answer": "System",
+            "show_feedback": true,
+            "feedback_correct": "System orientation focuses on helping the volunteer understand how their role fits into the larger context and mission of the organization.",
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 0,
+      "suggestion": "The MD's question 9 covers both formal AND informal volunteer recognition with 6 options and two correct answers (one per category). The index.html simplified this to a single multiple_choice question about formal recognition only. The informal recognition example (Remembering volunteers' start dates or birthdays) is not tested. Could optionally add a second question about informal recognition if desired.",
+      "reason": "MD has combined formal+informal question with 6 options; index.html reduced scope to formal-only."
+    }
+  ]
+}

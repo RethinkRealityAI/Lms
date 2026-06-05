@@ -1,0 +1,557 @@
+{
+  "lessonId": "5484e04b-d9ac-4b4e-b121-6d327f4c490c",
+  "lessonOrderIndex": 6,
+  "lessonTitle": "Engaging with the Media",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Importance of Public Relations for Nonprofits",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/how-to-start-a-non-profit-organization-930x350_ljf292.jpg",
+                "alt": "How to start a non-profit organization",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Public relations is crucial for nonprofits to build awareness, credibility, and support for their cause.</p><ul><li>Engaging with the media allows nonprofits to reach a wider audience and share their mission and impact.</li><li>Effective public relations can help nonprofits attract donors, volunteers, and partnerships.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Building Media Relationships",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/image1_sjm0rd.jpg",
+                "alt": "Building media relationships",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Nonprofits should research and identify media outlets that align with their cause and target audience.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Developing relationships with journalists and reporters can lead to increased media coverage and positive exposure.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Nonprofits should provide journalists with compelling stories, data, and visuals to capture their attention.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Key Points for Creating a Media Pitch for a Non-Profit Organization (Part 1)",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/One-Community-Sustainability-Non-profit1_bchsmf.jpg",
+                "alt": "One Community Sustainability Non-profit",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Highlight Your Organization's Background and Impact</h3><p>Your pitch should include information about your non-profit's history, mission, and the key programs or initiatives you are involved in. Emphasize the impact your organization has made in the community or the issues it addresses.</p><h3>Customize the Pitch for Your Audience</h3><p>Adapt the language, tone, and visuals of your pitch to resonate with your target audience, whether they are potential donors, volunteers, or corporate partners. Use audience-specific messaging that showcases the relevance of your work to them.</p><h3>Showcase Specific Programs and Impact</h3><p>Focus on highlighting the specific programs or initiatives that are most relevant to the media outlet or journalist you are pitching. Provide concrete examples of the impact your non-profit has had in those areas.</p><h3>Incorporate Feedback and Personalization</h3><p>Gather feedback from stakeholders to continuously refine and personalize your pitch. Ensure that the visuals, design, and content reflect your organization's brand and the local context or culture, if applicable</p><h3>Consider Creative and Interactive Pitch Formats</h3><p>To make your pitch stand out, consider incorporating creative elements like live demonstrations, interactive features, storytelling, or the use of emerging technologies like AR or VR. This can help engage the audience and convey your message in a memorable way.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Key Points for Creating a Media Pitch for a Non-Profit Organization (Part 2)",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/image_2_ppdup6.png",
+                "alt": "Media pitch Part 2",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Emphasize Newsworthiness and Timeliness</h3><p>Ensure that the story or information you are pitching is genuinely newsworthy and timely. Highlight any recent developments, events, or initiatives that would be of interest to the media outlet and their audience.</p><h3>Personalize and Tailor the Pitch</h3><p>Research the media outlet and the specific journalist you are pitching to understand their interests, writing style, and the type of content they typically cover. Personalize your pitch accordingly to increase the chances of it being accepted.</p><h3>Provide Relevant Supporting Materials</h3><p>Offer additional resources like data, visuals, or a press release to supplement your pitch, but ensure that the pitch itself is concise and engaging. Make it easy for the journalist to access more information if they are interested.</p><h3>Follow Up and Track Engagement</h3><p>After sending your pitch, follow up with the journalist to gauge their interest and provide any additional information they may need. Track the engagement and response to your pitch to continuously improve your approach.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "media",
+      "title": "Media Pitch Examples",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Successful media engagement takes many forms — from compelling press materials and social media campaigns to community events and partnerships. The key is consistency, authenticity, and relevance to your mission.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/recipe_Final_vp7cmk.jpg",
+                "alt": "Recipe media pitch example",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/One-Community-Sustainability-Non-profit1_bchsmf.jpg",
+                "alt": "One Community Sustainability Non-profit media pitch example",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/how-to-start-a-non-profit-organization-930x350_ljf292.jpg",
+                "alt": "How to start a non-profit organization — media pitch example",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/Social-Media-Pins_ygxkru.jpg",
+                "alt": "Social media pins — media pitch example",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Press Releases and Media Advisories",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/image1_sjm0rd.jpg",
+                "alt": "Press releases and media advisories",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>Press releases</strong> are formal announcements sent to the media to share news or updates about a nonprofit.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p><strong>Media advisories</strong> are shorter documents that provide key details about upcoming events or opportunities for coverage.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Nonprofits should ensure their press releases and media advisories are well-written, concise, and include relevant contact information.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Media Interviews and Spokespersons",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/image_2_ppdup6.png",
+                "alt": "Media interviews and spokespersons",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Nonprofits may have opportunities for media interviews to share their expertise, impact, or respond to current events.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Designating a spokesperson who is knowledgeable, articulate, and passionate about the cause is essential for effective media interviews.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Spokespersons should be prepared with key messages and practice delivering them confidently.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Monitoring and Evaluating Impact",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_07_Lesson_6_Engaging_with_the_Media/10000-women-performance-measurement-system-1000_rxubg8.jpg",
+                "alt": "10,000 Women performance measurement system",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Nonprofits should establish metrics and goals to measure the impact of their public relations efforts.</p><ul><li>Monitoring media coverage, website traffic, social media engagement, and donations can provide insights into the effectiveness of public relations strategies.</li><li>Regular evaluation and adjustment of strategies can help nonprofits improve their communication and achieve their goals.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of engaging with the media for nonprofits?",
+            "options": [
+              "To reach a wider audience and share their mission and impact.",
+              "To generate revenue and increase funding opportunities.",
+              "To recruit volunteers and expand their workforce.",
+              "To establish partnerships with other nonprofit organizations."
+            ],
+            "correct_answer": "To reach a wider audience and share their mission and impact.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Media engagement allows nonprofits to reach a wider audience and share their mission and impact — building awareness and credibility.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What should nonprofits include in their media pitch?",
+            "options": [
+              "Impactful statistics, personal stories, and quotes.",
+              "Detailed financial information and budget breakdowns.",
+              "Lengthy descriptions of the organization's history and background.",
+              "Technical jargon and industry-specific terminology."
+            ],
+            "correct_answer": "Impactful statistics, personal stories, and quotes.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Impactful statistics, personal stories, and quotes are the most compelling elements of a media pitch — they make the story human and newsworthy.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of press releases for nonprofits?",
+            "options": [
+              "To share news or updates about the organization.",
+              "To request funding and donations from the public.",
+              "To recruit new board members and volunteers."
+            ],
+            "correct_answer": "To share news or updates about the organization.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Press releases are formal announcements used to share news or updates about the organization with the media.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the role of a spokesperson in media interviews for nonprofits?",
+            "options": [
+              "To share expertise, impact, or respond to current events.",
+              "To criticize and challenge the media's coverage of the organization.",
+              "To promote personal achievements and career milestones.",
+              "To divert attention from the organization's mission and goals."
+            ],
+            "correct_answer": "To share expertise, impact, or respond to current events.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! A spokesperson represents the organization by sharing expertise, communicating impact, and responding to current events in a prepared and professional manner.",
+            "gridX": 0,
+            "gridY": 9,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can nonprofits utilize social media platforms effectively?",
+            "options": [
+              "By engaging with their audience, sharing updates, and promoting their mission.",
+              "By exclusively focusing on fundraising and donation appeals.",
+              "By posting sporadically and inconsistently on social media.",
+              "By ignoring comments and messages from their audience."
+            ],
+            "correct_answer": "By engaging with their audience, sharing updates, and promoting their mission.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Consistent engagement — sharing updates, responding to comments, and promoting the mission — is the key to effective social media use for nonprofits.",
+            "gridX": 0,
+            "gridY": 12,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ],
+      "slideTitle": "Knowledge Check"
+    }
+  ],
+  "candidates": []
+}

@@ -1,0 +1,44 @@
+{
+  "lessonId": "04b75913-17c4-4645-8c02-f90ad19d6b8e",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Lesson Objectives",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Lesson Objectives",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "By the end of this module, learners will be able to:",
+            "items": [
+              { "html": "<p>Understand the fundamental concepts, principles, and terminology of project management</p>", "animation": "left" },
+              { "html": "<p>Develop the ability to create comprehensive project plans, including defining project scope, objectives, deliverables, and timelines</p>", "animation": "left" },
+              { "html": "<p>Acquire skills in project scheduling, resource allocation, and budget management</p>", "animation": "left" },
+              { "html": "<p>Learn how to effectively communicate with stakeholders, team members, and other project participants</p>", "animation": "left" },
+              { "html": "<p>Gain knowledge of project risk management techniques and strategies to mitigate potential issues</p>", "animation": "left" },
+              { "html": "<p>Develop leadership and team management skills to motivate and coordinate project team members</p>", "animation": "left" },
+              { "html": "<p>Enhance problem-solving and decision-making abilities to address challenges and make timely adjustments to project plans</p>", "animation": "left" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

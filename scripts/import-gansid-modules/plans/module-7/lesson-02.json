@@ -1,0 +1,52 @@
+{
+  "lessonId": "10439d23-364f-4180-b0bf-4edc9d75060b",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Learning Objectives",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "By the end of this module, learners will be able to:",
+            "items": [
+              {
+                "html": "<p>Understanding of the development of work plans, that include the specifics necessary to be successfully achieved.</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Appreciating how to gain internal and external stakeholder buy-in and ongoing engagement to support work plan implementation.</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>How to measure success and articulate achieving work plan goals to internal and external stakeholders.</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

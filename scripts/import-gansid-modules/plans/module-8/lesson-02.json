@@ -1,0 +1,41 @@
+{
+  "lessonId": "c4ab8774-037b-4af4-866f-dab6970d8fdc",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Learning Objectives",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Lesson Objectives",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "By the end of this module, learners will be able to:",
+            "items": [
+              { "html": "<p>Gain a clear understanding of what grant writing entails.</p>", "animation": "left" },
+              { "html": "<p>Understand the different types of grants.</p>", "animation": "left" },
+              { "html": "<p>Learn about the role of grants in securing funding.</p>", "animation": "left" },
+              { "html": "<p>Understand the critical components of an effective grant proposal.</p>", "animation": "left" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

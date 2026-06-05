@@ -1,0 +1,277 @@
+{
+  "lessonId": "1dddf027-178a-4cce-a616-a764ee1646aa",
+  "lessonOrderIndex": 6,
+  "lessonTitle": "Recap Module 7: Development of Impactful Strategic Work Plans",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Recap: Development of Impactful Strategic Work Plans",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? The community you serve is a stakeholder.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! The community you serve is always a stakeholder in your work plan cycle.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? One key part of a concept note is the problem you are trying to address.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! The background section of a concept note describes the problem you are trying to address.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? The rationale includes what is being achieved.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! The rationale describes HOW you will carry out the work. What is being achieved is described in the Objective section.",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is work plan implementation?",
+            "options": [
+              "The detailed work plan outlines the process from concept to execution, enabling users to understand the project's success measurement.",
+              "Executing the work plan is vital for achieving desired outcomes and communicating success to stakeholders. Monitoring ensures goals are met.",
+              "Monitoring project progress is crucial. As the project nears completion, prepare to present a comprehensive evaluation to stakeholders. Highlight achievements and outline steps for future projects to sustain and build upon this work."
+            ],
+            "correct_answer": "Executing the work plan is vital for achieving desired outcomes and communicating success to stakeholders. Monitoring ensures goals are met.",
+            "show_feedback": true,
+            "feedback_correct": "Work plan implementation is executing the plan. It is vital for achieving desired outcomes and communicating success to stakeholders, with monitoring ensuring goals are met.",
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the work plan cycle in order?",
+            "options": [
+              "Concept note, work plan development, implementation, evaluation",
+              "Concept note, evaluation, work plan development, implementation",
+              "Recruitment, concept note, work plan development, implementation, evaluation",
+              "Concept note, work plan development, implementation"
+            ],
+            "correct_answer": "Concept note, work plan development, implementation, evaluation",
+            "show_feedback": true,
+            "feedback_correct": "The correct order is: Concept Note, Work Plan Development, Implementation, then Evaluation.",
+            "gridX": 0, "gridY": 12, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What should be worked on after the concept note has been approved?",
+            "options": [
+              "Work on work plan",
+              "Revise concept plan",
+              "Start buying supplies right away"
+            ],
+            "correct_answer": "Work on work plan",
+            "show_feedback": true,
+            "feedback_correct": "After the concept note is approved by stakeholders, you move on to developing the full work plan.",
+            "gridX": 0, "gridY": 15, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the difference between a concept note and a work plan?",
+            "options": [
+              "A concept note is for getting stakeholders while a work plan is how this will be achieved",
+              "A work plan is for getting stakeholders while a concept note is how this will be achieved",
+              "They are the same."
+            ],
+            "correct_answer": "A concept note is for getting stakeholders while a work plan is how this will be achieved",
+            "show_feedback": true,
+            "feedback_correct": "The concept note is used to gain stakeholder agreement on a project idea. The work plan is the detailed roadmap for how you will achieve it.",
+            "gridX": 0, "gridY": 18, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Less documentation means your organization will be stronger.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! More documentation means your organization will be stronger. Documentation supports accountability, communication, knowledge management, and compliance.",
+            "gridX": 0, "gridY": 21, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 8,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Success can only be measured through a survey.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! Success can be measured in many different ways — surveys, participation data, interviews, policy changes, health outcomes, and many other methods.",
+            "gridX": 0, "gridY": 24, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 9,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is most important?",
+            "options": [
+              "Having a budget, timeline and ensuring success",
+              "Making the most amount of money possible",
+              "Getting your project out as soon as possible"
+            ],
+            "correct_answer": "Having a budget, timeline and ensuring success",
+            "show_feedback": true,
+            "feedback_correct": "Having a realistic budget, a feasible timeline, and a plan for ensuring success are the most important elements of project planning.",
+            "gridX": 0, "gridY": 27, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 10,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? The logical framework does not help see ways to measure success.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! One of the main benefits of a logical framework is that it helps you identify ways to measure success at each level.",
+            "gridX": 0, "gridY": 30, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 11,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What are some of the parts of a logical framework?",
+            "options": [
+              "Inputs, activities, outputs, outcomes, impact",
+              "Only looks at the amount of participants and trainees",
+              "This is where you decide the reason of the activity"
+            ],
+            "correct_answer": "Inputs, activities, outputs, outcomes, impact",
+            "show_feedback": true,
+            "feedback_correct": "A logical framework includes: Inputs, Activities, Outputs, Outcomes, and Impact.",
+            "gridX": 0, "gridY": 33, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 12,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is documenting important?",
+            "options": [
+              "Helps to ensure accountability, betters communication and collaboration, legal reasons",
+              "It is not important",
+              "It is only needed for donors to see success"
+            ],
+            "correct_answer": "Helps to ensure accountability, betters communication and collaboration, legal reasons",
+            "show_feedback": true,
+            "feedback_correct": "Documentation is important for accountability, enhancing communication and collaboration, knowledge management for future projects, and compliance and legal requirements.",
+            "gridX": 0, "gridY": 36, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 13,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Do not allow for scope creep.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False.",
+            "gridX": 0, "gridY": 39, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 14,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What does the 'A' in SMART-IE means?",
+            "options": [
+              "Achievable",
+              "Analyzable",
+              "Acceptable",
+              "Admirable"
+            ],
+            "correct_answer": "Achievable",
+            "show_feedback": true,
+            "feedback_correct": "The 'A' in SMART-IE stands for Achievable — the objective should match the capacity of your organization.",
+            "gridX": 0, "gridY": 42, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 15,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? When working on work plan, expand the rationale.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! When transitioning from a concept note to a work plan, you should expand the rationale into a full implementation plan with detailed activities, timelines, and responsibilities.",
+            "gridX": 0, "gridY": 45, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

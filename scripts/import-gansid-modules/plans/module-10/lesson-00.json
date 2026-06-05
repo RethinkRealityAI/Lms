@@ -1,0 +1,152 @@
+{
+  "lessonId": "5114d085-7fe7-456b-9a79-4c23b8aac51e",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Recap Module 1: Fundamentals of Effective Advocacy",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which skill is essential for building alliances in advocacy work?",
+            "options": [
+              "Networking",
+              "Critical thinking",
+              "Decision making",
+              "Active listening"
+            ],
+            "correct_answer": "Networking",
+            "show_feedback": true,
+            "feedback_correct": "Networking is the key skill for building alliances in advocacy work.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Who can be considered as people with lived disease experience?",
+            "options": [
+              "Individuals living with the disease, their caregivers, families, and advocates.",
+              "Healthcare professionals involved in treating the disease.",
+              "Researchers studying the disease.",
+              "Government officials responsible for disease control."
+            ],
+            "correct_answer": "Individuals living with the disease, their caregivers, families, and advocates.",
+            "show_feedback": true,
+            "feedback_correct": "Individuals living with the disease, their caregivers, families, and advocates all have lived disease experience.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Where do patient organizations engage in advocacy efforts?",
+            "options": [
+              "Governments, hospital administrators and staff, workplaces, and schools.",
+              "Community centers and recreational facilities.",
+              "Religious institutions and charitable organizations.",
+              "Media outlets and social media platforms."
+            ],
+            "correct_answer": "Governments, hospital administrators and staff, workplaces, and schools.",
+            "show_feedback": true,
+            "feedback_correct": "Patient organizations engage in advocacy at governments, hospital administrators and staff, workplaces, and schools.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is one benefit of having people with lived disease experience in the governance of patient organizations?",
+            "options": [
+              "They bring a unique perspective and understanding of patient needs",
+              "They have extensive medical knowledge and expertise",
+              "They can provide financial support for healthcare initiatives",
+              "They have strong connections with pharmaceutical companies"
+            ],
+            "correct_answer": "They bring a unique perspective and understanding of patient needs",
+            "show_feedback": true,
+            "feedback_correct": "People with lived disease experience bring a unique perspective and understanding of patient needs to the governance of patient organizations.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the main focus of individual-driven advocacy?",
+            "options": [
+              "Empowering individuals to advocate for their own rights",
+              "Supporting organizations in advocating for policy change",
+              "Promoting community-driven initiatives for social change",
+              "Providing resources for collective advocacy efforts"
+            ],
+            "correct_answer": "Empowering individuals to advocate for their own rights",
+            "show_feedback": true,
+            "feedback_correct": "Individual-driven advocacy is primarily focused on empowering individuals to advocate for their own rights.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is one of the key skills required for effective advocacy?",
+            "options": [
+              "Strategic thinking",
+              "Time management",
+              "Problem-solving",
+              "Creativity"
+            ],
+            "correct_answer": "Strategic thinking",
+            "show_feedback": true,
+            "feedback_correct": "Strategic thinking is one of the key skills required for effective advocacy.",
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the main difference between advocacy and effective advocacy?",
+            "options": [
+              "Effective advocacy achieves tangible results.",
+              "Advocacy is focused on raising awareness only.",
+              "Effective advocacy is more expensive than regular advocacy.",
+              "Advocacy and effective advocacy have the same goals and outcomes."
+            ],
+            "correct_answer": "Effective advocacy achieves tangible results.",
+            "show_feedback": true,
+            "feedback_correct": "The key difference is that effective advocacy achieves tangible, measurable results.",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

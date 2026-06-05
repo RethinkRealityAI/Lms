@@ -1,0 +1,32 @@
+{
+  "lessonId": "aeec1df9-0679-486d-b9d6-2cb80cc9502b",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Disclaimer",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "disclaimer",
+      "title": "Disclaimer",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The Capacity Building Curriculum (\"Curriculum\") may be used strictly for educational, non-commercial purposes. By permitting such use The Global Action Network for Sickle Cell &amp; Other Inherited Blood Disorders (GANSID) does not grant any broader license or waive any of its or any contributor's rights under copyright or otherwise at law.</p><p>This Curriculum has been developed as an educational tool for patient organizations and advocates. The GANSID assumes no liability for any inaccurate or incomplete information contained in this Curriculum, nor any actions taken in reliance thereon. You assume full responsibility for the use of any information provided.</p><p>The information contained herein has been supplied by individual subject matter contributors without verification by us. The information is provided \"AS IS\" and GANSID assumes no obligation to update the information or advise on further developments concerning the topics mentioned. GANSID will not be responsible or liable in any way for the accuracy, relevancy, or copyright compliance of the material contained in this Curriculum.</p><p>By viewing and using any information derived from the Curriculum, you hereby waive any claims, causes of action, and demands, whether in tort or contract, against GANSID (including its content creators, staff, directors, officers, and agents) and contributors, in any way related to use of the Curriculum or the information derived from it.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -1,0 +1,570 @@
+{
+  "lessonId": "d103468b-6ac1-4cd3-9a0f-160996615ffe",
+  "lessonOrderIndex": 7,
+  "lessonTitle": "Maximizing Impact in the Digital Age",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "slideOrderIndex": 0,
+      "slideTitle": "Social Media and Online Presence",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/image_3_pvmv8b.png",
+                "alt": "Social media and online presence illustration",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "content_list",
+          "order_index": 1,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Nonprofits should utilize social media platforms to engage with their audience, share updates, and promote their mission.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Creating compelling content, including stories, images, and videos, can help nonprofits stand out on social media.</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Nonprofits should also monitor and respond to comments and messages on their social media platforms to maintain engagement.</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 1,
+      "slideTitle": "Developing a Social Media Schedule",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/image_4_gtbdrg.png",
+                "alt": "Developing a social media schedule",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "<p>A social media schedule helps plan and organize content across different platforms.</p><p>It ensures consistent posting and engagement with the audience.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "callout",
+          "order_index": 2,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Key elements of a social media schedule",
+            "html": "<p>Content themes, posting frequency, and timing.</p>",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 2,
+      "slideTitle": "Effective Use of Websites and Blogs",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/image_6_pyifr0.png",
+                "alt": "Effective use of websites and blogs",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "content_list",
+          "order_index": 1,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Websites and blogs are essential tools for digital marketing</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>They provide a platform to showcase products, services, and valuable content</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Effective use involves optimizing design, navigation, and user experience</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Regularly updating with fresh and relevant content helps attract and retain visitors</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "<p>Effective digital marketing for nonprofits combines email campaigns, compelling visuals, social media content, and search-optimized web pages to maximize reach and impact.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "image_gallery",
+          "order_index": 3,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/image_7_sqlams.png",
+                "alt": "Digital marketing strategy illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/nonprofit-email-marketing_hpdmsm.jpg",
+                "alt": "Nonprofit email marketing",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 3,
+      "slideTitle": "Creating a Targeted Message",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/image_7_sqlams.png",
+                "alt": "Creating a targeted message",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "<h3>Tailored Message</h3><p>Identify your specific target audience groups (e.g. donors, volunteers, program participants). Craft key messages that resonate with each group's interests, values, and language.</p><h3>Segment Communication Lists</h3><p>Create separate opt-in lists for different types of communications (e.g. general updates, events, advocacy). Only send relevant messages to each segmented list to improve engagement.</p><h3>Maintain Messaging Consistency</h3><p>Repeat key messages across all communications over time. Audiences need multiple exposures to internalize your brand and mission.</p><h3>Appeal on Multiple Levels</h3><p>Craft messages that inspire emotionally, inform intellectually, and provide clear calls-to-action. Combine emotional, tactical, and intellectual appeal.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 4,
+      "slideTitle": "Tips to Build an Email List",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/nonprofit-email-marketing_hpdmsm.jpg",
+                "alt": "Nonprofit email marketing",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "<h3>Develop Compelling Lead Magnets</h3><p>Offer valuable incentives like ebooks, checklists, or exclusive content in exchange for an email signup. This gives people a reason to willingly provide their email address.</p><h3>Optimize Signup Forms</h3><p>Place signup forms strategically on your website, using clear and enticing call-to-actions. Test different form designs and placements to improve conversion rates.</p><h3>Leverage Social Media</h3><p>Promote your lead magnets and email signup forms across social media platforms. You can also use paid social ads to target specific audiences and drive more signups.</p><h3>Segment and Personalize</h3><p>Collect additional data like interests, preferences, and demographics when people sign up. This allows you to segment your list and send more personalized, relevant emails.</p><h3>Maintain List Hygiene</h3><p>Regularly clean your email list by removing inactive or invalid addresses. This keeps your list healthy and improves deliverability and engagement.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 5,
+      "slideTitle": "How to Segment Email List",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/nonprofit-email-marketing_hpdmsm.jpg",
+                "alt": "Email list segmentation",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "<h3>Segment by Demographics</h3><p>Collect data on subscriber age, gender, location, and other basic demographics. Use this information to create targeted segments and tailor your messaging accordingly.</p><h3>Segment by Interests and Behaviors</h3><p>Track subscriber interests, purchase history, email engagement, and other behavioral data. Create segments based on this data to send more personalized and relevant content</p><h3>Continuously Maintain and Optimize Segments</h3><p>Regularly review and update your segments as subscriber data and preferences evolve. Test different segmentation strategies and measure the impact on engagement and conversions.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 6,
+      "slideTitle": "How to Create Compelling Content",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/types-of-visual-aids_wtrdkp.jpg",
+                "alt": "Types of visual aids for creating compelling content",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "<h3>Write for Your Audience</h3><p>Understand your target audience's interests, pain points, and language. Tailor your content to resonate with their needs and preferences.</p><h3>Provide Unique Value</h3><p>Don't just regurgitate existing information. Offer a fresh perspective or cite new research.</p><h3>Maintain Consistent Tone and Voice</h3><p>Develop a distinct brand voice and writing style that aligns with your audience. Use this consistent tone across all your content to build recognition and trust.</p><h3>Focus on Clarity and Concision</h3><p>Avoid jargon, complex language, and unnecessary fluff. Get to the point quickly and communicate your message in a clear, easy-to-understand way.</p><h3>Leverage Multimedia Elements</h3><p>Incorporate visuals, videos, infographics, and other engaging formats. These multimedia components can make your content more memorable and shareable.</p><h3>Optimize for Discoverability</h3><p>Conduct keyword research to identify the terms your audience is searching for. Incorporate these keywords strategically throughout your content to improve search visibility.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 7,
+      "slideTitle": "Leveraging Multimedia for Greater Impact",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_08_Lesson_7_Maximizing_Impact_in_the_Digital_Age/visual-aid-summary_xzqovc.jpg",
+                "alt": "Visual aid summary for multimedia impact",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "md",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "content_list",
+          "order_index": 1,
+          "data": {
+            "items": [
+              {
+                "html": "<p>Multimedia includes images, videos, infographics, and interactive content</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>It helps capture attention, convey messages effectively, and increase engagement</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Choosing the right multimedia formats based on the target audience is important</p>",
+                "animation": "none"
+              },
+              {
+                "html": "<p>Integrating multimedia across digital platforms can amplify the impact of campaigns</p>",
+                "animation": "none"
+              }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 8,
+      "slideTitle": "Knowledge Check",
+      "slideType": "quiz",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What are the key elements of a social media schedule?",
+            "options": [
+              "Content themes, posting frequency, and timing.",
+              "Target audience, engagement metrics, and analytics.",
+              "Hashtags, emojis, and captions.",
+              "Website design, navigation, and user experience."
+            ],
+            "correct_answer": "Content themes, posting frequency, and timing.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The three key elements of a social media schedule are content themes, posting frequency, and timing — together they ensure consistent and strategic posting.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 0
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can websites and blogs be effectively used for digital marketing?",
+            "options": [
+              "Optimizing design, navigation, and user experience.",
+              "Posting frequent updates and promotions.",
+              "Utilizing social media influencers for endorsements.",
+              "Implementing email marketing campaigns for lead generation."
+            ],
+            "correct_answer": "Optimizing design, navigation, and user experience.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Effective websites and blogs prioritize optimized design, clear navigation, and a strong user experience — along with regularly updated, relevant content.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 1
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a crucial step in email marketing for nonprofits?",
+            "options": [
+              "Building an email list and segmenting it based on interests and demographics.",
+              "Creating visually appealing email templates.",
+              "Sending mass emails to all subscribers simultaneously."
+            ],
+            "correct_answer": "Building an email list and segmenting it based on interests and demographics.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Building and segmenting your email list allows you to send relevant, personalized messages — dramatically improving engagement and outcomes.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 2
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What does leveraging multimedia in digital campaigns help achieve?",
+            "options": [
+              "Capture attention, convey messages effectively, and increase engagement.",
+              "Improve website loading speed and performance.",
+              "Increase organic search engine rankings.",
+              "Enhance social media follower count and likes."
+            ],
+            "correct_answer": "Capture attention, convey messages effectively, and increase engagement.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Multimedia — images, videos, infographics, and interactive content — captures attention, communicates more effectively, and boosts engagement.",
+            "gridX": 0,
+            "gridY": 9,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 3
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of a social media schedule?",
+            "options": [
+              "Plan and organize content across different platforms.",
+              "Track website traffic and conversion rates.",
+              "Generate leads through paid advertising campaigns.",
+              "Monitor competitor strategies and performance."
+            ],
+            "correct_answer": "Plan and organize content across different platforms.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! A social media schedule plans and organizes content across platforms, ensuring consistency and strategic timing of posts.",
+            "gridX": 0,
+            "gridY": 12,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 4
+        }
+      ],
+      "title": "Knowledge Check"
+    }
+  ],
+  "candidates": []
+}

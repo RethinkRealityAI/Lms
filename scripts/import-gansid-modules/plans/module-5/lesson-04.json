@@ -1,0 +1,238 @@
+{
+  "lessonId": "8e87c191-1212-46d0-bc8a-759da2dcd11f",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Project Management Phases",
+  "lessonDescription": "Project management typically involves several phases, each crucial for ensuring the successful completion of a project. These phases may vary depending on the project management methodology used, but they commonly include the Initiation, Planning, Execution, Monitoring and Controlling, and Closing phases.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "The 5 Project Management Phases",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Project management typically involves several phases, each crucial for ensuring the successful completion of a project. These phases may vary depending on the project management methodology used, but they commonly include:</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Initiation Phase</p>", "animation": "none" },
+              { "html": "<p>Planning Phase</p>", "animation": "none" },
+              { "html": "<p>Execution Phase</p>", "animation": "none" },
+              { "html": "<p>Monitoring and Controlling Phase</p>", "animation": "none" },
+              { "html": "<p>Closing Phase</p>", "animation": "none" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Phase 1: Initiation",
+            "html": "<p><strong>Purpose:</strong> Define the project's purpose, goals, and objectives before work begins.</p><p><strong>Key activities:</strong></p><ul><li>Define the project's purpose, goals, and objectives</li><li>Identify stakeholders and establish communication channels</li><li>Conduct feasibility studies and assess risks</li><li>Develop a project charter or initiation document</li></ul>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Phase 2: Planning",
+            "html": "<p><strong>Purpose:</strong> Create a detailed roadmap for how the project will be executed.</p><p><strong>Key activities:</strong></p><ul><li>Define project scope, deliverables, and requirements</li><li>Create a detailed project plan, including schedules, budgets, and resource allocation</li><li>Identify tasks, dependencies, and milestones</li><li>Develop risk management and quality assurance plans</li><li>Obtain necessary approvals and agreements</li></ul>",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Phase 3: Execution",
+            "html": "<p><strong>Purpose:</strong> Implement the project plan and deliver the project outputs.</p><p><strong>Key activities:</strong></p><ul><li>Implement the project plan by executing tasks and activities</li><li>Manage project resources, including team members, equipment, and materials</li><li>Monitor progress against the project plan and adjust as necessary</li><li>Address issues, risks, and changes as they arise</li><li>Ensure effective communication and collaboration among team members</li></ul>",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Phase 4: Monitoring and Controlling",
+            "html": "<p><strong>Purpose:</strong> Track project performance and ensure the project stays on course.</p><p><strong>Key activities:</strong></p><ul><li>Track project performance using key performance indicators (KPIs) and metrics</li><li>Monitor project progress, costs, and quality</li><li>Identify and address variances from the project plan</li><li>Conduct regular status meetings and reporting</li><li>Implement changes and corrective actions as needed</li></ul>",
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Phase 5: Closing",
+            "html": "<p><strong>Purpose:</strong> Formally complete the project and capture lessons learned.</p><p><strong>Key activities:</strong></p><ul><li>Complete all project deliverables and obtain formal acceptance from stakeholders</li><li>Conduct a project review or retrospective to evaluate lessons learned</li><li>Archive project documentation and resources</li><li>Hand over deliverables to the client or end users</li><li>Celebrate project success and acknowledge team contributions</li></ul>",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "The 5 Phases at a Glance",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              { "id": "col-phase", "label": "Phase", "align": "left" },
+              { "id": "col-purpose", "label": "Purpose", "align": "left" },
+              { "id": "col-output", "label": "Key Output", "align": "left" }
+            ],
+            "rows": [
+              {
+                "id": "row-1",
+                "cells": {
+                  "col-phase": "Initiation",
+                  "col-purpose": "Define project purpose and feasibility",
+                  "col-output": "Project charter"
+                }
+              },
+              {
+                "id": "row-2",
+                "cells": {
+                  "col-phase": "Planning",
+                  "col-purpose": "Create detailed roadmap",
+                  "col-output": "Project plan"
+                }
+              },
+              {
+                "id": "row-3",
+                "cells": {
+                  "col-phase": "Execution",
+                  "col-purpose": "Deliver project outputs",
+                  "col-output": "Project deliverables"
+                }
+              },
+              {
+                "id": "row-4",
+                "cells": {
+                  "col-phase": "Monitoring & Controlling",
+                  "col-purpose": "Track and adjust performance",
+                  "col-output": "Status reports, corrective actions"
+                }
+              },
+              {
+                "id": "row-5",
+                "cells": {
+                  "col-phase": "Closing",
+                  "col-purpose": "Formally complete the project",
+                  "col-output": "Lessons learned, archived docs"
+                }
+              }
+            ],
+            "striped": true,
+            "first_column_header": true,
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of the Monitoring and Controlling Phase in project management?",
+            "options": [
+              "Track project performance and address variances from the plan",
+              "Define project scope and requirements",
+              "Implement the project plan by executing tasks and activities",
+              "Complete project deliverables and obtain formal acceptance"
+            ],
+            "correct_answer": "Track project performance and address variances from the plan",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The Monitoring and Controlling Phase is specifically focused on tracking project performance using KPIs, identifying variances from the project plan, and implementing corrective actions as needed.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the main goal of the Planning Phase in project management?",
+            "options": [
+              "Define project scope, deliverables, and requirements",
+              "Implement the project plan by executing tasks and activities",
+              "Track project performance and address variances from the plan",
+              "Complete all project deliverables and obtain formal acceptance"
+            ],
+            "correct_answer": "Define project scope, deliverables, and requirements",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The Planning Phase focuses on defining project scope, deliverables, and requirements, and creating a detailed roadmap including schedules, budgets, and resource allocation.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which phase of project management involves identifying stakeholders and establishing communication channels?",
+            "options": [
+              "Initiation Phase",
+              "Planning Phase",
+              "Execution Phase",
+              "Closing Phase"
+            ],
+            "correct_answer": "Initiation Phase",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The Initiation Phase is where stakeholders are identified and communication channels are established, alongside defining the project's purpose, goals, and objectives.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

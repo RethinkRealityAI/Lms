@@ -1,0 +1,1072 @@
+{
+  "lessonId": "3478bc6d-00ec-40b1-822f-9d3c1edc8f86",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Communicate as a Leader",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "slideOrderIndex": 0,
+      "slideTitle": "Speaking Professionally",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<p>As a member of your advocacy group, you are the face of the organization, representing its values, mission, and objectives. Professional communication reflects positively on the organization and inspires trust among stakeholders, including patients, donors, volunteers, and partners.</p><p>Through this program, you will learn how to:</p><ul><li>Prepare and deliver messages confidently and effectively.</li><li>Establish connection and rapport with the audience.</li><li>Customize messages to resonate with the audience's needs and preferences.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_professional-speaking_jk27m8.jpg",
+                "alt": "Professional speaking"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 1,
+      "slideTitle": "Come Prepared and Be Organized",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_notebooks-and-postits-very-neat_qwsnir.jpg",
+                "alt": "Notebooks and post-its, organized workspace"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<ul><li>Gather relevant information and materials beforehand.</li><li>Organize your thoughts and structure your presentation or conversation in a clear and logical manner.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 2,
+      "slideTitle": "Understand Your Audience",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<ul><li>Conduct research or gather insights to understand the demographics, preferences, and expectations of your audience.</li><li>Anticipate potential questions or concerns your audience may have and prepare responses accordingly.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_audience-in-a-meeting_fjsqx3.jpg",
+                "alt": "Audience in a meeting"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 3,
+      "slideTitle": "Tailor Your Message",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<h3>Customize</h3><p>Customize your message to resonate with your specific audience, considering their background, interests, and knowledge level.</p><h3>Adapt</h3><p>Adapt your communication style and tone to suit the preferences and expectations of your audience.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_different-communication-styles-in-the-office_iltgcj.jpg",
+                "alt": "Different communication styles in the office"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 4,
+      "slideTitle": "Focus on Outcomes",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_pie-charts-graphs_jlhvzn.jpg",
+                "alt": "Pie charts and graphs showing outcomes"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<p>Clearly define the desired outcomes or objectives of your message and communicate them to your audience during the introduction of your speech or presentation.</p><p>Emphasize the impact or benefits your message will have on the audience to align their expectations with your goals.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 5,
+      "slideTitle": "Establish Credibility",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_a-woman-talking-clearly-in-front-of-a-lecture-hall_apd9ms.jpg",
+                "alt": "A woman talking clearly in front of a lecture hall"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<ol><li>Highlight your credibility by referencing reputable sources, providing relevant data or statistics, and sharing lived experience stories when appropriate.</li><li>Build trust with your audience by demonstrating expertise, authenticity, and transparency in your communication.</li></ol>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 6,
+      "slideTitle": "Use Storytelling Where Appropriate",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<ul><li>Incorporate storytelling techniques to make your message more engaging and memorable, particularly when conveying complex or abstract concepts.</li><li>Use real-life examples or personal anecdotes to illustrate key points and connect with your audience emotionally.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_two-people-talking-with-their-hands-at-their-desk-_o93zde.jpg",
+                "alt": "Two people talking with their hands at their desk"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 7,
+      "slideTitle": "Establish Rapport",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<p>Build trust and connect with your audience by smiling, acknowledging responses, and echoing their sentiments.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_building-trust-shaking-hands-people-smiling_him1jz.jpg",
+                "alt": "Building trust — shaking hands, people smiling"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 2,
+          "data": {
+            "html": "<p>Use inclusive language and address the concerns or interests of your audience to create a connection.</p><h3>Pay Attention to Feedback</h3><p>Monitor verbal and non-verbal cues such as questions, nods, facial expressions, and body language to gauge rapport.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 8,
+      "slideTitle": "Utilize Nonverbal Communication Effectively",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_35mm-film-photography-Middleaged-Caucasian-woman-i_zvbvi4.jpg",
+                "alt": "35mm film photography — middle-aged Caucasian woman"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<ol><li>Use pauses strategically to emphasize key points, allow for audience reflection, and maintain control of the conversation.</li><li>Minimize the use of filler words like \"um\" or \"uh\" to enhance your speech's clarity.</li><li>Maintain good eye contact with your audience to convey confidence, sincerity, and engagement.</li><li>Pay attention to body language, including posture, gestures, and facial expressions, to reinforce your message and establish rapport with your audience.</li><li>Vary the intonation of your voice and pace of speech to keep your audience engaged and emphasize important information.</li></ol>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 9,
+      "slideTitle": "Knowledge Check",
+      "slideType": "quiz",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 0,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to tailor your message to your audience?",
+            "options": [
+              "To impress the audience with your knowledge.",
+              "To ensure that your message resonates with the audience and meets their needs.",
+              "To demonstrate your authority as a speaker.",
+              "To confuse the audience with complex language."
+            ],
+            "correct_answer": "To ensure that your message resonates with the audience and meets their needs.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Tailoring your message ensures it resonates with your audience's background, interests, and knowledge level — making it far more effective.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 1,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is one strategy for establishing credibility when speaking professionally?",
+            "options": [
+              "Using excessive jargon to demonstrate expertise.",
+              "Sharing personal anecdotes unrelated to the topic.",
+              "Referencing reputable sources and providing relevant data.",
+              "Avoiding eye contact with the audience."
+            ],
+            "correct_answer": "Referencing reputable sources and providing relevant data.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Referencing reputable sources and relevant data — alongside lived experience stories — builds trust and demonstrates expertise.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 2,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can nonverbal communication enhance the effectiveness of your speech?",
+            "options": [
+              "By conveying confidence, sincerity, and engagement.",
+              "By distracting the audience from the main message.",
+              "By using filler words to fill pauses in speech.",
+              "By speaking in a monotone voice to maintain neutrality."
+            ],
+            "correct_answer": "By conveying confidence, sincerity, and engagement.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Nonverbal cues — eye contact, posture, gestures, and varied intonation — convey confidence and deepen audience engagement.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ],
+      "title": "Knowledge Check"
+    },
+    {
+      "slideOrderIndex": 10,
+      "slideTitle": "Dealing with Interpersonal Conflict and Difficult Audiences",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<p>Encountering challenging individuals or groups in your advocacy work is inevitable due to diverse communication styles and personalities. While diversity can enrich discussions, it may also lead to conflicts or disruptions. Thus, mastering strategies for handling difficult audiences is crucial. In this section, you will learn how to resolve interpersonal conflicts, recognize common behaviors of challenging participants in group discussions, and respond in a composed, effective, and professional manner.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_people-yelling-at-each-other-in-the-office-miscomm_d4bhl0.jpg",
+                "alt": "People yelling at each other in the office — miscommunication"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 2,
+          "data": {
+            "html": "<p>In this module, you will learn how to:</p><ul><li>Identify, manage, and resolve interpersonal conflict.</li><li>Recognize and resolve tense or uncomfortable situations within an audience.</li><li>Display professionalism when dealing with challenging audience members.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 11,
+      "slideTitle": "Understanding Conflict",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_people-debating-in-the-office_hqcn77.jpg",
+                "alt": "People debating in the office"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<h3>What is Conflict?</h3><p>Conflict arises from disagreements or differing interests between individuals or groups.</p><h3>What Causes Conflict?</h3><p>Conflicts may stem from differences in values, goals, communication styles, or resource allocation.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 12,
+      "slideTitle": "Effective Strategies for Conflict Resolution",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_someone-raising-their-hand-in-the-office-to-ask-a-_coqkoq.jpg",
+                "alt": "Someone raising their hand in the office to ask a question"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<ol><li><strong>Be Proactive</strong> — When issues arise, listen to those concerns and consider how best to address the situation. Investigate potential conflicts early on to prevent escalation.</li><li><strong>Seek to Understand All Sides</strong> — Approach individuals involved in the conflict in an open, non-confrontational, and non-defensive manner to gather information about the situation. Conversations should be held in an open yet private place.</li><li><strong>Listen Actively</strong> — Hear out all perspectives without interrupting, demonstrating empathy and understanding.</li><li><strong>Find Common Ground</strong> — Identify shared interests or goals to facilitate compromise and collaboration.</li><li><strong>Know When to Seek Help</strong> — Involve a neutral third party if conflict resolution efforts stall or if emotions escalate.</li><li><strong>Develop Preventative Strategies</strong> — Implement measures to prevent similar conflicts in the future through clear communication, established protocols, and conflict resolution training.</li></ol>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 13,
+      "slideTitle": "Identifying and Managing Difficult Audience Members",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_a-person-observing-in-the-office-and-being-quiet_ut5vg5.jpg",
+                "alt": "A person observing in the office and being quiet"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 1,
+          "data": {
+            "html": "<p>Effective Strategies on How to Identify and Manage Difficult Audience Members</p><p>How To Manage: The Talker, The Interjector, The Debater, The Observer, and The Non-Engaged</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 14,
+      "slideTitle": "Managing Audience Types",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "table",
+          "orderIndex": 0,
+          "data": {
+            "columns": [
+              {
+                "id": "type",
+                "label": "Type",
+                "align": "left"
+              },
+              {
+                "id": "strategy",
+                "label": "Strategy",
+                "align": "left"
+              }
+            ],
+            "rows": [
+              {
+                "id": "r1",
+                "cells": {
+                  "type": "The Talker",
+                  "strategy": "Thank them for their enthusiasm and redirect: \"That's a great point — let's make sure others have a chance to share too.\""
+                }
+              },
+              {
+                "id": "r2",
+                "cells": {
+                  "type": "The Interjector",
+                  "strategy": "Politely remind them of the expectation to note questions and comments for later discussion."
+                }
+              },
+              {
+                "id": "r3",
+                "cells": {
+                  "type": "The Debater",
+                  "strategy": "Acknowledge their perspective respectfully, then move the conversation forward: \"I appreciate that view — let's revisit it after the session.\""
+                }
+              },
+              {
+                "id": "r4",
+                "cells": {
+                  "type": "The Observer",
+                  "strategy": "Invite everyone to share their opinions and respond positively when they contribute."
+                }
+              },
+              {
+                "id": "r5",
+                "cells": {
+                  "type": "The Non-Engaged",
+                  "strategy": "Engage them with a specific question or interactive task to bring them back into the discussion."
+                }
+              }
+            ],
+            "striped": true,
+            "first_column_header": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_a-dark-skin-woman-boss-speaking-to-her-team-and-sm_fshix3.jpg",
+                "alt": "A dark-skin woman boss speaking to her team and smiling"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_someone-on-their-phone-in-the-office-not-engaged-w_gvjkro.jpg",
+                "alt": "Someone on their phone in the office, not engaged"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_people-debating-in-the-office_hqcn77.jpg",
+                "alt": "People debating in the office"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_a-person-observing-in-the-office-and-being-quiet_ut5vg5.jpg",
+                "alt": "A person observing in the office and being quiet"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_someone-raising-their-hand-in-the-office-to-ask-a-_coqkoq.jpg",
+                "alt": "Someone raising their hand in the office to ask a question"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_people-yelling-at-each-other-in-the-office-miscomm_d4bhl0.jpg",
+                "alt": "People yelling at each other in the office — miscommunication"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_two-people-talking-with-their-hands-at-their-desk-_o93zde.jpg",
+                "alt": "Two people talking with their hands at their desk"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_building-trust-shaking-hands-people-smiling_hqjsj7.jpg",
+                "alt": "Building trust — shaking hands, people smiling"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_different-communication-styles-in-the-office_iltgcj.jpg",
+                "alt": "Different communication styles in the office"
+              }
+            ],
+            "mode": "gallery",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 15,
+      "slideTitle": "Knowledge Check",
+      "slideType": "quiz",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 0,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to seek to understand all sides of a conflict?",
+            "options": [
+              "To assert dominance over others.",
+              "To gather information and find common ground.",
+              "To avoid addressing the conflict altogether.",
+              "To know who is at fault."
+            ],
+            "correct_answer": "To gather information and find common ground.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Understanding all sides helps you gather information objectively and identify shared interests that can lead to resolution.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 1,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which strategy is recommended to handle the behavior of a frequent interrupter during a presentation?",
+            "options": [
+              "Thank them for their input and continue speaking without interruption.",
+              "Politely remind them of the expectation to note questions and comments for later discussion.",
+              "Engage them in a specific task unrelated to the presentation.",
+              "Ignore their interruptions and proceed with the presentation."
+            ],
+            "correct_answer": "Politely remind them of the expectation to note questions and comments for later discussion.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Politely redirecting the interrupter to note their questions for later keeps the presentation on track while respecting their input.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 2,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the recommended approach for encouraging participation from a silent audience member?",
+            "options": [
+              "Invite everyone to share their opinions and respond positively when they contribute.",
+              "Ask them direct questions and pressure them to respond.",
+              "Thank them for their attention and move on to other participants.",
+              "Criticize their lack of participation in front of the group to motivate them."
+            ],
+            "correct_answer": "Invite everyone to share their opinions and respond positively when they contribute.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Creating a welcoming, open environment where everyone is invited to contribute - without pressure - encourages participation from quieter members.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ],
+      "title": "Knowledge Check"
+    },
+    {
+      "slideOrderIndex": 16,
+      "slideTitle": "Cross-Cultural Communication",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<p>Sometimes you will encounter individuals from all walks of life, demographics, nationalities, and cultures. Therefore, it is important to be cognizant of subtle nuances in the way that individuals communicate. This section will provide you with strategies to employ when dealing with cross-cultural relationships and how to nurture them respectfully.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_diversity-in-the-office-different-types-of-races-r_oxwg6d.jpg",
+                "alt": "Diversity in the office — different types of races"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 2,
+          "data": {
+            "html": "<p>In this module you will: Learn effective strategies to facilitate cross-cultural discussions.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 17,
+      "slideTitle": "Strategies for Effective Cross-Cultural Communication",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<ul><li><strong>Challenge stereotypes</strong> — Recognize the uniqueness of individuals and avoid making generalizations. Seek to understand the intersectional identity of individuals or groups.</li><li><strong>Adapt your communication style</strong> — Accommodate cultural norms and preferences. Repeat or paraphrase your words to ensure clarity and understanding.</li><li><strong>Ask questions</strong> — Demonstrate genuine interest and clarify misunderstandings. Show curiosity about cultural perspectives.</li><li><strong>Listen actively</strong> — Be patient, empathetic, and open to different communication styles and paces.</li><li><strong>Maintain fruitful relationships</strong> — Follow up, stay engaged, and show respect for cultural practices and traditions.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_diversity-in-the-office-different-types-of-races-r-2_sotuyb.jpg",
+                "alt": "Diversity in the office — different types of races (2)"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_building-trust-shaking-hands-people-smiling_him1jz.jpg",
+                "alt": "Building trust — shaking hands, people smiling"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_building-trust-shaking-hands-people-smiling_hqjsj7.jpg",
+                "alt": "Building trust — shaking hands, people smiling (2)"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_two-people-talking-with-their-hands-at-their-desk-_o93zde.jpg",
+                "alt": "Two people talking with their hands at their desk"
+              }
+            ],
+            "mode": "gallery",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideOrderIndex": 18,
+      "slideTitle": "Knowledge Check",
+      "slideType": "quiz",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 0,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to challenge stereotypes when communicating with cross-cultural audiences?",
+            "options": [
+              "To reinforce cultural biases.",
+              "To make assumptions about individuals within cultural groups.",
+              "To recognize the uniqueness of individuals and avoid generalizations.",
+              "To ensure that we treat audiences as homogenous groups."
+            ],
+            "correct_answer": "To recognize the uniqueness of individuals and avoid generalizations.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Challenging stereotypes means seeking to understand the intersectional identity of individuals — recognizing their uniqueness rather than applying broad generalizations.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 1,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is one strategy for maintaining fruitful relationships with partners from diverse cultural backgrounds?",
+            "options": [
+              "Adapting your communication style to accommodate cultural norms and preferences.",
+              "Using complex language and technical jargon.",
+              "Being inflexible in your communication approach.",
+              "Speaking quickly to ensure meetings end promptly."
+            ],
+            "correct_answer": "Adapting your communication style to accommodate cultural norms and preferences.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Adapting your communication style — including repeating or paraphrasing to ensure clarity — is key to nurturing cross-cultural relationships.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "quiz_inline",
+          "orderIndex": 2,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can asking questions contribute to effective cross-cultural communication?",
+            "options": [
+              "By avoiding dialogue and maintaining assumptions.",
+              "By demonstrating genuine interest and clarifying misunderstandings.",
+              "By imposing your own cultural values on others.",
+              "To ensure that others have more opportunities to speak than you do."
+            ],
+            "correct_answer": "By demonstrating genuine interest and clarifying misunderstandings.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Asking questions shows genuine curiosity, helps clarify misunderstandings, and builds bridges across cultural differences.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ],
+      "title": "Knowledge Check"
+    },
+    {
+      "slideOrderIndex": 19,
+      "slideTitle": "In Conclusion...",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "blockType": "rich_text",
+          "orderIndex": 0,
+          "data": {
+            "html": "<p>Mastering skills such as managing interpersonal conflict, dealing with difficult audiences, and cross-cultural communication will help members of patient advocacy groups communicate their vision and mission effectively.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "image_gallery",
+          "orderIndex": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_05_Lesson_4_Communicate_as_a_Leader/pikaso_texttoimage_a-dark-skin-woman-boss-speaking-to-her-team-and-sm_fshix3.jpg",
+                "alt": "A dark-skin woman boss speaking to her team and smiling"
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "blockType": "rich_text",
+          "orderIndex": 2,
+          "data": {
+            "html": "<p>Developing these skills will create a harmonious and productive work environment within the organization, fostering understanding, respect, and collaboration across diverse cultural backgrounds.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

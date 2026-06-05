@@ -1,0 +1,304 @@
+{
+  "lessonId": "74a5986f-8b7d-4259-b61e-5bcef5d4bdd5",
+  "lessonOrderIndex": 6,
+  "lessonTitle": "Project Management in Healthcare",
+  "lessonDescription": "Effective project management is essential for addressing complex challenges and improving patient outcomes. The key components that must be mastered are: Needs Assessment, Goal Setting, Stakeholder Engagement, Resource Allocation, Risk Management, Implementation Plan, Monitoring and Evaluation, Documentation and Reporting, Sustainability Planning, and Continuous Improvement.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Project Management in Healthcare",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective project management is essential for addressing complex challenges and improving patient outcomes. The key components that must be mastered are:</p><ol><li>Needs Assessment</li><li>Goal Setting</li><li>Stakeholder Engagement</li><li>Resource Allocation</li><li>Risk Management</li><li>Implementation Plan</li><li>Monitoring and Evaluation</li><li>Documentation and Reporting</li><li>Sustainability Planning</li><li>Continuous Improvement</li></ol>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Needs Assessment & Goal Setting",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>1. Needs Assessment</h2><p><strong>Definition:</strong> A needs assessment is a systematic process of gathering and analyzing information to identify the specific needs, preferences, and challenges faced by individuals, families, or communities in the context of healthcare.</p><p><strong>Implementation:</strong></p><ul><li>Conduct thorough needs assessments through surveys, interviews, or focus groups to allow healthcare professionals to gain insights into the specific needs and challenges faced by patients, caregivers, and healthcare providers</li><li>Analyze demographic data, health disparities, and community health indicators to gain a comprehensive understanding of the healthcare landscape and inform targeted interventions</li><li>Incorporate patient feedback and input from community stakeholders to ensure that healthcare projects are tailored to meet the diverse needs of the population served</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>2. Goal Setting</h2><p><strong>Definition:</strong> Goal setting involves establishing clear and measurable objectives that define the desired outcomes of a healthcare project or intervention. It plays a crucial role, particularly in projects aimed at enhancing access to healthcare services, increasing awareness, or strengthening support networks for affected individuals.</p><p><strong>Implementation:</strong></p><ul><li>Set <strong>SMART</strong> (Specific, Measurable, Achievable, Relevant, Time-bound) goals to ensure clarity and accountability</li><li>Establish benchmarks and performance indicators to monitor progress and evaluate impact</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Stakeholder Engagement, Resource Allocation & Risk Management",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>3. Stakeholder Engagement</h2><p><strong>Definition:</strong> Stakeholder engagement refers to involving patients, caregivers, healthcare professionals, advocacy groups, and policymakers — organizations with a vested interest or influence in a healthcare project or initiative. This ensures that stakeholder insights guide project planning and implementation, fostering greater collaboration and buy-in.</p><p><strong>Implementation:</strong></p><ul><li>Identify and map all relevant stakeholders early in the project</li><li>Establish regular communication channels and feedback loops</li><li>Involve stakeholders in key decisions to build ownership and sustainability</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>4. Resource Allocation</h2><p><strong>Definition:</strong> Resource allocation involves determining the necessary resources — including financial, human, technological, and material resources — needed to support a healthcare project or intervention.</p><p><strong>Implementation:</strong></p><ul><li>Assess resource needs and constraints to develop budgets and allocate resources effectively</li><li>Prioritize resource allocation based on project objectives and expected outcomes</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>5. Risk Management</h2><p><strong>Definition:</strong> Risk management is the process of identifying, assessing, and mitigating potential risks that may impact the success of a healthcare project or initiative. Examples of potential risks include regulatory compliance issues or resource constraints.</p><p><strong>Implementation:</strong></p><ul><li>Identify potential risks and their impact on project objectives</li><li>Develop strategies to mitigate risks and implement contingency plans</li><li>Monitor risks throughout the project lifecycle and adjust plans as needed</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Implementation, Monitoring, Documentation & Sustainability",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>6. Implementation Plan</h2><p><strong>Definition:</strong> An implementation plan is a detailed roadmap that outlines the specific activities, tasks, timelines, milestones, and responsibilities required to achieve the objectives of a healthcare project or intervention.</p><p><strong>Implementation:</strong></p><ul><li>Develop detailed timelines and assign responsibilities to team members</li><li>Establish monitoring mechanisms to track progress and make adjustments as needed</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>7. Monitoring and Evaluation</h2><p><strong>Definition:</strong> Monitoring and evaluation involve systematically tracking project progress, assessing performance, and measuring the impact of healthcare interventions on patient outcomes.</p><p><strong>Implementation:</strong></p><ul><li>Establish metrics and indicators to measure progress and evaluate impact</li><li>Collect data, analyze performance, and identify areas for improvement</li><li>Utilize feedback from stakeholders and evaluation findings to inform decision-making</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>8. Documentation and Reporting</h2><p><strong>Definition:</strong> Documentation and reporting involve maintaining accurate records — including meeting minutes, progress reports, financial statements, and evaluation findings — to document project activities and outcomes.</p><p><strong>Implementation:</strong></p><ul><li>Maintain detailed records of project activities and outcomes</li><li>Regularly report progress to stakeholders to ensure transparency and accountability</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>9. Sustainability Planning</h2><p><strong>Definition:</strong> Sustainability planning involves developing strategies to ensure the long-term impact and viability of healthcare projects and interventions beyond the initial funding or implementation period.</p><p><strong>Implementation:</strong></p><ul><li>Identify opportunities for long-term partnerships and funding</li><li>Advocate for policy changes to support project sustainability</li><li>Build community capacity and resources to sustain project outcomes</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>10. Continuous Improvement</h2><p><strong>Definition:</strong> Continuous improvement is the ongoing process of identifying areas for enhancement, implementing changes, and evaluating outcomes to improve the effectiveness and efficiency of healthcare projects and interventions.</p><p><strong>Implementation:</strong></p><ul><li>Solicit feedback from stakeholders and team members to identify areas for improvement</li><li>Evaluate project performance and integrate lessons learned into future initiatives</li><li>Foster a culture of learning and innovation to drive continuous improvement</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Quick Reference Summary",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "title": "Quick Reference Summary",
+            "columns": [
+              { "id": "component", "label": "Component", "align": "left" },
+              { "id": "purpose", "label": "Core Purpose", "align": "left" }
+            ],
+            "rows": [
+              { "id": "r1", "cells": { "component": "Needs Assessment", "purpose": "Understand what the community/patients actually need" } },
+              { "id": "r2", "cells": { "component": "Goal Setting", "purpose": "Define clear, SMART objectives" } },
+              { "id": "r3", "cells": { "component": "Stakeholder Engagement", "purpose": "Involve those with a stake in the outcome" } },
+              { "id": "r4", "cells": { "component": "Resource Allocation", "purpose": "Match resources to priorities" } },
+              { "id": "r5", "cells": { "component": "Risk Management", "purpose": "Anticipate and mitigate what could go wrong" } },
+              { "id": "r6", "cells": { "component": "Implementation Plan", "purpose": "Build the detailed action roadmap" } },
+              { "id": "r7", "cells": { "component": "Monitoring & Evaluation", "purpose": "Track progress and measure impact" } },
+              { "id": "r8", "cells": { "component": "Documentation & Reporting", "purpose": "Maintain transparency and accountability" } },
+              { "id": "r9", "cells": { "component": "Sustainability Planning", "purpose": "Ensure long-term viability beyond funding" } },
+              { "id": "r10", "cells": { "component": "Continuous Improvement", "purpose": "Learn, adapt, and grow" } }
+            ],
+            "striped": true,
+            "first_column_header": true,
+            "density": "comfortable",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of conducting a needs assessment in healthcare projects?",
+            "options": [
+              "To identify specific needs, preferences, and challenges faced by individuals, families, or communities",
+              "To analyze demographic data and community health indicators",
+              "To establish clear and measurable objectives for the project",
+              "To involve individuals, groups, or organizations with a vested interest in the project"
+            ],
+            "correct_answer": "To identify specific needs, preferences, and challenges faced by individuals, families, or communities",
+            "show_feedback": true,
+            "feedback_correct": "Correct! A needs assessment is a systematic process of gathering and analyzing information specifically to identify the needs, preferences, and challenges faced by patients and communities — this then informs all other project decisions.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can an implementation plan contribute to the success of a healthcare project?",
+            "options": [
+              "By outlining specific activities, timelines, and responsibilities required to achieve project objectives",
+              "By involving individuals, groups, or organizations with a vested interest or influence",
+              "By establishing clear and measurable objectives for the project",
+              "By assessing resource needs and constraints"
+            ],
+            "correct_answer": "By outlining specific activities, timelines, and responsibilities required to achieve project objectives",
+            "show_feedback": true,
+            "feedback_correct": "Correct! An implementation plan is a detailed roadmap that outlines the specific activities, tasks, timelines, milestones, and responsibilities required to achieve the objectives of a healthcare project.",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can stakeholder engagement contribute to the success of a healthcare project?",
+            "options": [
+              "By involving individuals, groups, or organizations with a vested interest or influence",
+              "By conducting surveys, interviews, or focus groups",
+              "By establishing clear and measurable objectives for the project",
+              "By assessing resource needs and constraints"
+            ],
+            "correct_answer": "By involving individuals, groups, or organizations with a vested interest or influence",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Stakeholder engagement ensures that those with a vested interest or influence — patients, caregivers, healthcare professionals, advocacy groups, and policymakers — are involved, fostering greater collaboration, ownership, and buy-in.",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

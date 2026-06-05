@@ -104,6 +104,22 @@ function validate(plan: Plan): string[] {
   return errs;
 }
 
+/** Single-image galleries: full width (mode single), original aspect, contain fit, large height. */
+function normalizeImageGalleryData(data: Record<string, unknown>): Record<string, unknown> {
+  const d = { ...data };
+  const images = Array.isArray(d.images) ? d.images : [];
+  const mode = (d.mode as string | undefined) ?? (images.length === 1 ? 'single' : 'gallery');
+  const isSingle =
+    mode === 'single' ||
+    (images.length === 1 && mode !== 'gallery' && mode !== 'slider' && mode !== 'carousel');
+  if (!isSingle) return d;
+  d.mode = 'single';
+  d.objectFit = 'contain';
+  d.displaySize = 'lg';
+  delete d.aspectRatio;
+  return d;
+}
+
 async function loadPlan(supabase: SupabaseClient, plan: Plan, dry: boolean) {
   const errs = validate(plan);
   if (errs.length) { console.error('VALIDATION FAILED:\n - ' + errs.join('\n - ')); process.exit(2); }
@@ -149,6 +165,10 @@ async function loadPlan(supabase: SupabaseClient, plan: Plan, dry: boolean) {
   for (const s of plan.slides) {
     const slideId = slideIdByOrder.get(s.orderIndex);
     for (const b of s.blocks) {
+      const data =
+        b.blockType === 'image_gallery' && b.data
+          ? normalizeImageGalleryData(b.data as Record<string, unknown>)
+          : b.data;
       blockRows.push({
         lesson_id: plan.lessonId,
         slide_id: slideId,
@@ -157,7 +177,7 @@ async function loadPlan(supabase: SupabaseClient, plan: Plan, dry: boolean) {
         title: b.title ?? null,
         order_index: b.orderIndex,
         is_visible: true,
-        data: b.data,
+        data,
       });
     }
   }
@@ -175,6 +195,22 @@ async function main() {
   const dry = process.argv.includes('--dry');
   if (!planPath) throw new Error('Usage: load-plan.ts <plan.json> [--dry]');
   const plan: Plan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
+  // Normalize planner key variants (agents emit mixed slide/block key names).
+  for (const s of plan.slides ?? []) {
+    const sx = s as PlanSlide & {
+      slideOrderIndex?: number;
+      slideIndex?: number;
+      slideTitle?: string | null;
+    };
+    if (sx.orderIndex === undefined && sx.slideOrderIndex !== undefined) sx.orderIndex = sx.slideOrderIndex;
+    if (sx.orderIndex === undefined && sx.slideIndex !== undefined) sx.orderIndex = sx.slideIndex;
+    if (sx.title === undefined && sx.slideTitle !== undefined) sx.title = sx.slideTitle;
+    for (const b of s.blocks ?? []) {
+      const bx = b as PlanBlock & { blockType?: string; block_type?: string; order_index?: number };
+      if (!bx.blockType && bx.block_type) bx.blockType = bx.block_type;
+      if (bx.orderIndex === undefined && bx.order_index !== undefined) bx.orderIndex = bx.order_index;
+    }
+  }
   const { url, serviceKey } = loadEnv();
   const supabase = createClient(url, serviceKey);
   await loadPlan(supabase, plan, dry);

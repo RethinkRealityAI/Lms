@@ -1,0 +1,32 @@
+{
+  "lessonId": "979ec42a-09e7-40e4-a8bf-e96d21428017",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Context to Grant Writing",
+  "lessonDescription": "As a patient advocacy organization, grant writing is a crucial skill to hone. Superb grant writing will elevate your chances of securing the funds needed to run your day-to-day operations and outreach programs.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Context to Grant Writing",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>As a patient advocacy organization, grant writing is a crucial skill to hone. Superb grant writing will elevate your chances of securing the funds needed to run your day-to-day operations and outreach programs.</p><p>Additionally, strong grant proposals can help build credibility with funders, foster long-term relationships, and open doors to new funding opportunities. By mastering this skill, you can ensure the sustainability and growth of your organization, enabling you to better serve your community.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

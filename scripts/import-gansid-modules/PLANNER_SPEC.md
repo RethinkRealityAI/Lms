@@ -32,6 +32,11 @@ v2 incorporates corrections from the Module 3 review. **Fidelity is the top prio
 - **Single native feedback.** Set `feedback_correct` (and optionally `feedback_incorrect`) to the
   VERBATIM index.html `feedback` string. **Do NOT set the `explanation` field** — it renders a
   redundant second box.
+- **Quiz options when MD and index.html disagree.** Use the MORE COMPLETE option set, but ONLY if
+  every one of its options is grounded in the lesson content (a real, plausible answer drawn from the
+  material) — this is usually index.html's set. If the larger set contains an option that is NOT from
+  the content (random/invented), use the smaller content-grounded set (the MD's). NEVER invent
+  options. The `correct_answer` must always be one of the chosen options, verbatim.
 - **Intersperse images.** When a slide has multiple images and heavy text, ORDER blocks so images
   break up the text (text → image → text → image), not all images dumped at the end. Single hero
   images go near the top of their slide.
@@ -43,6 +48,8 @@ v2 incorporates corrections from the Module 3 review. **Fidelity is the top prio
   body paragraph / list / table). Do not drop sections to "fit" the frontmatter.
 - The auto title slide + completion slide render automatically — never create blocks for them.
   Put the lesson intro / "Learning Goal" text (verbatim) into `lessonDescription`.
+- **No image-only slides.** Every content slide must include at least one text block (`rich_text`, `content_list`, `table`, or `callout`). Place images on the content slide they belong to.
+- **Consolidate grouped knowledge checks.** Runs of consecutive quiz/KC slides → one slide with multiple `quiz_inline` blocks.
 
 ## Component mapping
 | Source | Block |
@@ -51,12 +58,15 @@ v2 incorporates corrections from the Module 3 review. **Fidelity is the top prio
 | Bullet / numbered / step list, learning objectives | `content_list` |
 | Table | `table` (ALWAYS) — columns use `label` (NOT `header`); cells are PLAIN TEXT (no HTML/markdown). Use `first_column_header: true` to emphasize the first column instead of bold markup. |
 | Tip / Note / info-box | `callout` |
-| Single image | `image_gallery` mode single |
+| Single image | `image_gallery` with `mode: "single"` (full width), **no** `aspectRatio` (original), `objectFit: "contain"`, `displaySize: "lg"` |
 | Multiple images | `image_gallery` mode gallery, interspersed |
 | Knowledge check / quiz | `quiz_inline`, one block per question |
+| **Grouped knowledge checks** | When consecutive slides in the source are all quiz/KC questions (with no content between them), put **all questions on ONE slide** as multiple `quiz_inline` blocks. If KC questions appear in separate sections of the lesson (e.g. 3 after section A, 2 after section B), create **one consolidated KC slide per group** at each position — never one question per slide for a run of grouped checks. |
+| Image-only source slide | **Never create an image-only slide.** Merge images into the nearest related content slide (intersperse with text). For MD image stacks with no body, add index.html body text if available; skip duplicate images already shown on adjacent slides. |
 
 ## Block data essentials
 - Images: absolute URLs ONLY, from the module image manifest, mapped by the MD image path.
+- **Single-image galleries:** `mode: "single"`, omit `aspectRatio` (original), `objectFit: "contain"`, `displaySize: "lg"`. (Also enforced by `load-plan.ts` on insert.)
 - Quiz: `options` + `correct_answer` verbatim from source; `correct_answer` must exactly equal one
   option; `show_feedback: true`; `feedback_correct` = verbatim index.html feedback; NO `explanation`.
 - Grid: full-width `{gridX:0,gridY:0,gridW:12,gridH:3}` default; stacked blocks increment `gridY`.
@@ -73,3 +83,4 @@ for human opt-in — but never build them.
 4. Every quiz has a single verbatim feedback and NO `explanation`.
 5. Multiple-image slides intersperse images between text.
 6. quiz correct_answer ∈ options; all image URLs are https://; JSON parses.
+7. No image-only slides; grouped KC questions consolidated on one slide per run.

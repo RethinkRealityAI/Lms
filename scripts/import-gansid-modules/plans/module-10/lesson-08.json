@@ -1,0 +1,78 @@
+{
+  "lessonId": "5a6dc560-821b-4681-9796-378339e9b7b8",
+  "lessonOrderIndex": 8,
+  "lessonTitle": "Course Feedback",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Course Feedback Survey",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "title": null,
+          "data": {
+            "title": "Course Feedback",
+            "submit_label": "Submit Feedback",
+            "questions": [
+              {
+                "id": "q1",
+                "type": "multiple_choice",
+                "question": "How likely are you to recommend the course content (e.g., relevance, clarity, and depth) to others?",
+                "required": false,
+                "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+              },
+              {
+                "id": "q2",
+                "type": "multiple_choice",
+                "question": "How likely are you to say the course helped you achieve your learning goals?",
+                "required": false,
+                "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+              },
+              {
+                "id": "q3",
+                "type": "multiple_choice",
+                "question": "How likely are you to say the course pace was manageable and allowed you to keep up with the material?",
+                "required": false,
+                "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+              },
+              {
+                "id": "q4",
+                "type": "multiple_choice",
+                "question": "How likely are you to say the course instructions and expectations were clear and easy to follow?",
+                "required": false,
+                "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+              },
+              {
+                "id": "q5",
+                "type": "multiple_choice",
+                "question": "How likely are you to use what you've learned from this course in real-world scenarios?",
+                "required": false,
+                "options": ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+              },
+              {
+                "id": "q6",
+                "type": "textarea",
+                "question": "What other topics would you want to learn about in future modules?",
+                "required": false
+              },
+              {
+                "id": "q7",
+                "type": "textarea",
+                "question": "Any other comments or feedback?",
+                "required": false
+              }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

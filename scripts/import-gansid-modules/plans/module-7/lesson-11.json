@@ -1,0 +1,57 @@
+{
+  "lessonId": "8fb08ed3-a392-45e9-8f34-0fac9fd13f86",
+  "lessonOrderIndex": 11,
+  "lessonTitle": "Conclusion",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Conclusion",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Strategic Planning</h3>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>From Concept Note to Work Plan, it is important that you document how you will achieve success, what the objectives are to focus your efforts, and how it is feasible for your organization to do this.</p>", "animation": "left" },
+              { "html": "<p>Stay away from offering too much or trying to achieve things far outside your scope.</p>", "animation": "left" },
+              { "html": "<p>Remember, the concept note is meant to get stakeholders to agree to a project and the work plan is how you will achieve it.</p>", "animation": "left" },
+              { "html": "<p>Take the time to plan for how you will measure for success.</p>", "animation": "left" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 6
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>The more you document, the stronger your organization will become!</p>",
+            "gridX": 0, "gridY": 8, "gridW": 12, "gridH": 2
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

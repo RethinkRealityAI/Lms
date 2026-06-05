@@ -1,0 +1,302 @@
+{
+  "lessonId": "250547ef-62b9-4b99-bedd-7dfd39e5497e",
+  "lessonOrderIndex": 5,
+  "lessonTitle": "Recap Module 6: Effective Communication",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to tailor your message to your audience?",
+            "options": [
+              "To impress the audience with your knowledge.",
+              "To ensure that your message resonates with the audience and meets their needs.",
+              "To demonstrate your authority as a speaker.",
+              "To confuse the audience with complex language."
+            ],
+            "correct_answer": "To ensure that your message resonates with the audience and meets their needs.",
+            "show_feedback": true,
+            "feedback_correct": "Tailoring your message to your audience ensures that it resonates with them and meets their specific needs.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to seek to understand all sides of a conflict?",
+            "options": [
+              "To assert dominance over others.",
+              "To gather information and find common ground.",
+              "To avoid addressing the conflict altogether.",
+              "To know who is at fault."
+            ],
+            "correct_answer": "To gather information and find common ground.",
+            "show_feedback": true,
+            "feedback_correct": "Understanding all sides of a conflict helps to gather information and find common ground for resolution.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to challenge stereotypes when communicating with cross-cultural audiences?",
+            "options": [
+              "To reinforce cultural biases.",
+              "To make assumptions about individuals within cultural groups.",
+              "To recognize the uniqueness of individuals and avoid generalizations.",
+              "To ensure that we treat audiences as homogenous groups."
+            ],
+            "correct_answer": "To recognize the uniqueness of individuals and avoid generalizations.",
+            "show_feedback": true,
+            "feedback_correct": "Challenging stereotypes helps us recognize the uniqueness of individuals and avoid generalizations. We should seek to understand the intersectional identity of individuals or groups.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important for team leaders to hold regular meetings?",
+            "options": [
+              "To micromanage team members.",
+              "To discuss progress, challenges, and upcoming tasks.",
+              "To avoid communication with team members altogether."
+            ],
+            "correct_answer": "To discuss progress, challenges, and upcoming tasks.",
+            "show_feedback": true,
+            "feedback_correct": "Regular meetings help team leaders discuss progress, challenges, and upcoming tasks, ensuring collaboration and reducing misunderstandings.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of engaging with the media for nonprofits?",
+            "options": [
+              "To reach a wider audience and share their mission and impact.",
+              "To generate revenue and increase funding opportunities.",
+              "To recruit volunteers and expand their workforce.",
+              "To establish partnerships with other nonprofit organizations."
+            ],
+            "correct_answer": "To reach a wider audience and share their mission and impact.",
+            "show_feedback": true,
+            "feedback_correct": "Nonprofits engage with the media to reach a wider audience and share their mission and impact.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What are the key elements of a social media schedule?",
+            "options": [
+              "Content themes, posting frequency, and timing",
+              "Target audience, engagement metrics, and analytics",
+              "Hashtags, emojis, and captions",
+              "Website design, navigation, and user experience"
+            ],
+            "correct_answer": "Content themes, posting frequency, and timing",
+            "show_feedback": true,
+            "feedback_correct": "The key elements of a social media schedule are content themes, posting frequency, and timing.",
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can websites and blogs be effectively used for digital marketing?",
+            "options": [
+              "Optimizing design, navigation, and user experience",
+              "Posting frequent updates and promotions",
+              "Utilizing social media influencers for endorsements",
+              "Implementing email marketing campaigns for lead generation"
+            ],
+            "correct_answer": "Optimizing design, navigation, and user experience",
+            "show_feedback": true,
+            "feedback_correct": "Websites and blogs are most effective when you optimize their design, navigation, and user experience.",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the purpose of a social media schedule?",
+            "options": [
+              "Plan and organize content across different platforms",
+              "Track website traffic and conversion rates",
+              "Generate leads through paid advertising campaigns",
+              "Monitor competitor strategies and performance"
+            ],
+            "correct_answer": "Plan and organize content across different platforms",
+            "show_feedback": true,
+            "feedback_correct": "The purpose of a social media schedule is to plan and organize content across different platforms in a consistent and strategic way.",
+            "gridX": 0, "gridY": 7, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 8,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What should nonprofits include in their media pitch?",
+            "options": [
+              "Impactful statistics, personal stories, and quotes.",
+              "Detailed financial information and budget breakdowns.",
+              "Lengthy descriptions of the organization's history and background.",
+              "Technical jargon and industry-specific terminology."
+            ],
+            "correct_answer": "Impactful statistics, personal stories, and quotes.",
+            "show_feedback": true,
+            "feedback_correct": "Nonprofits should include impactful statistics, personal stories, and quotes in their media pitches.",
+            "gridX": 0, "gridY": 8, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 9,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can nonprofits utilize social media platforms effectively?",
+            "options": [
+              "By engaging with their audience, sharing updates, and promoting their mission.",
+              "By exclusively focusing on fundraising and donation appeals.",
+              "By posting sporadically and inconsistently on social media.",
+              "By ignoring comments and messages from their audience."
+            ],
+            "correct_answer": "By engaging with their audience, sharing updates, and promoting their mission.",
+            "show_feedback": true,
+            "feedback_correct": "Nonprofits can effectively use social media by engaging with their audience, sharing updates, and promoting their mission consistently.",
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 10,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can team leaders effectively empower team members?",
+            "options": [
+              "By providing them with authority and autonomy to make decisions.",
+              "By micromanaging their tasks and decisions.",
+              "By restricting their access to information and resources."
+            ],
+            "correct_answer": "By providing them with authority and autonomy to make decisions.",
+            "show_feedback": true,
+            "feedback_correct": "Team leaders can empower team members by providing them with authority and autonomy to make decisions within their areas of responsibility.",
+            "gridX": 0, "gridY": 10, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 11,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key aspect of building a culture of inclusivity?",
+            "options": [
+              "Embracing different perspectives and encouraging collaboration.",
+              "Focusing on individual achievements rather than teamwork.",
+              "Limiting growth and development opportunities to a select few.",
+              "Ignoring biases and discrimination in the workplace."
+            ],
+            "correct_answer": "Embracing different perspectives and encouraging collaboration.",
+            "show_feedback": true,
+            "feedback_correct": "Building a culture of inclusivity requires embracing different perspectives and encouraging collaboration.",
+            "gridX": 0, "gridY": 11, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 12,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is one strategy for maintaining fruitful relationships with partners from diverse cultural backgrounds?",
+            "options": [
+              "Adapting your communication style to accommodate cultural norms and preferences.",
+              "Using complex language and technical jargon.",
+              "Being inflexible in your communication approach.",
+              "Speaking quickly to ensure meetings end promptly."
+            ],
+            "correct_answer": "Adapting your communication style to accommodate cultural norms and preferences.",
+            "show_feedback": true,
+            "feedback_correct": "Adapting your communication style to accommodate cultural norms and preferences — and repeating or paraphrasing to ensure clarity — is a key strategy for cross-cultural communication.",
+            "gridX": 0, "gridY": 12, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 13,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the recommended approach for encouraging participation from a silent audience member?",
+            "options": [
+              "Invite everyone to share their opinions and respond positively when they contribute.",
+              "Ask them direct questions and pressure them to respond.",
+              "Thank them for their attention and move on to other participants.",
+              "Criticize their lack of participation in front of the group to motivate them."
+            ],
+            "correct_answer": "Invite everyone to share their opinions and respond positively when they contribute.",
+            "show_feedback": true,
+            "feedback_correct": "The recommended approach is to invite everyone to share their opinions and respond positively when they do contribute, creating a safe and welcoming environment.",
+            "gridX": 0, "gridY": 13, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 14,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can nonverbal communication enhance the effectiveness of your speech?",
+            "options": [
+              "By conveying confidence, sincerity, and engagement.",
+              "By distracting the audience from the main message.",
+              "By using filler words to fill pauses in speech.",
+              "By speaking in a monotone voice to maintain neutrality."
+            ],
+            "correct_answer": "By conveying confidence, sincerity, and engagement.",
+            "show_feedback": true,
+            "feedback_correct": "Nonverbal communication enhances your speech by conveying confidence, sincerity, and engagement to your audience.",
+            "gridX": 0, "gridY": 14, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

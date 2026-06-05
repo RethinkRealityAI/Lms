@@ -1,0 +1,137 @@
+{
+  "lessonId": "b8401889-7654-4665-a64f-03bbc1b18e30",
+  "lessonOrderIndex": 10,
+  "lessonTitle": "Measuring and Documenting Success",
+  "lessonDescription": "Define Success: Ask yourself, what does success look like? Define outputs, outcomes, and impact",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Documenting Success",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>In your strategic plan, you must develop a specific plan for documenting success amongst your stakeholders.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_11_Lesson_10_Measuring_Success/0001-3991748116737057684_ncz0k2.png",
+                "alt": "Documenting Success",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 4
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Why Documentation Matters",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Documenting is important for several reasons.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Essential for accountability to yourself, your organization, donors, and the communities you serve</p>", "animation": "left" },
+              { "html": "<p>Enhances communication and collaboration</p>", "animation": "left" },
+              { "html": "<p>Knowledge management for future projects</p>", "animation": "left" },
+              { "html": "<p>Compliance and legal reasons</p>", "animation": "left" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 5
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Less documentation means your organization will be stronger.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! More documentation means your organization will be stronger. Documentation supports accountability, communication, knowledge management, and compliance.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is documenting important?",
+            "options": [
+              "Helps to ensure accountability, betters communication and collaboration, legal reasons",
+              "It is not important",
+              "It is only needed for donors to see success"
+            ],
+            "correct_answer": "Helps to ensure accountability, betters communication and collaboration, legal reasons",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Documentation is important for accountability, enhancing communication and collaboration, knowledge management for future projects, and compliance and legal reasons.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? Success can only be measured through a survey.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! Success can be measured in many different ways — surveys, participation data, interviews, policy changes, health outcomes, and many other methods.",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

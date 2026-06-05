@@ -1,0 +1,386 @@
+{
+  "lessonId": "d409475e-86c9-4886-bce9-db99158b547a",
+  "lessonOrderIndex": 5,
+  "lessonTitle": "Effective Team Communication",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "slideIndex": 0,
+      "slideTitle": "Importance of Effective Team Communication",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "rich_text",
+          "order_index": 0,
+          "data": {
+            "html": "<p>Effective team communication is essential for achieving common goals, fostering collaboration, and ensuring the delivery of high-quality services to patients. Clear and open communication among team members enhances efficiency, promotes innovation, and strengthens relationships within the organization. This lesson will explore the importance of team communication in patient advocacy organizations and provide strategies to improve communication among team members, along with utilizing digital tools for enhanced collaboration.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "image_gallery",
+          "order_index": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_35mm-film-photography-A-diverse-team-of-profession_nmxuur.jpg",
+                "alt": "A diverse team of professionals working together",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "<h3>Why Effective Team Communication is Necessary</h3><ul><li>Facilitates collaboration and teamwork in achieving common goals.</li><li>Enhances efficiency and promotes innovation, while minimizing error.</li><li>Improves patient care and advocacy outcomes by ensuring clear and consistent messaging.</li></ul><h3>Signs of Poor Team Communication</h3><ul><li>Misunderstandings or confusion about tasks, goals, or expectations.</li><li>Lack of engagement or participation in team meetings or discussions.</li><li>Conflict or tension among team members.</li><li>Duplication of efforts or missed deadlines due to communication breakdowns.</li><li>Low morale or dissatisfaction among team members.</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideIndex": 1,
+      "slideTitle": "Strategies Overview",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "rich_text",
+          "order_index": 0,
+          "data": {
+            "html": "<p>Effective team communication takes many forms — from regular meetings and clear delegation to feedback sessions and collaborative problem-solving. Strong communicators model the behaviours they want to see from their teams.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "image_gallery",
+          "order_index": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_diverse-people-in-an-office-smiling_afjo0g.jpg",
+                "alt": "Diverse people in an office smiling",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_a-boss-sitting-in-front-of-two-employees-at-her-de_jctjrz.jpg",
+                "alt": "A boss sitting in front of two employees at her desk",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_happy-team-smiling-in-the-office-two-people-giving_wxinnk.jpg",
+                "alt": "Happy team smiling in the office, two people giving thumbs up",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_happy-team-smiling-in-the-office-two-people-giving-2_ula4ya.jpg",
+                "alt": "Happy team smiling in the office",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_a-boss-providing-constructive-feedback-to-her-team_wffs26.jpg",
+                "alt": "A boss providing constructive feedback to her team",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_a-boss-providing-positive-feedback-to-her-team-wit_v4fo8l.jpg",
+                "alt": "A boss providing positive feedback to her team",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideIndex": 2,
+      "slideTitle": "Strategies to Build a Culture of Openness, Transparency, and Inclusivity",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "image_gallery",
+          "order_index": 0,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_people-in-an-office-smiling-one-person-writing-on-_gtwedm.jpg",
+                "alt": "People in an office smiling, one person writing on a whiteboard",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 1,
+          "data": {
+            "html": "<h3>Promote a culture of respect, transparency, and inclusivity</h3><p>Encourage communication and collaboration, promoting bottom-up communication where everyone's voice is valued. Create an environment where team members feel safe to express their opinions, ideas, and concerns.</p><h3>Address Concerns Quickly</h3><p>Address concerns, conflicts or disagreements among team members promptly and constructively. Encourage open dialogue and seek mutually beneficial solutions.</p><h3>Encourage Engagement in Meetings</h3><p>Ensure that team members feel empowered to contribute their ideas and perspectives. Acknowledge power dynamics within a meeting and create opportunities for everyone to participate. Encourage active listening, empathy, and professionalism among team members.</p><h3>Provide Constructive Feedback</h3><p>Offer both verbal and written feedback to team members on their performance. Remove blame from errors and mistakes, focusing instead on identifying root causes and implementing corrective actions. Focus on specific behaviors or actions and provide suggestions for improvement.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideIndex": 3,
+      "slideTitle": "Digital Tools for Team Communication",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "rich_text",
+          "order_index": 0,
+          "data": {
+            "html": "<ul><li><strong>Project management platforms</strong> for task assignment and tracking (e.g. Notion, Trello)</li><li><strong>Instant messaging apps</strong> for real time communication (e.g. Slack, Discord)</li><li><strong>Video conferencing tools</strong> (e.g. Zoom, Microsoft Teams, Google Meet, Skype)</li><li><strong>Document sharing</strong> for collaborative work (e.g. Microsoft One Drive, Google Drive, Dropbox)</li><li><strong>Apps for scheduling appointments</strong> (e.g. When2Meet, Doodlepoll, LettuceMeet)</li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "image_gallery",
+          "order_index": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_someone-video-conferencing-on-their-laptop_synwia.jpg",
+                "alt": "Someone video conferencing on their laptop",
+                "caption": "Video conferencing tools"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_someone-texting-on-their-phone_os9bci.jpg",
+                "alt": "Someone texting on their phone",
+                "caption": "Instant messaging apps"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_tabs-open-on-a-laptop-with-shared-drives-for-an-of_mser0d.jpg",
+                "alt": "Tabs open on a laptop with shared drives for an office",
+                "caption": "Document sharing platforms"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_calendar-on-someones-ipad_yv5pn9.jpg",
+                "alt": "Calendar on someone's iPad",
+                "caption": "Scheduling apps"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_calendar-on-your-phone-for-scheduling-appointement_debkoc.jpg",
+                "alt": "Calendar on your phone for scheduling appointments",
+                "caption": "Apps for scheduling appointments"
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "slideIndex": 4,
+      "slideTitle": "Knowledge Check",
+      "slideType": "quiz",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important for team leaders to hold regular meetings?",
+            "options": [
+              "To micromanage team members.",
+              "To discuss progress, challenges, and upcoming tasks.",
+              "To avoid communication with team members altogether."
+            ],
+            "correct_answer": "To discuss progress, challenges, and upcoming tasks.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Regular meetings ensure collaboration, reduce misunderstandings, and keep everyone aligned on progress and upcoming tasks.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 0
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key strategy for fostering trust and openness among team members?",
+            "options": [
+              "Promoting bottom-up communication and valuing everyone's input.",
+              "Avoiding communication about sensitive topics.",
+              "Maintaining a hierarchical structure with limited communication channels."
+            ],
+            "correct_answer": "Promoting bottom-up communication and valuing everyone's input.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Encouraging active listening, respecting diverse perspectives, and valuing everyone's input fosters a culture of trust and openness.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 1
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can team leaders effectively empower team members?",
+            "options": [
+              "By providing them with authority and autonomy to make decisions.",
+              "By micromanaging their tasks and decisions.",
+              "By restricting their access to information and resources."
+            ],
+            "correct_answer": "By providing them with authority and autonomy to make decisions.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Empowering team members means trusting them with authority and autonomy — this increases ownership, motivation, and performance.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 2
+        },
+        {
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key aspect of building a culture of inclusivity?",
+            "options": [
+              "Embracing different perspectives and encouraging collaboration.",
+              "Focusing on individual achievements rather than teamwork.",
+              "Limiting growth and development opportunities to a select few.",
+              "Ignoring biases and discrimination in the workplace."
+            ],
+            "correct_answer": "Embracing different perspectives and encouraging collaboration.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Embracing different perspectives and encouraging collaboration are the cornerstones of an inclusive team culture.",
+            "gridX": 0,
+            "gridY": 9,
+            "gridW": 12,
+            "gridH": 3
+          },
+          "blockType": "quiz_inline",
+          "orderIndex": 3
+        }
+      ],
+      "title": "Knowledge Check"
+    },
+    {
+      "slideIndex": 5,
+      "slideTitle": "In Conclusion...",
+      "slideType": "content",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "block_type": "rich_text",
+          "order_index": 0,
+          "data": {
+            "html": "<p>Effective team communication is crucial for patient advocacy organizations to achieve their goals.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "image_gallery",
+          "order_index": 1,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-6/images/Module_6_Effective_Communication/Lesson_06_Lesson_5_Effective_Team_Communication/pikaso_texttoimage_35mm-film-photography-A-diverse-team-of-profession_ulk5fz.jpg",
+                "alt": "A diverse team of professionals working together",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "block_type": "rich_text",
+          "order_index": 2,
+          "data": {
+            "html": "<p>By implementing streamlined strategies such as setting clear goals, holding regular meetings, fostering trust, resolving conflicts promptly, leading by example, creating safe communication spaces, encouraging engagement, celebrating success, providing feedback, sharing information effectively, and utilizing digital tools, teams can enhance collaboration, productivity, and ultimately, fulfill their mission of advocating for patients' needs.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

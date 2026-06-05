@@ -1,0 +1,189 @@
+{
+  "lessonId": "1477629e-4e71-4c93-aaaf-b3ee33600a9e",
+  "lessonOrderIndex": 7,
+  "lessonTitle": "Work Plan Objectives",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Work Plan Objectives",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The most important part of the work plan is your objectives.</p><p><strong>Key aspects of your objectives:</strong> They provide the framework for all stakeholders on what you want to accomplish. They should be agreed upon by all stakeholders. They recognize the capacity of your organization.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Common Pitfalls</h3><p>Here are some pitfalls that teams make when devising their objectives. Learn more about how to avoid them!</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_08_Lesson_7_Work_Plan_-_Objectives/0001-1733192886851430048_ppihqk.png",
+                "alt": "Common pitfall: setting vague or unmeasurable objectives",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_08_Lesson_7_Work_Plan_-_Objectives/0001-2910884187688410433_rrz68n.png",
+                "alt": "Common pitfall: objectives that exceed organizational capacity",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_08_Lesson_7_Work_Plan_-_Objectives/0001-3709147224218525110_m7zddc.png",
+                "alt": "Common pitfall: allowing scope creep",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_08_Lesson_7_Work_Plan_-_Objectives/0001-7437001816295402278_lpkok0.png",
+                "alt": "Common pitfall: failing to make objectives time-bound",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "SMART-IE Objectives",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              { "key": "letter", "label": "Letter" },
+              { "key": "meaning", "label": "Meaning" },
+              { "key": "question", "label": "Key Question" }
+            ],
+            "rows": [
+              { "cells": { "letter": "S", "meaning": "Specific", "question": "Anyone can understand what is trying to be achieved." } },
+              { "cells": { "letter": "M", "meaning": "Measurable", "question": "Can you see what success would look like?" } },
+              { "cells": { "letter": "A", "meaning": "Achievable", "question": "Does this objective match the capacity of your organization?" } },
+              { "cells": { "letter": "R", "meaning": "Realistic", "question": "Can this be done in the space/time you have set out for it?" } },
+              { "cells": { "letter": "T", "meaning": "Timebound", "question": "When do you see this objective being achieved?" } },
+              { "cells": { "letter": "I", "meaning": "Inclusive", "question": "Does this objective serve the community?" } },
+              { "cells": { "letter": "E", "meaning": "Equitable", "question": "Are we insuring that the objective prioritizes equity in the community?" } }
+            ],
+            "first_column_header": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Example SMARTIE Objective</h3><p><strong>Initial Objective:</strong> We will raise awareness about Sickle Cell Disease in Kenya.</p><p>Make it more specific.</p><p><strong>Revised Objective:</strong> We will conduct advocacy campaigns with policymakers on Sickle Cell Disease in Kenya.</p><p>Make it more measurable and timebound.</p><p><strong>Final Version of Objective:</strong> We will conduct an advocacy campaign for policymakers for a new Ministry of Health Sickle Cell Disease strategy for Kenya, completed by 2025.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false?\n\nStatement: Only half of the stakeholders should agree on the work plan.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! All stakeholders must agree on the work plan. Buy-in from all stakeholders is essential for successful implementation.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false?\n\nStatement: Do not allow for scope cree-",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "show_feedback": true,
+            "feedback_correct": "False! Allowing scope creep without stakeholder agreement is a common pitfall that should be avoided when devising objectives.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What does the 'A' in SMART-IE means?",
+            "options": ["Achievable", "Analyzable", "Acceptable", "Admirable"],
+            "correct_answer": "Achievable",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The 'A' in SMART-IE stands for Achievable — the objective should match the capacity of your organization.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

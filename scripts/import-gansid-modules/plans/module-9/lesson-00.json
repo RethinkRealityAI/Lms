@@ -1,0 +1,610 @@
+{
+  "lessonId": "4ecdd9e3-53c7-4c94-b4d0-c78facf9af8d",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Understanding Effective Leadership",
+  "lessonDescription": "Explore what makes leaders effective, how leadership influences organizational success, and which qualities and behaviors distinguish great leaders from poor ones.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "The Importance of Leadership",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Leadership plays a crucial role in the success of any organization.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Effective leaders inspire and motivate their team members to achieve common goals.</p>", "animation": "none" },
+              { "html": "<p>Poor leadership can lead to confusion, low morale, and decreased productivity.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>The quality of leadership within an organization directly shapes its culture, performance, and long-term impact in the community it serves.</p>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Qualities of Effective Leaders",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective leaders share a common set of core qualities that enable them to guide their teams successfully:</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Effective leaders possess qualities such as good communication skills, empathy, and integrity.</p>", "animation": "none" },
+              { "html": "<p>They are able to listen to their team members and provide guidance and support.</p>", "animation": "none" },
+              { "html": "<p>They lead by example and are accountable for their actions.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Leading by Example",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Leading by example means demonstrating the behaviors and values you expect from your team.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-9/images/lesson_00/slide_03_image_01.png",
+                "alt": "Leading by example illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-9/images/lesson_00/slide_03_image_02.jpg",
+                "alt": "Leading by example illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-9/images/lesson_00/slide_03_image_03.jpg",
+                "alt": "Leading by example illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-9/images/lesson_00/slide_03_image_04.jpg",
+                "alt": "Leading by example illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>When leaders set a positive example, it encourages their team members to do the same.</p>", "animation": "none" },
+              { "html": "<p>This creates a culture of accountability and fosters trust within the organization.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>Actions speak louder than words. When you model the behavior you expect, your team is far more likely to follow suit.</p>",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Communication Skills",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective leaders are skilled communicators who can clearly convey their expectations and vision.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>They actively listen to their team members and encourage open and honest communication.</p>", "animation": "none" },
+              { "html": "<p>Good communication helps to build strong relationships and resolve conflicts.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Key Communication Practices for Leaders</h3>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Practice active listening — give your full attention and acknowledge what you hear.</p>", "animation": "none" },
+              { "html": "<p>Be clear and concise when conveying expectations and goals.</p>", "animation": "none" },
+              { "html": "<p>Encourage two-way communication — make it safe for team members to share ideas and concerns.</p>", "animation": "none" },
+              { "html": "<p>Provide regular, constructive feedback.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Adaptability and Flexibility",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective leaders are adaptable and flexible in their approach.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>They can navigate through challenges and embrace change.</p>", "animation": "none" },
+              { "html": "<p>Being open to new ideas and perspectives allows leaders to make informed decisions.</p>", "animation": "none" },
+              { "html": "<p>Adaptable leaders recognize that the path to success may need to be adjusted as circumstances evolve.</p>", "animation": "none" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>In today's fast-changing environment, the ability to pivot and adapt is one of the most valuable leadership traits an organization can benefit from.</p>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Empowering Others",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective leaders empower their team members by delegating tasks and giving them autonomy.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>They trust their team's abilities and provide opportunities for growth and development.</p>", "animation": "none" },
+              { "html": "<p>Empowering others fosters a sense of ownership and increases motivation.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>How to Empower Your Team</h3>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Delegate meaningful work, not just routine tasks.</p>", "animation": "none" },
+              { "html": "<p>Give team members the authority to make decisions within their areas of responsibility.</p>", "animation": "none" },
+              { "html": "<p>Provide the resources and support they need to succeed.</p>", "animation": "none" },
+              { "html": "<p>Celebrate their achievements and learn from setbacks together.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Emotional Intelligence",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-9/images/lesson_00/slide_07_image_05.jpg",
+                "alt": "Emotional intelligence illustration",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Emotional intelligence is the ability to understand and manage one's own emotions and those of others.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Effective leaders with high emotional intelligence can empathize with their team members and build strong relationships.</p>", "animation": "none" },
+              { "html": "<p>They are aware of the impact their emotions have on others and can regulate their responses.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>The Four Components of Emotional Intelligence</h3>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              { "key": "component", "label": "Component" },
+              { "key": "description", "label": "Description" }
+            ],
+            "rows": [
+              { "cells": { "component": "Self-Awareness", "description": "Recognizing your own emotions and their impact." } },
+              { "cells": { "component": "Self-Regulation", "description": "Managing your emotions and impulses constructively." } },
+              { "cells": { "component": "Empathy", "description": "Understanding and sharing the feelings of others." } },
+              { "cells": { "component": "Social Skills", "description": "Building and managing healthy relationships." } }
+            ],
+            "first_column_header": true,
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Continuous Learning and Improvement",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective leaders are committed to continuous learning and self-improvement.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>They seek out new knowledge, attend workshops, and read books to enhance their skills.</p>", "animation": "none" },
+              { "html": "<p>By continuously learning, leaders can stay updated with industry trends and adapt their strategies accordingly.</p>", "animation": "none" },
+              { "html": "<p>A growth mindset — the belief that abilities can be developed — is a hallmark of effective leaders.</p>", "animation": "none" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>The best leaders are always students. Committing to your own growth sets a powerful example for your entire organization.</p>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the role of effective leadership in an organization?",
+            "options": [
+              "Inspiring and motivating team members to achieve common goals",
+              "Managing conflicts and resolving issues within the team",
+              "Ensuring compliance with company policies and procedures",
+              "Monitoring individual performance and providing feedback"
+            ],
+            "correct_answer": "Inspiring and motivating team members to achieve common goals",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Inspiring and motivating team members to achieve common goals is the primary role of effective leadership in an organization.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What qualities do effective leaders possess?",
+            "options": [
+              "Good communication skills, empathy, and integrity",
+              "Technical expertise and knowledge in their field",
+              "Strong decision-making abilities and problem-solving skills",
+              "Extroverted personality and charisma"
+            ],
+            "correct_answer": "Good communication skills, empathy, and integrity",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Effective leaders possess good communication skills, empathy, and integrity as their core qualities.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What does leading by example mean?",
+            "options": [
+              "Demonstrating the behaviors and values expected from the team",
+              "Dictating tasks and micromanaging team members",
+              "Setting unrealistic goals and expectations for the team"
+            ],
+            "correct_answer": "Demonstrating the behaviors and values expected from the team",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Leading by example means demonstrating the behaviors and values you expect from your team, creating a culture of accountability and trust.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key aspect of effective communication for leaders?",
+            "options": [
+              "Actively listening to team members and encouraging open communication",
+              "Providing clear instructions and expectations to the team",
+              "Using persuasive techniques to influence team members' opinions",
+              "Avoiding difficult conversations and conflicts within the team"
+            ],
+            "correct_answer": "Actively listening to team members and encouraging open communication",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Actively listening to team members and encouraging open and honest communication is the key aspect of effective communication for leaders.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is adaptability important for effective leaders?",
+            "options": [
+              "Navigating through challenges and embracing change",
+              "Maintaining a rigid and inflexible approach to leadership",
+              "Resisting change and sticking to traditional methods",
+              "Focusing solely on short-term goals and immediate results"
+            ],
+            "correct_answer": "Navigating through challenges and embracing change",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Adaptability is important because it allows leaders to navigate through challenges, embrace change, and make informed decisions by being open to new ideas and perspectives.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "That's it!",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Congratulations on completing the Understanding Effective Leadership lesson!</p><h3>Key Takeaways</h3>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p><strong>Leadership matters:</strong> Effective leadership inspires motivation and drives organizational success.</p>", "animation": "none" },
+              { "html": "<p><strong>Core qualities:</strong> Communication, empathy, and integrity are foundational to effective leadership.</p>", "animation": "none" },
+              { "html": "<p><strong>Lead by example:</strong> Demonstrate the behaviors and values you expect from your team.</p>", "animation": "none" },
+              { "html": "<p><strong>Adaptability:</strong> Embrace change and navigate challenges with flexibility.</p>", "animation": "none" },
+              { "html": "<p><strong>Empower others:</strong> Delegate, trust, and create opportunities for growth.</p>", "animation": "none" },
+              { "html": "<p><strong>Emotional intelligence:</strong> Understand and manage emotions to build strong relationships.</p>", "animation": "none" },
+              { "html": "<p><strong>Continuous learning:</strong> Commit to ongoing growth and improvement.</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>Strong leadership is not a trait you are born with — it is a set of skills and habits that can be developed and refined throughout your career.</p>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

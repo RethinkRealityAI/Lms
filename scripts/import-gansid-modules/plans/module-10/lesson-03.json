@@ -1,0 +1,114 @@
+{
+  "lessonId": "3aebb44c-3002-4e3f-ae68-c6cf6efb1cbb",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Recap Module 4: Leadership",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key characteristic of a visionary leader?",
+            "options": [
+              "They clearly communicate a compelling vision and motivate the team to achieve common goals.",
+              "They prefer to delegate tasks and avoid direct involvement.",
+              "They set challenging goals and maintain high standards.",
+              "They focus primarily on adhering to established processes and protocols."
+            ],
+            "correct_answer": "They clearly communicate a compelling vision and motivate the team to achieve common goals.",
+            "show_feedback": true,
+            "feedback_correct": "A visionary leader sees the future clearly, effectively communicates this vision to the team, and motivates them to work together towards common goals. They generate enthusiasm and encourage innovation and creativity.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the impact of effective leadership on employee satisfaction and productivity?",
+            "options": [
+              "It improves employee satisfaction and productivity.",
+              "It has no impact on employee satisfaction and productivity.",
+              "It decreases employee satisfaction and productivity.",
+              "It only improves employee satisfaction but not productivity."
+            ],
+            "correct_answer": "It improves employee satisfaction and productivity.",
+            "show_feedback": true,
+            "feedback_correct": "Effective leadership improves both employee satisfaction and productivity.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the focus of transactional leadership?",
+            "options": [
+              "Setting clear expectations and providing rewards based on performance",
+              "Encouraging creativity and innovation",
+              "Prioritizing the needs of team members",
+              "Challenging the status quo and creating a vision"
+            ],
+            "correct_answer": "Setting clear expectations and providing rewards based on performance",
+            "show_feedback": true,
+            "feedback_correct": "Transactional leadership focuses on setting clear expectations and providing rewards or consequences based on performance.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following best describes the primary role of leadership in an organization?",
+            "options": [
+              "Ensuring that all tasks are completed on time",
+              "Guiding and influencing others towards a common vision or goal",
+              "Enforcing company policies and regulations strictly",
+              "Managing the financial aspects of the organization"
+            ],
+            "correct_answer": "Guiding and influencing others towards a common vision or goal",
+            "show_feedback": true,
+            "feedback_correct": "Leadership involves guiding and influencing others or a team towards achieving a common vision or goal, which is crucial for organizational success.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is effective leadership crucial for the success of an organization?",
+            "options": [
+              "It ensures that the organization's financial resources are managed efficiently.",
+              "It focuses solely on the production and sales targets of the organization.",
+              "It inspires and motivates the team, encourages collaboration, and impacts overall performance.",
+              "It enforces strict compliance with organizational rules and regulations."
+            ],
+            "correct_answer": "It inspires and motivates the team, encourages collaboration, and impacts overall performance.",
+            "show_feedback": true,
+            "feedback_correct": "Effective leadership is crucial as it involves inspiring and motivating the team, encouraging collaboration, and making decisions that significantly impact employee satisfaction, productivity, and overall organizational performance.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

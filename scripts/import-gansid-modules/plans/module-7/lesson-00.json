@@ -1,0 +1,69 @@
+{
+  "lessonId": "6be236e2-d790-4c01-94e6-6c40bd017bd8",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Introduction",
+  "lessonDescription": "In this module, learners will grasp the essentials of strategic planning, focusing on developing concept notes and crafting work plans. This preparation equips patient advocacy organizations to effectively support their initiatives.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Introduction to the Development of Strategic Work Plans Module",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>In this module, learners will grasp the essentials of strategic planning, focusing on developing concept notes and crafting work plans. This preparation equips patient advocacy organizations to effectively support their initiatives.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_01_Introduction/0001-4370050535430506476_jzmguv.png",
+                "alt": "Introduction to the Development of Strategic Work Plans Module",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><em>Author: Andrew Zapfel, MPH, PMP | Image Credits: Canva</em></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -1,0 +1,47 @@
+{
+  "lessonId": "4744c698-129c-4e2c-bd63-de658ffc14e1",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "What is Project Management?",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "What is Project Management?",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Context to Project Management</h3><p>Project management is the practice of initiating, planning, executing, controlling, and closing the work of a team to achieve specific goals and meet specific success criteria within a specified time frame. It involves the application of knowledge, skills, tools, and techniques to project activities to meet project requirements.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Why it matters:",
+            "html": "<p>Project management is crucial in ensuring that projects are completed efficiently, on time, and within budget while delivering the desired outcomes.</p>",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

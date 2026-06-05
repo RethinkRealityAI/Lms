@@ -28,9 +28,10 @@ strict fidelity. The orchestrator (you) drives subagents; you never author conte
    `feedback_correct` = verbatim index.html feedback (else one succinct lesson-grounded sentence);
    **never set `explanation`.** *(loader rejects `explanation` + bad correct_answer.)* Keep ALL MD
    knowledge-check questions even if index.html condensed them.
-5. Images: absolute manifest URLs only; intersperse between text blocks (don't dump at slide end).
+5. Images: absolute manifest URLs only; intersperse between text blocks (don't dump at slide end). **No image-only slides** — merge images into the nearest related content slide; skip duplicates already on adjacent slides. **Single-image blocks:** `mode: "single"`, no `aspectRatio` (original), `objectFit: "contain"`, `displaySize: "lg"` (enforced by `load-plan.ts`).
 6. `lessonDescription` = verbatim lesson Learning Goal/intro, or `null`. Never paraphrased/invented.
-7. Keep lesson rows (preserve IDs/progress); only slides+blocks are rebuilt. Loads are idempotent.
+7. **Consolidated knowledge checks:** when consecutive source slides are all KC/quiz questions, put them on **one slide** with multiple `quiz_inline` blocks. Separate KC groups in different lesson sections → one consolidated KC slide per group (questions still appear after the content they follow).
+8. Keep lesson rows (preserve IDs/progress); only slides+blocks are rebuilt. Loads are idempotent.
 
 ## Pipeline (per module)
 1. **Upload images:** `npx tsx scripts/import-gansid-modules/upload-images.ts N`

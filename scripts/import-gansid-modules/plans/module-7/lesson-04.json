@@ -1,0 +1,169 @@
+{
+  "lessonId": "aefd0482-f1f2-4d56-b220-001a73c1e020",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "The Work Plan Cycle",
+  "lessonDescription": "There are 4 steps in the Work Plan Cycle: Concept Note, Work Plan Development, Implementation, and Evaluation. Stakeholder engagement is crucial throughout this process.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "The Work Plan Cycle",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>There are 4 steps in the Work Plan Cycle: Concept Note, Work Plan Development, Implementation, and Evaluation. Stakeholder engagement is crucial throughout this entire process.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_05_Lesson_4_Work_Plan_Cycle/0001-158057962493567177_d2rq8u.png",
+                "alt": "Concept Note step illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_05_Lesson_4_Work_Plan_Cycle/0001-2919890433480653958_bwmnlk.png",
+                "alt": "Work Plan Development step illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_05_Lesson_4_Work_Plan_Cycle/0001-8291558890921382115_csysvv.png",
+                "alt": "Work Plan Implementation step illustration",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-7/images/Module_7_Strategic_Work_Plans/Lesson_05_Lesson_4_Work_Plan_Cycle/0001-8720526754490763359_tw7ink.png",
+                "alt": "Work Plan Evaluation step illustration",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p><strong>Concept Note:</strong> An opening \u201cidea\u201d document to provide yourself and necessary stakeholders the framework of your plan. People who review the concept note will be able to provide input on how to develop this project and give initial support to your idea.</p>", "animation": "none" },
+              { "html": "<p><strong>Work Plan Development:</strong> The detailed plan that will include how you will get from initial concept/idea to execution. This work plan should be very detailed and provide any user with a full understanding of the execution of your project and how you will measure success.</p>", "animation": "none" },
+              { "html": "<p><strong>Work Plan Implementation:</strong> The steps you take to implement what was written and approved by stakeholders in your work plan. Monitoring implementation is critical to ensure you are achieving what you wanted to achieve and can express to stakeholders how you measure success.</p>", "animation": "none" },
+              { "html": "<p><strong>Work Plan Evaluation:</strong> You should be monitoring your project\u2019s success throughout implementation and be ready, as it comes to a closure, to showcase to stakeholders how well it went and what needs to be done in future projects to continue the work.</p>", "animation": "none" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Stakeholder Engagement",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Stakeholder engagement is necessary throughout the Work Plan Cycle.</p><p><strong>Internal Stakeholders</strong></p><ul><li>Decision-makers, such as management: Ensure alignment with organizational goals and resource support.</li><li>Project team members: Key to the project\u2019s execution and collaboration, ensuring informed and motivated involvement.</li></ul><p><strong>External Stakeholders</strong></p><ul><li>The community being served: Engaged to ensure the project meets their needs, builds trust, and remains relevant.</li></ul>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": null,
+            "html": "<p>Remember: The community you serve is always a stakeholder in your work plan process.</p>",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Is the following statement true or false? The community you serve is a stakeholder.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "show_feedback": true,
+            "feedback_correct": "True! The community you serve is absolutely a stakeholder. They should be engaged throughout the entire work plan cycle.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is work plan implementation?",
+            "options": [
+              "The detailed work plan outlines the process from concept to execution, enabling users to understand the project's success measurement.",
+              "Executing the work plan is vital for achieving desired outcomes and communicating success to stakeholders. Monitoring ensures goals are met.",
+              "Monitoring project progress is crucial. As the project nears completion, prepare to present a comprehensive evaluation to stakeholders. Highlight achievements and outline steps for future projects to sustain and build upon this work."
+            ],
+            "correct_answer": "Executing the work plan is vital for achieving desired outcomes and communicating success to stakeholders. Monitoring ensures goals are met.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Work plan implementation is about executing the plan and monitoring progress to ensure goals are met and success can be communicated to stakeholders.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the work plan cycle in order?",
+            "options": [
+              "Concept note, work plan development, implementation, evaluation",
+              "Concept note, evaluation, work plan development, implementation",
+              "Recruitment, concept note, work plan development, implementation, evaluation",
+              "Concept note, work plan development, implementation"
+            ],
+            "correct_answer": "Concept note, work plan development, implementation, evaluation",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The four steps of the Work Plan Cycle in order are: Concept Note, Work Plan Development, Implementation, and Evaluation.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}
