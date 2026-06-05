@@ -10,11 +10,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2, GripVertical, LayoutTemplate, PanelLeft } from 'lucide-react';
+import { Plus, Video, FileText, Globe, Box, Trash2, Edit, Loader2, LayoutTemplate, PanelLeft, MessageSquare, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, Quiz } from '@/types';
 import { createLegacyBlockPayload, mapLegacyContentTypeToBlockType } from '@/lib/content/lesson-blocks';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CourseAssignmentsTab } from '@/components/admin/course-assignments-tab';
+import { CourseFeedbackTab } from '@/components/admin/course-feedback-tab';
 
 export default function CoursePage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
   const params = React.use(paramsPromise);
@@ -92,6 +94,7 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
       .from('lessons')
       .select('*')
       .eq('course_id', params.id)
+      .is('deleted_at', null)
       .order('order_index', { ascending: true });
 
     if (data) setLessons(data);
@@ -339,142 +342,167 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
         </div>
       </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Lessons</CardTitle>
-            <Button onClick={() => setShowLessonForm(!showLessonForm)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Lesson
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {showLessonForm && (
-              <form onSubmit={handleCreateLesson} className="space-y-4 mb-6 p-4 border rounded-lg">
-                <div className="space-y-2">
-                  <Label htmlFor="lesson-title">Lesson Title</Label>
-                  <Input
-                    id="lesson-title"
-                    value={lessonData.title}
-                    onChange={(e) => setLessonData({ ...lessonData, title: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lesson-description">Description</Label>
-                  <Textarea
-                    id="lesson-description"
-                    value={lessonData.description}
-                    onChange={(e) => setLessonData({ ...lessonData, description: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="content-type">Content Type</Label>
-                  <select
-                    id="content-type"
-                    value={lessonData.content_type}
-                    onChange={(e) => setLessonData({ ...lessonData, content_type: e.target.value as any })}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="video">Video</option>
-                    <option value="pdf">PDF</option>
-                    <option value="iframe">iFrame (Embed)</option>
-                    <option value="3d">3D Model</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="content-url">Content URL</Label>
-                  <Input
-                    id="content-url"
-                    value={lessonData.content_url}
-                    onChange={(e) => setLessonData({ ...lessonData, content_url: e.target.value })}
-                    placeholder="https://..."
-                    required
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button type="submit">Create Lesson</Button>
-                  <Button type="button" variant="outline" onClick={() => setShowLessonForm(false)}>
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            )}
+      <Tabs defaultValue="lessons">
+        <TabsList className="bg-slate-100 p-1 rounded-xl mb-4">
+          <TabsTrigger value="lessons" className="rounded-lg font-bold text-sm px-4">
+            <LayoutTemplate className="h-4 w-4 mr-2" />
+            Lessons
+          </TabsTrigger>
+          <TabsTrigger value="assignments" className="rounded-lg font-bold text-sm px-4">
+            <Users className="h-4 w-4 mr-2" />
+            Assignments
+          </TabsTrigger>
+          <TabsTrigger value="feedback" className="rounded-lg font-bold text-sm px-4">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Feedback
+          </TabsTrigger>
+        </TabsList>
 
-            <div className="space-y-2">
-              {lessons.map((lesson, index) => (
-                <div
-                  key={lesson.id}
-                  className="flex items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-3"
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="text-xs font-bold text-muted-foreground w-5 shrink-0 tabular-nums">
-                      {index + 1}.
-                    </span>
-                    {getContentIcon(lesson.content_type)}
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-sm text-foreground truncate leading-tight">
-                        {lesson.title || <span className="text-muted-foreground italic">Untitled</span>}
-                      </h4>
-                      {lesson.description && (
-                        <p className="text-xs text-muted-foreground truncate mt-0.5">{lesson.description}</p>
-                      )}
+        <TabsContent value="lessons">
+          <div className="grid gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Lessons</CardTitle>
+                <Button onClick={() => setShowLessonForm(!showLessonForm)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Lesson
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {showLessonForm && (
+                  <form onSubmit={handleCreateLesson} className="space-y-4 mb-6 p-4 border rounded-lg">
+                    <div className="space-y-2">
+                      <Label htmlFor="lesson-title">Lesson Title</Label>
+                      <Input
+                        id="lesson-title"
+                        value={lessonData.title}
+                        onChange={(e) => setLessonData({ ...lessonData, title: e.target.value })}
+                        required
+                      />
                     </div>
-                  </div>
-                  <div className="flex gap-1.5 shrink-0">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      title="Edit lesson"
-                      onClick={() => handleEditLesson(lesson)}
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 text-xs px-2.5"
-                      onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/lessons/${lesson.id}/quiz`, pathname))}
-                    >
-                      Manage Quiz
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 text-xs px-2.5"
-                      onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/lessons/${lesson.id}/blocks`, pathname))}
-                    >
-                      Manage Blocks
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      title="Delete lesson"
-                      onClick={() => handleDeleteLesson(lesson.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {lessons.length === 0 && !showLessonForm && (
-                <p className="text-center text-muted-foreground py-8">
-                  No lessons yet. Add your first lesson!
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                    <div className="space-y-2">
+                      <Label htmlFor="lesson-description">Description</Label>
+                      <Textarea
+                        id="lesson-description"
+                        value={lessonData.description}
+                        onChange={(e) => setLessonData({ ...lessonData, description: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="content-type">Content Type</Label>
+                      <select
+                        id="content-type"
+                        value={lessonData.content_type}
+                        onChange={(e) => setLessonData({ ...lessonData, content_type: e.target.value as any })}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      >
+                        <option value="video">Video</option>
+                        <option value="pdf">PDF</option>
+                        <option value="iframe">iFrame (Embed)</option>
+                        <option value="3d">3D Model</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="content-url">Content URL</Label>
+                      <Input
+                        id="content-url"
+                        value={lessonData.content_url}
+                        onChange={(e) => setLessonData({ ...lessonData, content_url: e.target.value })}
+                        placeholder="https://..."
+                        required
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="submit">Create Lesson</Button>
+                      <Button type="button" variant="outline" onClick={() => setShowLessonForm(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                )}
 
-        <CourseAssignmentsTab
-          courseId={params.id}
-          institutionId={course.institution_id ?? ''}
-          accessMode={accessMode}
-          onAccessModeChange={setAccessMode}
-        />
-      </div>
+                <div className="space-y-2">
+                  {lessons.map((lesson, index) => (
+                    <div
+                      key={lesson.id}
+                      className="flex items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span className="text-xs font-bold text-muted-foreground w-5 shrink-0 tabular-nums">
+                          {index + 1}.
+                        </span>
+                        {getContentIcon(lesson.content_type)}
+                        <div className="min-w-0">
+                          <h4 className="font-semibold text-sm text-foreground truncate leading-tight">
+                            {lesson.title || <span className="text-muted-foreground italic">Untitled</span>}
+                          </h4>
+                          {lesson.description && (
+                            <p className="text-xs text-muted-foreground truncate mt-0.5">{lesson.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-1.5 shrink-0">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          title="Edit lesson"
+                          onClick={() => handleEditLesson(lesson)}
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs px-2.5"
+                          onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/lessons/${lesson.id}/quiz`, pathname))}
+                        >
+                          Manage Quiz
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs px-2.5"
+                          onClick={() => router.push(withInstitutionPath(`/admin/courses/${params.id}/lessons/${lesson.id}/blocks`, pathname))}
+                        >
+                          Manage Blocks
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          title="Delete lesson"
+                          onClick={() => handleDeleteLesson(lesson.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {lessons.length === 0 && !showLessonForm && (
+                    <p className="text-center text-muted-foreground py-8">
+                      No lessons yet. Add your first lesson!
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="assignments">
+          <CourseAssignmentsTab
+            courseId={params.id}
+            institutionId={course.institution_id ?? ''}
+            accessMode={accessMode}
+            onAccessModeChange={setAccessMode}
+          />
+        </TabsContent>
+
+        <TabsContent value="feedback">
+          <CourseFeedbackTab courseId={params.id} />
+        </TabsContent>
+      </Tabs>
 
       {/* Edit Course Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>

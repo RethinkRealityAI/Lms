@@ -31,6 +31,7 @@ import type {
   SurveyResponseWithMeta,
 } from '@/lib/db/surveys';
 import { SurveysAnalyticsTab } from '@/components/admin/surveys-analytics-tab';
+import { FeedbackAnalyticsTab, buildFeedbackSummaries } from '@/components/admin/feedback-analytics-tab';
 
 interface Props {
   platform: PlatformStats | null;
@@ -43,6 +44,7 @@ interface Props {
     blocksByCourse: Record<string, SurveyBlockSummary[]>;
     responsesByBlock: Record<string, SurveyResponseWithMeta[]>;
   };
+  feedbackCounts: Record<string, number>;
 }
 
 function StatCard({
@@ -283,7 +285,7 @@ function StudentLeaderboard({ students }: { students: StudentProgress[] }) {
   );
 }
 
-export function AnalyticsDashboard({ platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics }: Props) {
+export function AnalyticsDashboard({ platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts }: Props) {
   const raw = platform ?? {
     total_institutions: 0,
     total_users: 0,
@@ -374,6 +376,10 @@ export function AnalyticsDashboard({ platform, courses, enrollmentTrend, complet
             <ClipboardList className="h-4 w-4 mr-2" />
             Surveys
           </TabsTrigger>
+          <TabsTrigger value="feedback" className="rounded-lg font-bold text-sm px-4">
+            <Star className="h-4 w-4 mr-2" />
+            Feedback
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses">
@@ -410,6 +416,10 @@ export function AnalyticsDashboard({ platform, courses, enrollmentTrend, complet
             blocksByCourse={surveyAnalytics.blocksByCourse}
             responsesByBlock={surveyAnalytics.responsesByBlock}
           />
+        </TabsContent>
+
+        <TabsContent value="feedback">
+          <FeedbackAnalyticsTab summaries={buildFeedbackSummaries(courses, feedbackCounts)} />
         </TabsContent>
       </Tabs>
     </div>

@@ -82,6 +82,7 @@ export async function getLessonsByCourse(
     .from('lessons')
     .select('*')
     .eq('course_id', courseId)
+    .is('deleted_at', null)
     .order('order_index', { ascending: true });
   if (error) return [];
   return (data ?? []) as Lesson[];

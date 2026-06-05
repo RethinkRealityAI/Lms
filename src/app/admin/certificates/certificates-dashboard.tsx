@@ -260,7 +260,8 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
       c.user?.full_name?.toLowerCase().includes(q) ||
       c.user?.email?.toLowerCase().includes(q) ||
       c.certificate_number?.toLowerCase().includes(q) ||
-      c.course?.title?.toLowerCase().includes(q)
+      c.course?.title?.toLowerCase().includes(q) ||
+      c.program?.title?.toLowerCase().includes(q)
     );
   });
 

@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Image as ImageIcon, Type, SlidersHorizontal, RotateCcw, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Image as ImageIcon, Type, SlidersHorizontal, RotateCcw, Loader2, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { ColorSwatch } from './theme-editor/color-swatch';
 import { DropZoneUploader } from './drop-zone-uploader';
 import { useEditorStore } from './editor-store-context';
 import { DEFAULT_COURSE_THEME, type CourseThemeSettings, type BlockStyle } from '@/lib/content/course-theme';
 import { createClient } from '@/lib/supabase/client';
+import { getSurveyTemplates, type SurveyTemplate } from '@/lib/db/survey-templates';
+import { getCompletionSurvey, setCourseCompletionSurveyTemplate } from '@/lib/db/course-feedback';
 
 const BLOCK_STYLES: { value: BlockStyle; label: string; description: string; preview: string }[] = [
   { value: 'glass', label: 'Light Glass', description: 'Frosted glass · transparent on light slides (default)', preview: 'bg-white/25 border border-slate-200/60 shadow-md backdrop-blur-sm' },
@@ -49,6 +52,44 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
   const theme = useEditorStore((s) => s.themeSettings);
   const updateThemeSettings = useEditorStore((s) => s.updateThemeSettings);
   const [saving, setSaving] = useState(false);
+
+  // ── Completion feedback survey ──────────────────────────────────────────────
+  const [surveyTemplates, setSurveyTemplates] = useState<SurveyTemplate[]>([]);
+  const [selectedSurveyTemplateId, setSelectedSurveyTemplateId] = useState<string | null>(null);
+  const [surveyLoading, setSurveyLoading] = useState(false);
+  const [surveySaving, setSurveySaving] = useState(false);
+
+  useEffect(() => {
+    if (!open || !courseId || !institutionId) return;
+    let cancelled = false;
+    setSurveyLoading(true);
+    const supabase = createClient();
+    Promise.all([
+      getSurveyTemplates(supabase, institutionId),
+      getCompletionSurvey(supabase, courseId),
+    ]).then(([templates, current]) => {
+      if (cancelled) return;
+      setSurveyTemplates(templates);
+      setSelectedSurveyTemplateId(current.templateId);
+      setSurveyLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [open, courseId, institutionId]);
+
+  const handleSurveyChange = async (value: string) => {
+    const newId = value === '__none__' ? null : value;
+    if (!courseId) return;
+    setSurveySaving(true);
+    const supabase = createClient();
+    const { error } = await setCourseCompletionSurveyTemplate(supabase, courseId, newId);
+    setSurveySaving(false);
+    if (error) {
+      toast.error('Failed to save survey', { description: error });
+    } else {
+      setSelectedSurveyTemplateId(newId);
+      toast.success(newId ? 'Completion survey set' : 'Completion survey cleared');
+    }
+  };
 
   const set = (changes: Partial<CourseThemeSettings>) => updateThemeSettings(changes);
 
@@ -289,6 +330,56 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
             />
           )}
           <p className="text-[10px] text-gray-400 mt-1">Shown behind slides that don&apos;t set their own background</p>
+        </div>
+
+        {/* ── COMPLETION FEEDBACK SURVEY ───────────────────────────── */}
+        <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+          <SectionHeading
+            icon={<MessageSquare className="w-4 h-4" />}
+            title="Completion Feedback Survey"
+            hint="Shown (optionally) to learners on the completion slide"
+          />
+
+          {surveyLoading ? (
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading templates…
+            </div>
+          ) : surveyTemplates.length === 0 ? (
+            <p className="text-xs text-gray-500">
+              No survey templates found for this institution.{' '}
+              <span className="text-gray-400">
+                Create one by adding a Survey block to a lesson, then using the Save as Template option in the survey editor toolbar.
+              </span>
+            </p>
+          ) : (
+            <div className="space-y-1.5">
+              <Select
+                value={selectedSurveyTemplateId ?? '__none__'}
+                onValueChange={handleSurveyChange}
+              >
+                <SelectTrigger className="w-full text-xs h-8" disabled={surveySaving}>
+                  {surveySaving
+                    ? <span className="flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" />Saving…</span>
+                    : <SelectValue placeholder="None (no survey)" />
+                  }
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__" className="text-xs text-gray-500">None (no survey)</SelectItem>
+                  {surveyTemplates.map((t) => (
+                    <SelectItem key={t.id} value={t.id} className="text-xs">
+                      {t.name}
+                      {t.description && (
+                        <span className="ml-1 text-gray-400">— {t.description}</span>
+                      )}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[10px] text-gray-400">
+                Saves immediately on change. Learners see this survey after completing the course.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between pt-1">

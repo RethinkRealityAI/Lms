@@ -46,7 +46,8 @@ export default function StudentProgressPage() {
       const { data: lessonData } = await supabase
         .from('lessons')
         .select('*')
-        .in('course_id', courseIds);
+        .in('course_id', courseIds)
+        .is('deleted_at', null);
       setAllLessons(lessonData || []);
     }
 

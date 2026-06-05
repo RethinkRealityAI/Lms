@@ -10,7 +10,8 @@ export async function getProgressByUserAndCourse(
   const { data: lessons } = await supabase
     .from('lessons')
     .select('id')
-    .eq('course_id', courseId);
+    .eq('course_id', courseId)
+    .is('deleted_at', null);
 
   if (!lessons || lessons.length === 0) return [];
 

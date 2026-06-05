@@ -8,6 +8,7 @@ import {
   getStudentProgress,
 } from '@/lib/db/analytics';
 import { getSurveyAnalyticsBundle } from '@/lib/db/surveys';
+import { getInstitutionFeedbackCounts } from '@/lib/db/course-feedback';
 import { AnalyticsDashboard } from './analytics-dashboard';
 
 export default async function AnalyticsPage() {
@@ -22,7 +23,7 @@ export default async function AnalyticsPage() {
     );
   }
 
-  const [platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics] =
+  const [platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts] =
     await Promise.all([
       getPlatformStats(supabase, institutionId),
       getCourseStats(supabase, institutionId),
@@ -30,6 +31,7 @@ export default async function AnalyticsPage() {
       getCompletionTrend(supabase, institutionId),
       getStudentProgress(supabase, institutionId),
       getSurveyAnalyticsBundle(supabase, institutionId),
+      getInstitutionFeedbackCounts(supabase, institutionId),
     ]);
 
   return (
@@ -40,6 +42,7 @@ export default async function AnalyticsPage() {
       completionTrend={completionTrend}
       students={students}
       surveyAnalytics={surveyAnalytics}
+      feedbackCounts={feedbackCounts}
     />
   );
 }

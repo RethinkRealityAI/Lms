@@ -5,6 +5,7 @@ import { getCertificateById } from '@/lib/db/certificates';
 import { getDefaultCertificateTemplate } from '@/lib/db/certificate-templates';
 import { getInstitutionName } from '@/lib/db/institutions';
 import { CertificatePdfDocument } from '@/components/certificates/certificate-pdf-document';
+import { isAdminRole } from '@/lib/auth/roles';
 import type { CertificateData } from '@/types';
 import React from 'react';
 
@@ -23,6 +24,18 @@ export async function GET(
   const cert = await getCertificateById(supabase, params.id);
   if (!cert) {
     return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
+  }
+
+  // Authorization: only the certificate owner or an admin may access the PDF
+  if (cert.user_id !== user.id) {
+    const { data: requester } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    if (!isAdminRole(requester?.role)) {
+      return new NextResponse('Forbidden', { status: 403 });
+    }
   }
 
   if (cert.pdf_url) {

@@ -31,6 +31,11 @@ import { asInstitutionTheme, resolveEffectiveTheme, type InstitutionTheme } from
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
+import { getCompletionSurvey, getMyCourseFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
+import type { SurveyData, SurveyAnswers, SurveyAnswerValue, SurveyQuestion } from '@/lib/content/blocks/survey/schema';
+import type { SurveyTemplate } from '@/lib/db/survey-templates';
+import { Input } from '@/components/ui/input';
+import { ClipboardList, CheckCircle2 } from 'lucide-react';
 
 const CanvasSlideViewer = dynamic(
   () => import('./canvas-slide-viewer'),
@@ -267,6 +272,254 @@ function NavButtonWithHint({
 }
 
 // ---------------------------------------------------------------------------
+// Completion Feedback Form — inline survey on the completion slide
+// ---------------------------------------------------------------------------
+function FeedbackQuestionField({
+  question,
+  value,
+  onChange,
+  disabled,
+  primaryColor,
+}: {
+  question: SurveyQuestion;
+  value: SurveyAnswerValue | undefined;
+  onChange: (value: SurveyAnswerValue) => void;
+  disabled?: boolean;
+  primaryColor: string;
+}) {
+  const options = question.options ?? [];
+
+  switch (question.type) {
+    case 'true_false':
+    case 'multiple_choice':
+      return (
+        <div className="space-y-2">
+          {options.map((option, i) => {
+            const selected = value === option;
+            return (
+              <button
+                key={i}
+                type="button"
+                disabled={disabled}
+                onClick={() => onChange(option)}
+                className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-all ${
+                  selected
+                    ? 'font-medium'
+                    : 'border-slate-200 hover:bg-slate-50 text-slate-800'
+                } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+                style={selected ? { borderColor: primaryColor, backgroundColor: `${primaryColor}18`, color: primaryColor } : undefined}
+              >
+                {question.type === 'multiple_choice' && (
+                  <span className="text-slate-400 mr-2">{String.fromCharCode(65 + i)}.</span>
+                )}
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      );
+
+    case 'multi_select': {
+      const selected = Array.isArray(value) ? value : [];
+      return (
+        <div className="space-y-2">
+          {options.map((option, i) => {
+            const checked = selected.includes(option);
+            return (
+              <label
+                key={i}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-all ${
+                  checked ? 'font-medium' : 'border-slate-200 hover:bg-slate-50'
+                } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+                style={checked ? { borderColor: primaryColor, backgroundColor: `${primaryColor}18` } : undefined}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  disabled={disabled}
+                  onChange={() => {
+                    if (disabled) return;
+                    if (checked) onChange(selected.filter(o => o !== option));
+                    else onChange([...selected, option]);
+                  }}
+                  className="h-4 w-4 rounded border-slate-300"
+                />
+                <span className="text-sm text-slate-800">{option}</span>
+              </label>
+            );
+          })}
+        </div>
+      );
+    }
+
+    case 'text':
+      return (
+        <Input
+          value={typeof value === 'string' ? value : ''}
+          onChange={e => onChange(e.target.value)}
+          disabled={disabled}
+          placeholder="Your answer"
+          className="bg-white"
+        />
+      );
+
+    case 'textarea':
+      return (
+        <Textarea
+          value={typeof value === 'string' ? value : ''}
+          onChange={e => onChange(e.target.value)}
+          disabled={disabled}
+          placeholder="Share your thoughts..."
+          rows={3}
+          className="bg-white resize-y"
+        />
+      );
+
+    case 'rating': {
+      const rating = typeof value === 'number' ? value : 0;
+      return (
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map(star => (
+            <button
+              key={star}
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange(star)}
+              aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+              className="cursor-pointer hover:scale-110 transition-transform disabled:cursor-not-allowed"
+            >
+              <Star className={`h-7 w-7 ${star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    case 'scale': {
+      const min = question.min_value ?? 1;
+      const max = question.max_value ?? 10;
+      const step = question.increment ?? 1;
+      const num = typeof value === 'number' ? value : min;
+      const pct = max === min ? 0 : ((num - min) / (max - min)) * 100;
+      return (
+        <div className="space-y-3 px-1">
+          <div className="text-center">
+            <span className="inline-flex items-center justify-center min-w-[3rem] px-3 py-1 rounded-lg text-white text-sm font-bold"
+              style={{ backgroundColor: primaryColor }}>
+              {num}
+            </span>
+          </div>
+          <input
+            type="range" min={min} max={max} step={step} value={num}
+            disabled={disabled}
+            onChange={e => onChange(Number(e.target.value))}
+            className="w-full h-2 rounded-full appearance-none cursor-pointer disabled:opacity-60"
+            style={{ background: `linear-gradient(to right, ${primaryColor} 0%, ${primaryColor} ${pct}%, #e2e8f0 ${pct}%, #e2e8f0 100%)` }}
+          />
+          {(question.min_label || question.max_label) && (
+            <div className="flex justify-between text-xs text-slate-500">
+              <span>{question.min_label ?? min}</span>
+              <span>{question.max_label ?? max}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    default:
+      return null;
+  }
+}
+
+function CompletionFeedbackForm({
+  template,
+  answers,
+  onAnswerChange,
+  submitted,
+  submitting,
+  onSubmit,
+  primaryColor,
+}: {
+  template: SurveyTemplate;
+  answers: SurveyAnswers;
+  onAnswerChange: (questionId: string, value: SurveyAnswerValue) => void;
+  submitted: boolean;
+  submitting: boolean;
+  onSubmit: () => void;
+  primaryColor: string;
+}) {
+  const surveyData: SurveyData = template.data;
+  const { title, description, questions = [] } = surveyData;
+
+  if (!questions.length) return null;
+
+  return (
+    <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-4 text-white rounded-t-2xl" style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}cc 100%)` }}>
+        <div className="flex items-center gap-2 mb-0.5">
+          <ClipboardList className="h-4 w-4 opacity-90 shrink-0" />
+          <h4 className="text-base font-bold">{title ?? 'Course Feedback'}</h4>
+        </div>
+        {description && <p className="text-sm text-white/85 leading-relaxed">{description}</p>}
+        <p className="text-xs text-white/70 mt-1">Optional — help us improve this course.</p>
+      </div>
+
+      {/* Body */}
+      <div className="p-5 space-y-5">
+        {submitted ? (
+          <div className="flex items-start gap-3 rounded-xl bg-green-50 border border-green-200 px-4 py-4">
+            <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-green-800 text-sm">Thanks for your feedback!</p>
+              <p className="text-xs text-green-700 mt-0.5">Your response has been recorded.</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {questions.map((question, index) => (
+              <div key={question.id} className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="shrink-0 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm font-semibold leading-snug text-slate-800">
+                    {question.question || 'Question'}
+                    {question.required && <span className="text-red-500 ml-1">*</span>}
+                  </p>
+                </div>
+                <div className="pl-7">
+                  <FeedbackQuestionField
+                    question={question}
+                    value={answers[question.id]}
+                    onChange={val => onAnswerChange(question.id, val)}
+                    disabled={submitting}
+                    primaryColor={primaryColor}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <div className="pt-2 border-t border-slate-100 flex items-center gap-3">
+              <Button
+                onClick={onSubmit}
+                disabled={submitting}
+                className="font-bold"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                Submit Feedback
+              </Button>
+              <span className="text-xs text-slate-400">Optional — you can skip this</span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 interface CourseViewerProps {
@@ -323,6 +576,13 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [reviewText, setReviewText] = useState('');
   const [reviewLoading, setReviewLoading] = useState(false);
   const [existingReviewId, setExistingReviewId] = useState<string | null>(null);
+
+  // Completion feedback survey
+  const [feedbackTemplateId, setFeedbackTemplateId] = useState<string | null>(null);
+  const [feedbackTemplate, setFeedbackTemplate] = useState<SurveyTemplate | null>(null);
+  const [feedbackAnswers, setFeedbackAnswers] = useState<SurveyAnswers>({});
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -397,7 +657,9 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       }
 
       const { data: lessonsData } = await supabase.from('lessons').select('*')
-        .eq('course_id', courseId).order('order_index', { ascending: true });
+        .eq('course_id', courseId)
+        .is('deleted_at', null)
+        .order('order_index', { ascending: true });
 
       if (lessonsData) {
         setLessons(lessonsData);
@@ -429,6 +691,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
             .from('slides')
             .select('id, lesson_id, order_index, title, settings, slide_type, canvas_data')
             .in('lesson_id', lessonIds)
+            .is('deleted_at', null)
             .order('order_index', { ascending: true });
 
           if (slidesData) {
@@ -460,6 +723,15 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
             setProgress(pm);
           }
         }
+      }
+
+      // Completion feedback survey — load template + any existing response
+      const { templateId: fbTemplateId, template: fbTemplate } = await getCompletionSurvey(supabase, courseId);
+      setFeedbackTemplateId(fbTemplateId);
+      setFeedbackTemplate(fbTemplate);
+      if (fbTemplate && user) {
+        const existing = await getMyCourseFeedback(supabase, courseId, user.id);
+        if (existing) setFeedbackSubmitted(true);
       }
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -605,6 +877,40 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     } finally {
       setReviewLoading(false);
     }
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!feedbackTemplate || !feedbackTemplateId) return;
+
+    // previewMode: show confirmation without writing to DB
+    if (previewMode) {
+      setFeedbackSubmitted(true);
+      toast.success('Feedback preview submitted (not saved)');
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !course?.institution_id) {
+      toast.error('You must be signed in to submit feedback');
+      return;
+    }
+
+    setFeedbackSubmitting(true);
+    const { error } = await upsertCourseFeedbackResponse(supabase, {
+      institutionId: course.institution_id,
+      courseId,
+      userId: user.id,
+      templateId: feedbackTemplateId,
+      answers: feedbackAnswers,
+    });
+    setFeedbackSubmitting(false);
+
+    if (error) {
+      toast.error('Failed to submit feedback', { description: error });
+      return;
+    }
+    setFeedbackSubmitted(true);
+    toast.success('Thanks for your feedback!');
   };
 
   // ---------------------------------------------------------------------------
@@ -1326,22 +1632,38 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
                   {/* COMPLETION SLIDE */}
                   {currentSlideData?.kind === 'completion' && (
-                    <div className="relative flex flex-col items-center justify-center py-10 px-8 text-center gap-6 flex-1 overflow-y-auto">
+                    <div className="relative flex flex-col items-center py-10 px-8 gap-6 flex-1 overflow-y-auto">
                       {showConfetti && <Confetti />}
-                      <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center animate-bounce [animation-iteration-count:1] [animation-duration:0.8s]">
-                        <Award className="h-10 w-10 text-green-500" />
+                      {/* Hero — centred */}
+                      <div className="flex flex-col items-center text-center gap-6 w-full">
+                        <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center animate-bounce [animation-iteration-count:1] [animation-duration:0.8s]">
+                          <Award className="h-10 w-10 text-green-500" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Lesson Complete</p>
+                          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
+                          <p className="text-slate-500 mt-2 text-base">Congratulations! You&apos;ve completed this lesson.</p>
+                        </div>
+                        {/* Leave a Review — only on last lesson, not in preview */}
+                        {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
+                          <Button variant="outline" onClick={openReviewModal}
+                            className="border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-50">
+                            <Star className="mr-2 h-4 w-4" />Leave a Review
+                          </Button>
+                        )}
                       </div>
-                      <div>
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Lesson Complete</p>
-                        <h3 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
-                        <p className="text-slate-500 mt-2 text-base">Congratulations! You&apos;ve completed this lesson.</p>
-                      </div>
-                      {/* Leave a Review — only on last lesson, not in preview */}
-                      {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
-                        <Button variant="outline" onClick={openReviewModal}
-                          className="border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-50">
-                          <Star className="mr-2 h-4 w-4" />Leave a Review
-                        </Button>
+
+                      {/* Optional completion feedback survey */}
+                      {feedbackTemplate && (
+                        <CompletionFeedbackForm
+                          template={feedbackTemplate}
+                          answers={feedbackAnswers}
+                          onAnswerChange={(qId, val) => setFeedbackAnswers(prev => ({ ...prev, [qId]: val }))}
+                          submitted={feedbackSubmitted}
+                          submitting={feedbackSubmitting}
+                          onSubmit={handleSubmitFeedback}
+                          primaryColor={effectiveTheme.progressColor ?? '#1A3C6E'}
+                        />
                       )}
                     </div>
                   )}

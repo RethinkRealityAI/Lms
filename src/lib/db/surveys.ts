@@ -159,7 +159,8 @@ export async function getSurveyBlocksForCourse(
   const { data: lessons } = await supabase
     .from('lessons')
     .select('id, title')
-    .eq('course_id', courseId);
+    .eq('course_id', courseId)
+    .is('deleted_at', null);
 
   if (!lessons?.length) return [];
 

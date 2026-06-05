@@ -50,6 +50,7 @@ export default function CertificatesPage() {
         .select(`
           *,
           course:courses!certificates_course_id_fkey(title, description),
+          program:programs!certificates_program_id_fkey(title, description),
           template:certificate_templates!certificates_template_id_fkey(*)
         `)
         .eq('user_id', user.id)
