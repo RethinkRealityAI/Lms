@@ -11,6 +11,13 @@ describe('resolveImageLayout', () => {
     expect(r).toMatchObject({ objectFit: 'contain', displaySize: 'lg', columns: 3, widthPreset: 'md', align: 'center' });
   });
 
+  it('stacked arrangement forces one column at every breakpoint', () => {
+    const data = base({ gridLayout: 'stacked', columns: 3 });
+    expect(resolveImageLayout(data, 'desktop').columns).toBe(1);
+    expect(resolveImageLayout(data, 'tablet').columns).toBe(1);
+    expect(resolveImageLayout(data, 'mobile').columns).toBe(1);
+  });
+
   it('mobile smart defaults: full width + 1 column when not overridden', () => {
     const r = resolveImageLayout(base(), 'mobile');
     expect(r.widthPreset).toBe('full');

@@ -28,7 +28,8 @@ function baseLayout(data: ImageGalleryData): ResolvedImageLayout {
   return {
     objectFit: data.objectFit ?? 'contain',
     displaySize: data.displaySize ?? 'md',
-    columns: data.columns ?? 2,
+    // 'stacked' arrangement = one column at every breakpoint (columns var drives the grid now).
+    columns: data.gridLayout === 'stacked' ? 1 : (data.columns ?? 2),
     widthPreset: data.widthPreset ?? 'full',
     align: data.align ?? 'center',
   };
