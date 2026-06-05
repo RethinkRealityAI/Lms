@@ -386,6 +386,22 @@
   }
 }
 
+/* Responsive image block: variables are set per-breakpoint by a scoped <style> the
+   image viewer injects (see image-gallery/responsive.ts). These rules consume them. */
+.lms-img-resp {
+  max-width: var(--lms-img-maxw, 100%);
+  margin-left: var(--lms-img-ml, auto);
+  margin-right: var(--lms-img-mr, auto);
+}
+.lms-img-resp .lms-img-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--lms-img-cols, 1), minmax(0, 1fr));
+}
+.lms-img-resp img.lms-img-el {
+  object-fit: var(--lms-img-fit, contain);
+  max-height: var(--lms-img-maxh, 12rem);
+}
+
 /* ── React-Grid-Layout: override the default red placeholder ───────────────
  * RGL ships with background:red for its drop-target placeholder.
  * Double-selector + !important ensures we beat the RGL stylesheet regardless
