@@ -186,7 +186,24 @@ export async function getCourseStats(
     .eq('institution_id', institutionId)
     .order('enrollment_count', { ascending: false });
   if (error) return [];
-  return (data ?? []) as CourseStats[];
+  // v_course_stats uses course_id/course_title/avg_progress_pct/... — map to the CourseStats shape
+  // (a blind cast leaves c.id/c.title/c.avg_progress undefined at runtime).
+  return (data ?? []).map((r: Record<string, unknown>) => ({
+    id: r.course_id as string,
+    title: (r.course_title as string) ?? '',
+    is_published: Boolean(r.is_published),
+    created_at: r.created_at as string,
+    enrollment_count: Number(r.enrollment_count) || 0,
+    lesson_count: Number(r.lesson_count) || 0,
+    completion_count: Number(r.completed_lesson_count) || 0,
+    completion_rate: Number(r.completion_rate) || 0,
+    avg_progress: Number(r.avg_progress_pct) || 0,
+    quiz_attempts: Number(r.quiz_attempt_count) || 0,
+    avg_quiz_score: Number(r.avg_quiz_score) || 0,
+    review_count: Number(r.review_count) || 0,
+    avg_rating: Number(r.avg_rating) || 0,
+    certificate_count: Number(r.certificate_count) || 0,
+  })) as CourseStats[];
 }
 
 export async function getEnrollmentTrend(

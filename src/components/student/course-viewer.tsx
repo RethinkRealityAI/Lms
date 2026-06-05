@@ -1653,8 +1653,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         )}
                       </div>
 
-                      {/* Optional completion feedback survey */}
-                      {feedbackTemplate && (
+                      {/* Optional completion feedback survey — only on the final lesson (course completion) */}
+                      {feedbackTemplate && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
                         <CompletionFeedbackForm
                           template={feedbackTemplate}
                           answers={feedbackAnswers}
