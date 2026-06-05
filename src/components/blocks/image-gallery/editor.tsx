@@ -1,5 +1,5 @@
 'use client';
-// cache-bust: 2026-06-02
+// cache-bust: 2026-06-05
 import { useState } from 'react';
 import {
   Link, Upload, LayoutGrid, SlidersHorizontal, GalleryHorizontal,
@@ -14,6 +14,8 @@ import {
   captionColorUsesInherit,
   resolveCaptionColor,
 } from '@/lib/content/blocks/image-gallery/display-utils';
+import { resolveImageLayout } from '@/lib/content/blocks/image-gallery/responsive';
+import type { ImageBreakpoint, ResolvedImageLayout } from '@/lib/content/blocks/image-gallery/responsive';
 import { CaptionEditor } from './caption-editor';
 
 const inputClass =
@@ -35,6 +37,19 @@ const DISPLAY_MODES: {
   { value: 'slider',   label: 'Slider',   icon: SlidersHorizontal,   description: 'One image at a time with Previous / Next. Good for steps.' },
   { value: 'carousel', label: 'Carousel', icon: GalleryHorizontal,   description: 'Several images visible, auto-advancing. Pauses on hover.' },
 ];
+
+// ─── Device field note ────────────────────────────────────────────────────────
+
+function DeviceFieldNote({ bp, overridden, onReset }: { bp: ImageBreakpoint; overridden: boolean; onReset: () => void }) {
+  if (bp === 'desktop') return null;
+  return overridden ? (
+    <button type="button" onClick={onReset} className="text-[10px] text-[#1E3A5F] underline mt-1">
+      Overridden for {bp} · Reset to inherited
+    </button>
+  ) : (
+    <p className="text-[10px] text-gray-400 mt-1">Inherited — change to set a {bp} override</p>
+  );
+}
 
 // ─── Image source picker ──────────────────────────────────────────────────────
 
@@ -92,10 +107,44 @@ function ImageEntryEditor({ img, index, showHeader, onUpdate, onRemove }: {
   );
 }
 
+// ─── Responsive field helpers ─────────────────────────────────────────────────
+
+const RESPONSIVE_FIELDS = ['objectFit', 'displaySize', 'columns', 'widthPreset', 'align'] as const;
+type RespField = typeof RESPONSIVE_FIELDS[number];
+
 // ─── Main editor ─────────────────────────────────────────────────────────────
 
-export function ImageGalleryEditor({ data, onChange, slideBlockStyle }: BlockEditorProps<ImageGalleryData>) {
+export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint = 'desktop' }: BlockEditorProps<ImageGalleryData>) {
   const [hoveredMode, setHoveredMode] = useState<ImageGalleryData['mode'] | null>(null);
+
+  const bp = breakpoint as ImageBreakpoint;
+  const resolved = resolveImageLayout(data, bp);
+
+  // resolved effective value shown in the control for the active device
+  const eff = <K extends RespField>(field: K): ResolvedImageLayout[K] => resolved[field];
+
+  // does the active device have its OWN override (not inherited)?
+  const isOverridden = (field: RespField): boolean =>
+    bp !== 'desktop' && (data.responsive?.[bp] as Record<string, unknown> | undefined)?.[field] !== undefined;
+
+  // write a value to the correct bucket for the active device
+  function setResp<K extends RespField>(field: K, value: ResolvedImageLayout[K]) {
+    if (bp === 'desktop') {
+      onChange({ ...data, [field]: value });
+      return;
+    }
+    const current = data.responsive ?? {};
+    const tier = { ...(current[bp] ?? {}), [field]: value };
+    onChange({ ...data, responsive: { ...current, [bp]: tier } });
+  }
+
+  // clear the active device's override for a field (revert to inherited)
+  function clearResp(field: RespField) {
+    if (bp === 'desktop' || !data.responsive?.[bp]) return;
+    const tier = { ...(data.responsive[bp] as Record<string, unknown>) };
+    delete tier[field];
+    onChange({ ...data, responsive: { ...data.responsive, [bp]: tier } });
+  }
 
   // Always safe-guard images array
   const images = data.images ?? [];
@@ -129,6 +178,13 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle }: BlockEdi
 
   return (
     <div className="space-y-4 px-4 pb-4">
+
+      {/* ── Device banner ── */}
+      {bp !== 'desktop' && (
+        <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-700">
+          Editing <strong>{bp}</strong> overrides. Switch the device toggle to Desktop to edit base values.
+        </div>
+      )}
 
       {/* ── 1. Display mode ── */}
       <div>
@@ -172,7 +228,7 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle }: BlockEdi
           </div>
         </div>
 
-        {/* Image Fit */}
+        {/* Image Fit (device-aware) */}
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Image Fit</label>
           <div className="flex gap-1.5">
@@ -180,27 +236,64 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle }: BlockEdi
               { label: 'Contain (show all)', value: 'contain' as const },
               { label: 'Cover (fill frame)',  value: 'cover'   as const },
             ].map((opt) => (
-              <button key={opt.value} type="button" onClick={() => onChange({ ...data, objectFit: opt.value })}
+              <button key={opt.value} type="button" onClick={() => setResp('objectFit', opt.value)}
                 className={`flex-1 px-2.5 py-1 text-xs rounded-lg border transition-colors ${
-                  (data.objectFit ?? 'contain') === opt.value ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+                  eff('objectFit') === opt.value ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
                 }`}>{opt.label}</button>
             ))}
           </div>
+          <DeviceFieldNote bp={bp} overridden={isOverridden('objectFit')} onReset={() => clearResp('objectFit')} />
         </div>
 
-        {/* Display size */}
+        {/* Display size (device-aware) */}
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Max Height</label>
           <div className="grid grid-cols-4 gap-1.5">
             {(Object.keys(DISPLAY_SIZE_LABEL) as Array<keyof typeof DISPLAY_SIZE_LABEL>).map((size) => (
-              <button key={size} type="button" onClick={() => onChange({ ...data, displaySize: size })}
+              <button key={size} type="button" onClick={() => setResp('displaySize', size)}
                 className={`px-2 py-1.5 text-xs rounded-lg border transition-colors ${
-                  (data.displaySize ?? 'md') === size ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+                  eff('displaySize') === size ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
                 }`}>{DISPLAY_SIZE_LABEL[size]}</button>
             ))}
           </div>
           <p className="mt-1 text-[10px] text-gray-400">Use Contain fit to show the full image.</p>
+          <DeviceFieldNote bp={bp} overridden={isOverridden('displaySize')} onReset={() => clearResp('displaySize')} />
         </div>
+
+        {/* Image Width (device-aware) */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Image Width</label>
+          <div className="grid grid-cols-4 gap-1.5">
+            {([
+              { v: 'full', label: 'Full' }, { v: 'lg', label: 'Large' },
+              { v: 'md', label: 'Medium' }, { v: 'sm', label: 'Small' },
+            ] as const).map((opt) => (
+              <button key={opt.v} type="button" onClick={() => setResp('widthPreset', opt.v)}
+                className={`px-2 py-1.5 text-xs rounded-lg border transition-colors ${
+                  eff('widthPreset') === opt.v ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+                }`}>{opt.label}</button>
+            ))}
+          </div>
+          <DeviceFieldNote bp={bp} overridden={isOverridden('widthPreset')} onReset={() => clearResp('widthPreset')} />
+        </div>
+
+        {/* Alignment (device-aware, only meaningful when width < full) */}
+        {eff('widthPreset') !== 'full' && (
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Alignment</label>
+            <div className="flex gap-1.5">
+              {([
+                { v: 'left', Icon: AlignLeft }, { v: 'center', Icon: AlignCenter }, { v: 'right', Icon: AlignRight },
+              ] as const).map(({ v, Icon }) => (
+                <button key={v} type="button" onClick={() => setResp('align', v)}
+                  className={`flex-1 flex items-center justify-center px-2.5 py-1.5 rounded-lg border transition-colors ${
+                    eff('align') === v ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+                  }`}><Icon className="w-3.5 h-3.5" /></button>
+              ))}
+            </div>
+            <DeviceFieldNote bp={bp} overridden={isOverridden('align')} onReset={() => clearResp('align')} />
+          </div>
+        )}
 
         {/* Caption color */}
         <div>
@@ -255,13 +348,14 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle }: BlockEdi
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Columns</label>
               <div className="flex gap-1.5">
-                {[2, 3, 4].map((n) => (
-                  <button key={n} type="button" onClick={() => onChange({ ...data, columns: n })}
+                {[1, 2, 3, 4].map((n) => (
+                  <button key={n} type="button" onClick={() => setResp('columns', n)}
                     className={`flex-1 px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
-                      (data.columns ?? 2) === n ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+                      eff('columns') === n ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
                     }`}>{n} col{n > 1 ? 's' : ''}</button>
                 ))}
               </div>
+              <DeviceFieldNote bp={bp} overridden={isOverridden('columns')} onReset={() => clearResp('columns')} />
             </div>
           )}
         </div>
