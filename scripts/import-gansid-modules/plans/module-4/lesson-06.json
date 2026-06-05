@@ -1,0 +1,356 @@
+{
+  "lessonId": "2d22e4ba-f202-46dd-8e1c-0a730a03601f",
+  "lessonOrderIndex": 6,
+  "lessonTitle": "Effective Leadership Practices",
+  "lessonDescription": "This lesson covers qualities and characteristics of effective leaders, effective leadership behaviours (What works), ineffective leadership behaviours (What does NOT work), practical tips for leadership excellence, and discussion and reflection exercises.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Effective Leadership Behaviours (What Works)",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/effective-leadership-_pypokj.jpg",
+                "alt": "Effective leadership",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "cover",
+            "aspectRatio": "16/9",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The following behaviours characterize effective leaders:</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "What Works: Effective Leadership Behaviours",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p><strong>Communication</strong> — Clear, open, and consistent communication with the team</p>", "animation": "left" },
+              { "html": "<p><strong>Delegation</strong> — Appropriately delegating tasks to match skills to responsibilities</p>", "animation": "left" },
+              { "html": "<p><strong>Listening</strong> — Actively listening to team members' perspectives and concerns</p>", "animation": "left" },
+              { "html": "<p><strong>Providing clear direction</strong> — Ensuring the team knows goals, priorities, and expectations</p>", "animation": "left" },
+              { "html": "<p><strong>Showing empathy</strong> — Understanding and acknowledging the feelings and experiences of others</p>", "animation": "left" },
+              { "html": "<p><strong>Recognising team's competence</strong> — Trusting and valuing what team members bring to the table</p>", "animation": "left" },
+              { "html": "<p><strong>Build conducive work climate</strong> — Creating an environment where people feel safe, respected, and motivated</p>", "animation": "left" },
+              { "html": "<p><strong>Continually learning in order to adapt</strong> — Staying current and evolving with the changing environment</p>", "animation": "left" },
+              { "html": "<p><strong>Gain trust of team</strong> — Building and maintaining trust through integrity and consistency</p>", "animation": "left" },
+              { "html": "<p><strong>Encourage feedback</strong> — Welcoming and acting on feedback from team members</p>", "animation": "left" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "What Does NOT Work: Ineffective Leadership Behaviours",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The following behaviours undermine leadership effectiveness:</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p><strong>Micromanagement</strong> — Over-controlling every detail, leaving no room for team autonomy</p>", "animation": "left" },
+              { "html": "<p><strong>Distrust of team</strong> — Failing to trust team members' abilities and intentions</p>", "animation": "left" },
+              { "html": "<p><strong>Lack of confidence in team</strong> — Undermining team capability through doubt or dismissiveness</p>", "animation": "left" },
+              { "html": "<p><strong>Lack of direction</strong> — Failing to provide clear goals or expectations</p>", "animation": "left" },
+              { "html": "<p><strong>Lack of empathy</strong> — Ignoring or dismissing the emotions and experiences of team members</p>", "animation": "left" },
+              { "html": "<p><strong>Tendency to create negative work environment</strong> — Leading to low morale and disengagement</p>", "animation": "left" },
+              { "html": "<p><strong>No continued learning to improve skills</strong> — Becoming stagnant and unable to adapt to change</p>", "animation": "left" },
+              { "html": "<p><strong>Inability to adapt to change</strong> — Resisting necessary change, blocking organizational growth</p>", "animation": "left" }
+            ],
+            "bullet_style": "decimal",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p><strong>Remember:</strong> Effective leadership is not about power or control — it is about empowering others, fostering growth, and creating positive impact.</p>",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Tips for Effective Leadership",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>1. Talk Less and Listen More</h3><p>A good leader understands when to retreat, listens to the contributions of others, and considers those ideas and suggestions when making decisions. Being able to observe a situation from different perspectives can help you to overcome challenges. When your team members feel like they have a voice and you respect their opinions, it makes it easy for them to trust your leadership.</p><h3>2. Understand Each Position in Your Organization</h3><p>It is often easier to lead a team if you understand the positions and responsibilities of the employees in the organization. You can achieve this by devoting time to learning about each individual in your team, the position they occupy, and the particular tasks they're responsible for. This shows team members that you care about them and their roles. It also equips you with the knowledge to explain and promote the company to others.</p><h3>3. Take Care of Your Team Members</h3><p>A leader is only as successful as the team they lead. An important duty of a leader is to take care of their team members and support their personal and professional goals. Show your team members that they are important to the organisation, that you respect their goals and ambitions, and that you want what is best for them. This will motivate them to perform better and remain with the organisation, reducing employee attrition.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/6861256042_0b37739bcd_z_lzjgha.jpg",
+                "alt": "Talk less and listen more",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/speak-listen-communicate-better_wfceqs.jpg",
+                "alt": "Speak, listen, communicate better",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "objectFit": "cover",
+            "aspectRatio": "4/3",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>4. Be a Source of Inspiration</h3><p>A leader's duties extend beyond managing a business and making decisions. They also include inspiring and motivating team members. Leaders who motivate their employees will find it easier to convince them to follow. You can become an inspiring leader by being open, taking responsibility, creating positive change, making unselfish decisions, and having a vision that others can follow.</p><h3>5. Accept and Respond to Feedback</h3><p>A good leader understands that they can make better decisions if they listen to feedback from team members.</p><h3>6. Learn to Be Adaptable and Flexible</h3><p>Plans sometimes do not work out the way you envisioned. A good leader will be adaptable and flexible in order to accommodate changes.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/Empathy-Four-Elements_esduw0.jpg",
+                "alt": "Four elements of empathy",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "aspectRatio": "4/3",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Discussion, Reflection & Module Summary",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Discussion / Self-Evaluation</h3><p>Perform a self-evaluation or reflection on some of the following points. Alternatively, find a partner to discuss:</p><ul><li>Common mistakes made by leaders</li><li>Consequences of poor leadership</li><li>Strategies for avoiding or overcoming common leadership pitfalls or mistakes</li><li>How to handle conflicts and challenges within teams</li><li>Ethical dilemmas faced by leaders</li><li>Adaptability to organizational change (embracing or resisting?)</li></ul>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "tip",
+            "title": "Reflection Exercise",
+            "html": "<p>For your reflection, consider:</p><ul><li>Recap the key learnings from the module</li><li>Reflect on personal insights and growth as a result of the module</li></ul>",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Module Summary</h3><p>Leadership is a multifaceted, ever-evolving field. Effective leaders possess a firm understanding of themselves and of their team, which enables them to successfully navigate the complex world of leadership. They leverage their emotional intelligence, their adaptability, vision, and influence to inspire and guide their teams toward success.</p><p><strong>Effective leadership is not about power or control — it is about empowering others, fostering growth, and creating positive impact.</strong></p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the impact of effective leadership on employee satisfaction and productivity?",
+            "options": [
+              "It improves employee satisfaction and productivity.",
+              "It has no impact on employee satisfaction and productivity.",
+              "It decreases employee satisfaction and productivity.",
+              "It only improves employee satisfaction but not productivity."
+            ],
+            "correct_answer": "It improves employee satisfaction and productivity.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Effective leadership directly improves both employee satisfaction and productivity by inspiring, motivating, and supporting team members.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which leadership style involves minimal guidance and allows team members to make decisions independently?",
+            "options": [
+              "Laissez-faire leadership",
+              "Autocratic leadership",
+              "Democratic leadership",
+              "Transformational leadership"
+            ],
+            "correct_answer": "Laissez-faire leadership",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Laissez-faire leadership provides minimal guidance and grants team members full autonomy to make decisions and handle tasks independently.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a common behavior displayed by ineffective leaders?",
+            "options": [
+              "Micromanagement",
+              "Empathy",
+              "Clear direction",
+              "Active listening"
+            ],
+            "correct_answer": "Micromanagement",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Micromanagement — over-controlling every detail and leaving no room for team autonomy — is a hallmark of ineffective leadership.",
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key quality possessed by effective leaders?",
+            "options": [
+              "Integrity",
+              "Indecisiveness",
+              "Dishonesty",
+              "Inflexibility"
+            ],
+            "correct_answer": "Integrity",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Integrity is a foundational quality of effective leaders — it builds trust and consistency, enabling leaders to gain the confidence of their teams.",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the focus of transactional leadership?",
+            "options": [
+              "Setting clear expectations and providing rewards based on performance",
+              "Encouraging creativity and innovation",
+              "Prioritizing the needs of team members",
+              "Challenging the status quo and creating a vision"
+            ],
+            "correct_answer": "Setting clear expectations and providing rewards based on performance",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Transactional leadership establishes clear goals and expectations, with rewards for meeting targets and penalties for failing to meet them — it is task-oriented and structured.",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "match_pairs block pairing effective behaviour names to their descriptions",
+      "reason": "The 10 effective behaviours list (e.g. Communication → Clear, open, consistent…) is structured as labelled pairs and could work as a drag-to-match activity, but the source treats it as informational content, so it stays as a content_list."
+    },
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "match_pairs block pairing ineffective behaviour names to their descriptions",
+      "reason": "Same structure as the effective behaviours list — informational, not a knowledge-check, so table/list is correct per rulebook."
+    }
+  ]
+}

@@ -7,7 +7,7 @@ vi.mock('@tiptap/react', () => ({
   useEditor: () => null,
   EditorContent: () => null,
 }));
-vi.mock('@tiptap/starter-kit', () => ({ default: {} }));
+vi.mock('@tiptap/starter-kit', () => ({ default: { configure: () => ({}) } }));
 vi.mock('@tiptap/extension-image', () => ({ default: { configure: () => ({}) } }));
 vi.mock('@tiptap/extension-link', () => ({ default: { configure: () => ({}) } }));
 vi.mock('@tiptap/extension-placeholder', () => ({ default: { configure: () => ({}) } }));

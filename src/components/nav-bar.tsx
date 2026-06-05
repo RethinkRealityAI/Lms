@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
-import { withInstitutionPath, resolveInstitutionSlug } from '@/lib/tenant/path';
+import { withInstitutionPath } from '@/lib/tenant/path';
 import {
   LogOut,
   BookOpen,
@@ -51,6 +51,14 @@ interface NavBarProps {
   userName?: string;
   avatarUrl?: string;
   title: string;
+  /**
+   * Authoritative institution slug, resolved server-side by the layout via
+   * getTenantContext(). Passed in (rather than re-derived from the cookie here)
+   * so the server and client render identical markup — the cookie is unreadable
+   * during SSR, which previously caused a hydration mismatch (server fell back to
+   * the default slug while the client read the real one from the cookie).
+   */
+  institutionSlug: string;
 }
 
 const INSTITUTION_LOGOS: Record<string, string> = {
@@ -58,13 +66,12 @@ const INSTITUTION_LOGOS: Record<string, string> = {
   scago: 'https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/logos/scago-logo.png',
 };
 
-export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarProps) {
+export function NavBar({ links, userEmail, userName, avatarUrl, title, institutionSlug }: NavBarProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
-  const institutionSlug = resolveInstitutionSlug(pathname);
   const logoUrl = INSTITUTION_LOGOS[institutionSlug];
 
   // Reset logo error state when institution changes
@@ -104,7 +111,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-12 items-center">
           <div className="flex items-center gap-6">
-            <Link href={withInstitutionPath("/", pathname)} className="flex items-center gap-2 group shrink-0">
+            <Link href={withInstitutionPath("/", pathname, institutionSlug)} className="flex items-center gap-2 group shrink-0">
               {institutionSlug === 'scago' ? (
                 <span className="text-sm font-black tracking-tight">
                   <span className="text-[#C8262A]">SCAGO</span>
@@ -131,11 +138,11 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
 
             <div className="hidden md:flex items-center gap-0.5">
               {links.map((link) => {
-                const resolvedHref = withInstitutionPath(link.href, pathname);
+                const resolvedHref = withInstitutionPath(link.href, pathname, institutionSlug);
                 const isActive =
                   pathname === resolvedHref ||
-                  (resolvedHref !== withInstitutionPath('/student', pathname) &&
-                    resolvedHref !== withInstitutionPath('/admin', pathname) &&
+                  (resolvedHref !== withInstitutionPath('/student', pathname, institutionSlug) &&
+                    resolvedHref !== withInstitutionPath('/admin', pathname, institutionSlug) &&
                     pathname.startsWith(resolvedHref + '/'));
                 const Icon = iconMap[link.icon] || BookOpen;
                 return (
@@ -161,7 +168,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
             <ThemeToggle />
             
             <Link
-              href={isStudent ? withInstitutionPath("/student/profile", pathname) : withInstitutionPath("/admin/profile", pathname)}
+              href={isStudent ? withInstitutionPath("/student/profile", pathname, institutionSlug) : withInstitutionPath("/admin/profile", pathname, institutionSlug)}
               className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-200 group"
             >
               <div className="text-right">
@@ -207,7 +214,7 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
         <div className="md:hidden border-t border-slate-100 bg-white shadow-2xl animate-in slide-in-from-top-4 duration-300">
           <div className="px-4 py-6 space-y-4">
             <Link
-              href={isStudent ? withInstitutionPath("/student/profile", pathname) : withInstitutionPath("/admin/profile", pathname)}
+              href={isStudent ? withInstitutionPath("/student/profile", pathname, institutionSlug) : withInstitutionPath("/admin/profile", pathname, institutionSlug)}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-4 pb-6 border-b border-slate-100 group"
             >
@@ -225,11 +232,11 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title }: NavBarP
 
             <div className="space-y-1">
               {links.map((link) => {
-                const resolvedHref = withInstitutionPath(link.href, pathname);
+                const resolvedHref = withInstitutionPath(link.href, pathname, institutionSlug);
                 const isActive =
                   pathname === resolvedHref ||
-                  (resolvedHref !== withInstitutionPath('/student', pathname) &&
-                    resolvedHref !== withInstitutionPath('/admin', pathname) &&
+                  (resolvedHref !== withInstitutionPath('/student', pathname, institutionSlug) &&
+                    resolvedHref !== withInstitutionPath('/admin', pathname, institutionSlug) &&
                     pathname.startsWith(resolvedHref + '/'));
                 const Icon = iconMap[link.icon] || BookOpen;
                 return (

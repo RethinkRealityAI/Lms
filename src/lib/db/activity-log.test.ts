@@ -17,7 +17,7 @@ describe('logActivity', () => {
     vi.restoreAllMocks();
   });
 
-  it('inserts a row into content_activity_log', async () => {
+  it('inserts a row into content_activity_log, mapping the action to the DB past-tense value', async () => {
     const { supabase, mockFrom, mockInsert } = makeMockSupabase();
 
     await logActivity(supabase, {
@@ -33,9 +33,37 @@ describe('logActivity', () => {
         institution_id: 'inst-1',
         entity_type: 'slide',
         entity_id: 'slide-1',
-        action: 'create',
+        // present-tense 'create' API → past-tense 'created' DB value
+        // (matches the content_activity_log_action_check constraint)
+        action: 'created',
       }),
     );
+  });
+
+  it('maps every present-tense action to its DB past-tense value', async () => {
+    const cases: Array<[
+      'create' | 'update' | 'delete' | 'publish' | 'reorder',
+      string,
+    ]> = [
+      ['create', 'created'],
+      ['update', 'updated'],
+      ['delete', 'deleted'],
+      ['publish', 'published'],
+      ['reorder', 'reordered'],
+    ];
+
+    for (const [input, expected] of cases) {
+      const { supabase, mockInsert } = makeMockSupabase();
+      await logActivity(supabase, {
+        institutionId: 'inst-1',
+        entityType: 'slide',
+        entityId: 'slide-1',
+        action: input,
+      });
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({ action: expected }),
+      );
+    }
   });
 
   it('does not throw when the insert fails', async () => {

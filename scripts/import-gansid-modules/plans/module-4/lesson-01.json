@@ -1,0 +1,36 @@
+{
+  "lessonId": "d1d19ba6-77b1-4852-b351-b30568a842cb",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Disclaimer",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "disclaimer",
+      "title": "Disclaimer",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>The Capacity Building Curriculum (\"Curriculum\") may be used strictly for educational, non-commercial purposes. By permitting such use, The Global Action Network for Sickle Cell &amp; Other Inherited Blood Disorders (GANSID) does not grant any broader license or waive any of its or any contributor's rights under copyright or otherwise at law.</p><p>This Curriculum has been developed as an educational tool for patient organizations and advocates. The GANSID assumes no liability for any inaccurate or incomplete information contained in this Curriculum, nor any actions taken in reliance thereon. You assume full responsibility for the use of any information provided.</p><p>The information contained herein has been supplied by individual subject matter contributors without verification by us. The information is provided \"AS IS\" and GANSID assumes no obligation to update the information or advise on further developments concerning the topics mentioned.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

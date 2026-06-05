@@ -4,12 +4,28 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronRight, FolderOpen, FileText, Layers } from 'lucide-react';
 
+interface SlideOption {
+  id: string;
+  order_index: number;
+  title?: string | null;
+  slide_type?: string;
+}
+
 interface CopyBlockDialogProps {
   modules: { id: string; title: string }[];
   lessons: Map<string, { id: string; title: string }[]>;
-  slides: Map<string, { id: string; order_index: number }[]>;
+  slides: Map<string, SlideOption[]>;
   onCopy: (targetSlideId: string, targetLessonId: string) => void;
   onClose: () => void;
+  /** Dialog title — defaults to "Copy block to..." */
+  title?: string;
+}
+
+function formatSlideLabel(slide: SlideOption, index: number): string {
+  const num = index + 1;
+  const name = slide.title?.trim() || slide.slide_type || 'Untitled';
+  const truncated = name.length > 36 ? `${name.slice(0, 36)}…` : name;
+  return `Slide ${num} · ${truncated}`;
 }
 
 export function CopyBlockDialog({
@@ -18,6 +34,7 @@ export function CopyBlockDialog({
   slides,
   onCopy,
   onClose,
+  title = 'Copy block to...',
 }: CopyBlockDialogProps) {
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
@@ -25,11 +42,11 @@ export function CopyBlockDialog({
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40" onClick={onClose}>
       <div
-        className="bg-white rounded-xl shadow-2xl w-80 max-h-[28rem] flex flex-col"
+        className="bg-white rounded-xl shadow-2xl w-96 max-h-[28rem] flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         <div className="px-4 py-3 border-b border-slate-100">
-          <h3 className="text-sm font-bold text-slate-900">Copy block to...</h3>
+          <h3 className="text-sm font-bold text-slate-900">{title}</h3>
         </div>
         <div className="flex-1 overflow-y-auto p-2">
           {modules.map(mod => (
@@ -59,10 +76,10 @@ export function CopyBlockDialog({
                         onCopy(slide.id, lesson.id);
                         onClose();
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-1 text-sm text-slate-500 hover:bg-blue-50 hover:text-[#1E3A5F] rounded-lg ml-4"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:bg-blue-50 hover:text-[#1E3A5F] rounded-lg ml-4"
                     >
-                      <Layers className="w-3 h-3 text-slate-400" />
-                      <span>Slide {idx + 1}</span>
+                      <Layers className="w-3 h-3 text-slate-400 shrink-0" />
+                      <span className="truncate text-left">{formatSlideLabel(slide, idx)}</span>
                     </button>
                   ))}
                 </div>

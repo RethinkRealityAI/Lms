@@ -16,6 +16,7 @@ import type {
   SurveyAnswerValue,
 } from '@/lib/content/blocks/survey/schema';
 import { getSurveyResponse, submitSurveyResponse } from '@/lib/db/surveys';
+import { BLOCK_CONTENT_SHELL, surfaceMutedClass } from '@/lib/content/block-surface-tokens';
 
 function formatAnswer(value: SurveyAnswerValue | undefined): string {
   if (value === undefined || value === null) return '—';
@@ -324,7 +325,7 @@ export default function SurveyViewer({
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8 flex items-center justify-center">
+      <div className={cn(BLOCK_CONTENT_SHELL, 'items-center justify-center py-8')}>
         <Loader2 className="h-6 w-6 animate-spin text-[#1A3C6E]" />
       </div>
     );
@@ -332,15 +333,15 @@ export default function SurveyViewer({
 
   if (!questions.length) {
     return (
-      <div className="rounded-2xl bg-white shadow-sm border border-dashed border-gray-200 p-6 text-center text-sm text-slate-500">
+      <div className={cn(BLOCK_CONTENT_SHELL, 'items-center justify-center py-8 text-center text-sm', surfaceMutedClass())}>
         This survey has no questions yet.
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-      <div className="bg-gradient-to-r from-[#1A3C6E] to-[#0099CA] px-6 py-5 text-white">
+    <div className={cn(BLOCK_CONTENT_SHELL, '-m-4 @md:-m-5')}>
+      <div className="bg-gradient-to-r from-[#1A3C6E] to-[#0099CA] px-6 py-5 text-white shrink-0 rounded-t-2xl">
         <div className="flex items-center gap-2 mb-1">
           <ClipboardList className="h-5 w-5 opacity-90" />
           <h3 className="text-lg font-bold">{title}</h3>
@@ -348,15 +349,15 @@ export default function SurveyViewer({
         {description && <p className="text-sm text-white/85 leading-relaxed">{description}</p>}
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 flex-1">
         {questions.map((question, index) => (
           <div key={question.id} className="space-y-3">
             <div className="flex items-start gap-2">
-              <span className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+              <span className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold bg-[color:var(--surface-inset-bg)] text-[color:var(--surface-text-muted)]">
                 {index + 1}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900 leading-snug">
+                <p className="text-sm font-semibold leading-snug">
                   {question.question || 'Untitled question'}
                   {question.required && <span className="text-red-500 ml-1">*</span>}
                 </p>
@@ -395,7 +396,7 @@ export default function SurveyViewer({
             </div>
           </div>
         ) : (
-          <div className="pt-2 border-t border-slate-100">
+          <div className="pt-2 border-t border-current/10">
             <Button
               onClick={handleSubmit}
               disabled={submitting}

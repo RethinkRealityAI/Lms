@@ -32,8 +32,8 @@ export function useKeyboardShortcuts({
     function handleKeyDown(e: KeyboardEvent) {
       const ctrl = e.ctrlKey || e.metaKey;
 
-      // ? key — toggle shortcuts overlay (works even in editable targets)
-      if (e.key === '?' && !ctrl && onShowShortcuts) {
+      // Ctrl+? — toggle shortcuts overlay
+      if (e.key === '?' && ctrl && onShowShortcuts) {
         e.preventDefault();
         onShowShortcuts();
         return;

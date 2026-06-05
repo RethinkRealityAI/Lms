@@ -15,9 +15,23 @@ interface LessonNodeProps {
   onDeleteLesson?: (lessonId: string) => void;
   onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
   onDuplicateSlide?: (slideId: string, lessonId: string) => void;
+  activeDragId?: string | null;
+  overId?: string | null;
+  isTargetLesson?: boolean;
+  isSelectedLesson?: boolean;
 }
 
-export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide, onDuplicateSlide }: LessonNodeProps) {
+export function LessonNode({
+  lesson,
+  onAddSlide,
+  onDeleteLesson,
+  onMoveSlide,
+  onDuplicateSlide,
+  activeDragId,
+  overId,
+  isTargetLesson,
+  isSelectedLesson,
+}: LessonNodeProps) {
   const [expanded, setExpanded] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
@@ -31,11 +45,15 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide, on
     }
   }
 
+  const highlightLesson = isSelected || isSelectedLesson || isTargetLesson;
+
   return (
     <div>
       <div
         className={`flex items-center gap-1 px-2 py-1.5 ml-4 rounded cursor-pointer group transition-colors ${
-          isSelected ? 'bg-[#1E3A5F] text-white' : 'hover:bg-gray-50 text-gray-700'
+          highlightLesson
+            ? 'bg-[#1E3A5F] text-white ring-2 ring-[#DC2626]/60 ring-offset-1'
+            : 'hover:bg-gray-50 text-gray-700'
         }`}
       >
         <button
@@ -52,12 +70,12 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide, on
           )}
         </button>
         <span
-          className="text-xs truncate flex-1 min-w-0"
+          className="text-xs truncate flex-1 min-w-0 font-medium"
           onClick={() => selectEntity({ type: 'lesson', id: lesson.id })}
         >
           {lesson.title}
         </span>
-        <span className={`text-xs shrink-0 ${isSelected ? 'text-blue-200' : 'text-gray-400'}`}>
+        <span className={`text-xs shrink-0 tabular-nums ${highlightLesson ? 'text-blue-200' : 'text-gray-400'}`}>
           {slides.length}
         </span>
         <button
@@ -66,7 +84,7 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide, on
             onAddSlide(lesson.id);
           }}
           className={`p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
-            isSelected ? 'hover:bg-blue-800' : 'hover:bg-gray-200'
+            highlightLesson ? 'hover:bg-blue-800' : 'hover:bg-gray-200'
           }`}
           title="Add slide"
         >
@@ -76,7 +94,7 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide, on
           <button
             onClick={handleDelete}
             className={`p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
-              isSelected ? 'hover:bg-blue-800' : 'hover:bg-gray-200'
+              highlightLesson ? 'hover:bg-blue-800' : 'hover:bg-gray-200'
             }`}
             title="Delete lesson"
           >
@@ -85,18 +103,16 @@ export function LessonNode({ lesson, onAddSlide, onDeleteLesson, onMoveSlide, on
         )}
       </div>
       {expanded && (
-        <div className="space-y-0.5">
-          {slides.length === 0 ? (
-            <div
-              className="ml-8 px-2 py-1.5 text-xs text-gray-400 cursor-pointer hover:text-[#1E3A5F]"
-              onClick={() => onAddSlide(lesson.id)}
-            >
-              + Add first slide
-            </div>
-          ) : (
-            <SortableSlideList lessonId={lesson.id} slides={slides} onMoveSlide={onMoveSlide} onDuplicateSlide={onDuplicateSlide} />
-          )}
-        </div>
+        <SortableSlideList
+          lessonId={lesson.id}
+          slides={slides}
+          activeDragId={activeDragId}
+          overId={overId}
+          isTargetLesson={isTargetLesson}
+          onMoveSlide={onMoveSlide}
+          onDuplicateSlide={onDuplicateSlide}
+          onAddSlide={onAddSlide}
+        />
       )}
     </div>
   );

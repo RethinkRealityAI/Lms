@@ -85,6 +85,7 @@ export interface Lesson {
   is_required: boolean;
   prerequisite_lesson_id?: string;
   title_image_url?: string | null;
+  title_slide_settings?: import('@/lib/content/title-slide-settings').TitleSlideSettings | null;
 }
 
 export type LessonBlockType =

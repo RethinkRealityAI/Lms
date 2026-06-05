@@ -1,0 +1,55 @@
+{
+  "lessonId": "0c43d7b6-0736-4ec3-9bf6-9755c2102925",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Introduction",
+  "lessonDescription": "In this module, learners will gain insights on how to build a strong team of volunteers through learning the principles of recruitment, training, and retention.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "media",
+      "title": "Module 3: Volunteer Management",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_00/slide_00_image_00.png",
+                "caption": null,
+                "alt": "Module 3: Volunteer Management hero image"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "displaySize": "xl",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>In this module, learners will gain insights on how to build a strong team of volunteers through learning the principles of recruitment, training, and retention.</p><p><em>Author: Delaney Hines, MPH, MBA</em></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

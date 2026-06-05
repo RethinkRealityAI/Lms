@@ -2,11 +2,14 @@
 
 import { useCallback, useContext } from 'react';
 import dynamic from 'next/dynamic';
-import { Monitor, ChevronLeft, ChevronRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Monitor, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { SlidePreview } from './slide-preview';
+import { TitleSlide } from '@/components/shared/title-slide';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import { createClient } from '@/lib/supabase/client';
 import { createBlock as dbCreateBlock } from '@/lib/db/blocks';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 import type { Slide, LessonBlock } from '@/types';
 
@@ -45,8 +48,10 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const updateSlide = useEditorStore((s) => s.updateSlide);
   const addBlock = useEditorStore((s) => s.addBlock);
-  const reorderBlocks = useEditorStore((s) => s.reorderBlocks);
   const institutionId = useEditorStore((s) => s.institutionId);
+
+  const pathname = usePathname();
+  const institutionSlug = resolveInstitutionSlug(pathname);
 
   // Find the currently selected slide and its owning lesson
   let selectedSlide: Slide | null = null;
@@ -82,14 +87,22 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
         }
       }
     }
+  } else if (selectedEntity?.type === 'lesson') {
+    // Lesson selected → show the title slide. Resolve lesson data and sibling slides
+    // so the → arrow can step into slide 1 and the title slide rerenders reactively
+    // when the lesson title / description / image changes in the properties panel.
+    owningLessonId = selectedEntity.id;
+    siblingSlides = slides.get(selectedEntity.id) ?? [];
   }
 
+  const isLessonSelected = selectedEntity?.type === 'lesson';
   const slideIndex = selectedSlide ? siblingSlides.indexOf(selectedSlide) : -1;
 
-  // Resolve lesson context for WYSIWYG header
+  // Resolve lesson context for WYSIWYG header (and for the title slide preview)
   let lessonTitle = 'Untitled Lesson';
   let lessonDescription: string | null = null;
   let titleImageUrl: string | null = null;
+  let titleSlideSettings = null as import('@/lib/content/title-slide-settings').TitleSlideSettings | null | undefined;
 
   if (owningLessonId) {
     for (const lessonList of lessons.values()) {
@@ -98,18 +111,31 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
         lessonTitle = lesson.title;
         lessonDescription = lesson.description ?? null;
         titleImageUrl = lesson.title_image_url ?? null;
+        titleSlideSettings = lesson.title_slide_settings;
         break;
       }
     }
   }
 
   function goToPrevSlide() {
-    if (slideIndex > 0) {
-      selectEntity({ type: 'slide', id: siblingSlides[slideIndex - 1].id });
+    // From a real slide: go to previous slide, or back to the lesson (title slide)
+    if (selectedSlide) {
+      if (slideIndex > 0) {
+        selectEntity({ type: 'slide', id: siblingSlides[slideIndex - 1].id });
+      } else if (owningLessonId) {
+        selectEntity({ type: 'lesson', id: owningLessonId });
+      }
     }
   }
 
   function goToNextSlide() {
+    // From the title slide: step into slide 1
+    if (isLessonSelected) {
+      if (siblingSlides.length > 0) {
+        selectEntity({ type: 'slide', id: siblingSlides[0].id });
+      }
+      return;
+    }
     if (slideIndex < siblingSlides.length - 1) {
       selectEntity({ type: 'slide', id: siblingSlides[slideIndex + 1].id });
     }
@@ -117,25 +143,31 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
 
   const selectedBlockId = selectedEntity?.type === 'block' ? selectedEntity.id : undefined;
   const updateBlock = useEditorStore((s) => s.updateBlock);
+  const fitBlockHeight = useEditorStore((s) => s.fitBlockHeight);
+
+  // Stable callback — avoids recreating BCA's measure() on every PreviewPanel re-render
+  const handleFitHeight = useCallback(
+    (blockId: string, gridH: number) => {
+      if (selectedSlide) fitBlockHeight(selectedSlide.id, blockId, gridH);
+    },
+    [selectedSlide, fitBlockHeight],
+  );
 
   // --- Block reorder by arrow buttons ---
-  const handleMoveBlockUp = useCallback((blockId: string, slideId: string) => {
-    const slideBlocks = blocks.get(slideId) ?? [];
-    const idx = slideBlocks.findIndex(b => b.id === blockId);
-    if (idx <= 0) return;
-    const ids = slideBlocks.map(b => b.id);
-    [ids[idx - 1], ids[idx]] = [ids[idx], ids[idx - 1]];
-    reorderBlocks(slideId, ids);
-  }, [blocks, reorderBlocks]);
+  // Delegated to the store's moveBlockVertical: it swaps the block with its visual
+  // neighbour and vertically compacts, so the move is gap-free, can't overlap, and
+  // can always reach the very bottom (the old manual gridY swap couldn't). Keeping
+  // order_index in sync with visual order is handled inside the store action.
+  const moveBlockVertical = useEditorStore((s) => s.moveBlockVertical);
 
-  const handleMoveBlockDown = useCallback((blockId: string, slideId: string) => {
-    const slideBlocks = blocks.get(slideId) ?? [];
-    const idx = slideBlocks.findIndex(b => b.id === blockId);
-    if (idx === -1 || idx >= slideBlocks.length - 1) return;
-    const ids = slideBlocks.map(b => b.id);
-    [ids[idx], ids[idx + 1]] = [ids[idx + 1], ids[idx]];
-    reorderBlocks(slideId, ids);
-  }, [blocks, reorderBlocks]);
+  const handleMoveBlockUp = useCallback(
+    (blockId: string, slideId: string) => moveBlockVertical(slideId, blockId, -1),
+    [moveBlockVertical],
+  );
+  const handleMoveBlockDown = useCallback(
+    (blockId: string, slideId: string) => moveBlockVertical(slideId, blockId, 1),
+    [moveBlockVertical],
+  );
 
   // --- Canvas slide handlers ---
 
@@ -205,9 +237,15 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
 
   const isCanvasSlide = selectedSlide?.slide_type === 'canvas';
 
+  // The editor canvas is ALWAYS editable, at every device width. The device toggle
+  // just narrows the card (content stays responsive via container queries) and, for
+  // tablet/mobile, frames it as a device. Exact device rendering is the Preview
+  // dialog (Play button) which embeds the real viewer in a device-sized iframe.
+  const isDeviceFramed = devicePreview !== 'desktop';
+
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
-      <div className="flex-1 flex items-start justify-center p-6 overflow-auto">
+      <div className="flex-1 flex items-stretch justify-center p-6 overflow-auto">
         {selectedSlide && isCanvasSlide ? (
           <div className="w-full h-full">
             <CanvasSlideEditor
@@ -220,8 +258,12 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
           </div>
         ) : (
           <div
-            className="bg-white rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col"
-            style={{ width: DEVICE_WIDTHS[devicePreview], maxWidth: '100%', minHeight: '500px' }}
+            className={`bg-white overflow-hidden transition-all duration-300 flex flex-col ${
+              isDeviceFramed
+                ? 'rounded-[2rem] border-[10px] border-slate-900 shadow-2xl ring-1 ring-black/10'  // editable, framed as a device
+                : 'rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)]'
+            }`}
+            style={{ width: DEVICE_WIDTHS[devicePreview], maxWidth: '100%', height: '100%', minHeight: '500px' }}
           >
             {selectedSlide ? (
               <SlidePreview
@@ -232,6 +274,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                 onUpdateBlock={(blockId, data) => {
                   if (selectedSlide) updateBlock(selectedSlide.id, blockId, { data });
                 }}
+                onFitHeight={handleFitHeight}
                 onDuplicateBlock={onDuplicateBlock}
                 onCopyBlockToSlide={onCopyBlockToSlide}
                 onMoveBlockToSlide={onMoveBlockToSlide}
@@ -243,6 +286,27 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                 slideNumber={slideIndex + 1}
                 totalSlides={siblingSlides.length}
               />
+            ) : isLessonSelected ? (
+              <div className="flex flex-col flex-1 min-h-0">
+                {/* Title slide header strip */}
+                <div className="shrink-0 flex items-center justify-between gap-3 px-4 py-2.5 bg-gray-900 border-b border-white/10">
+                  <span className="text-xs font-semibold text-white/50 truncate">{lessonTitle}</span>
+                  <span className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-white/80 text-[10px] font-bold uppercase tracking-wider">
+                    <BookOpen className="w-2.5 h-2.5" />
+                    Title Slide
+                  </span>
+                </div>
+                {/* Title slide content — rerenders live as lesson props change */}
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <TitleSlide
+                    lessonTitle={lessonTitle}
+                    lessonDescription={lessonDescription ?? undefined}
+                    titleImageUrl={titleImageUrl ?? undefined}
+                    institutionSlug={institutionSlug}
+                    titleSlideSettings={titleSlideSettings}
+                  />
+                </div>
+              </div>
             ) : (
               <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-12">
                 <div className="text-center space-y-3">
@@ -264,20 +328,25 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
       <div className="flex items-center justify-center gap-4 py-2.5 bg-white/95 backdrop-blur-sm border-t border-gray-100 shrink-0">
         <button
           onClick={goToPrevSlide}
-          disabled={slideIndex <= 0}
+          disabled={isLessonSelected || (slideIndex <= 0 && !owningLessonId)}
           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 disabled:opacity-20 transition-all"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-xs font-medium text-gray-500 min-w-[100px] text-center truncate max-w-[260px]" title={selectedSlide?.title ?? undefined}>
-          {selectedSlide
+        <span
+          className="text-xs font-medium text-gray-500 min-w-[100px] text-center truncate max-w-[260px]"
+          title={isLessonSelected ? 'Title Slide' : selectedSlide?.title ?? undefined}
+        >
+          {isLessonSelected
+            ? `Title Slide${siblingSlides.length > 0 ? ` — ${siblingSlides.length} slide${siblingSlides.length !== 1 ? 's' : ''}` : ''}`
+            : selectedSlide
             ? `${slideIndex + 1}/${siblingSlides.length} — ${selectedSlide.title || selectedSlide.slide_type}`
             : 'No slide selected'
           }
         </span>
         <button
           onClick={goToNextSlide}
-          disabled={slideIndex < 0 || slideIndex >= siblingSlides.length - 1}
+          disabled={!isLessonSelected && (slideIndex < 0 || slideIndex >= siblingSlides.length - 1)}
           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 disabled:opacity-20 transition-all"
         >
           <ChevronRight className="w-4 h-4" />

@@ -1,0 +1,89 @@
+{
+  "lessonId": "ed8dadad-01a5-4c59-83c5-cb1a30a7dfcf",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Context Fundamental to Volunteer Engagement Modules",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Context Fundamental to Volunteer Engagement",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_03/slide_00_image_00.jpg",
+                "caption": null,
+                "alt": "Volunteers standing at a table with some carrying materials"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "displaySize": "lg",
+            "enableLightbox": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>The Volunteer Engagement Module</h2><p>This module is intended to provide direction on managing volunteer experience by providing insight into the <strong>four stages of engagement</strong> with volunteers:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Recruitment</p>", "animation": "none" },
+              { "html": "<p>Orientation &amp; Training</p>", "animation": "none" },
+              { "html": "<p>Recognition</p>", "animation": "none" },
+              { "html": "<p>Stewardship</p>", "animation": "none" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "decimal",
+            "font_size": "auto",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Volunteers serve as the bedrock for many non-profit and charitable organizations. It is imperative that, as a volunteer manager, you help, coach, and provide support to your volunteers at all stages of their relationship with you and the group.</p><p>Volunteer engagement and support should be everyone's role, but with the volunteer engagement role comes the added accountability of ensuring the following best practices are adhered to. As you deepen your understanding of the wishes and desires of the volunteers supporting GANSID, be sure to modify and/or change your approaches in order to meet and exceed the expectations of your volunteers.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

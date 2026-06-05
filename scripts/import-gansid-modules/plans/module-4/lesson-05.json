@@ -1,0 +1,190 @@
+{
+  "lessonId": "0a83975b-41bf-4218-bf2d-34b360212d9d",
+  "lessonOrderIndex": 5,
+  "lessonTitle": "Leadership Styles",
+  "lessonDescription": "This lesson covers:\n- Various styles of leadership\n- Discussion of strengths and weaknesses of each style\n- Characteristics of a good and effective leader",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "media",
+      "title": "The 10 Leadership Styles",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/leadership-types_ml779i.jpg",
+                "alt": "Different leadership styles illustrated",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "The 10 Leadership Styles",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>The 10 Leadership Styles</h2><h3>1. Coaching Leadership</h3><p>A coaching leader serves as a mentor and guide. They actively listen to the concerns and aspirations of their team members and provide constructive feedback and support. Moreover, they encourage individual growth and assist employees in overcoming challenges. They further develop their skills through regular coaching sessions, fostering a collaborative environment.</p><h3>2. Visionary Leadership</h3><p>A visionary leader sees the future clearly and compellingly. In addition, they effectively communicate this vision to their team, motivating them to work together to achieve common goals. Furthermore, they generate enthusiasm and a sense of purpose through their persuasive communication skills, encouraging innovation and creativity. To sum up, a visionary leader lays out a plan for success, setting high expectations and encouraging their team to push boundaries and explore new opportunities.</p><h3>3. Servant Leadership</h3><p>Servant leaders are service-based leaders; they prioritize their team's needs and well-being. They create a supportive environment in which people feel valued and appreciated. Essentially, they understand that a team's success depends on the satisfaction and motivation of its members. By focusing on individual development and fostering a sense of community, servant leaders inspire their team to achieve their best.</p><h3>4. Autocratic Leadership</h3><p>An autocratic leader wields power and control over decision-making. Besides this, they make unilateral decisions and expect their team members to follow them. Admittedly, this leadership style can be effective when quick and decisive action is required. On the other hand, it limits employee engagement and creativity.</p><h3>5. Laissez-Faire Leadership</h3><p>A laissez-faire leader takes a more passive approach, allowing team members autonomy and freedom. Consequently, they believe in their employees' ability to make decisions and handle tasks independently. Because individuals can pursue their own approaches, this leadership style can foster creativity and innovation. However, if not managed properly, it can lead to a lack of direction or coordination.</p><h3>6. Democratic Leadership</h3><p>The Democratic Leader values their team members' opinions. Employees are involved in decision-making processes, and their ideas and perspectives are sought. In addition, a democratic leader fosters collaboration, teamwork, and employee engagement by instilling a sense of ownership and participation.</p><h3>7. Pacesetter Leadership</h3><p>The pacesetter leader sets the standard by creating challenging goals and demonstrating high performance. As a result, they have a strong work ethic and expect their team members to have the same level of dedication. Consequently, this style can effectively drive productivity and achieve results; it fosters an environment of excellence and encourages individuals to perform to their full potential. However, it may also result in high-pressure environments and potentially overlook employee development and well-being.</p><h3>8. Transformational Leadership</h3><p>Transformational leaders inspire and motivate their teams through their charismatic personalities and compelling vision. Additionally, they promote personal growth, building on the strengths of their team members. This, in turn, leads to an innovative culture. Furthermore, a transformational leader stimulates positive change, empowers individuals, and fosters a shared sense of purpose.</p><h3>9. Transactional Leadership</h3><p>Transactional leadership establishes clear goals and expectations, with rewards &amp; punishments based on performance: rewards for meeting targets and penalties for failing to meet them. This leadership style emphasizes a structured approach that ultimately motivates its employees to perform better and is task-oriented.</p><h3>10. Bureaucratic Leadership</h3><p>A bureaucratic leader strictly adheres to rules, policies, and procedures. Generally speaking, they make certain that tasks are completed systematically, emphasizing adherence to established protocols. This leadership style is frequently seen in hierarchical organizations where consistency and adherence to established guidelines are paramount.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Key Leadership Styles at a Glance",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Recap: Key Leadership Styles at a Glance</h2>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              { "id": "col-style", "label": "Style", "align": "left" },
+              { "id": "col-approach", "label": "Core Approach", "align": "left" },
+              { "id": "col-bestfor", "label": "Best For", "align": "left" }
+            ],
+            "rows": [
+              { "id": "row-1", "cells": { "col-style": "Coaching", "col-approach": "Mentorship and individual growth", "col-bestfor": "Developing talent" } },
+              { "id": "row-2", "cells": { "col-style": "Visionary", "col-approach": "Compelling future vision", "col-bestfor": "Innovation and change" } },
+              { "id": "row-3", "cells": { "col-style": "Servant", "col-approach": "Team needs first", "col-bestfor": "Morale and retention" } },
+              { "id": "row-4", "cells": { "col-style": "Autocratic", "col-approach": "Unilateral control", "col-bestfor": "Crisis/urgent decisions" } },
+              { "id": "row-5", "cells": { "col-style": "Laissez-Faire", "col-approach": "Full team autonomy", "col-bestfor": "Creative/expert teams" } },
+              { "id": "row-6", "cells": { "col-style": "Democratic", "col-approach": "Collaborative decisions", "col-bestfor": "Engagement and buy-in" } },
+              { "id": "row-7", "cells": { "col-style": "Pacesetter", "col-approach": "High standards and performance", "col-bestfor": "Results-driven teams" } },
+              { "id": "row-8", "cells": { "col-style": "Transformational", "col-approach": "Inspire through vision and charisma", "col-bestfor": "Cultural change" } },
+              { "id": "row-9", "cells": { "col-style": "Transactional", "col-approach": "Reward/punishment system", "col-bestfor": "Structured performance" } },
+              { "id": "row-10", "cells": { "col-style": "Bureaucratic", "col-approach": "Rules and protocols", "col-bestfor": "Compliance-heavy settings" } }
+            ],
+            "striped": true,
+            "first_column_header": true,
+            "density": "comfortable",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key characteristic of a visionary leader?",
+            "options": [
+              "They clearly communicate a compelling vision and motivate the team to achieve common goals.",
+              "They prefer to delegate tasks and avoid direct involvement.",
+              "They set challenging goals and maintain high standards.",
+              "They focus primarily on adhering to established processes and protocols."
+            ],
+            "correct_answer": "They clearly communicate a compelling vision and motivate the team to achieve common goals.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! A visionary leader sees the future clearly, communicates that vision compellingly, and motivates the team to work together toward common goals.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which leadership style involves team members in the decision-making process and values their input?",
+            "options": [
+              "Democratic",
+              "Pacesetter",
+              "Laissez-Faire",
+              "Autocratic"
+            ],
+            "correct_answer": "Democratic",
+            "show_feedback": true,
+            "feedback_correct": "Correct! The Democratic leadership style values team members' opinions, involves them in decision-making processes, and fosters collaboration, teamwork, and a sense of ownership and participation.",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which leadership style involves minimal guidance and allows team members to make decisions independently?",
+            "options": [
+              "Laissez-faire leadership",
+              "Autocratic leadership",
+              "Democratic leadership",
+              "Transformational leadership"
+            ],
+            "correct_answer": "Laissez-faire leadership",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Laissez-faire leadership takes a passive approach, allowing team members full autonomy and freedom to make decisions and handle tasks independently.",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

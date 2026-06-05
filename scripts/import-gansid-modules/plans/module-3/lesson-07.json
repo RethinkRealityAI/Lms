@@ -1,0 +1,263 @@
+{
+  "lessonId": "bc9125bb-41bd-4249-b79e-30e98c54f224",
+  "lessonOrderIndex": 7,
+  "lessonTitle": "Recognition",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Volunteer Recognition",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_07/slide_00_image_00.jpg",
+                "alt": "Volunteer recognition photo",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>What is Volunteer Recognition?</h2><p>Volunteer recognition is an important way to ensure volunteers feel valued for their contributions and proud to be part of the organization. It's a great way to demonstrate to volunteers the impact they are having or have had.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "tip",
+            "title": "Key Principle",
+            "html": "<p>Recognition is not the sole responsibility of a volunteer manager — it involves <strong>everyone in the organization</strong> and should be <strong>proactive rather than reactive</strong>.</p>",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Formal Recognition</h2><p>Formal recognition events and activities should align with both:</p><ul><li>The <strong>reasons a volunteer chooses to give their time</strong></li><li>The <strong>missions of the organization</strong></li></ul>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "Formal recognition can take the form of:",
+            "items": [
+              { "html": "<p>Awards</p>" },
+              { "html": "<p>Handwritten cards</p>" },
+              { "html": "<p>Formal medal ceremonies (e.g., Distinguished Volunteer Award ceremonies)</p>" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "If holding a formal event, prioritize logistics:",
+            "items": [
+              { "html": "<p>Where the event will be held</p>" },
+              { "html": "<p>Who you are going to invite</p>" },
+              { "html": "<p>What time of year you will hold the event</p>" },
+              { "html": "<p>Why you want to host a formal event as opposed to an informal one</p>" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 5,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Informal Recognition",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_07/slide_01_image_01.jpg",
+                "alt": "Volunteer being recognized",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Informal Recognition</h2><p>Informal recognition is the way we conduct our relationship with volunteers <strong>every day</strong>. It does not involve formal processes — it is authentic and sincere.</p><p>Informal recognition exists and thrives within the organization only when a <strong>culture of recognition</strong> is cultivated. Informal recognition can come in the form of:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_07/slide_01_image_02.png",
+                "alt": "Informal recognition moment",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": null,
+            "items": [
+              { "html": "<p>Saying thank you at the completion of a task</p>" },
+              { "html": "<p>Including volunteers in staff celebrations</p>" },
+              { "html": "<p>Remembering volunteers' start dates or birthdays</p>" },
+              { "html": "<p>Simple, sincere acknowledgements of effort and impact</p>" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "title": "Understanding Volunteer Preferences",
+            "html": "<p>It's important to understand <strong>how volunteers want to be recognized</strong>. There are many ways to recognize volunteers, so be sure to survey your volunteers to get their thoughts and feedback on recognition activities. Tailor your approach to what resonates with each volunteer.</p>",
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Who is responsible for recognizing volunteers within an organization?",
+            "options": [
+              "Everyone in the organization",
+              "Only the volunteer manager",
+              "Only the organization's CEO",
+              "Only the human resources department"
+            ],
+            "correct_answer": "Everyone in the organization",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Recognition is everyone's responsibility — not just the volunteer manager's. A culture of recognition involves the whole organization.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

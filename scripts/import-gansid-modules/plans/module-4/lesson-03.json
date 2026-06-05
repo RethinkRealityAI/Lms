@@ -1,0 +1,72 @@
+{
+  "lessonId": "1a69f221-f952-4188-bcba-72fefd724d3c",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Context to the Leadership Module",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Context to the Leadership Module",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Context to the Leadership Module</h2><p>Leadership training, particularly for NGOs/non-profits, aims to equip individuals within these organizations with the knowledge, skills, and mindset necessary to effectively lead and manage in the unique context of the non-profit sector.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/effective-leadership-_pypokj.jpg",
+                "alt": "Effective Leadership",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "displaySize": "md",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>GANSID leadership training will contribute to building stronger, more resilient, and more impactful non-profit organizations that are better equipped to address the complex challenges facing communities around the world.</p>",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -20,7 +20,8 @@ const nextConfig = {
               // Default: only same-origin
               "default-src 'self'",
               // Scripts: self + inline (Next.js needs inline) + eval (dev only via nonce ideally, but needed for HMR)
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com",
+              // YouTube IFrame Player API (custom video block player — no API key required)
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.youtube.com https://s.ytimg.com",
               // Styles: self + inline (Tailwind/shadcn inject inline styles)
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Images: self + data URIs + blob + Supabase storage + any https (course content may reference external images)

@@ -43,10 +43,10 @@ export default async function VerifyPage({
                 <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Recipient</p>
                 <p className="text-slate-900 font-medium">{cert.user?.full_name ?? cert.user?.email}</p>
               </div>
-              {cert.course && (
+              {(cert.course || cert.program) && (
                 <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Course</p>
-                  <p className="text-slate-900 font-medium">{cert.course.title}</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">{cert.course ? 'Course' : 'Program'}</p>
+                  <p className="text-slate-900 font-medium">{cert.course?.title ?? cert.program?.title}</p>
                 </div>
               )}
               <div>

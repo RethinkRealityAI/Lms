@@ -11,6 +11,7 @@ export async function getIssuedCertificates(
       *,
       user:users!certificates_user_id_fkey(full_name, email),
       course:courses!certificates_course_id_fkey(title, description),
+      program:programs!certificates_program_id_fkey(title, description),
       template:certificate_templates!certificates_template_id_fkey(name, canva_design_url, layout_config, is_default),
       awarder:users!certificates_awarded_by_fkey(full_name)
     `)
@@ -31,6 +32,7 @@ export async function getCertificateById(
       *,
       user:users!certificates_user_id_fkey(full_name, email),
       course:courses!certificates_course_id_fkey(title, description),
+      program:programs!certificates_program_id_fkey(title, description),
       template:certificate_templates!certificates_template_id_fkey(*)
     `)
     .eq('id', certificateId)
@@ -50,6 +52,7 @@ export async function getCertificateByNumber(
       *,
       user:users!certificates_user_id_fkey(full_name, email),
       course:courses!certificates_course_id_fkey(title, description),
+      program:programs!certificates_program_id_fkey(title, description),
       template:certificate_templates!certificates_template_id_fkey(name)
     `)
     .eq('certificate_number', certificateNumber)
@@ -130,6 +133,7 @@ export async function getUserCertificates(
     .select(`
       *,
       course:courses!certificates_course_id_fkey(title, description),
+      program:programs!certificates_program_id_fkey(title, description),
       template:certificate_templates!certificates_template_id_fkey(*)
     `)
     .eq('user_id', userId)

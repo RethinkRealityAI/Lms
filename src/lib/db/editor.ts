@@ -8,6 +8,7 @@ export interface EditorCourseData {
     title: string;
     description: string | null;
     theme_overrides: Record<string, unknown>;
+    theme_settings: Record<string, unknown>;
     status: string;
     institution_id: string;
   };
@@ -25,7 +26,7 @@ export async function loadEditorCourseData(
   // Fetch course scoped to institution
   const { data: course, error: courseErr } = await supabase
     .from('courses')
-    .select('id, title, description, theme_overrides, status, institution_id')
+    .select('id, title, description, theme_overrides, theme_settings, status, institution_id')
     .eq('id', courseId)
     .eq('institution_id', institutionId)
     .is('deleted_at', null)
@@ -56,7 +57,7 @@ export async function loadEditorCourseData(
   const { data: lessonsRaw, error: lesErr } = moduleIds.length > 0
     ? await supabase
         .from('lessons')
-        .select('id, title, description, module_id, course_id, order_index, title_image_url')
+        .select('id, title, description, module_id, course_id, order_index, title_image_url, title_slide_settings')
         .in('module_id', moduleIds)
         .is('deleted_at', null)
         .order('order_index')
@@ -71,6 +72,7 @@ export async function loadEditorCourseData(
     course_id: l.course_id as string,
     order_index: l.order_index as number,
     title_image_url: (l.title_image_url as string | null) ?? undefined,
+    title_slide_settings: (l.title_slide_settings as LessonData['title_slide_settings']) ?? undefined,
   }));
 
   // Group lessons by module

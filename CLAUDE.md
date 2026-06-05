@@ -57,9 +57,13 @@ src/
     editor/              # Three-panel editor components
       course-editor-shell.tsx   # Editor root — loads course data, owns all CRUD handlers
       editor-toolbar.tsx        # Save/Undo/Redo/Preview/Publish toolbar
-      structure-panel.tsx       # Left: module/lesson/slide tree
+      structure-panel.tsx       # Left: module/lesson/slide tree + cross-lesson slide DnD
+      sortable-slide-list.tsx   # Slide list with drop indicators + empty-lesson targets
+      slide-template-picker.tsx # Template picker when adding slides
+      copy-block-dialog.tsx     # Copy/move block — shows "Slide N · Title"
+      lesson-preview-dialog.tsx # Toolbar Preview portal (device toggle + sync back to editor)
       preview-panel.tsx         # Centre: slide preview
-      properties-panel.tsx      # Right: selected element properties
+      properties-panel.tsx      # Right: selected element properties (incl. title slide settings)
       canvas-slide-editor.tsx   # tldraw editor for canvas slides (dynamic import, ssr: false)
       dnd/                      # @dnd-kit drag-and-drop system
         editor-dnd-context.tsx  # Top-level DnD context (palette→canvas + block reorder)
@@ -69,7 +73,7 @@ src/
         drop-indicator.tsx      # Blue insertion line between blocks
     shared/                     # Shared components used by both editor and student views
       slide-frame.tsx           # WYSIWYG slide card: header + progress bar + content area
-      title-slide.tsx           # Hero gradient/image title slide with GANSID branding
+      title-slide.tsx           # Hero gradient/image title slide — per-lesson size/color/footer/logo
       completion-slide.tsx      # Award icon completion slide
     blocks/                     # One viewer per block type
       rich-text/viewer.tsx      # prose-xl scaling
@@ -79,6 +83,8 @@ src/
       callout/viewer.tsx
       video/viewer.tsx          # Responsive aspect-video, loading spinner, error state
       pdf/, iframe/, h5p/
+      content-list/             # Animated/styled rich-text list items
+      survey/                   # Multi-question survey block + template toolbar
     certificates/                   # Certificate system components
       certificate-renderer.tsx      # HTML renderer (Canva background + data fields overlay)
       certificate-pdf-document.tsx  # @react-pdf/renderer PDF generator
@@ -89,6 +95,8 @@ src/
     content/
       block-registry.ts         # Runtime Map of registered block types
       blocks/register-all.ts    # 'use client' — registers ALL block types on import
+      slide-templates.ts        # Slide template picker configs (id, defaultBlocks, settings)
+      title-slide-settings.ts   # Per-lesson title slide overrides (size, color, footer, logo)
       lesson-blocks.ts          # sortBlocks(), createLegacyBlockPayload()
     canvas/
       canvas-utils.ts           # tldraw snapshot helpers, design frame, CanvasBlockContext
@@ -110,6 +118,8 @@ src/
       course-assignments.ts # Course assignment CRUD, visibility query
       certificate-templates.ts # Template CRUD, course-template assignments
       certificates.ts       # Certificate CRUD (award, revoke, detail queries)
+      surveys.ts            # Survey response CRUD + analytics queries
+      survey-templates.ts   # Reusable institution-scoped survey templates
     canva/
       auth.ts               # Canva OAuth PKCE helpers, token refresh
       api.ts                # Canva REST API (designs, exports)
@@ -158,7 +168,9 @@ institutions → courses → modules → lessons → lesson_blocks
 users → progress (lesson_id)
       → certificates (course_id, template_id)
       → course_reviews (course_id)
+      → survey_responses (block_id, user_id) — UNIQUE per block+user
       → user_group_members → user_groups
+survey_templates → institutions (reusable survey block configs)
 certificate_templates → course_certificate_templates → courses
 ```
 
@@ -203,6 +215,11 @@ Legacy users: 2,868 imported from EdApp CSV.
 | 025 | fix_platform_admin_cross_tenant_rls | Slides/slide_templates/activity_log RLS allows `platform_admin` cross-tenant access |
 | 026 | add_institution_id_to_contact_submissions | `institution_id` column on `contact_submissions`, backfilled to GANSID |
 | 027 | handle_new_user_institution_aware | `handle_new_user` trigger reads `institution_slug` from signup metadata and assigns correct `institution_id` (fixes new SCAGO signups landing with NULL institution) |
+| 028 | course_programs | `programs` + `program_courses` tables, `certificates.program_id` column, RLS, and `award_program_certificates()` AFTER-INSERT trigger that auto-issues a program certificate once a user holds course certificates for every course in a program |
+| 029 | add_survey_responses | `survey_responses` table (institution/course/lesson/block scoped, `answers` jsonb, UNIQUE block_id+user_id), RLS for self read/write + admin read |
+| 030 | survey_templates | `survey_templates` table (institution-scoped reusable configs), admin manage + authenticated read |
+| 031 | add_title_slide_settings | `lessons.title_slide_settings` jsonb column (`title_size`, `title_color`, `footer_text`, `footer_logo_url`) |
+| 032 | add_institution_update_policy | RLS UPDATE policy on `institutions` — admins can update their own institution; `platform_admin` can update any |
 
 ### RLS Pattern — CRITICAL
 
@@ -265,7 +282,22 @@ SCAGO admin URL: `http://localhost:3001/scago/admin`
 
 ### Registered Block Types
 
-`rich_text`, `image_gallery`, `cta`, `callout`, `quiz_inline`, `video`, `pdf`, `iframe`, `h5p`
+`rich_text`, `image_gallery`, `cta`, `callout`, `quiz_inline`, `slider`, `video`, `pdf`, `iframe`, `h5p`, `scratch_reveal`, `match_pairs`, `page_break`, `content_list`, `survey`, `image_compare`
+
+- **`image_compare`** — Before/after image comparison with draggable divider (horizontal or vertical). Upload or URL for each side; configurable handle, labels, aspect ratio, fit, prompt/caption, optional require-interaction for completion. `src/lib/content/blocks/image-compare/`, `src/components/blocks/image-compare/`.
+
+- **`scratch_reveal`** — canvas scratch-off cover → reveals an image/text underneath, with confetti/sparkles. Before & after can each be image or text. `src/components/blocks/scratch-reveal/`.
+- **`match_pairs`** ("Drag to Match") — @dnd-kit drag (pointer+touch) matching of prompt↔answer pairs; image or text on either side; left/right prompt placement. `src/components/blocks/match-pairs/`.
+- **`content_list`** (`List` in the components panel) — The single list block: rich-text items with links, bullet/number styles, responsive or fixed font sizing, color pickers, optional staggered entrance animations. Used by Learning Objectives and References slide templates. `src/lib/content/blocks/content-list/`, `src/components/blocks/content-list/`.
+- **`survey`** — Multi-question survey block (true/false, multiple choice, multi-select, text, textarea, rating, scale). Responses upserted to `survey_responses`. Reusable templates via `survey_templates` + toolbar in editor. Admin analytics in Analytics → Surveys tab. `src/lib/content/blocks/survey/`, `src/components/blocks/survey/`.
+- **Rich text links:** the Tiptap editor has a Link button (URL popover), autolinks typed/pasted URLs, and the viewer renders links `target=_blank rel=noopener` while neutralising `javascript:`/`vbscript:`/`data:` hrefs.
+
+### Quiz Inline — Question Types
+
+Editor supports: `multiple_choice`, `true_false`, `select_all`, `categorize`, `slider`.
+
+- **`select_all`** — Checkbox UI; multiple correct answers stored as array in `correct_answer`. Editor + viewer (was viewer-only from SCAGO imports; now fully editable).
+- **`categorize`** — Shared option pool + category checkboxes in editor. `src/lib/content/blocks/quiz-inline/categorize-utils.ts` handles pool/play-item logic and **exclusive** category assignment (item can only belong to one category). Viewer pool = union of category items only (orphan options in `options[]` are ignored). Type-cache preserves options/categories when switching question types.
 
 ### CTA Block — Content Links Only
 
@@ -382,7 +414,7 @@ When `previewMode={true}`:
 
 ```ts
 type Slide =
-  | { kind: 'title' }               // Hero gradient + lesson title + description + institution attribution
+  | { kind: 'title' }               // Hero gradient + lesson title + description; uses lessons.title_slide_settings overrides
   | { kind: 'page'; slideId: string; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }
   | { kind: 'completion' }          // Award icon + confetti animation; nav buttons are in the footer
 ```
@@ -437,7 +469,7 @@ The editor canvas renders slides identically to the student viewer using shared 
 | Component | Location | Purpose |
 |---|---|---|
 | `SlideFrame` | `src/components/shared/slide-frame.tsx` | Card shell: header (lesson title + progress bar) + content area. Used by both editor and student views. |
-| `TitleSlide` | `src/components/shared/title-slide.tsx` | Gradient/image hero with GANSID branding. Shared. |
+| `TitleSlide` | `src/components/shared/title-slide.tsx` | Gradient/image hero; reads `title_slide_settings` from lesson + institution branding fallback. |
 | `CompletionSlide` | `src/components/shared/completion-slide.tsx` | Award icon + "Lesson Complete". Editor-only (student has action buttons inline). |
 | `SlideContentArea` | Exported from `slide-frame.tsx` | Content wrapper with student-matching padding (`px-6 py-5 gap-5`). |
 
@@ -448,10 +480,62 @@ Stored in `slide.settings`:
 - `settings.background_image` — Full Supabase URL to an uploaded image (renders as absolute-positioned cover behind content with `bg-black/20` overlay)
 - `settings.nav_label` — Custom button label override for the footer nav button (optional)
 - `settings.nav_url` — External URL; if set, footer button opens this URL instead of navigating (optional)
+- `settings.block_style` — Block container "skin": `'glass'` (**default**, light frosted glass — transparent on white slides) | `'glass-dark'` (smoked liquid glass + light text, for dark/photo backgrounds) | `'classic'` (white card) | `'none'` (transparent). Resolved by `getBlockContainerBase()` in `gridConstants.ts` (undefined → `DEFAULT_BLOCK_STYLE` = `'glass'`; course theme `default_block_style` also defaults to `'glass'`). Applied to every block cell in BOTH `slide-preview.tsx` (editor) and `course-viewer.tsx` (student). Glass classes live in `globals.css`. Padding lives INSIDE the container (`p-3 @md:p-4` on the content wrapper, not the cell — keeps RGL resize handles at the cell edge); `SlideContentArea` outer padding is intentionally minimal.
+
+### Responsive slides via CONTAINER queries (device parity)
+
+The slide content area is a query container (`.slide-cq` → `container-type: inline-size; container-name: slide` in `globals.css`). All responsive block behaviour keys off the **container** width, not the viewport, so the editor's device-preview (a width-constrained card) renders EXACTLY like a real device of that width. Breakpoints (`@container slide` / Tailwind `@md`/`@lg`/`@3xl`):
+- **Body text**: `<30rem` container → L (1.125rem); `≥30rem` → XL (1.25rem). Net: phone L, tablet/desktop XL. (`prose-*` classes are inert — no typography plugin — so `.rich-text-viewer` font-size is set explicitly.)
+- **Grid blocks** stack full-width at `<30rem`; **galleries** go 1→2→3 cols at `@lg`/`@3xl`.
+- `bg-card` is **transparent** in this Tailwind v4 setup (no `--color-card` token) — quiz cards use explicit `bg-white` so they stay readable on dark glass.
+
+The admin preview route has a **device toggle** (desktop/tablet/mobile). Desktop renders `CourseViewer` directly; tablet/mobile render it inside an `<iframe>` sized to the device (`?embed=1`), so real media queries fire → true device fidelity. The embedded viewer reports position via `postMessage` to keep the "Open Editor" resume link in sync. The iframe `src` is seeded from the INITIAL position only (depending on live position would reload-loop the iframe).
 
 The `SlideStyleEditor` (`theme-editor/slide-style-editor.tsx`) provides both color presets and image upload.
 
 Both the editor preview (`slide-preview.tsx`) and the student/preview viewer (`course-viewer.tsx`) use `getSlideBackground()` + background image overlays, and `SlideContentArea` for matching padding. The student viewer fetches `settings` from the `slides` table alongside `id` and `order_index`.
+
+### Slide Templates
+
+Defined in `src/lib/content/slide-templates.ts`. Each template has a unique `id` (picker key), a `type` (maps to `slides.slide_type`), `defaultBlocks`, and `defaultSettings`.
+
+| id | type | Purpose |
+|---|---|---|
+| `title` | title | Lesson intro heading + description |
+| `learning_objectives` | content | Heading + animated `content_list` bullets |
+| `references` | content | Heading + decimal `content_list` citations (no animations) |
+| `content` | content | Generic text slide |
+| `media` | media | Video/image/embed |
+| `quiz` | quiz | Default multiple-choice `quiz_inline` |
+| `disclaimer` | disclaimer | Warning callout |
+| `interactive` | interactive | iframe embed |
+| `canvas` | canvas | Empty tldraw canvas |
+
+- **`slide-template-picker.tsx`** — shown when adding a slide; passes template to `handleAddSlide()` in `course-editor-shell.tsx`.
+- **`getTemplateById(id)`** — preferred for specialized templates (e.g. `learning_objectives`).
+- **`getTemplateByType(type)`** — prefers template whose `id === type` before falling back to first match on `type` (avoids returning Learning Objectives when asking for generic `content`).
+- After template slide creation, selection lands on the **slide** (not the first block).
+
+### Title Slide Settings
+
+Stored on `lessons.title_slide_settings` (jsonb, migration 031). Schema in `src/lib/content/title-slide-settings.ts`:
+
+- `title_size` — `sm` | `md` | `lg` | `xl` | `2xl`
+- `title_color` — hex override
+- `footer_text` — custom attribution line below title
+- `footer_logo_url` — optional logo URL (falls back to institution branding)
+
+Edited in properties panel when a lesson is selected. Deep-merged in `editor-store.ts`. Wired through `lib/db/lessons.ts`, `lib/db/editor.ts`, `course-viewer.tsx`, and `title-slide.tsx`.
+
+### Structure Panel DnD
+
+Beyond canvas block DnD, the structure panel supports **slide reordering and cross-lesson moves** via `@dnd-kit`:
+
+- **`sortable-slide-list.tsx`** — per-lesson sortable slides, `DropIndicator` between slides, empty-lesson droppable zones
+- **`structure-panel.tsx`** — `DragOverlay`, drop indicators with `lessonId`, cross-lesson targeting highlights target lesson
+- **Block selection** resolves parent lesson from block map → highlights owning lesson in tree
+- **Cross-lesson moves** append slide to target lesson (insert-at-index between slides not yet implemented)
+- **`copy-block-dialog.tsx`** — target picker shows `Slide N · Title` format
 
 ### Editor DnD System
 
@@ -469,6 +553,10 @@ Uses an inline bottom toast bar (`fixed bottom-6 left-1/2 z-[70]`), NOT a full-s
 ### Quiz Editor State Caching
 
 `quiz-inline/editor.tsx` uses a `useRef<TypeCache>` to cache options/categories per question type. Switching from multiple choice → categorize → back restores previous options.
+
+### Block Reorder (Arrow Buttons)
+
+The structure panel and slide canvas both expose up/down arrows for blocks. Blocks are positioned by **grid coordinates** (`gridX`, `gridY` in block `data`), not `order_index` alone — so reorder handlers in `preview-panel.tsx` swap vertical grid slots with the neighbour above/below, then sync `order_index` via `reorderBlocks()` so the structure tree matches the canvas.
 
 ---
 
@@ -502,17 +590,51 @@ const CanvasSlideEditor = dynamic(() => import('./canvas-slide-editor'), { ssr: 
 ### Design Frame
 New canvas slides get a locked 1920x1080 geo rectangle as a design boundary. Content can extend beyond it but `zoomToFit()` targets the frame.
 
-### Device Preview
-Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel width. Works for both canvas and block-based slides.
+### Device Preview (editor canvas)
+Editor toolbar has a desktop/tablet/mobile toggle. **Desktop** = the editable react-grid-layout canvas (`SlidePreview`). **Tablet/mobile** = `EmbedDeviceFrame` — the REAL `CourseViewer` rendered inside an `<iframe>` sized to the device, so the iframe's own width drives CSS media/container queries → byte-for-byte parity with a physical device. The frame follows the editor selection via `postMessage({type:'preview-navigate', slideId})` (no reload); the embedded viewer's listener (gated on `embedded`) jumps same-lesson instantly, cross-lesson via a pending-ref. Canvas slides always edit inline.
+
+### Interactive components in the editor
+The editor block content wrapper is `pointer-events-auto` (not `none`) so videos play, sliders drag, etc. RGL only moves blocks via `.block-drag-handle`, so interacting never moves a block; selection uses the hover handle.
 
 ---
 
-## Admin Preview Route
+## Preview (single, unified)
 
-`/gansid/admin/courses/[id]/preview` renders `<CourseViewer courseId={id} previewMode />` inside a `fixed inset-0 z-[60]` overlay that covers the admin nav entirely. A navy banner at the top (`h-12`, `bg-[#1E3A5F]`) shows "Admin Preview" with a "Back to Editor" link.
+There is ONE preview: the toolbar **Preview** (Play) button → `LessonPreviewDialog` (portal, `fixed inset-0 z-[100]`). It opens on the slide you were editing (`resolvePreviewTarget()` in `editor/preview-target.ts` → `initialLessonId`/`initialSlideId`), has a desktop/tablet/mobile **device toggle**, and "Back to Editor" simply closes the portal (editor state preserved — no navigation). Desktop renders `CourseViewer` directly; tablet/mobile use `EmbedDeviceFrame`. (The old toolbar Eye button + full `/preview` *route* as a primary entry point were removed; the route still exists and serves the `?embed=1` iframe target for the device frames.)
 
-- **z-index:** Use `z-[60]` (not `z-50`) — admin nav uses `z-50`; dialogs use `z-50` but are portal-rendered so they escape the overlay stacking context
-- **Entry points:** Editor toolbar Eye button (`courseId?` prop → `router.push`) + hover Eye icon on admin course cards (`opacity-0 group-hover:opacity-100 focus-visible:opacity-100`)
+- **Device sync:** `LessonPreviewDialog` accepts `initialDevice` and calls `onClose(lastDevice)` so the editor toolbar device toggle stays in sync after closing preview.
+- **Embed mode:** `/admin/courses/[id]/preview?embed=1` renders only `<CourseViewer previewMode embedded>` under a `z-[60]` cover (hides the admin nav inside the iframe). `embedded` → full-height (no banner). It `postMessage`s `preview-location` out so a parent device-frame can sync a resume link.
+- **Jump-on-load gotcha:** the one-time jump effect MUST wait for `pageLoading === false` AND until the target slide exists in loaded slides (else it fires on fetchData's synthesized fallback slides and burns its guard before real slides load).
+- **iframe src must be seeded from the INITIAL slide only** — depending on the live position reload-loops the iframe. Live updates go through `postMessage`, never the src.
+- **Single-image blocks render full-width:** `image-gallery/viewer.tsx` special-cases `images.length === 1` (`SingleImageView`); multi-image galleries keep the grid.
+
+---
+
+## Survey Platform
+
+Multi-question surveys embedded as `survey` blocks in course content, with admin analytics and reusable templates.
+
+### Data Model
+
+- **`survey_responses`** — one row per user per survey block (`UNIQUE block_id, user_id`); `answers` jsonb keyed by question id
+- **`survey_templates`** — institution-scoped reusable configs (`name`, `description`, `data` jsonb)
+
+### Key Files
+
+| File | Purpose |
+|---|---|
+| `src/lib/content/blocks/survey/schema.ts` | Zod schema + question types |
+| `src/components/blocks/survey/viewer.tsx` | Student-facing form + submit/upsert |
+| `src/components/blocks/survey/editor.tsx` | Block editor |
+| `src/components/blocks/survey/survey-template-toolbar.tsx` | Load/save institution templates |
+| `src/lib/db/surveys.ts` | Response CRUD + aggregation queries |
+| `src/lib/db/survey-templates.ts` | Template CRUD |
+| `src/components/admin/surveys-analytics-tab.tsx` | Analytics dashboard tab |
+| `src/components/admin/user-detail-dialog.tsx` | Per-user survey response history |
+
+### Block Context
+
+Survey viewer receives course/lesson/block context from `CourseViewer` via `BlockRenderContext` for scoping responses. `previewMode` suppresses DB writes (same pattern as progress/certs).
 
 ---
 
@@ -529,7 +651,7 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 9. **`lib/db/` files must NOT import from `@/lib/supabase/server`** — `server.ts` uses `next/headers` which is server-only. Any db file imported by a client component (directly or via the `@/lib/db` barrel) will break the build. All read helpers must accept a `SupabaseClient` parameter instead of calling `createClient()` internally.
 10. **Tiptap `useEditor` must include `immediatelyRender: false`** — without it, SSR throws a hydration mismatch error.
 11. **`lessons.content_url` is nullable** — block-based lessons don't use it (migration 017). Do not restore the NOT NULL constraint.
-12. **Editor save must not swallow errors** — `handleSave` tracks failure count and only calls `markSaved()` when all DB writes succeed. Failures keep `isDirty = true` (so auto-save retries) and show a toast error. Never `.catch()` and discard save errors silently.
+12. **Editor save must not swallow errors** — `handleSave` tracks failure count and only calls `markSaved()` when all DB writes succeed. Failures keep `isDirty = true` (so auto-save retries) and show a toast error. Per-block saves also toast individually on failure. Never `.catch()` and discard save errors silently.
 13. **Rich text sanitizer strips relative image paths** — SCORM-imported HTML may contain `<img src="fit_content_assets/...">` with relative paths that can't load. The sanitizer in `rich-text/viewer.tsx` removes `<img>` tags whose `src` doesn't start with `http://`, `https://`, or `data:`.
 14. **tldraw components must be dynamically imported** with `ssr: false` — tldraw requires browser APIs and will crash during SSR. Always use `next/dynamic`.
 15. **Navigation is viewer chrome, not block content** — Slide navigation (Next/Previous/Complete) is built into the course-viewer footer. Do not use CTA blocks for navigation. Slide settings (`nav_label`, `nav_url`) control button labels and external links.
@@ -539,6 +661,8 @@ Editor toolbar has desktop/tablet/mobile toggle that adjusts the preview panel w
 19. **All `lib/db/` query functions that return institution-scoped data must accept `institutionId` parameter** — Do not return cross-institution data. The caller resolves institution via `getTenantContext()` or cookie.
 20. **`platform_admin` role bypasses institution scoping** — RLS policies on slides/slide_templates/activity_log allow `platform_admin` full access. The `is_admin()` SQL function recognizes `admin`, `platform_admin`, `institution_admin`.
 21. **Institution branding lives in `src/lib/tenant/branding.ts`** — Logos, colors, taglines, program descriptions. Title slides, nav bars, login pages, and landing pages all read from this config. Add new institutions here.
+22. **Slide templates use unique `id`** — Multiple templates can share the same `slide_type`; use `getTemplateById()` when targeting a specific template (e.g. `learning_objectives`).
+23. **Categorize quiz options** — Items belong to exactly one category (`assignItemToCategory`); viewer ignores orphan options not assigned to any category.
 
 ---
 
@@ -590,7 +714,7 @@ Client Components:
 
 ---
 
-## Current Implementation Status (as of 2026-04-13)
+## Current Implementation Status (as of 2026-06-01)
 
 ### Completed
 - [x] Auth system: signup, login, role-based routing, email verification
@@ -652,6 +776,7 @@ Client Components:
 - [x] Public certificate verification page (`/verify/[certificateNumber]`)
 - [x] Student certificates page: rendered thumbnails, PDF download, share verification link
 - [x] Course completion → certificate with template resolution + PDF pre-generation
+- [x] **Course Programs**: group courses into a program (each course = a "module"); admin manages them in the Certificates → **Programs** tab (`programs-tab.tsx`, `lib/db/programs.ts`). Completing every course in a program auto-issues a **program certificate** via the migration-028 trigger. Program certs (course_id null, program_id set) display the program title across admin/student/verify/PDF.
 - [x] `canva-exports` Supabase Storage bucket for slide backgrounds, certificate backgrounds, and PDFs
 - [x] SCAGO tenant: institution created (`ba52611f-9ad5-44b7-824e-97725a177336`), middleware routing works
 - [x] SCAGO course import: 13 courses, 49 lessons, 253 slides, 468 blocks from Markdown
@@ -691,8 +816,19 @@ Client Components:
   - Live preview updates instantly; `key` prop forces re-mount on background type changes
   - Save clears `canva_design_url` when background type changes (prevents renderer priority issue)
 - [x] Certificate dashboard uses `getTenantContext()` — Templates, Awarded, and Course Assignments tabs all filter by tenant URL slug (not user's profile institution_id)
+- [x] **Survey platform**: `survey` block type, `survey_responses` + `survey_templates` tables (migrations 029–030), institution-scoped templates, student upsert, admin analytics tab, user detail survey history
+- [x] **Slide template picker**: Learning Objectives, References, and existing templates via `slide-templates.ts` + `slide-template-picker.tsx`; `handleAddSlide()` seeds `defaultBlocks`
+- [x] **`content_list` block**: rich-text items, bullet styles, staggered animations; used by Learning Objectives / References templates
+- [x] **Structure panel DnD**: slide numbers, cross-lesson drag with drop indicators + lesson highlight, empty-lesson drop targets, block→lesson highlight
+- [x] **Quiz editor expansion**: `select_all` type in editor; categorize with shared option pool + category checkboxes + exclusive assignment (`categorize-utils.ts`)
+- [x] **Title slide customization**: `lessons.title_slide_settings` (migration 031) — size, color, footer text, logo; properties panel + deep merge in editor store
+- [x] **Preview improvements**: opens on current slide, device size syncs back to editor on close (`initialDevice` / `onClose(device)`)
+- [x] **Copy/move block dialog**: shows `Slide N · Title` for target selection
+- [x] **Editor save robustness**: per-block try/catch + toast on partial failures; MC option rename preserves `correct_answer`
 
 ### In Progress / Next
+- [ ] Apply migration 031 to live Supabase if not yet applied (`title_slide_settings`)
+- [ ] Cross-lesson slide moves: insert-at-index (currently appends to target lesson)
 - [ ] Phase 3 remaining: inline block editing on canvas, slide CRUD polish
 - [ ] Phase 4: Quiz expansion (standalone quiz grading, scores, retry logic)
 - [ ] Phase 6: Advanced blocks (hotspot, sequence, drag-and-drop)
@@ -703,6 +839,8 @@ Client Components:
 - `src/app/admin/courses/[id]/page.tsx` same issue
 - SCORM-imported images: inline relative paths (`fit_content_assets/...`) are stripped by the rich text sanitizer; the actual images exist as separate `image_gallery` blocks with working EdApp CDN URLs. A future data migration could upload them to Supabase Storage.
 - Categories are global (no `institution_id` column) — shared across institutions by design
+- Cross-lesson slide DnD appends to target lesson rather than inserting at drop index
+- Use `getTemplateById()` for specialized templates — `getTemplateByType('content')` returns the generic Content template (by design: prefers `id === type`)
 
 ---
 

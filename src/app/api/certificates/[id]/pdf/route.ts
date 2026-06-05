@@ -41,7 +41,7 @@ export async function GET(
 
   const certData: CertificateData = {
     student_name: cert.user?.full_name ?? cert.user?.email ?? 'Student',
-    course_title: cert.course?.title,
+    course_title: cert.course?.title ?? cert.program?.title,
     completion_date: new Date(cert.issued_at).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',

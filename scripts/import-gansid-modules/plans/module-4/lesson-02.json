@@ -1,0 +1,48 @@
+{
+  "lessonId": "7e4da056-80f4-4d41-a1af-0edf66e3399d",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Learning Objectives",
+  "lessonDescription": "Following completion of this module, patient organizations will be able to:",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Develop appropriate Leadership Skills</p>", "animation": "left" },
+              { "html": "<p>Adapt Leadership Styles</p>", "animation": "left" },
+              { "html": "<p>Know the Do's of Effective Leadership</p>", "animation": "left" },
+              { "html": "<p>Know the Don'ts of Effective Leadership</p>", "animation": "left" },
+              { "html": "<p>Promote Ethical Leadership</p>", "animation": "left" },
+              { "html": "<p>Enhance Stakeholder Engagement</p>", "animation": "left" },
+              { "html": "<p>Lead for Strategic Planning and Management</p>", "animation": "left" },
+              { "html": "<p>Lead for Resource Mobilization and Financial Management</p>", "animation": "left" },
+              { "html": "<p>Lead for Advocacy and Social Change</p>", "animation": "left" },
+              { "html": "<p>Understand Leadership Development and Succession Planning</p>", "animation": "left" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -8,16 +8,19 @@ import { BlockErrorBoundary } from '@/components/blocks/block-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import type { BlockViewerContext } from '@/lib/content/block-registry';
+import { BlockSurface } from '@/components/shared/block-surface';
+import { blockSurfaceFillCell, blockSurfaceFlush } from '@/lib/content/gridConstants';
 
 interface LessonBlockRendererProps {
   block: LessonBlock;
   lessonTitle: string;
   context?: BlockViewerContext;
   onComplete?: () => void;
+  onBlockComplete?: (blockId: string) => void;
   onQuizCorrect?: (blockId: string) => void;
 }
 
-export function LessonBlockRenderer({ block, lessonTitle, context, onComplete, onQuizCorrect }: LessonBlockRendererProps) {
+export function LessonBlockRenderer({ block, lessonTitle, context, onComplete, onBlockComplete, onQuizCorrect }: LessonBlockRendererProps) {
   if (!block.is_visible) return null;
 
   const definition = getBlockType(block.block_type);
@@ -34,21 +37,54 @@ export function LessonBlockRenderer({ block, lessonTitle, context, onComplete, o
 
   const handleComplete = block.block_type === 'quiz_inline' && onQuizCorrect
     ? () => onQuizCorrect(block.id)
-    : onComplete;
+    : onBlockComplete
+      ? () => onBlockComplete(block.id)
+      : onComplete;
+
+  const viewer = (
+    <Viewer
+      data={block.data}
+      block={{
+        id: block.id,
+        title: block.title ?? lessonTitle,
+        is_visible: block.is_visible,
+      }}
+      context={context}
+      onComplete={handleComplete}
+    />
+  );
+
+  // Resolve a minimum surface height (rem). Only fill-cell interactive blocks honour
+  // it — auto-height text blocks always hug their content. An explicit author height
+  // (`block_min_h`) wins; otherwise a lone fill-cell block grows to fill more of the
+  // slide instead of sitting tiny. The editor's auto-measure picks this up and grows
+  // the persisted grid height, so the student view stays in sync.
+  const fillCell = blockSurfaceFillCell(block.block_type);
+  const explicitMinH = typeof (block.data as Record<string, unknown>)?.block_min_h === 'number'
+    ? ((block.data as Record<string, unknown>).block_min_h as number)
+    : undefined;
+  // A lone fill-cell block grows to a comfortable minimum instead of sitting tiny
+  // (the floor; in the student view the grid also stretches it to fill the slide).
+  // Video is content-sized (aspect-video), not fill-cell, so it's untouched here.
+  const minHeightRem = fillCell
+    ? (explicitMinH ?? (context?.soleBlock ? 24 : undefined))
+    : undefined;
 
   return (
     <BlockErrorBoundary blockType={block.block_type}>
       <Suspense fallback={<Skeleton className="h-32 w-full rounded-lg" />}>
-        <Viewer
-          data={block.data}
-          block={{
-            id: block.id,
-            title: block.title ?? lessonTitle,
-            is_visible: block.is_visible,
-          }}
-          context={context}
-          onComplete={handleComplete}
-        />
+        {context?.blockStyle !== undefined ? (
+          <BlockSurface
+            blockStyle={context.blockStyle}
+            flush={blockSurfaceFlush(block.block_type)}
+            fillCell={fillCell}
+            minHeightRem={minHeightRem}
+          >
+            {viewer}
+          </BlockSurface>
+        ) : (
+          viewer
+        )}
       </Suspense>
     </BlockErrorBoundary>
   );

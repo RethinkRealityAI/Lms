@@ -1,14 +1,33 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, type CSSProperties } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, RotateCcw, Shuffle } from 'lucide-react';
+import { CheckCircle, XCircle, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
+import {
+  BLOCK_CONTENT_SHELL,
+  SURFACE_ACTIONS,
+  SURFACE_HEADING,
+  surfaceFeedbackClass,
+  surfaceInsetClass,
+  surfaceLabelClass,
+  surfaceMutedClass,
+  surfaceOptionClass,
+  surfacePoolClass,
+  surfaceChipClass,
+  surfacePrimaryButtonClass,
+  surfaceOutlineButtonClass,
+} from '@/lib/content/block-surface-tokens';
+import { formatQuizText } from '@/lib/content/format-quiz-text';
 
-export default function QuizInlineViewer({ data, onComplete }: BlockViewerProps<QuizInlineData>) {
+export default function QuizInlineViewer({ data, context, onComplete }: BlockViewerProps<QuizInlineData>) {
   const [submitted, setSubmitted] = useState(false);
+
+  if (data.question_type === 'swipe') {
+    return <SwipeQuizViewer data={data} onCorrect={() => onComplete?.()} />;
+  }
 
   if (data.question_type === 'multiple_choice' || data.question_type === 'true_false') {
     return (
@@ -69,12 +88,12 @@ function MultipleChoiceViewer({
   };
 
   return (
-    <div className="rounded-xl border bg-card px-4 py-4 sm:px-7 sm:py-6 space-y-3 sm:space-y-5 flex flex-col">
+    <div className={BLOCK_CONTENT_SHELL}>
       {data.question && (
-        <p className="font-bold text-sm sm:text-lg leading-snug text-slate-900">{data.question}</p>
+        <p className={SURFACE_HEADING}>{formatQuizText(data.question)}</p>
       )}
 
-      <div className="space-y-2 sm:space-y-2.5">
+      <div className="flex flex-col gap-2.5 sm:gap-3">
         {(data.options ?? []).map((option, i) => {
           const isSelected = selected === option;
           const isCorrectOption = option === data.correct_answer;
@@ -87,14 +106,13 @@ function MultipleChoiceViewer({
               type="button"
               disabled={submitted}
               onClick={() => !submitted && setSelected(option)}
-              className={cn(
-                'w-full text-left px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-lg border text-sm sm:text-base transition-all',
-                !submitted && !isSelected && 'hover:bg-slate-50 border-border',
-                !submitted && isSelected && 'border-[#1E3A5F] bg-[#1E3A5F]/10 font-medium text-[#1E3A5F]',
-                showCorrect && 'border-green-500 bg-green-100 text-green-900 font-medium',
-                showWrong && 'border-red-500 bg-red-100 text-red-900 font-medium',
-                submitted && !isSelected && 'opacity-40',
-              )}
+              className={surfaceOptionClass({
+                submitted,
+                isSelected: !submitted && isSelected,
+                isCorrect: showCorrect,
+                isWrong: showWrong,
+                dimmed: submitted && !isSelected,
+              })}
             >
               <span className="flex items-center justify-between gap-2">
                 <span>{String.fromCharCode(65 + i)}. {option}</span>
@@ -107,14 +125,11 @@ function MultipleChoiceViewer({
       </div>
 
       {!submitted && data.hint && (
-        <p className="text-sm text-slate-500 italic px-1">{data.hint}</p>
+        <p className={cn('text-sm italic', surfaceMutedClass())}>{data.hint}</p>
       )}
 
       {submitted && data.show_feedback && (
-        <div className={cn(
-          'flex items-start gap-2 text-sm sm:text-base font-medium rounded-lg px-3 py-2.5 sm:px-5 sm:py-3.5',
-          isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        )}>
+        <div className={surfaceFeedbackClass(isCorrect)}>
           {isCorrect ? (
             <><CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 shrink-0" /> {data.feedback_correct || "That's correct!"}</>
           ) : (
@@ -124,24 +139,371 @@ function MultipleChoiceViewer({
       )}
 
       {submitted && data.explanation && (
-        <div className="text-sm text-slate-600 bg-slate-50 rounded-lg px-3 py-2.5 sm:px-5 sm:py-3.5 border border-slate-100">
+        <div className={surfaceInsetClass()}>
           {data.explanation}
         </div>
       )}
 
+      <div className={SURFACE_ACTIONS}>
       {!submitted ? (
         <Button
           onClick={() => selected !== null && onSubmit()}
           disabled={selected === null}
-          className="w-full sm:w-auto bg-[#1E3A5F] hover:bg-[#0F172A] text-white"
+          className={surfacePrimaryButtonClass()}
         >
           Check Answer
         </Button>
       ) : !isCorrect ? (
-        <Button variant="outline" onClick={handleRetry} className="w-full sm:w-auto border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10">
+        <Button variant="outline" onClick={handleRetry} className={surfaceOutlineButtonClass()}>
           Try Again
         </Button>
       ) : null}
+      </div>
+    </div>
+  );
+}
+
+// ─── Swipe Deck (Tinder-style stack of question cards) ────────────────────────
+
+type SwipeCard = { question: string; correct: 'left' | 'right' };
+
+/** Convert a #rrggbb hex to an rgba() string. Returns the input untouched if not a 6-digit hex. */
+function hexA(hex: string, alpha: number): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+}
+
+function SwipeQuizViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?: () => void }) {
+  const leftLabel = ((data.options?.[0] ?? '').trim()) || 'Left';
+  const rightLabel = ((data.options?.[1] ?? '').trim()) || 'Right';
+
+  // Theme props (all optional — fall back to glassmorphic defaults / brand navy).
+  const accent = (data.swipe_accent_color || '').trim() || '#1E3A5F';
+  const cardColor = (data.swipe_card_color || '').trim();
+  const cardText = (data.swipe_card_text_color || '').trim();
+  const showFeedback = data.show_feedback !== false;
+
+  // Deck of cards. New blocks store `swipe_cards`; a legacy single-question swipe
+  // (no swipe_cards) is treated as a one-card deck.
+  const cards = useMemo<SwipeCard[]>(() => {
+    const cs = (data.swipe_cards ?? []).filter((c) => (c.question ?? '').trim().length > 0);
+    if (cs.length > 0) return cs;
+    if (data.swipe_cards == null && data.question) {
+      const correct: 'left' | 'right' =
+        data.correct_answer && data.options?.[1] === data.correct_answer ? 'right' : 'left';
+      return [{ question: data.question, correct }];
+    }
+    return [];
+  }, [data.swipe_cards, data.question, data.correct_answer, data.options]);
+
+  const total = cards.length;
+  const deckPrompt = (data.swipe_cards && data.swipe_cards.length > 0) ? (data.question ?? '').trim() : '';
+
+  // phase: 'card' = interactive card on top · 'feedback' = result panel awaiting Next
+  const [index, setIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [dragX, setDragX] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [phase, setPhase] = useState<'card' | 'feedback'>('card');
+  const [flyOff, setFlyOff] = useState(false);
+  const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
+  const [finished, setFinished] = useState(false);
+
+  const startXRef = useRef(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const completeFiredRef = useRef(false);
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  useEffect(() => {
+    if (finished && total > 0 && score === total && !completeFiredRef.current) {
+      completeFiredRef.current = true;
+      onCorrect?.();
+    }
+  }, [finished, score, total, onCorrect]);
+
+  const THRESHOLD = 80;
+  const current = cards[index];
+
+  // Swipe committed → fly the card off, then reveal the feedback panel.
+  function commit(dir: 'left' | 'right') {
+    if (phase !== 'card' || flyOff || finished || !current) return;
+    const correct = current.correct === dir;
+    setLastCorrect(correct);
+    if (correct) setScore((s) => s + 1);
+    setFlyOff(true);
+    setDragging(false);
+    setDragX(dir === 'left' ? -700 : 700);
+    timerRef.current = setTimeout(() => setPhase('feedback'), 300);
+  }
+
+  // Advance from the feedback panel to the next card (or the summary).
+  function next() {
+    const ni = index + 1;
+    setPhase('card');
+    setFlyOff(false);
+    setDragX(0);
+    setLastCorrect(null);
+    if (ni >= total) {
+      setFinished(true);
+    } else {
+      setIndex(ni);
+    }
+  }
+
+  function handlePointerDown(e: React.PointerEvent) {
+    if (phase !== 'card' || flyOff || finished || !current) return;
+    e.stopPropagation();
+    setDragging(true);
+    startXRef.current = e.clientX - dragX;
+    try { cardRef.current?.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+  }
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!dragging || flyOff) return;
+    setDragX(e.clientX - startXRef.current);
+  }
+  function handlePointerUp(e: React.PointerEvent) {
+    if (!dragging || flyOff) return;
+    setDragging(false);
+    try { cardRef.current?.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
+    if (dragX <= -THRESHOLD) commit('left');
+    else if (dragX >= THRESHOLD) commit('right');
+    else setDragX(0);
+  }
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (phase !== 'card' || flyOff || finished) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); commit('left'); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); commit('right'); }
+  }
+
+  function restart() {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    completeFiredRef.current = false;
+    setIndex(0); setScore(0); setDragX(0); setDragging(false);
+    setPhase('card'); setFlyOff(false); setLastCorrect(null); setFinished(false);
+  }
+
+  if (total === 0) {
+    return (
+      <div className={BLOCK_CONTENT_SHELL}>
+        <p className={cn('text-sm', surfaceMutedClass())}>No swipe questions yet.</p>
+      </div>
+    );
+  }
+
+  const rotate = Math.max(-14, Math.min(14, dragX * 0.06));
+  const leftActive = dragX <= -THRESHOLD * 0.5;
+  const rightActive = dragX >= THRESHOLD * 0.5;
+  const leftHint = Math.min(1, Math.max(0, -dragX / THRESHOLD));
+  const rightHint = Math.min(1, Math.max(0, dragX / THRESHOLD));
+  const pct = Math.round((score / total) * 100);
+
+  // Card surface — solid colour if configured, otherwise frosted glass.
+  const cardStyle: CSSProperties = cardColor
+    ? { backgroundColor: cardColor, color: cardText || undefined, borderColor: hexA(cardText || '#0f172a', 0.12) }
+    : { backgroundColor: 'rgba(255,255,255,0.82)', color: cardText || '#1e293b', borderColor: 'rgba(255,255,255,0.7)' };
+  const feedbackMsg = lastCorrect
+    ? (data.feedback_correct || '').trim()
+    : (data.feedback_incorrect || '').trim();
+
+  // Shrink the question font as the text grows so long statements stay inside the
+  // fixed-height card instead of spilling out the top/bottom.
+  const qLen = (current?.question ?? '').length;
+  const cardFontClass =
+    qLen > 260 ? 'text-[11px] leading-snug'
+    : qLen > 180 ? 'text-xs leading-snug'
+    : qLen > 110 ? 'text-sm leading-snug'
+    : qLen > 60 ? 'text-[15px] sm:text-base leading-snug'
+    : 'text-base sm:text-lg leading-snug';
+
+  return (
+    <div className={BLOCK_CONTENT_SHELL}>
+      {/* Header: progress + score */}
+      <div className="flex items-center justify-between gap-2">
+        <span className={cn('text-xs font-semibold uppercase tracking-wide', surfaceMutedClass())}>
+          {finished ? 'Complete' : `Card ${Math.min(index + 1, total)} of ${total}`}
+        </span>
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold tabular-nums text-white shadow-sm"
+          style={{ backgroundColor: accent }}
+        >
+          Score {score}/{total}
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1.5 rounded-full bg-[color:var(--surface-inset-bg)] overflow-hidden">
+        <div
+          className="h-full transition-all duration-300"
+          style={{ width: `${(Math.min(index + (phase === 'feedback' ? 1 : 0), total) / total) * 100}%`, backgroundColor: accent }}
+        />
+      </div>
+
+      {/* Deck prompt */}
+      {deckPrompt && !finished && (
+        <p className={SURFACE_HEADING}>{formatQuizText(deckPrompt)}</p>
+      )}
+
+      {finished ? (
+        /* Summary */
+        <div className="relative h-[230px] flex items-center justify-center">
+          <div
+            className="w-full max-w-xs rounded-2xl border-2 backdrop-blur-md shadow-xl flex flex-col items-center justify-center gap-2 p-5 text-center animate-in fade-in zoom-in-95 duration-300"
+            style={{ borderColor: hexA(accent, 0.25), backgroundColor: hexA(accent, 0.06) }}
+          >
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center animate-in zoom-in-50 duration-500"
+              style={{ backgroundColor: pct === 100 ? hexA(accent, 0.14) : pct >= 50 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.12)' }}
+            >
+              {pct === 100
+                ? <CheckCircle className="w-8 h-8" style={{ color: accent }} />
+                : <span className="text-lg font-black text-[color:var(--surface-text)]">{pct}%</span>}
+            </div>
+            <p className="text-base font-bold text-[color:var(--surface-text)]">You scored {score} / {total}</p>
+            <p className="text-xs text-[color:var(--surface-text-muted)]">
+              {pct === 100 ? 'Perfect — every card correct!' : pct >= 50 ? 'Nice work!' : 'Keep practicing!'}
+            </p>
+          </div>
+        </div>
+      ) : phase === 'feedback' ? (
+        /* Per-card feedback panel */
+        <div className="relative min-h-[230px] flex items-center justify-center">
+          <div
+            className={cn(
+              'w-full rounded-2xl border-2 backdrop-blur-md shadow-xl flex flex-col items-center justify-center gap-2.5 p-6 text-center animate-in fade-in zoom-in-95 duration-300',
+              lastCorrect ? 'border-emerald-300/70' : 'border-rose-300/70',
+            )}
+            style={{ backgroundColor: lastCorrect ? 'rgba(16,185,129,0.10)' : 'rgba(244,63,94,0.10)' }}
+          >
+            <div
+              className={cn(
+                'w-14 h-14 rounded-full flex items-center justify-center animate-in zoom-in-50 duration-500',
+                lastCorrect ? 'bg-emerald-100' : 'bg-rose-100',
+              )}
+            >
+              {lastCorrect
+                ? <CheckCircle className="w-8 h-8 text-emerald-500" />
+                : <XCircle className="w-8 h-8 text-rose-500" />}
+            </div>
+            <p className={cn('text-base font-bold', lastCorrect ? 'text-emerald-700' : 'text-rose-700')}>
+              {lastCorrect ? 'Correct!' : 'Not quite'}
+            </p>
+            {showFeedback && feedbackMsg && (
+              <p className="text-sm text-[color:var(--surface-text)] leading-snug max-w-prose">{feedbackMsg}</p>
+            )}
+            {data.explanation && (
+              <p className="text-xs italic text-[color:var(--surface-text-muted)] leading-snug max-w-prose">
+                {data.explanation}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={next}
+              autoFocus
+              className="mt-1.5 inline-flex items-center gap-1.5 px-5 py-2 rounded-xl text-white text-sm font-semibold shadow-md transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+              style={{ backgroundColor: accent }}
+            >
+              {index + 1 >= total ? 'See results' : 'Next card'}
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="relative h-[230px] select-none touch-none">
+          {/* Left edge */}
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={() => commit('left')}
+            className={cn(
+              'absolute left-0 top-1/2 -translate-y-1/2 z-0 flex flex-col items-center gap-1 w-14 sm:w-20 py-3 rounded-r-xl border-2 backdrop-blur-sm transition-all duration-150 cursor-pointer',
+              leftActive ? 'border-rose-400 bg-rose-50 scale-105' : 'border-[color:var(--surface-inset-border)] bg-[color:var(--surface-inset-bg)]',
+            )}
+          >
+            <ChevronLeft className={cn('w-5 h-5', leftActive ? 'text-rose-500' : 'text-[color:var(--surface-text-muted)]')} />
+            <span className="text-[11px] font-semibold leading-tight px-1 break-words text-center text-[color:var(--surface-text)]">{leftLabel}</span>
+          </button>
+
+          {/* Right edge */}
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={() => commit('right')}
+            className={cn(
+              'absolute right-0 top-1/2 -translate-y-1/2 z-0 flex flex-col items-center gap-1 w-14 sm:w-20 py-3 rounded-l-xl border-2 backdrop-blur-sm transition-all duration-150 cursor-pointer',
+              rightActive ? 'border-emerald-400 bg-emerald-50 scale-105' : 'border-[color:var(--surface-inset-border)] bg-[color:var(--surface-inset-bg)]',
+            )}
+          >
+            <ChevronRight className={cn('w-5 h-5', rightActive ? 'text-emerald-500' : 'text-[color:var(--surface-text-muted)]')} />
+            <span className="text-[11px] font-semibold leading-tight px-1 break-words text-center text-[color:var(--surface-text)]">{rightLabel}</span>
+          </button>
+
+          {/* Background cards (the rest of the deck) for depth */}
+          {[2, 1].map((depth) => {
+            const ci = index + depth;
+            if (ci >= total) return null;
+            return (
+              <div
+                key={`bg-${ci}`}
+                aria-hidden="true"
+                className="absolute inset-x-[4.5rem] sm:inset-x-24 top-2 bottom-2 rounded-2xl border backdrop-blur-md shadow-md"
+                style={{ ...cardStyle, transform: `scale(${1 - depth * 0.04}) translateY(${depth * 8}px)`, zIndex: 5 - depth, opacity: 1 - depth * 0.18 }}
+              />
+            );
+          })}
+
+          {/* Current draggable card */}
+          <div
+            key={index}
+            ref={cardRef}
+            role="group"
+            aria-label="Swipe to answer the question"
+            tabIndex={0}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onKeyDown={handleKeyDown}
+            style={{
+              ...cardStyle,
+              transform: `translateX(${dragX}px) rotate(${rotate}deg)`,
+              transition: dragging ? 'none' : 'transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease',
+              opacity: flyOff ? 0 : 1,
+              cursor: dragging ? 'grabbing' : 'grab',
+              touchAction: 'none',
+              borderColor: leftActive ? '#fb7185' : rightActive ? '#34d399' : cardStyle.borderColor,
+            }}
+            className="absolute inset-x-[4.5rem] sm:inset-x-24 top-2 bottom-2 z-10 rounded-2xl border-2 backdrop-blur-xl shadow-xl flex items-center justify-center p-4 text-center overflow-hidden focus:outline-none focus-visible:ring-2"
+          >
+            <div className="max-h-full w-full overflow-y-auto overflow-x-hidden flex items-center justify-center pointer-events-none">
+              <p className={cn('font-semibold break-words hyphens-auto', cardFontClass)}>
+                {formatQuizText(current.question)}
+              </p>
+            </div>
+            <span style={{ opacity: leftHint }} className="absolute top-3 right-3 px-2 py-1 rounded-lg bg-rose-500 text-white text-[11px] font-bold rotate-12 shadow pointer-events-none">{leftLabel}</span>
+            <span style={{ opacity: rightHint }} className="absolute top-3 left-3 px-2 py-1 rounded-lg bg-emerald-500 text-white text-[11px] font-bold -rotate-12 shadow pointer-events-none">{rightLabel}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Hint */}
+      {!finished && phase === 'card' && (
+        <p className={cn('text-center text-xs', surfaceMutedClass())}>
+          Drag the card — or use the ← → arrow keys{data.hint ? ` · ${data.hint}` : ''}
+        </p>
+      )}
+
+      {/* Restart */}
+      {finished && (
+        <div className={SURFACE_ACTIONS}>
+          <Button variant="outline" onClick={restart} className={surfaceOutlineButtonClass()}>
+            <RotateCcw className="w-4 h-4 mr-1.5" /> Restart
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -180,13 +542,13 @@ function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
   }
 
   return (
-    <div className="rounded-xl border bg-card px-4 py-4 sm:px-7 sm:py-6 space-y-3 sm:space-y-5 flex flex-col">
+    <div className={BLOCK_CONTENT_SHELL}>
       {data.question && (
-        <p className="font-bold text-sm sm:text-lg leading-snug text-slate-900">{data.question}</p>
+        <p className={SURFACE_HEADING}>{formatQuizText(data.question)}</p>
       )}
-      <p className="text-xs text-slate-400 font-medium">{data.instructions || 'Select all that apply'}</p>
+      <p className={cn('text-xs font-medium', surfaceMutedClass())}>{data.instructions || 'Select all that apply'}</p>
 
-      <div className="space-y-2 sm:space-y-2.5">
+      <div className="flex flex-col gap-2.5 sm:gap-3">
         {(data.options ?? []).map((opt, i) => {
           const isChecked = checked.has(opt);
           const isCorrectOpt = correctSet.has(opt);
@@ -201,13 +563,14 @@ function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
               disabled={submitted}
               onClick={() => toggle(opt)}
               className={cn(
-                'w-full text-left px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-lg border text-sm sm:text-base transition-all flex items-center gap-3',
-                !submitted && !isChecked && 'hover:bg-slate-50 border-border',
-                !submitted && isChecked && 'border-[#1E3A5F] bg-[#1E3A5F]/10 font-medium text-[#1E3A5F]',
-                showGreen && 'border-green-500 bg-green-50 text-green-900',
-                showRed && 'border-red-400 bg-red-50 text-red-900',
-                showMissed && 'border-amber-400 bg-amber-50 text-amber-900',
-                submitted && !isChecked && !showMissed && 'opacity-40',
+                surfaceOptionClass({
+                  submitted,
+                  isSelected: !submitted && isChecked,
+                  isCorrect: showGreen,
+                  isWrong: showRed || showMissed,
+                  dimmed: submitted && !isChecked && !showMissed,
+                }),
+                'flex items-center gap-3',
               )}
             >
               <span className={cn(
@@ -228,10 +591,7 @@ function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
       </div>
 
       {submitted && (
-        <div className={cn(
-          'flex items-start gap-2 text-sm font-medium rounded-lg px-3 py-2.5 sm:px-5 sm:py-3',
-          isFullyCorrect ? 'bg-green-100 text-green-800' : 'bg-amber-50 text-amber-800',
-        )}>
+        <div className={surfaceFeedbackClass(isFullyCorrect)}>
           {isFullyCorrect
             ? <><CheckCircle className="h-4 w-4 mt-0.5 shrink-0" /> {data.feedback_correct || "That's correct!"}</>
             : <><XCircle className="h-4 w-4 mt-0.5 shrink-0" /><span>{data.feedback_incorrect || 'Not quite — check the highlighted options and try again.'}</span></>
@@ -240,25 +600,27 @@ function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
       )}
 
       {submitted && data.explanation && (
-        <div className="text-sm text-slate-600 bg-slate-50 rounded-lg px-3 py-2.5 sm:px-5 sm:py-3.5 border border-slate-100">
+        <div className={surfaceInsetClass()}>
           {data.explanation}
         </div>
       )}
 
+      <div className={SURFACE_ACTIONS}>
       {!submitted ? (
         <Button
           onClick={() => setSubmitted(true)}
           disabled={checked.size === 0}
-          className="w-full sm:w-auto bg-[#1E3A5F] hover:bg-[#0F172A] text-white"
+          className={surfacePrimaryButtonClass()}
         >
           Check Answer
         </Button>
       ) : !isFullyCorrect ? (
         <Button variant="outline" onClick={() => { setChecked(new Set()); setSubmitted(false); }}
-          className="w-full sm:w-auto border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F]/10">
+          className={surfaceOutlineButtonClass()}>
           Try Again
         </Button>
       ) : null}
+      </div>
     </div>
   );
 }
@@ -283,10 +645,16 @@ function CategorizeViewer({
 }) {
   const categories = data.categories ?? [];
 
-  // Build the shuffled pool once on mount
+  // Build the shuffled pool once on mount.
+  // Union of the authoring pool (`options`) AND every category item, so EVERY answer
+  // option appears to be sorted — including ones the author hasn't assigned yet — while
+  // legacy blocks (which only stored assignments in categories, with empty `options`)
+  // still surface all their items. Using the union (not options-only) also protects
+  // against a partial `options` list that would otherwise hide some category items.
   const initialPool = useMemo(() => {
-    const allItems = categories.flatMap((c) => c.items);
-    return shuffleArray(allItems);
+    const fromOptions = (data.options ?? []).filter(Boolean);
+    const fromCategories = categories.flatMap((c) => c.items.filter(Boolean));
+    return shuffleArray([...new Set([...fromOptions, ...fromCategories])]);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // pool: items not yet placed; placements: item → category name
@@ -384,24 +752,21 @@ function CategorizeViewer({
   }
 
   return (
-    <div className="rounded-xl border bg-card px-4 py-4 sm:px-6 sm:py-5 space-y-4">
-      {/* Question */}
+    <div className={BLOCK_CONTENT_SHELL}>
       {data.question && (
-        <p className="font-bold text-sm sm:text-base leading-snug text-slate-900">{data.question}</p>
+        <p className={SURFACE_HEADING}>{formatQuizText(data.question)}</p>
       )}
 
-      {/* Instructions */}
-      <p className="text-xs sm:text-sm text-slate-500">
+      <p className={cn('text-xs sm:text-sm', surfaceMutedClass())}>
         {data.instructions || 'Click an item to select it, then click a category to place it there.'}
       </p>
 
-      {/* Item pool */}
       {pool.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+          <p className={surfaceLabelClass()}>
             Items to sort ({pool.length} remaining)
           </p>
-          <div className="flex flex-wrap gap-2 p-3 rounded-lg bg-slate-50 border border-slate-200 min-h-[48px]">
+          <div className={cn('flex flex-wrap gap-2', surfacePoolClass())}>
             {pool.map((item) => (
               <button
                 key={item}
@@ -411,7 +776,7 @@ function CategorizeViewer({
                   'px-3 py-1.5 rounded-lg text-sm font-medium border transition-all duration-150',
                   selected === item
                     ? 'bg-[#1E3A5F] text-white border-[#1E3A5F] scale-105 shadow-sm'
-                    : 'bg-white text-slate-700 border-slate-200 hover:border-[#1E3A5F] hover:text-[#1E3A5F]',
+                    : surfaceChipClass(),
                 )}
               >
                 {item}
@@ -421,7 +786,7 @@ function CategorizeViewer({
         </div>
       )}
 
-      {pool.length === 0 && !submitted && (
+      {pool.length === 0 && !submitted && initialPool.length > 0 && (
         <div className="flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
           <CheckCircle className="w-3.5 h-3.5 shrink-0" />
           All items placed — check your answer or rearrange as needed
@@ -430,7 +795,7 @@ function CategorizeViewer({
 
       {/* Category buckets */}
       <div className="grid gap-3 sm:grid-cols-2">
-        {categories.map((cat) => {
+        {categories.map((cat, index) => {
           const placedItems = Object.entries(placements)
             .filter(([, cn]) => cn === cat.name)
             .map(([item]) => item);
@@ -440,19 +805,22 @@ function CategorizeViewer({
 
           return (
             <div
-              key={cat.name}
+              // Index-based key: new/unnamed categories share an empty `cat.name`,
+              // which would collide as a React key. cat.name is still the source of
+              // truth for placements/scoring — this only affects DOM reconciliation.
+              key={`cat-${index}-${cat.name}`}
               onClick={() => handleDropIntoCategory(cat.name)}
               className={cn(
                 'rounded-xl border-2 p-3 transition-all duration-150',
                 submitted && catCorrect === true && 'border-green-400 bg-green-50',
                 submitted && catCorrect === false && 'border-red-400 bg-red-50',
                 !submitted && (isActive || isActiveMove) && 'border-[#1E3A5F] bg-[#1E3A5F]/5 cursor-pointer',
-                !submitted && !isActive && !isActiveMove && 'border-slate-200 bg-slate-50/50',
+                !submitted && !isActive && !isActiveMove && 'border-[color:var(--surface-inset-border)] bg-[color:var(--surface-inset-bg)]',
               )}
             >
               {/* Category header */}
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-slate-700">{cat.name}</h4>
+                <h4 className="text-sm font-semibold text-[color:var(--surface-text)]">{cat.name}</h4>
                 {submitted && catCorrect !== null && (
                   catCorrect
                     ? <CheckCircle className="w-4 h-4 text-green-600" />
@@ -511,15 +879,11 @@ function CategorizeViewer({
 
       {/* Hint */}
       {!submitted && data.hint && (
-        <p className="text-sm text-slate-500 italic">{data.hint}</p>
+        <p className={cn('text-sm italic', surfaceMutedClass())}>{data.hint}</p>
       )}
 
-      {/* Feedback banner */}
       {submitted && data.show_feedback && (
-        <div className={cn(
-          'flex items-start gap-2 text-sm font-medium rounded-lg px-4 py-3',
-          isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
-        )}>
+        <div className={surfaceFeedbackClass(isCorrect)}>
           {isCorrect
             ? <><CheckCircle className="h-4 w-4 mt-0.5 shrink-0" />{data.feedback_correct || "That's correct!"}</>
             : <><XCircle className="h-4 w-4 mt-0.5 shrink-0" /><span>{data.feedback_incorrect || 'Not quite — review the correct categories above.'}</span></>
@@ -528,18 +892,17 @@ function CategorizeViewer({
       )}
 
       {submitted && data.explanation && (
-        <div className="text-sm text-slate-600 bg-slate-50 rounded-lg px-4 py-3 border border-slate-100">
+        <div className={surfaceInsetClass()}>
           {data.explanation}
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex gap-2">
+      <div className={cn(SURFACE_ACTIONS, 'flex-row flex-wrap gap-2')}>
         {!submitted && (
           <Button
             onClick={handleCheckAnswer}
             disabled={!allPlaced}
-            className="bg-[#1E3A5F] hover:bg-[#0F172A] text-white"
+            className={surfacePrimaryButtonClass()}
           >
             Check Answer
           </Button>
@@ -548,20 +911,9 @@ function CategorizeViewer({
           <Button
             variant="outline"
             onClick={handleReset}
-            className="gap-1.5 border-slate-200 text-slate-600 hover:border-slate-300"
+            className={surfaceOutlineButtonClass()}
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Reset
-          </Button>
-        )}
-        {!submitted && pool.length === initialPool.length && (
-          <Button
-            variant="ghost"
-            onClick={() => setPool(shuffleArray(pool))}
-            className="gap-1.5 text-slate-500 hover:text-slate-700"
-            title="Shuffle items"
-          >
-            <Shuffle className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset
           </Button>
         )}
       </div>

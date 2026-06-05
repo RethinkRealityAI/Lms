@@ -92,7 +92,7 @@ describe('SurveyViewer', () => {
   it('shows empty state when there are no questions', () => {
     render(
       <SurveyViewer
-        data={{ title: 'Empty', questions: [] }}
+        data={{ title: 'Empty', submit_label: 'Submit Survey', questions: [] }}
         block={DEFAULT_BLOCK}
         context={{ previewMode: true }}
       />,

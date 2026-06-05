@@ -4,11 +4,15 @@ import { useDroppable } from '@dnd-kit/core';
 
 interface DropIndicatorProps {
   id: string;
+  lessonId?: string;
   isOver?: boolean;
 }
 
-export function DropIndicator({ id, isOver }: DropIndicatorProps) {
-  const { setNodeRef, isOver: isOverThis } = useDroppable({ id });
+export function DropIndicator({ id, lessonId, isOver }: DropIndicatorProps) {
+  const { setNodeRef, isOver: isOverThis } = useDroppable({
+    id,
+    data: lessonId ? { lessonId, type: 'slide-drop-slot' as const } : undefined,
+  });
   const active = isOver || isOverThis;
 
   return (

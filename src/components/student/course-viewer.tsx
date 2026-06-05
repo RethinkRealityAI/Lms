@@ -9,8 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
-  ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
-  Minimize2, Maximize2, Download, Share2, ExternalLink,
+  ChevronLeft, ChevronRight, Award, BookOpen,
+  Minimize2, Maximize2, Download, Share2, ExternalLink, Menu, X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -24,7 +24,12 @@ import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
 import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
-import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout } from '@/lib/content/gridConstants';
+import { viewedImagesStorageKey } from '@/lib/content/blocks/image-gallery/display-utils';
+import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout, blockSurfaceFillCell } from '@/lib/content/gridConstants';
+import { asCourseTheme } from '@/lib/content/course-theme';
+import { asInstitutionTheme, resolveEffectiveTheme, type InstitutionTheme } from '@/lib/tenant/institution-theme';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
+import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 
 const CanvasSlideViewer = dynamic(
@@ -106,8 +111,8 @@ function Confetti({ count = 24 }: { count?: number }) {
 // ---------------------------------------------------------------------------
 // Slide background — matches editor's getSlideBackground (slide-preview.tsx)
 // ---------------------------------------------------------------------------
-function getSlideBackground(settings?: SlideSettings): React.CSSProperties {
-  const bg = settings?.background;
+function getSlideBackground(settings?: SlideSettings, fallback?: string): React.CSSProperties {
+  const bg = settings?.background ?? fallback;
   if (bg === 'gradient') return { background: 'linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)' };
   if (typeof bg === 'string' && bg.startsWith('#')) return { backgroundColor: bg };
   return { backgroundColor: '#FFFFFF' };
@@ -116,13 +121,59 @@ function getSlideBackground(settings?: SlideSettings): React.CSSProperties {
 // ---------------------------------------------------------------------------
 // Grid Block Renderer — CSS Grid for blocks with grid positions, vertical stack for legacy
 // ---------------------------------------------------------------------------
-function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, context }: {
+/** Tailwind justify-* class for a block's vertical content alignment within its cell */
+function alignToJustify(align: unknown): string {
+  return align === 'center' ? 'justify-center' : align === 'bottom' ? 'justify-end' : 'justify-start';
+}
+
+function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, onBlockComplete, blockStyle, context }: {
   blocks: LessonBlock[];
   lessonTitle?: string;
   onQuizCorrect?: (blockId: string) => void;
+  onBlockComplete?: (blockId: string) => void;
+  blockStyle?: string;
   context?: BlockViewerContext;
 }) {
   if (!blocks.length) return null;
+
+  const mergedContext: BlockViewerContext = {
+    ...context,
+    blockStyle: blockStyle ?? context?.blockStyle,
+    soleBlock: blocks.length === 1,
+  };
+
+  // Sole block on the slide. Two behaviours:
+  //  • Interactive fill-cell blocks (quiz, match, fill-in-the-blank, survey, slider)
+  //    STRETCH to fill the slide so they read big instead of tiny-and-top-stuck.
+  //  • Everything else (video, text, table, list, image…) hugs its content and the
+  //    "Vertical Position" control places it top / middle / bottom of the slide.
+  // The block keeps its chosen width via gridColumn either way.
+  if (blocks.length === 1) {
+    const block = blocks[0];
+    const layout = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
+    const stretch = blockSurfaceFillCell(block.block_type);
+    const align = (block.data as Record<string, unknown>)?.contentAlign;
+    const alignContent = stretch ? 'stretch' : align === 'center' ? 'center' : align === 'bottom' ? 'end' : 'start';
+    return (
+      <div
+        className="w-full grid-viewer flex-1 min-h-0"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`,
+          alignContent,
+          gap: `${GRID_MARGIN[1]}px ${GRID_MARGIN[0]}px`,
+          padding: `${GRID_CONTAINER_PADDING[1]}px ${GRID_CONTAINER_PADDING[0]}px`,
+        }}
+      >
+        <div
+          className={stretch ? 'min-w-0 min-h-0 h-full' : 'min-w-0 min-h-0'}
+          style={{ gridColumn: `${layout.gridX + 1} / ${layout.gridX + layout.gridW + 1}` }}
+        >
+          <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} onBlockComplete={onBlockComplete} context={mergedContext} />
+        </div>
+      </div>
+    );
+  }
 
   // Check if any block has explicit non-default grid positions
   const hasGridLayout = blocks.some(
@@ -132,15 +183,19 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, context }:
   // If no custom grid layout, render simple vertical stack (backward compatible)
   if (!hasGridLayout) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2.5">
         {blocks.map(block => (
-          <LessonBlockRenderer key={block.id} block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} context={context} />
+          <div key={block.id} className="relative overflow-hidden rounded-2xl min-h-0">
+            <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} onBlockComplete={onBlockComplete} context={mergedContext} />
+          </div>
         ))}
       </div>
     );
   }
 
-  // CSS Grid renderer matching editor's react-grid-layout
+  // CSS Grid renderer matching editor's react-grid-layout. The cell fills its
+  // row track (glass frame) and content is vertically aligned within it,
+  // mirroring the editor's contentAlign behavior for WYSIWYG parity.
   return (
     <div
       className="w-full grid-viewer"
@@ -153,6 +208,7 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, context }:
     >
       {blocks.map(block => {
         const layout = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
+        const justify = alignToJustify((block.data as Record<string, unknown>)?.contentAlign);
         return (
           <div
             key={block.id}
@@ -162,11 +218,51 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, context }:
               gridRow: `${layout.gridY + 1} / ${layout.gridY + layout.gridH + 1}`,
             }}
           >
-            <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} context={context} />
+            <div className={`h-full flex flex-col ${justify}`}>
+              <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} onBlockComplete={onBlockComplete} context={mergedContext} />
+            </div>
           </div>
         );
       })}
     </div>
+  );
+}
+
+/** Wraps a nav button so a tooltip appears on hover when navigation is blocked. */
+function NavButtonWithHint({
+  disabled,
+  hint,
+  children,
+  className,
+  onClick,
+  'aria-label': ariaLabel,
+}: {
+  disabled?: boolean;
+  hint?: string | null;
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  'aria-label'?: string;
+}) {
+  if (!disabled || !hint) {
+    return (
+      <button type="button" disabled={disabled} onClick={onClick} aria-label={ariaLabel} className={className}>
+        {children}
+      </button>
+    );
+  }
+  return (
+    <span className="inline-flex relative group focus-within:outline-none">
+      <button type="button" disabled onClick={onClick} aria-label={ariaLabel} className={className}>
+        {children}
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full right-0 mb-2 z-50 w-max max-w-[240px] px-2.5 py-1.5 text-xs leading-snug text-white bg-slate-800 rounded-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity shadow-lg"
+      >
+        {hint}
+      </span>
+    </span>
   );
 }
 
@@ -176,9 +272,17 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, context }:
 interface CourseViewerProps {
   courseId: string;
   previewMode?: boolean;
+  /** When previewing from the editor, open this lesson instead of the first one */
+  initialLessonId?: string | null;
+  /** When previewing from the editor, jump to this slide within the lesson */
+  initialSlideId?: string | null;
+  /** Reports the current lesson + slide as the user navigates (for editor resume) */
+  onLocationChange?: (lessonId: string | null, slideId: string | null) => void;
+  /** Rendered inside a device-frame iframe — fill the full iframe height (no banner) */
+  embedded?: boolean;
 }
 
-export default function CourseViewer({ courseId, previewMode = false }: CourseViewerProps) {
+export default function CourseViewer({ courseId, previewMode = false, initialLessonId = null, initialSlideId = null, onLocationChange, embedded = false }: CourseViewerProps) {
   const [course, setCourse] = useState<Course | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [progress, setProgress] = useState<Record<string, ProgressType>>({});
@@ -192,10 +296,16 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [currentSlide, setCurrentSlide] = useState(0);
   const [subPage, setSubPage] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [lessonMenuOpen, setLessonMenuOpen] = useState(false); // mobile glass lesson modal
+  const [institutionTheme, setInstitutionTheme] = useState<InstitutionTheme>({}); // global theme layer
   const [autoCompleteFired, setAutoCompleteFired] = useState<Record<string, boolean>>({});
   // Confetti — track which lessons have already shown the animation
   const confettiFiredRef = useRef<Record<string, boolean>>({});
   const navDirection = useRef<'forward' | 'backward'>('forward');
+  // Guards the one-time jump to the editor-requested slide on initial load
+  const appliedInitialSlideRef = useRef(false);
+  // Pending cross-lesson navigation (embedded mode) consumed once slides rebuild
+  const pendingNavigateRef = useRef<string | null>(null);
   // Reset sub-page when slide changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => { setSubPage(0); }, [currentSlide, selectedLesson?.id]);
@@ -205,6 +315,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const [showCertModal, setShowCertModal] = useState(false);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
+  // Interactive block completion (e.g. image gallery require-all-clicked) per lesson
+  const [completedInteractiveBlocks, setCompletedInteractiveBlocks] = useState<Record<string, Set<string>>>({});
   // Review modal
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
@@ -289,7 +401,13 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
       if (lessonsData) {
         setLessons(lessonsData);
-        if (lessonsData.length > 0 && !selectedLesson) setSelectedLesson(lessonsData[0]);
+        if (lessonsData.length > 0 && !selectedLesson) {
+          // Open the editor-requested lesson if provided, else the first lesson
+          const initial = initialLessonId
+            ? lessonsData.find(l => l.id === initialLessonId)
+            : null;
+          setSelectedLesson(initial ?? lessonsData[0]);
+        }
 
         const lessonIds = lessonsData.map(l => l.id);
         if (lessonIds.length > 0) {
@@ -531,6 +649,104 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const totalSlides = currentSlides.length;
   const currentSlideData = currentSlides[currentSlide] ?? null;
 
+  // Course-level theme defaults (header colours, default block style + background).
+  const theme = React.useMemo(
+    () => asCourseTheme((course as { theme_settings?: unknown } | null)?.theme_settings),
+    [course],
+  );
+
+  // Institution (global) theme layer — fetched once the course's institution is known.
+  useEffect(() => {
+    const instId = course?.institution_id;
+    if (!instId) return;
+    let cancelled = false;
+    supabase.from('institutions').select('theme').eq('id', instId).maybeSingle()
+      .then(({ data }) => { if (!cancelled) setInstitutionTheme(asInstitutionTheme(data?.theme)); });
+    return () => { cancelled = true; };
+  }, [course?.institution_id, supabase]);
+
+  // Effective theme = course override → institution → branding fallback.
+  const effectiveTheme = React.useMemo(
+    () => resolveEffectiveTheme({ course: theme, institution: institutionTheme, branding: getInstitutionBranding(institutionSlug) }),
+    [theme, institutionTheme, institutionSlug],
+  );
+
+  // Report current location (lesson + DB slide id) so a parent can build an
+  // "Open Editor" link that resumes on the slide the admin was viewing.
+  // Deps are primitives only; the parent's callback must be stable (useCallback)
+  // to avoid a render loop.
+  const currentPage = currentSlides[currentSlide];
+  const currentPageSlideId = currentPage?.kind === 'page' ? (currentPage.slideId || null) : null;
+  useEffect(() => {
+    if (!onLocationChange) return;
+    onLocationChange(selectedLesson?.id ?? null, currentPageSlideId);
+  }, [selectedLesson?.id, currentPageSlideId, onLocationChange]);
+
+  // One-time jump to the editor-requested slide. Must wait until ALL lesson data
+  // has loaded (pageLoading === false) — otherwise the effect fires on the
+  // synthesized fallback slides during the initial render passes of fetchData,
+  // consumes its one-shot guard, and never retries once real slides arrive.
+  useEffect(() => {
+    if (appliedInitialSlideRef.current) return;
+    if (pageLoading) return;
+    if (!selectedLesson) return;
+    if (initialLessonId && selectedLesson.id !== initialLessonId) return;
+
+    if (!initialSlideId) {
+      appliedInitialSlideRef.current = true;
+      return;
+    }
+
+    const idx = currentSlides.findIndex(s => s.kind === 'page' && s.slideId === initialSlideId);
+    if (idx === -1) return;
+
+    appliedInitialSlideRef.current = true;
+    if (idx > 0) {
+      navDirection.current = 'forward';
+      setCurrentSlide(idx);
+    }
+  }, [pageLoading, selectedLesson, currentSlides, initialLessonId, initialSlideId]);
+
+  // Embedded device-frame: the editor center posts `preview-navigate` when the
+  // admin selects a different slide, so the in-frame viewer follows the selection
+  // WITHOUT reloading the iframe. Same-lesson jumps are instant; cross-lesson
+  // selects the lesson then a pending-ref consumes the jump once slides rebuild.
+  useEffect(() => {
+    if (!embedded) return;
+    function onNavigate(e: MessageEvent) {
+      if (e.origin !== window.location.origin) return;
+      if (e.data?.type !== 'preview-navigate') return;
+      const targetSlideId: string | null = e.data.slideId ?? null;
+      if (!targetSlideId) { setCurrentSlide(0); return; } // lesson/title slide
+      let targetLesson = selectedLesson;
+      const inCurrent = targetLesson && (lessonSlidesMap[targetLesson.id] ?? []).some(s => s.id === targetSlideId);
+      if (!inCurrent) {
+        targetLesson = lessons.find(l => (lessonSlidesMap[l.id] ?? []).some(s => s.id === targetSlideId)) ?? targetLesson;
+      }
+      if (targetLesson && targetLesson.id !== selectedLesson?.id) {
+        pendingNavigateRef.current = targetSlideId;
+        setSelectedLesson(targetLesson);
+        setCurrentSlide(0);
+      } else {
+        const idx = currentSlides.findIndex(s => s.kind === 'page' && s.slideId === targetSlideId);
+        if (idx > 0) setCurrentSlide(idx);
+      }
+    }
+    window.addEventListener('message', onNavigate);
+    return () => window.removeEventListener('message', onNavigate);
+  }, [embedded, selectedLesson, lessons, lessonSlidesMap, currentSlides]);
+
+  // Consume a pending cross-lesson navigation once the new lesson's slides exist
+  useEffect(() => {
+    const target = pendingNavigateRef.current;
+    if (!target) return;
+    const idx = currentSlides.findIndex(s => s.kind === 'page' && s.slideId === target);
+    if (idx >= 0) {
+      pendingNavigateRef.current = null;
+      setCurrentSlide(idx > 0 ? idx : 0);
+    }
+  }, [currentSlides]);
+
   // Navigation state — uses tested utility for consistency
   const navState = computeNavState(
     currentSlides.map(s => ({ kind: s.kind, settings: s.kind === 'page' ? s.settings : undefined })),
@@ -556,12 +772,28 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
     });
   }, [selectedLesson]);
 
+  const handleBlockComplete = useCallback((blockId: string) => {
+    if (!selectedLesson) return;
+    setCompletedInteractiveBlocks(prev => {
+      const existing = prev[selectedLesson.id] ?? new Set();
+      if (existing.has(blockId)) return prev;
+      const next = new Set(existing);
+      next.add(blockId);
+      return { ...prev, [selectedLesson.id]: next };
+    });
+  }, [selectedLesson]);
+
+  // Ref so blockContext (declared before goNext) can trigger slide advance from a block.
+  const goNextRef = useRef<() => void>(() => {});
+
   const blockContext = React.useMemo<BlockViewerContext>(() => ({
     courseId,
     lessonId: selectedLesson?.id,
     institutionId: course?.institution_id ?? undefined,
     previewMode,
-  }), [courseId, selectedLesson?.id, course?.institution_id, previewMode]);
+    theme: effectiveTheme,
+    onAutoAdvance: () => goNextRef.current(),
+  }), [courseId, selectedLesson?.id, course?.institution_id, previewMode, effectiveTheme]);
 
   // Only gate on quiz blocks with an interactive question type.
   // Blocks with null/unknown types render a non-interactive placeholder and can never
@@ -578,15 +810,78 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   const allQuizzesComplete = currentLessonQuizBlockIds.length === 0 ||
     currentLessonQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
 
+  const currentSlideRequiredBlockIds = React.useMemo(() => {
+    const slide = currentSlides[currentSlide];
+    if (!slide || slide.kind !== 'page') return [];
+    return slide.blocks
+      .filter(b => b.block_type === 'image_gallery' && b.data?.requireAllClicked === true)
+      .map(b => b.id);
+  }, [currentSlides, currentSlide]);
+
+  const allInteractiveBlocksComplete = currentSlideRequiredBlockIds.length === 0 ||
+    currentSlideRequiredBlockIds.every(id => completedInteractiveBlocks[selectedLesson?.id ?? '']?.has(id));
+
   // Gate: is the next slide the completion slide and quizzes aren't done?
   const nextSlideIsCompletion = currentSlides[currentSlide + 1]?.kind === 'completion';
-  const nextBlocked = nextSlideIsCompletion && !allQuizzesComplete;
+  const nextBlocked = (nextSlideIsCompletion && !allQuizzesComplete) || !allInteractiveBlocksComplete;
+
+  const nextBlockedHint = React.useMemo(() => {
+    if (!nextBlocked) return null;
+    if (!allInteractiveBlocksComplete && selectedLesson) {
+      const remaining = currentSlideRequiredBlockIds.filter(
+        id => !completedInteractiveBlocks[selectedLesson.id]?.has(id),
+      ).length;
+      if (remaining > 0) {
+        return `Open every required image on this slide (${remaining} block${remaining === 1 ? '' : 's'} remaining).`;
+      }
+      return 'Open every required image on this slide before continuing.';
+    }
+    if (nextSlideIsCompletion && !allQuizzesComplete) {
+      return 'Answer all quiz questions correctly before completing this lesson.';
+    }
+    return null;
+  }, [
+    nextBlocked,
+    allInteractiveBlocksComplete,
+    nextSlideIsCompletion,
+    allQuizzesComplete,
+    selectedLesson,
+    currentSlideRequiredBlockIds,
+    completedInteractiveBlocks,
+  ]);
+
+  // Restore interactive completion when a block remounts with persisted progress (e.g. image gallery sessionStorage)
+  useEffect(() => {
+    if (!selectedLesson) return;
+    const slide = currentSlides[currentSlide];
+    if (!slide || slide.kind !== 'page') return;
+    const completed = completedInteractiveBlocks[selectedLesson.id] ?? new Set<string>();
+    for (const block of slide.blocks) {
+      if (block.block_type !== 'image_gallery' || !block.data?.requireAllClicked) continue;
+      if (completed.has(block.id)) continue;
+      const imageCount = Array.isArray(block.data?.images)
+        ? (block.data.images as unknown[]).filter((i) => (i as { url?: string })?.url).length
+        : 0;
+      if (imageCount === 0) continue;
+      try {
+        const raw = sessionStorage.getItem(viewedImagesStorageKey(selectedLesson.id, block.id));
+        if (!raw) continue;
+        const viewed = JSON.parse(raw) as unknown;
+        if (Array.isArray(viewed) && viewed.length >= imageCount) {
+          handleBlockComplete(block.id);
+        }
+      } catch {
+        // ignore parse / storage errors
+      }
+    }
+  }, [selectedLesson, currentSlide, currentSlides, completedInteractiveBlocks, handleBlockComplete]);
 
   const goNext = useCallback(() => {
     navDirection.current = 'forward';
     if (nextBlocked) return;
     setCurrentSlide(i => Math.min(i + 1, totalSlides - 1));
   }, [totalSlides, nextBlocked]);
+  goNextRef.current = goNext;
   const goPrev = useCallback(() => {
     navDirection.current = 'backward';
     setCurrentSlide(i => Math.max(i - 1, 0));
@@ -595,13 +890,18 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   // Keyboard navigation (goNext already respects nextBlocked)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      // While the lesson menu is open, Escape closes it and arrows don't move slides.
+      if (lessonMenuOpen) {
+        if (e.key === 'Escape') setLessonMenuOpen(false);
+        return;
+      }
       if (!selectedLesson) return;
       if (e.key === 'ArrowRight') goNext();
       if (e.key === 'ArrowLeft') goPrev();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedLesson, goNext, goPrev]);
+  }, [selectedLesson, goNext, goPrev, lessonMenuOpen]);
 
   // Auto-mark complete when completion slide reached (only if all quizzes done)
   useEffect(() => {
@@ -632,8 +932,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
   // ---------------------------------------------------------------------------
   // Guards
   // ---------------------------------------------------------------------------
-  const outerHeightClass = isFullscreen
-    ? 'h-screen'
+  const outerHeightClass = isFullscreen || embedded
+    ? 'h-screen'                 // embedded in a device-frame iframe — fill it
     : previewMode
       ? 'h-[calc(100vh-3rem)]'   // 3rem = 48px preview banner (h-12)
       : 'h-screen';              // LessonNavbar is inside the component now
@@ -836,37 +1136,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
       {/* ── Main content ───────────────────────────────────────────────────── */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 p-3 sm:p-4 overflow-hidden">
 
-        {/* Mobile lesson dropdown */}
-        <div className="lg:hidden shrink-0 space-y-1.5">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-bold text-slate-500">
-              Lesson {lessons.findIndex(l => l.id === selectedLesson?.id) + 1} of {lessons.length}
-            </span>
-            <span className="text-xs font-bold text-green-600 flex items-center gap-1">
-              <CheckCircle className="h-3 w-3" />
-              {completedCount}/{lessons.length} completed
-            </span>
-          </div>
-          <div className="relative">
-            <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-            <select
-              aria-label="Select lesson"
-              value={selectedLesson?.id || ''}
-              onChange={e => {
-                const lesson = lessons.find(l => l.id === e.target.value);
-                if (lesson) selectLesson(lesson);
-              }}
-              className="w-full appearance-none bg-white border border-slate-200 rounded-xl pl-9 pr-10 py-3 text-sm font-medium text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-            >
-              {lessons.map(lesson => (
-                <option key={lesson.id} value={lesson.id}>
-                  {progress[lesson.id]?.completed ? '✓ ' : ''}{lesson.title}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
+        {/* Mobile lesson selection now lives in a glass modal opened from the footer
+            hamburger — frees the vertical space the old dropdown consumed. */}
 
         {/* "Show Lessons" toggle — desktop only, when sidebar collapsed */}
         {!sidebarOpen && (
@@ -918,24 +1189,29 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
             {selectedLesson ? (
               <div className="flex flex-col h-full">
 
-                {/* Top bar: lesson label + slide title + counter + progress bar */}
+                {/* Top bar: lesson eyebrow + slide title (prominent) + counter + progress bar */}
                 <div className="px-5 pt-3 pb-3 shrink-0 border-b border-slate-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="truncate pr-4 min-w-0">
-                      <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] block truncate">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="min-w-0">
+                      {/* Lesson title = small eyebrow / kicker */}
+                      <span
+                        className="text-[11px] font-bold uppercase tracking-wider block break-words leading-tight"
+                        style={{ color: effectiveTheme.lessonTitleColor }}
+                      >
                         {selectedLesson.title}
                       </span>
+                      {/* Slide title = the prominent headline */}
                       {currentSlideData?.kind === 'page' && currentSlideData.slideTitle && (
                         <span
-                          className="text-xs font-semibold block truncate mt-0.5"
-                          style={{ color: (currentSlideData.settings?.title_color as string) || '#64748b' }}
+                          className="text-lg sm:text-xl font-black block break-words leading-tight mt-0.5"
+                          style={{ color: (currentSlideData.settings?.title_color as string) || effectiveTheme.slideTitleColor }}
                         >
                           {currentSlideData.slideTitle}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-sm font-bold text-slate-500">
+                    <div className="flex items-center gap-2 shrink-0 pt-0.5">
+                      <span className="text-sm font-bold tabular-nums" style={{ color: effectiveTheme.numberColor }}>
                         {currentSlide + 1} / {totalSlides}
                       </span>
                       <button
@@ -947,11 +1223,12 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       </button>
                     </div>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-[3px]"
+                  <div className="w-full rounded-full h-[3px]"
+                    style={{ backgroundColor: effectiveTheme.progressTrackColor }}
                     role="progressbar" aria-valuenow={Math.round(((currentSlide + 1) / totalSlides) * 100)} aria-valuemin={0} aria-valuemax={100}
                     aria-label="Slide progress">
-                    <div className="bg-[#1E3A5F] h-[3px] rounded-full transition-all duration-300"
-                      style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }} />
+                    <div className="h-[3px] rounded-full transition-all duration-300"
+                      style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%`, backgroundColor: effectiveTheme.progressColor }} />
                   </div>
                 </div>
 
@@ -974,8 +1251,13 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       lessonTitle={selectedLesson.title}
                       lessonDescription={selectedLesson.description}
                       titleImageUrl={selectedLesson.title_image_url}
+                      titleSlideSettings={selectedLesson.title_slide_settings}
                       courseDate={course?.created_at ? new Date(course.created_at).toLocaleDateString('en-CA', { year: 'numeric', month: 'long' }) : null}
                       institutionSlug={institutionSlug}
+                      titleLogoUrl={effectiveTheme.titleLogoUrl}
+                      gradientFrom={effectiveTheme.titleGradientFrom}
+                      gradientTo={effectiveTheme.titleGradientTo}
+                      defaultBackgroundImageUrl={effectiveTheme.defaultTitleBackgroundUrl}
                     />
                   )}
 
@@ -992,9 +1274,11 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
 
                   {/* CONTENT SLIDE — matches editor slide-preview.tsx rendering */}
                   {currentSlideData?.kind === 'page' && !(currentSlideData.slideType === 'canvas' && currentSlideData.canvasData) && (() => {
-                    const bgStyle = getSlideBackground(currentSlideData.settings);
+                    const bgStyle = getSlideBackground(currentSlideData.settings, effectiveTheme.defaultBackground);
                     const backgroundImage = typeof currentSlideData.settings?.background_image === 'string'
-                      ? currentSlideData.settings.background_image : null;
+                      ? currentSlideData.settings.background_image
+                      : (theme.default_background_image || null);
+                    const backgroundFit = resolveSlideBackgroundFit(currentSlideData.settings?.background_fit);
                     const pages = splitBlocksIntoPages(currentSlideData.blocks);
                     const hasPages = pages.length > 1;
 
@@ -1002,8 +1286,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                       <div className="relative flex-1 flex flex-col overflow-hidden" style={bgStyle}>
                         {backgroundImage && (
                           <div
-                            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                            style={{ backgroundImage: `url(${backgroundImage})` }}
+                            className="absolute inset-0"
+                            style={slideBackgroundImageStyle(backgroundImage, backgroundFit)}
                           >
                             <div className="absolute inset-0 bg-black/20" />
                           </div>
@@ -1014,6 +1298,8 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                               blocks={hasPages ? pages[subPage] ?? pages[0] : currentSlideData.blocks}
                               lessonTitle={selectedLesson.title}
                               onQuizCorrect={handleQuizCorrect}
+                              onBlockComplete={handleBlockComplete}
+                              blockStyle={(currentSlideData.settings?.block_style as string | undefined) ?? effectiveTheme.defaultBlockStyle}
                               context={blockContext}
                             />
                           </SlideContentArea>
@@ -1062,7 +1348,7 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                 </div>
 
                 {/* Navigation Footer — always visible */}
-                <div className="shrink-0 flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
+                <div className="relative shrink-0 flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
                   {/* Left: Previous */}
                   <button
                     onClick={goPrev}
@@ -1072,6 +1358,17 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous
+                  </button>
+
+                  {/* Centre: lesson menu (mobile only) — opens the glass lesson modal */}
+                  <button
+                    onClick={() => setLessonMenuOpen(true)}
+                    aria-label="Browse lessons"
+                    aria-haspopup="dialog"
+                    style={effectiveTheme.chromeAccent ? { color: effectiveTheme.chromeAccent } : undefined}
+                    className="lg:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center h-11 w-11 rounded-2xl text-slate-700 bg-white/55 backdrop-blur-xl backdrop-saturate-150 border border-white/70 shadow-lg shadow-slate-900/10 ring-1 ring-black/[0.03] hover:bg-white/80 hover:scale-105 active:scale-95 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                  >
+                    <Menu className="h-5 w-5" />
                   </button>
 
                   {/* Right: Context-dependent primary action */}
@@ -1108,23 +1405,25 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
                         </button>
                       )
                     ) : isLastContentSlide ? (
-                      <button
+                      <NavButtonWithHint
                         onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}
                         disabled={!navUrl && nextBlocked}
+                        hint={!navUrl ? nextBlockedHint : null}
                         aria-label="Complete lesson"
                         className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
                         {navLabel || 'Complete Lesson'} <ChevronRight className="h-4 w-4" />
-                      </button>
+                      </NavButtonWithHint>
                     ) : !isLastSlide ? (
-                      <button
+                      <NavButtonWithHint
                         onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}
                         disabled={!navUrl && nextBlocked}
+                        hint={!navUrl ? nextBlockedHint : null}
                         aria-label="Next slide"
                         className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
                         {navLabel || 'Next'} <ChevronRight className="h-4 w-4" />
-                      </button>
+                      </NavButtonWithHint>
                     ) : null}
                   </div>
                 </div>
@@ -1143,6 +1442,79 @@ export default function CourseViewer({ courseId, previewMode = false }: CourseVi
           </Card>
         </div>
       </div>
+
+      {/* ── Mobile glass lesson modal (opened from the footer hamburger) ─────── */}
+      {lessonMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-[95] flex flex-col justify-end"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Lessons"
+        >
+          {/* Backdrop */}
+          <button
+            aria-label="Close lessons"
+            onClick={() => setLessonMenuOpen(false)}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
+          />
+          {/* Glass sheet */}
+          <div className="relative w-full max-h-[78vh] flex flex-col rounded-t-[1.75rem] border-t border-white/60 bg-white/75 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_-10px_50px_rgba(15,23,42,0.28)] animate-in slide-in-from-bottom duration-300 ease-out">
+            {/* Grab handle */}
+            <div className="pt-3 pb-1 flex justify-center shrink-0">
+              <span className="h-1.5 w-12 rounded-full bg-slate-400/60" />
+            </div>
+            {/* Header */}
+            <div className="px-5 pt-1 pb-3 flex items-center justify-between shrink-0">
+              <div className="min-w-0">
+                <h3 className="text-lg font-black text-slate-900 leading-tight">Lessons</h3>
+                <p className="text-xs font-bold text-green-600 flex items-center gap-1 mt-0.5">
+                  <CheckCircle className="h-3 w-3 shrink-0" /> {completedCount}/{lessons.length} completed
+                </p>
+              </div>
+              <button
+                onClick={() => setLessonMenuOpen(false)}
+                aria-label="Close lessons"
+                className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {/* Lesson list */}
+            <div role="list" aria-label="Course lessons" className="flex-1 overflow-y-auto px-3 pb-5 space-y-1.5">
+              {lessons.map((lesson, i) => {
+                const active = selectedLesson?.id === lesson.id;
+                const done = progress[lesson.id]?.completed;
+                return (
+                  <button
+                    key={lesson.id}
+                    role="listitem"
+                    onClick={() => { selectLesson(lesson); setLessonMenuOpen(false); }}
+                    aria-current={active ? 'true' : undefined}
+                    style={active && effectiveTheme.chromeAccent ? { boxShadow: `inset 3px 0 0 ${effectiveTheme.chromeAccent}` } : undefined}
+                    className={`w-full text-left px-3.5 py-3 rounded-2xl flex items-center gap-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+                      active
+                        ? 'bg-white/90 text-slate-900 shadow-md shadow-slate-900/10 ring-1 ring-slate-900/10 border border-white'
+                        : 'bg-white/45 hover:bg-white/75 border border-white/60 text-slate-600'
+                    }`}
+                  >
+                    <span
+                      className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                        done ? 'bg-green-100 text-green-600'
+                          : active ? 'bg-slate-900/10 text-slate-700'
+                          : 'bg-slate-100 text-slate-400'
+                      }`}
+                    >
+                      {done ? <CheckCircle className="h-4 w-4" /> : i + 1}
+                    </span>
+                    <span className={`text-sm leading-snug min-w-0 flex-1 break-words ${active ? 'font-bold' : 'font-semibold'}`}>{lesson.title}</span>
+                    {active && <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

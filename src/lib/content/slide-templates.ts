@@ -1,6 +1,8 @@
 import type { SlideType } from '@/types';
 
 export interface SlideTemplateConfig {
+  /** Unique picker id (multiple templates may share the same slide_type) */
+  id: string;
   type: SlideType;
   name: string;
   description: string;
@@ -11,6 +13,7 @@ export interface SlideTemplateConfig {
 
 export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
   {
+    id: 'title',
     type: 'title',
     name: 'Title',
     description: 'Lesson introduction with heading and description',
@@ -21,6 +24,53 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#1E3A5F',
   },
   {
+    id: 'learning_objectives',
+    type: 'content',
+    name: 'Learning Objectives',
+    description: 'Animated bullet list of lesson objectives',
+    defaultBlocks: [
+      {
+        block_type: 'content_list',
+        data: {
+          items: [
+            { html: '<p>Describe the first learning objective</p>', animation: 'left' },
+            { html: '<p>Describe the second learning objective</p>', animation: 'right' },
+            { html: '<p>Describe the third learning objective</p>', animation: 'up' },
+          ],
+          bullet_style: 'disc',
+          font_size: 'auto',
+          enable_animations: true,
+          animation_stagger_ms: 150,
+        },
+      },
+    ],
+    defaultSettings: { background: '#FFFFFF' },
+    accentColor: '#0891B2',
+  },
+  {
+    id: 'references',
+    type: 'content',
+    name: 'References',
+    description: 'Citation list with rich text links — no animations',
+    defaultBlocks: [
+      {
+        block_type: 'content_list',
+        data: {
+          items: [
+            { html: '<p><strong>Author, A.</strong> (2024). <em>Title of article</em>. <a href="https://example.com" target="_blank">https://example.com</a></p>', animation: 'none' },
+            { html: '<p><strong>Organization.</strong> (2023). <em>Resource name</em>. Retrieved from <a href="https://example.com" target="_blank">link</a></p>', animation: 'none' },
+          ],
+          bullet_style: 'decimal',
+          font_size: 'auto',
+          enable_animations: false,
+        },
+      },
+    ],
+    defaultSettings: { background: '#FFFFFF' },
+    accentColor: '#64748B',
+  },
+  {
+    id: 'content',
     type: 'content',
     name: 'Content',
     description: 'Text content with optional image',
@@ -31,6 +81,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#2563EB',
   },
   {
+    id: 'media',
     type: 'media',
     name: 'Media',
     description: 'Full-width video, image, or embed',
@@ -41,6 +92,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#7C3AED',
   },
   {
+    id: 'quiz',
     type: 'quiz',
     name: 'Quiz',
     description: 'Multiple choice knowledge check',
@@ -60,6 +112,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#059669',
   },
   {
+    id: 'disclaimer',
     type: 'disclaimer',
     name: 'Disclaimer',
     description: 'Warning or legal notice',
@@ -70,6 +123,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#D97706',
   },
   {
+    id: 'interactive',
     type: 'interactive',
     name: 'Interactive',
     description: 'Embedded interactive content',
@@ -80,6 +134,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     accentColor: '#0099CA',
   },
   {
+    id: 'canvas',
     type: 'canvas',
     name: 'Freeform Canvas',
     description: 'Free-form layout with tldraw — place content anywhere',
@@ -90,5 +145,10 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
 ];
 
 export function getTemplateByType(type: SlideType): SlideTemplateConfig | undefined {
-  return SLIDE_TEMPLATES.find((t) => t.type === type);
+  // Prefer template whose id matches the slide type (e.g. id "content" not "learning_objectives")
+  return SLIDE_TEMPLATES.find((t) => t.id === type) ?? SLIDE_TEMPLATES.find((t) => t.type === type);
+}
+
+export function getTemplateById(id: string): SlideTemplateConfig | undefined {
+  return SLIDE_TEMPLATES.find((t) => t.id === id);
 }

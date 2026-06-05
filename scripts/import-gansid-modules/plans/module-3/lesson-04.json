@@ -1,0 +1,141 @@
+{
+  "lessonId": "e3dcfae8-090b-4331-ae44-ed6c2a82b94c",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Guiding Principles — What is Volunteer Engagement",
+  "lessonDescription": "Volunteer engagement, also known as volunteer management, refers to the systematic and logical process of working with and through volunteers to achieve an organization's objectives.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Guiding Principles: What is Volunteer Engagement?",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_04/slide_00_image_00.jpg",
+                "caption": null,
+                "alt": "A group of diverse volunteers"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "displaySize": "lg",
+            "enableLightbox": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>What is Volunteer Engagement?</h2><p><strong>Definition:</strong> Volunteer engagement, also known as <strong>volunteer management</strong>, refers to the systematic and logical process of working with and through volunteers to achieve an organization's objectives. Volunteer engagement can be grouped into four stages: Recruitment, Orientation &amp; Training, Recognition, and Stewardship.</p><p>Volunteer engagement typically involves:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Motivating volunteers</p>", "animation": "none" },
+              { "html": "<p>Leading and supervising volunteers in defined roles</p>", "animation": "none" },
+              { "html": "<p>Roles can include: community ambassadors, program support, information holders, liaisons, etc.</p>", "animation": "none" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "font_size": "auto",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Role of the Volunteer Manager</h3><p>The volunteer manager's core responsibilities:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p><strong>Know your volunteers</strong> — Get to know them so that you can provide them with a rewarding experience</p>", "animation": "none" },
+              { "html": "<p><strong>Match skills to needs</strong> — Ensure the skills, interests, and experiences of volunteers are appropriately matched to the needs of the organization</p>", "animation": "none" },
+              { "html": "<p><strong>Support and recognize</strong> — Ensure volunteers are well-trained, matched to meaningful roles, and appropriately recognized</p>", "animation": "none" }
+            ],
+            "display_mode": "list",
+            "bullet_style": "decimal",
+            "font_size": "auto",
+            "enable_animations": false,
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What else is volunteer engagement referred to as?",
+            "options": [
+              "Volunteer management",
+              "Volunteer coordination",
+              "Volunteer administration",
+              "Volunteer sleuthing"
+            ],
+            "correct_answer": "Volunteer management",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Volunteer engagement is also known as volunteer management — the systematic process of working with volunteers to achieve organizational objectives.",
+            "feedback_incorrect": "Not quite. Review the definition of volunteer engagement from the previous slide.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal, Paintbrush, ClipboardList } from 'lucide-react';
+import { Settings, Type, FileText, Image as ImageIcon, HelpCircle, File as FileIcon, Square, CheckSquare, PanelRightClose, PanelRightOpen, Code, Video, SeparatorHorizontal, Paintbrush, SlidersHorizontal, Sparkles, Shuffle, ClipboardList, List as ListIcon, Columns2, TextCursorInput, Table as TableIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -12,6 +12,10 @@ import { DropZoneUploader } from './drop-zone-uploader';
 import { CourseThemeEditor } from './theme-editor/course-theme-editor';
 import { SlideStyleEditor } from './theme-editor/slide-style-editor';
 import { BLOCK_PRESETS } from '@/lib/content/block-presets';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { usePathname } from 'next/navigation';
+import type { TitleSlideSettings } from '@/lib/content/title-slide-settings';
 import { CanvaDesignPicker } from './canva-design-picker';
 import type { EntitySelection } from '@/types';
 import type { LessonData } from '@/lib/stores/editor-store';
@@ -27,11 +31,18 @@ interface PropertiesPanelProps {
 
 const AVAILABLE_BLOCKS = [
   { type: 'rich_text', label: 'Rich Text', icon: Type, color: 'text-blue-500 bg-blue-50' },
+  { type: 'content_list', label: 'List', icon: ListIcon, color: 'text-sky-600 bg-sky-50' },
+  { type: 'table', label: 'Table', icon: TableIcon, color: 'text-slate-600 bg-slate-50' },
   { type: 'image_gallery', label: 'Image', icon: ImageIcon, color: 'text-emerald-500 bg-emerald-50' },
   { type: 'video', label: 'Video', icon: Video, color: 'text-red-500 bg-red-50' },
   { type: 'cta', label: 'Button', icon: Square, color: 'text-indigo-500 bg-indigo-50' },
   { type: 'quiz_inline', label: 'Quiz', icon: CheckSquare, color: 'text-orange-500 bg-orange-50' },
   { type: 'survey', label: 'Survey', icon: ClipboardList, color: 'text-violet-600 bg-violet-50' },
+  { type: 'slider', label: 'Slider', icon: SlidersHorizontal, color: 'text-cyan-600 bg-cyan-50' },
+  { type: 'scratch_reveal', label: 'Scratch Reveal', icon: Sparkles, color: 'text-fuchsia-600 bg-fuchsia-50' },
+  { type: 'image_compare', label: 'Before / After', icon: Columns2, color: 'text-indigo-600 bg-indigo-50' },
+  { type: 'match_pairs', label: 'Drag to Match', icon: Shuffle, color: 'text-teal-600 bg-teal-50' },
+  { type: 'fill_blank', label: 'Fill in the Blank', icon: TextCursorInput, color: 'text-green-600 bg-green-50' },
   { type: 'callout', label: 'Callout', icon: HelpCircle, color: 'text-yellow-600 bg-yellow-50' },
   { type: 'pdf', label: 'PDF Viewer', icon: FileIcon, color: 'text-rose-500 bg-rose-50' },
   { type: 'iframe', label: 'Embed (iframe)', icon: Code, color: 'text-purple-500 bg-purple-50' },
@@ -103,6 +114,9 @@ function ModuleEditor({ moduleId }: { moduleId: string }) {
 }
 
 function LessonEditor({ lessonId }: { lessonId: string }) {
+  const pathname = usePathname();
+  const institutionSlug = resolveInstitutionSlug(pathname);
+  const defaultFooter = getInstitutionBranding(institutionSlug).acronym;
   const lessons = useEditorStore((s) => s.lessons);
   const updateLesson = useEditorStore((s) => s.updateLesson);
 
@@ -141,6 +155,14 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
   const handleRemoveImage = () => {
     if (!parentModuleId) return;
     updateLesson(parentModuleId, lessonId, { title_image_url: null });
+  };
+
+  const titleSettings = lessonData?.title_slide_settings ?? {};
+  const patchTitleSettings = (patch: Partial<TitleSlideSettings>) => {
+    if (!parentModuleId) return;
+    updateLesson(parentModuleId, lessonId, {
+      title_slide_settings: { ...titleSettings, ...patch },
+    });
   };
 
   return (
@@ -192,7 +214,64 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
           onRemove={handleRemoveImage}
           previewMode="image"
         />
-        <p className="text-[10px] text-gray-400">Replaces the blue gradient on the title slide</p>
+        <p className="text-[10px] text-gray-400">Replaces the gradient on the title slide</p>
+      </div>
+
+      <div className="border-t border-gray-100 pt-4 space-y-3">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Title Slide Style</p>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-gray-600">Title Size</Label>
+          <select
+            value={titleSettings.title_size ?? 'md'}
+            onChange={(e) => patchTitleSettings({ title_size: e.target.value as TitleSlideSettings['title_size'] })}
+            className="w-full h-9 text-sm border border-gray-200 rounded-lg px-2"
+          >
+            <option value="sm">Small</option>
+            <option value="md">Medium</option>
+            <option value="lg">Large</option>
+            <option value="xl">Extra Large</option>
+            <option value="2xl">Hero</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-gray-600">Title Color</Label>
+          <div className="flex gap-2">
+            <input
+              type="color"
+              value={titleSettings.title_color ?? '#FFFFFF'}
+              onChange={(e) => patchTitleSettings({ title_color: e.target.value })}
+              className="h-9 w-12 rounded border border-gray-200 cursor-pointer"
+            />
+            <Input
+              value={titleSettings.title_color ?? '#FFFFFF'}
+              onChange={(e) => patchTitleSettings({ title_color: e.target.value })}
+              className="h-9 text-sm flex-1"
+            />
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-gray-600">Footer Text</Label>
+          <Input
+            value={titleSettings.footer_text ?? ''}
+            onChange={(e) => patchTitleSettings({ footer_text: e.target.value || undefined })}
+            placeholder={defaultFooter}
+            className="h-9 text-sm"
+          />
+          <p className="text-[10px] text-gray-400">Shown in the title slide footer (default: {defaultFooter})</p>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-gray-600">Footer Logo / Icon</Label>
+          <DropZoneUploader
+            bucket="block-media"
+            pathPrefix={`lessons/${lessonId}/title-slide/`}
+            accept="image/*"
+            label="Upload logo or icon"
+            currentUrl={titleSettings.footer_logo_url ?? undefined}
+            onUpload={(url) => patchTitleSettings({ footer_logo_url: url })}
+            onRemove={() => patchTitleSettings({ footer_logo_url: null })}
+            previewMode="image"
+          />
+        </div>
       </div>
     </div>
   );

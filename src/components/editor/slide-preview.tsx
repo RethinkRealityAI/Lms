@@ -1,26 +1,39 @@
 'use client';
-
-import { Suspense, useRef, useState, useEffect, useCallback } from 'react';
+// cache-bust: 2026-06-02
+import { Suspense, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { usePathname } from 'next/navigation';
 import { GripVertical, Trash2, X, Copy, CopyPlus, Move, ChevronUp, ChevronDown, Layers } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
-import RGL from 'react-grid-layout';
+// react-grid-layout v2 ships a v1-compatible wrapper at `/legacy`. The default
+// root export is the NEW v2 `GridLayout` whose flat props (rowHeight, margin,
+// cols, isResizable, draggableHandle, …) are IGNORED — it only reads `gridConfig`.
+// Importing the legacy wrapper restores the v1 flat-prop API this code relies on.
+// Without it, RGL silently falls back to defaults (rowHeight=150, margin=[10,10]),
+// which is what produced the oversized cells / huge gaps.
+import { ReactGridLayout as RGL } from 'react-grid-layout/legacy';
 const ReactGridLayout = RGL as any;
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { LessonBlockRenderer } from '@/components/lesson-block-renderer';
 import { SlideFrame, SlideContentArea } from '@/components/shared/slide-frame';
+import type { CourseThemeSettings } from '@/lib/content/course-theme';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { useEditorStore } from './editor-store-context';
 import {
   GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING,
-  RESIZE_HANDLES, computeRowHeight, getBlockGridLayout,
+  computeRowHeight, getBlockGridLayout,
+  blockUsesAutoHeight, getBlockRglLayout, resolvePersistedGridH,
 } from '@/lib/content/gridConstants';
+import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { CopyBlockDialog } from './copy-block-dialog';
 import { MultiSelectToolbar } from './multi-select-toolbar';
 import { AlignmentGuides, computeAlignmentGuides } from './alignment-guides';
+import { renderBlockResizeHandle } from './block-resize-handle';
+import { BlockContentAutosize } from './block-content-autosize';
 import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { resolveEffectiveTheme } from '@/lib/tenant/institution-theme';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 import type { Slide } from '@/types';
 
 interface SlidePreviewProps {
@@ -28,6 +41,8 @@ interface SlidePreviewProps {
   onSelectBlock: (blockId: string) => void;
   onDeleteBlock?: (blockId: string) => void;
   onUpdateBlock?: (blockId: string, data: Record<string, unknown>) => void;
+  /** Auto-fit a block's height to its content (reflows blocks below) */
+  onFitHeight?: (blockId: string, gridH: number) => void;
   onDuplicateBlock?: (blockId: string, slideId: string) => void;
   onCopyBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
   onMoveBlockToSlide?: (blockId: string, sourceSlideId: string, targetSlideId: string, targetLessonId: string) => void;
@@ -51,6 +66,7 @@ export function SlidePreview({
   onSelectBlock,
   onDeleteBlock,
   onUpdateBlock,
+  onFitHeight,
   onDuplicateBlock,
   onCopyBlockToSlide,
   onMoveBlockToSlide,
@@ -66,6 +82,24 @@ export function SlidePreview({
   const editorPathname = usePathname();
   const institutionSlug = resolveInstitutionSlug(editorPathname);
   const blocks = useEditorStore((s) => s.blocks.get(slide.id) ?? []);
+
+  /** Visual top-to-bottom order on the canvas (grid Y/X), not order_index. */
+  const visualBlockOrder = useMemo(
+    () =>
+      [...blocks]
+        .map((b) => ({
+          b,
+          g: getBlockGridLayout((b.data ?? {}) as Record<string, unknown>),
+        }))
+        .sort((a, z) => a.g.gridY - z.g.gridY || a.g.gridX - z.g.gridX)
+        .map(({ b }) => b),
+    [blocks],
+  );
+  const visualIndexById = useMemo(
+    () => new Map(visualBlockOrder.map((b, i) => [b.id, i])),
+    [visualBlockOrder],
+  );
+
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: 'slide-canvas' });
 
   // Canvas size measurement for react-grid-layout
@@ -73,13 +107,17 @@ export function SlidePreview({
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 600, height: 400 });
 
   useEffect(() => {
-    if (!canvasRef.current) return;
-    const observer = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        setCanvasSize({ width: entry.contentRect.width, height: entry.contentRect.height });
-      }
-    });
-    observer.observe(canvasRef.current);
+    const el = canvasRef.current;
+    if (!el) return;
+    const update = () => {
+      const width = el.clientWidth;
+      const height = el.clientHeight;
+      if (width <= 0 || height <= 0) return;
+      setCanvasSize(prev => (prev.width === width && prev.height === height ? prev : { width, height }));
+    };
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    update();
     return () => observer.disconnect();
   }, []);
 
@@ -91,6 +129,12 @@ export function SlidePreview({
   const modules = useEditorStore((s) => s.modules);
   const allLessons = useEditorStore((s) => s.lessons);
   const allSlides = useEditorStore((s) => s.slides);
+  const courseTheme = useEditorStore((s) => s.themeSettings);
+  const institutionTheme = useEditorStore((s) => s.institutionTheme);
+  const effectiveTheme = useMemo(
+    () => resolveEffectiveTheme({ course: courseTheme, institution: institutionTheme, branding: getInstitutionBranding(institutionSlug) }),
+    [courseTheme, institutionTheme, institutionSlug],
+  );
   // Multi-select
   const selectedBlockIds = useEditorStore((s) => s.selectedBlockIds);
   const toggleBlockSelection = useEditorStore((s) => s.toggleBlockSelection);
@@ -100,6 +144,70 @@ export function SlidePreview({
   const alignBlocks = useEditorStore((s) => s.alignBlocks);
   // Alignment guides
   const [activeGuides, setActiveGuides] = useState<Array<{ type: 'vertical' | 'horizontal'; position: number }>>([]);
+  /** Measured content heights in grid row units — drives RGL item height for auto-height blocks. */
+  const [measuredGridH, setMeasuredGridH] = useState<Record<string, number>>({});
+  const registerMinHeight = useCallback((blockId: string, minH: number) => {
+    setMeasuredGridH((prev) => (prev[blockId] === minH ? prev : { ...prev, [blockId]: minH }));
+  }, []);
+
+  // Fixed row height (px). Deriving it from the live canvas height created a feedback
+  // loop (taller cell → taller canvas → bigger rowHeight → taller cell …). The editor
+  // canvas height is effectively constant across device widths, so a fixed unit gives
+  // fine-grained, predictable resizing. The student viewer ignores this (CSS auto-rows).
+  // Must be declared BEFORE rglLayout and layoutHeightKey (which both reference it).
+  const rowHeight = 14;
+
+  const rglLayout = useMemo(
+    () =>
+      blocks.map((block) =>
+        getBlockRglLayout(
+          block.id,
+          block.block_type,
+          (block.data ?? {}) as Record<string, unknown>,
+          measuredGridH[block.id],
+        ),
+      ),
+    [blocks, measuredGridH],
+  );
+
+  // RGL remount key — STRUCTURAL ONLY: grid constants (rowHeight/margin) + the set of
+  // block ids. It intentionally does NOT include per-block heights.
+  //
+  // react-grid-layout (legacy wrapper) applies height changes from the `layout` prop
+  // reactively, so a remount on every height tweak is unnecessary — and harmful: it
+  // unmounts/remounts every block, which resets child state. For the image gallery that
+  // means `ImageWithFallback` loses its `loaded` flag, the <img>s flash back to
+  // placeholders (and may re-fetch), the measured height changes, gridH updates, the key
+  // would change again → an infinite remount→reset→re-measure loop (the "constant
+  // flashing"). Keying on ids only breaks that loop while still forcing a clean remount
+  // when blocks are added/removed or the grid unit changes.
+  // Intentionally NOT a useMemo — the hook count must stay stable across HMR updates.
+  const layoutHeightKey = `rh${rowHeight}m${GRID_MARGIN[1]}_` + rglLayout.map((l) => l.i).join('|');
+
+  // Drop stale measurements when blocks are removed from the slide
+  useEffect(() => {
+    const ids = new Set(blocks.map((b) => b.id));
+    setMeasuredGridH((prev) => {
+      const next = Object.fromEntries(Object.entries(prev).filter(([id]) => ids.has(id)));
+      return Object.keys(next).length === Object.keys(prev).length ? prev : next;
+    });
+  }, [blocks]);
+
+  // Sync stored gridH down to measured content when a block's stored height drifts
+  // above what its content needs (e.g. content was shortened). fitBlockHeight now
+  // vertically compacts the whole slide, so blocks below settle automatically —
+  // no manual per-block shifting here (that double-shifted against compaction).
+  useEffect(() => {
+    if (!onFitHeight) return;
+    for (const block of blocks) {
+      if (!blockUsesAutoHeight(block.block_type)) continue;
+      const measured = measuredGridH[block.id];
+      if (measured == null) continue;
+      const storedGrid = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
+      if (storedGrid.gridH <= measured) continue; // only shrink here; growth comes from BCA
+      onFitHeight(block.id, measured);
+    }
+  }, [blocks, measuredGridH, onFitHeight]);
 
   useEffect(() => {
     if (!blockContextMenu) return;
@@ -132,19 +240,21 @@ export function SlidePreview({
       for (const item of layout) {
         const block = blocks.find(b => b.id === item.i);
         if (!block) continue;
+        const measuredH = measuredGridH[item.i];
+        const clampedH = resolvePersistedGridH(block.block_type, item.h, measuredH);
         const currentGrid = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
         if (
           currentGrid.gridX !== item.x ||
           currentGrid.gridY !== item.y ||
           currentGrid.gridW !== item.w ||
-          currentGrid.gridH !== item.h
+          currentGrid.gridH !== clampedH
         ) {
           onUpdateBlock(block.id, {
             ...(block.data as Record<string, unknown>),
             gridX: item.x,
             gridY: item.y,
             gridW: item.w,
-            gridH: item.h,
+            gridH: clampedH,
           });
         }
       }
@@ -154,86 +264,111 @@ export function SlidePreview({
 
   const isTitle = slide.slide_type === 'title';
   const settings = slide.settings as Record<string, unknown>;
-  const bgStyle = getSlideBackground(settings);
-  const backgroundImage = typeof settings?.background_image === 'string' ? settings.background_image : null;
+  const bgStyle = getSlideBackground(settings, effectiveTheme.defaultBackground);
+  const backgroundImage = typeof settings?.background_image === 'string'
+    ? settings.background_image
+    : (courseTheme.default_background_image || null);
+  const backgroundFit = resolveSlideBackgroundFit(settings?.background_fit);
+  const blockStyle = (settings?.block_style as string | undefined) ?? effectiveTheme.defaultBlockStyle;
+  // rowHeight moved below — declared earlier (before rglLayout) to avoid TDZ error
 
   return (
     <SlideFrame
       lessonTitle={lessonTitle}
       slideTitle={slide.title}
-      slideTitleColor={(slide.settings as Record<string, unknown>)?.title_color as string | undefined}
+      slideTitleColor={((slide.settings as Record<string, unknown>)?.title_color as string | undefined) ?? effectiveTheme.slideTitleColor}
+      lessonTitleColor={effectiveTheme.lessonTitleColor}
+      numberColor={effectiveTheme.numberColor}
+      progressColor={effectiveTheme.progressColor}
+      progressTrackColor={effectiveTheme.progressTrackColor}
       currentSlide={slideNumber}
       totalSlides={totalSlides}
     >
-      {/* TITLE SLIDE */}
-      {isTitle && (
-        <TitleSlide
-          lessonTitle={lessonTitle}
-          lessonDescription={lessonDescription}
-          titleImageUrl={titleImageUrl}
-          institutionSlug={institutionSlug}
-        />
-      )}
+      {/* UNIFIED CANVAS — title slides render TitleSlide as an absolute background so
+          additional blocks (video, image, etc.) can be overlaid on top of the base structure. */}
+      <div
+        ref={(node) => { setDropRef(node); (canvasRef as any).current = node; }}
+        className={`relative flex-1 min-h-0 overflow-y-auto transition-all duration-200 ${
+          isOver ? 'ring-2 ring-inset ring-blue-300 rounded-b-xl' : ''
+        }`}
+        style={isTitle ? {} : bgStyle}
+      >
+        {/* Title slide: TitleSlide fills the background; blocks float above it */}
+        {isTitle && (
+          <div className="absolute inset-0 pointer-events-none">
+            <TitleSlide
+              lessonTitle={lessonTitle}
+              lessonDescription={lessonDescription}
+              titleImageUrl={titleImageUrl}
+              institutionSlug={institutionSlug}
+              gradientFrom={effectiveTheme.titleGradientFrom}
+              gradientTo={effectiveTheme.titleGradientTo}
+              defaultBackgroundImageUrl={effectiveTheme.defaultTitleBackgroundUrl}
+            />
+          </div>
+        )}
 
-      {/* CONTENT SLIDE — blocks with react-grid-layout canvas */}
-      {!isTitle && (
-        <div
-          ref={(node) => { setDropRef(node); (canvasRef as any).current = node; }}
-          className={`relative flex-1 overflow-y-auto transition-all duration-200 ${
-            isOver ? 'ring-2 ring-inset ring-blue-300 rounded-b-xl' : ''
-          }`}
-          style={bgStyle}
-        >
-          {/* Background image layer */}
-          {backgroundImage && (
-            <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${backgroundImage})` }}
-            >
-              <div className="absolute inset-0 bg-black/20" />
-            </div>
-          )}
+        {/* Slide body wrapper grows with content so the background image covers the full height */}
+        <div className="relative min-h-full">
+        {/* Content slide: optional background image */}
+        {!isTitle && backgroundImage && (
+          <div
+            className="absolute inset-0"
+            style={slideBackgroundImageStyle(backgroundImage, backgroundFit)}
+          >
+            <div className="absolute inset-0 bg-black/20" />
+          </div>
+        )}
 
-          <div className="relative z-10">
+          <div className="slide-cq relative z-10">
             {blocks.length === 0 ? (
-              <SlideContentArea>
-                <div className={`flex flex-col items-center justify-center py-16 border-2 border-dashed rounded-xl text-sm transition-all duration-200 ${
-                  isOver
-                    ? 'border-blue-400 bg-blue-50/60 text-blue-500 scale-[1.01]'
-                    : 'border-gray-200 text-gray-400'
-                }`}>
-                  <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
-                    <Layers className="w-6 h-6 text-gray-300" />
+              isOver ? (
+                // Drop-zone active: show for both title and content slides
+                <SlideContentArea>
+                  <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed rounded-xl text-sm border-blue-400 bg-blue-50/60 text-blue-500 scale-[1.01] transition-all duration-200">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center mb-3">
+                      <Layers className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <p className="font-medium">Drop here to add</p>
+                    <p className="text-xs mt-1.5 max-w-[220px] text-center leading-relaxed">Release to place the block</p>
                   </div>
-                  <p className="font-medium text-gray-500">
-                    {isOver ? 'Drop here to add' : 'Empty slide'}
-                  </p>
-                  <p className="text-xs mt-1.5 max-w-[220px] text-center leading-relaxed text-gray-400">
-                    {isOver
-                      ? 'Release to place the block'
-                      : 'Drag components from the right panel, or click one to add it here'}
-                  </p>
-                </div>
-              </SlideContentArea>
+                </SlideContentArea>
+              ) : isTitle ? (
+                // Title slide with no extra blocks: show nothing — TitleSlide IS the content
+                null
+              ) : (
+                // Content slide empty state
+                <SlideContentArea>
+                  <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed rounded-xl text-sm border-gray-200 text-gray-400 transition-all duration-200">
+                    <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
+                      <Layers className="w-6 h-6 text-gray-300" />
+                    </div>
+                    <p className="font-medium text-gray-500">Empty slide</p>
+                    <p className="text-xs mt-1.5 max-w-[220px] text-center leading-relaxed text-gray-400">
+                      Drag components from the right panel, or click one to add it here
+                    </p>
+                  </div>
+                </SlideContentArea>
+              )
             ) : (
               <ReactGridLayout
-                layout={blocks.map((block) => {
-                  const grid = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
-                  return {
-                    i: block.id,
-                    x: grid.gridX,
-                    y: grid.gridY,
-                    w: grid.gridW,
-                    h: grid.gridH,
-                  };
-                })}
+                key={layoutHeightKey}
+                layout={rglLayout}
                 cols={GRID_COLS}
-                rowHeight={computeRowHeight(canvasSize.height)}
+                rowHeight={rowHeight}
                 width={canvasSize.width}
+                // Vertical compaction: blocks always stack from the top with no
+                // gaps, and dragging pushes neighbours out of the way instead of
+                // overlapping. The store mirrors this exact algorithm
+                // (compactBlocksVertical) so delete/resize/arrow-move and the
+                // student CSS-grid viewer all stay in sync. We persist only on
+                // drag/resize STOP (handleDragOrResizeStop) — never onLayoutChange,
+                // which would feed back into a render loop.
                 compactType="vertical"
-                isResizable={true}
-                isDraggable={true}
-                resizeHandles={RESIZE_HANDLES as any}
+                preventCollision={false}
+                isResizable
+                isDraggable
+                resizeHandle={renderBlockResizeHandle}
                 draggableHandle=".block-drag-handle"
                 margin={GRID_MARGIN}
                 containerPadding={GRID_CONTAINER_PADDING}
@@ -253,14 +388,35 @@ export function SlidePreview({
                   setActiveGuides([]);
                   handleDragOrResizeStop(layout);
                 }}
+                onResize={(_layout: any, _oldItem: any, newItem: any) => {
+                  const block = blocks.find((b) => b.id === newItem.i);
+                  if (!block) return;
+                  const measuredH = measuredGridH[newItem.i];
+                  if (blockUsesAutoHeight(block.block_type) && measuredH != null) {
+                    newItem.h = measuredH;
+                    newItem.minH = measuredH;
+                    newItem.maxH = measuredH;
+                    return;
+                  }
+                  const minH = measuredH ?? 1;
+                  if (newItem.h < minH) newItem.h = minH;
+                }}
               >
-                {blocks.map(block => (
+                {blocks.map(block => {
+                  const isSelected = selectedBlockId === block.id || selectedBlockIds.has(block.id);
+                  const visualIndex = visualIndexById.get(block.id) ?? 0;
+                  const isFirstVisual = visualIndex === 0;
+                  const isLastVisual = visualIndex >= visualBlockOrder.length - 1;
+                  const autoHeightBlock = blockUsesAutoHeight(block.block_type);
+                  return (
                   <div
                     key={block.id}
-                    className={`relative overflow-hidden rounded-lg transition-all cursor-default group ${
-                      selectedBlockId === block.id || selectedBlockIds.has(block.id)
-                        ? 'ring-2 ring-[#1E3A5F]'
-                        : 'ring-1 ring-slate-200 hover:ring-slate-300'
+                    className={`relative overflow-visible rounded-2xl transition-all cursor-default group w-full ${
+                      autoHeightBlock ? 'h-auto' : 'h-full'
+                    } ${
+                      isSelected
+                        ? 'ring-2 ring-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.18)]'
+                        : 'hover:ring-2 hover:ring-blue-400/50'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -288,57 +444,82 @@ export function SlidePreview({
                           <div className="flex-1 border-t-2 border-dashed border-slate-300" />
                         </div>
                       </div>
-                    ) : (
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                      <Suspense fallback={<div className="p-4 text-sm text-slate-400">Loading...</div>}>
-                        <LessonBlockRenderer
-                          block={{
-                            id: block.id,
-                            institution_id: '',
-                            lesson_id: '',
-                            block_type: block.block_type,
-                            data: block.data,
-                            order_index: block.order_index,
-                            is_visible: block.is_visible,
-                            settings: {},
-                            version: 1,
-                            title: undefined,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString(),
-                          }}
-                          lessonTitle={lessonTitle}
-                        />
-                      </Suspense>
-                    </div>
-                    )}
+                    ) : (() => {
+                      const autoHeight = blockUsesAutoHeight(block.block_type);
+                      // Exclude grid layout fields — moving/resizing a block shouldn't
+                      // trigger BCA re-measurement, only content changes should.
+                      const { gridX: _gx, gridY: _gy, gridW: _gw, gridH: _gh, ...contentData } = (block.data ?? {}) as Record<string, unknown>;
+                      const contentKey = JSON.stringify(contentData);
+                      const blockNode = (
+                        <Suspense fallback={<div className="p-4 text-sm text-slate-400">Loading...</div>}>
+                          <LessonBlockRenderer
+                            block={{
+                              id: block.id,
+                              institution_id: '',
+                              lesson_id: '',
+                              block_type: block.block_type,
+                              data: block.data,
+                              order_index: block.order_index,
+                              is_visible: block.is_visible,
+                              settings: {},
+                              version: 1,
+                              title: undefined,
+                              created_at: new Date().toISOString(),
+                              updated_at: new Date().toISOString(),
+                            }}
+                            lessonTitle={lessonTitle}
+                            context={{ editing: true, blockStyle, soleBlock: blocks.length === 1 }}
+                          />
+                        </Suspense>
+                      );
+                      return autoHeight && onFitHeight ? (
+                        <BlockContentAutosize
+                          blockId={block.id}
+                          rowHeight={rowHeight}
+                          enabled
+                          contentKey={contentKey}
+                          onFitHeight={onFitHeight}
+                          onMinHeight={registerMinHeight}
+                        >
+                          {blockNode}
+                        </BlockContentAutosize>
+                      ) : (
+                        <div className="w-full h-full">{blockNode}</div>
+                      );
+                    })()}
 
                     {/* Block toolbar — drag handle + reorder arrows + label */}
                     <div
                       className={`absolute top-1 left-1 z-10 inline-flex items-center gap-0.5 rounded backdrop-blur-sm transition-opacity ${
-                        selectedBlockId === block.id
+                        isSelected
                           ? 'opacity-100 bg-[#1E3A5F]/80 text-white'
                           : 'opacity-0 group-hover:opacity-100 bg-black/50 text-white/80'
                       }`}
                     >
-                      <div className="block-drag-handle inline-flex items-center gap-0.5 px-1.5 py-0.5 cursor-grab active:cursor-grabbing text-[10px] font-medium">
+                      <div
+                        className="block-drag-handle inline-flex items-center gap-0.5 px-1.5 py-0.5 cursor-grab active:cursor-grabbing text-[10px] font-medium"
+                        data-no-dnd="true"
+                      >
                         <GripVertical className="w-3 h-3" />
                         <span className="capitalize">{block.block_type.replace('_', ' ')}</span>
                       </div>
-                      {blocks.length > 1 && (
+                      {visualBlockOrder.length > 1 && (
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); onMoveBlockUp?.(block.id, slide.id); }}
-                            disabled={blocks.indexOf(block) === 0}
-                            className="p-0.5 rounded hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={isFirstVisual}
+                            className="p-0.5 rounded hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
                             title="Move up"
+                            aria-label="Move up"
                           >
                             <ChevronUp className="w-3 h-3" />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); onMoveBlockDown?.(block.id, slide.id); }}
-                            disabled={blocks.indexOf(block) === blocks.length - 1}
-                            className="p-0.5 rounded hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={isLastVisual}
+                            className="p-0.5 rounded hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
                             title="Move down"
+                            aria-label="Move down"
                           >
                             <ChevronDown className="w-3 h-3" />
                           </button>
@@ -354,7 +535,7 @@ export function SlidePreview({
                           onDeleteBlock(block.id);
                         }}
                         className={`absolute top-1 right-1 z-10 w-5 h-5 rounded flex items-center justify-center transition-opacity backdrop-blur-sm text-white/60 hover:text-red-400 hover:bg-red-500/20 ${
-                          selectedBlockId === block.id
+                          isSelected
                             ? 'opacity-100'
                             : 'opacity-0 group-hover:opacity-100'
                         }`}
@@ -363,7 +544,8 @@ export function SlidePreview({
                       </button>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </ReactGridLayout>
             )}
 
@@ -380,6 +562,7 @@ export function SlidePreview({
               />
             )}
           </div>
+        </div>
 
           {/* Block context menu */}
           {blockContextMenu && (
@@ -453,12 +636,18 @@ export function SlidePreview({
                 return map;
               })()}
               slides={(() => {
-                const map = new Map<string, { id: string; order_index: number }[]>();
+                const map = new Map<string, { id: string; order_index: number; title?: string | null; slide_type?: string }[]>();
                 for (const [lessonId, slideList] of allSlides) {
-                  map.set(lessonId, slideList.map(s => ({ id: s.id, order_index: s.order_index })));
+                  map.set(lessonId, slideList.map(s => ({
+                    id: s.id,
+                    order_index: s.order_index,
+                    title: s.title,
+                    slide_type: s.slide_type,
+                  })));
                 }
                 return map;
               })()}
+              title={copyMoveDialog.mode === 'move' ? 'Move block to...' : 'Copy block to...'}
               onCopy={(targetSlideId, targetLessonId) => {
                 if (copyMoveDialog.mode === 'copy') {
                   onCopyBlockToSlide?.(copyMoveDialog.blockId, slide.id, targetSlideId, targetLessonId);
@@ -471,14 +660,13 @@ export function SlidePreview({
             />
           )}
         </div>
-      )}
     </SlideFrame>
   );
 }
 
 /** Resolve slide background from settings — supports color, gradient, and image */
-export function getSlideBackground(settings: Record<string, unknown>): CSSProperties {
-  const bg = settings?.background;
+export function getSlideBackground(settings: Record<string, unknown>, fallback?: string): CSSProperties {
+  const bg = settings?.background ?? fallback;
   if (bg === 'gradient') {
     return {
       background: 'linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)',

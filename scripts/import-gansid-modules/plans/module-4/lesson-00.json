@@ -1,0 +1,58 @@
+{
+  "lessonId": "22921de2-a793-4219-be56-5d240ecb5d64",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Introduction",
+  "lessonDescription": "In this module, learners will hone their understanding of what constitutes effective leadership in a patient advocacy organization.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Introduction",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/Leadership_5yGqB85_bdvjrm.jpg",
+                "alt": "Leadership",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "displaySize": "lg",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>In this module, learners will hone their understanding of what constitutes effective leadership in a patient advocacy organization.</strong></p><p><em>Author: Annette Akinsete MBBS, DTM&amp;H, MPH, FMCPH | Image credits: Canva, www.freepik.com</em></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

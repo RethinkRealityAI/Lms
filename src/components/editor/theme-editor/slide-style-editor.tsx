@@ -5,7 +5,36 @@ import { ColorSwatch } from './color-swatch';
 import { useEditorStore } from '../editor-store-context';
 import { DropZoneUploader } from '../drop-zone-uploader';
 import { CanvaDesignPicker } from '../canva-design-picker';
+import { DEFAULT_BLOCK_STYLE } from '@/lib/content/gridConstants';
+import { SLIDE_BACKGROUND_FITS, resolveSlideBackgroundFit } from '@/lib/content/slide-background';
 import type { Slide } from '@/types';
+
+const BLOCK_STYLES: { value: string; label: string; description: string; preview: string }[] = [
+  {
+    value: 'glass',
+    label: 'Light Glass',
+    description: 'Frosted glass — the default, transparent on light slides',
+    preview: 'bg-white/25 border border-slate-200/60 shadow-md backdrop-blur-sm',
+  },
+  {
+    value: 'glass-dark',
+    label: 'Dark Glass',
+    description: 'Smoked liquid glass — for dark or photo backgrounds',
+    preview: 'bg-slate-900/55 border border-white/15 shadow-md backdrop-blur-sm',
+  },
+  {
+    value: 'classic',
+    label: 'Classic',
+    description: 'Clean white card',
+    preview: 'bg-white border border-gray-200 shadow-sm',
+  },
+  {
+    value: 'none',
+    label: 'None',
+    description: 'No container — transparent blocks',
+    preview: 'border-2 border-dashed border-gray-200',
+  },
+];
 
 interface SlideStyleEditorProps {
   slideId: string;
@@ -27,6 +56,7 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
   const settings = slide.settings as Record<string, unknown>;
   const bg = (settings.background as string) || '#FFFFFF';
   const bgImage = typeof settings.background_image === 'string' ? settings.background_image : null;
+  const blockStyle = (settings.block_style as string) ?? DEFAULT_BLOCK_STYLE;
 
   function updateSettings(changes: Record<string, unknown>) {
     updateSlide(lessonId, slideId, {
@@ -47,6 +77,37 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Slide Type</p>
         <p className="text-sm font-medium text-gray-700 capitalize">{slide.slide_type}</p>
+      </div>
+
+      <div className="border-t border-gray-100" />
+
+      {/* Block Container Style */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Block Style</p>
+        <p className="text-[10px] text-gray-400 mb-2.5">How component containers look on this slide</p>
+        <div className="grid grid-cols-2 gap-2">
+          {BLOCK_STYLES.map((s) => {
+            const active = blockStyle === s.value;
+            return (
+              <button
+                key={s.value}
+                onClick={() => updateSettings({ block_style: s.value })}
+                className={`flex flex-col items-start gap-1.5 p-2.5 rounded-xl border text-left transition-all ${
+                  active
+                    ? 'border-[#1E3A5F] bg-blue-50 ring-1 ring-[#1E3A5F]/30'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+              >
+                {/* Mini preview swatch */}
+                <div className={`w-full h-6 rounded-md ${s.preview}`} />
+                <span className={`text-[11px] font-semibold leading-tight ${active ? 'text-[#1E3A5F]' : 'text-gray-700'}`}>
+                  {s.label}
+                </span>
+                <span className="text-[9px] text-gray-400 leading-tight">{s.description}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="border-t border-gray-100" />
@@ -131,6 +192,36 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
           previewMode="image"
         />
         <p className="text-[10px] text-gray-400 mt-1">Full-page background behind slide content</p>
+
+        {bgImage && (
+          <div className="mt-3">
+            <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+              Image fit
+            </label>
+            <div className="flex gap-1.5">
+              {SLIDE_BACKGROUND_FITS.map((f) => {
+                const active = resolveSlideBackgroundFit(settings.background_fit) === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    onClick={() => updateSettings({ background_fit: f.value })}
+                    title={f.hint}
+                    className={`flex-1 px-2 py-1.5 text-xs rounded-lg border font-medium transition-all ${
+                      active
+                        ? 'border-[#1E3A5F] text-[#1E3A5F] bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[10px] text-gray-400 mt-1">
+              Fills the whole slide even when it scrolls past the viewport.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Canva Design as Background */}

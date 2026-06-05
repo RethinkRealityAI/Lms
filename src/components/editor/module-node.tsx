@@ -17,9 +17,25 @@ interface ModuleNodeProps {
   onDeleteModule?: (moduleId: string) => void;
   onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
   onDuplicateSlide?: (slideId: string, lessonId: string) => void;
+  activeDragId?: string | null;
+  overId?: string | null;
+  targetLessonId?: string | null;
+  selectedLessonId?: string | null;
 }
 
-export function ModuleNode({ module, onAddSlide, onAddLesson, onDeleteLesson, onDeleteModule, onMoveSlide, onDuplicateSlide }: ModuleNodeProps) {
+export function ModuleNode({
+  module,
+  onAddSlide,
+  onAddLesson,
+  onDeleteLesson,
+  onDeleteModule,
+  onMoveSlide,
+  onDuplicateSlide,
+  activeDragId,
+  overId,
+  targetLessonId,
+  selectedLessonId,
+}: ModuleNodeProps) {
   const [expanded, setExpanded] = useState(true);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
@@ -114,7 +130,18 @@ export function ModuleNode({ module, onAddSlide, onAddLesson, onDeleteLesson, on
             </div>
           ) : (
             lessons.map((lesson) => (
-              <LessonNode key={lesson.id} lesson={lesson} onAddSlide={onAddSlide} onDeleteLesson={onDeleteLesson} onMoveSlide={onMoveSlide} onDuplicateSlide={onDuplicateSlide} />
+              <LessonNode
+                key={lesson.id}
+                lesson={lesson}
+                onAddSlide={onAddSlide}
+                onDeleteLesson={onDeleteLesson}
+                onMoveSlide={onMoveSlide}
+                onDuplicateSlide={onDuplicateSlide}
+                activeDragId={activeDragId}
+                overId={overId}
+                isTargetLesson={targetLessonId === lesson.id}
+                isSelectedLesson={selectedLessonId === lesson.id}
+              />
             ))
           )}
         </div>

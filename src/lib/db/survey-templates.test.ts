@@ -65,7 +65,7 @@ describe('createSurveyTemplate', () => {
       institutionId: 'inst-1',
       name: 'Exit survey',
       description: 'After module',
-      data: { title: 'Survey', questions: [] },
+      data: { title: 'Survey', submit_label: 'Submit Survey', questions: [] },
       createdBy: 'user-1',
     });
 
@@ -84,6 +84,7 @@ describe('applySurveyTemplate', () => {
       description: null,
       data: {
         title: 'Course feedback',
+        submit_label: 'Submit Survey',
         questions: [{ id: 'q-old', type: 'text', question: 'Thoughts?', required: false }],
       },
       created_by: null,

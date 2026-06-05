@@ -70,6 +70,7 @@ export default async function AdminLayout({
         userName={fullName}
         avatarUrl={avatarUrl}
         title={`${institutionSlug.toUpperCase()} Faculty`}
+        institutionSlug={institutionSlug}
       />
       <main className="max-w-7xl mx-auto pt-16 pb-8 px-4 sm:px-6 lg:px-8">
         {children}

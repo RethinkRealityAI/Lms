@@ -1,0 +1,355 @@
+{
+  "lessonId": "5deefeb7-2a07-483e-b800-3e0c4eaea628",
+  "lessonOrderIndex": 8,
+  "lessonTitle": "Stewardship",
+  "lessonDescription": "Explain the importance of stewardship and the vital role it plays in the development and strengthening of relationships with volunteers. Engage and enhance the relationship between volunteers and your organization. Thoughtfully and strategically weave stewardship throughout the volunteers' entire experience at the organization.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "What is Stewardship?",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_08/slide_00_image_00.png",
+                "alt": "Stewardship concept illustration",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>What is Stewardship?</h2><p>Stewardship encompasses all the ways volunteer engagement shows they have the <strong>volunteers' best interests at heart</strong> throughout the entire process. It's an ongoing effort — not a one-time event or stage.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Stewardship happens at ALL stages of volunteer management:</strong></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": null,
+            "items": [
+              {
+                "html": "<p><strong>Recruitment</strong> — Building trust from the first point of contact</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Orientation &amp; Training</strong> — Checking in, ensuring volunteers have what they need to succeed</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Recognition</strong> — Demonstrating ongoing appreciation</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "decimal",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>This is important because it opens the door to further enhancements of the volunteer experience and deepens a volunteer's connection with the organization.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 2
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Stewardship vs. Recognition",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Stewardship vs. Recognition</h2><p>While on the surface, stewardship may seem like recognition, there are key differences:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              {
+                "id": "col-stewardship",
+                "label": "Stewardship",
+                "align": "left"
+              },
+              {
+                "id": "col-recognition",
+                "label": "Recognition",
+                "align": "left"
+              }
+            ],
+            "rows": [
+              {
+                "id": "row-01",
+                "cells": {
+                  "col-stewardship": "Ongoing throughout the entire volunteer journey",
+                  "col-recognition": "Typically a specific act or event"
+                }
+              },
+              {
+                "id": "row-02",
+                "cells": {
+                  "col-stewardship": "Woven into every interaction and stage",
+                  "col-recognition": "More episodic and deliberate"
+                }
+              },
+              {
+                "id": "row-03",
+                "cells": {
+                  "col-stewardship": "Shows volunteers their best interests are at heart",
+                  "col-recognition": "Acknowledges specific contributions"
+                }
+              },
+              {
+                "id": "row-04",
+                "cells": {
+                  "col-stewardship": "Everyone's responsibility, all the time",
+                  "col-recognition": "Often planned or scheduled"
+                }
+              }
+            ],
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_08/slide_01_image_01.jpg",
+                "alt": "Diverse professional women collaborating",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_08/slide_01_image_02.jpg",
+                "alt": "Diverse professional women in discussion",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_08/slide_01_image_03.jpg",
+                "alt": "Young professionals collaborating",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "enableLightbox": true,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Stewardship in Practice</h2><p><strong>During Orientation &amp; Training:</strong><br>Check in with volunteers to ensure they have the skills and knowledge for success. Don't assume — ask.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "tip",
+            "title": "Mentorship as a Stewardship Tool",
+            "html": "<p>Mentorship is a key stewardship tool — it transfers knowledge and wisdom through a structured or informal relationship, deepening the volunteer's connection to the mission.</p>",
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following is an example of incorporating stewardship during the orientation & training stage?",
+            "options": [
+              "Asking volunteers how they would like to be involved",
+              "Conducting a formal medal ceremony",
+              "Checking in with volunteers to ensure they have the skills and knowledge for success",
+              "Sending out monthly newsletters"
+            ],
+            "correct_answer": "Checking in with volunteers to ensure they have the skills and knowledge for success",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Stewardship during orientation means checking in with volunteers to ensure they have what they need to succeed — showing their best interests are at heart.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "At which stages of volunteer management does stewardship occur?",
+            "options": [
+              "Recruitment only",
+              "Orientation & training only",
+              "Recognition only",
+              "Recruitment, orientation & training, and recognition"
+            ],
+            "correct_answer": "Recruitment, orientation & training, and recognition",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Stewardship occurs at ALL stages — recruitment, orientation & training, and recognition.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "How can mentorship serve as a component of stewardship?",
+            "options": [
+              "By providing formal training sessions to all volunteers",
+              "By transferring knowledge and wisdom through a structured or informal relationship",
+              "By conducting performance reviews for volunteers",
+              "By organizing large-scale volunteer events"
+            ],
+            "correct_answer": "By transferring knowledge and wisdom through a structured or informal relationship",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Mentorship deepens the volunteer's connection to the mission by transferring knowledge and wisdom through a structured or informal relationship.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

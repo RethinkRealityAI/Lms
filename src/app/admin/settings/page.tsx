@@ -1,5 +1,5 @@
 'use client';
-
+// v2
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,441 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Key, Loader2, Copy, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Key, Loader2, Copy, CheckCircle2, Palette, RotateCcw, Type, SlidersHorizontal, Image as ImageIcon } from 'lucide-react';
+import { asInstitutionTheme, type InstitutionTheme, type BlockStyle } from '@/lib/tenant/institution-theme';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
+import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
+
+// ── Constants shared with course-settings-modal ──────────────────────────────
+
+const BLOCK_STYLES: { value: BlockStyle; label: string; description: string; preview: string }[] = [
+  { value: 'glass',      label: 'Light Glass', description: 'Frosted glass · transparent on light slides (default)', preview: 'bg-white/25 border border-slate-200/60 shadow-md backdrop-blur-sm' },
+  { value: 'glass-dark', label: 'Dark Glass',  description: 'Smoked liquid glass · for dark or photo backgrounds',  preview: 'bg-slate-900/55 border border-white/15 shadow-md backdrop-blur-sm' },
+  { value: 'classic',    label: 'Classic',      description: 'Clean white card',                                     preview: 'bg-white border border-gray-200 shadow-sm' },
+  { value: 'none',       label: 'None',         description: 'No container · transparent blocks',                   preview: 'border-2 border-dashed border-gray-200' },
+];
+
+const BG_PRESETS = [
+  { label: 'Inherit',  value: '' },
+  { label: 'White',    value: '#FFFFFF' },
+  { label: 'Light',    value: '#F8FAFC' },
+  { label: 'Navy',     value: '#1E3A5F' },
+  { label: 'Dark',     value: '#0F172A' },
+  { label: 'Gradient', value: 'gradient' },
+];
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function SectionHeading({ icon, title, hint }: { icon: React.ReactNode; title: string; hint?: string }) {
+  return (
+    <div className="flex items-start gap-2 mb-3">
+      <div className="mt-0.5 text-muted-foreground">{icon}</div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+        {hint && <p className="text-xs text-muted-foreground/70 mt-0.5">{hint}</p>}
+      </div>
+    </div>
+  );
+}
+
+interface ColorRowProps {
+  label: string;
+  hint?: string;
+  value: string | undefined;
+  fallback: string;
+  onChange: (v: string) => void;
+  onReset: () => void;
+  resetLabel?: string;
+}
+
+function ColorRow({ label, hint, value, fallback, onChange, onReset, resetLabel = 'default' }: ColorRowProps) {
+  const val = (value ?? '').trim();
+  return (
+    <div className="flex items-center gap-3">
+      <input
+        type="color"
+        value={val || fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-9 w-11 shrink-0 rounded border border-gray-200 cursor-pointer bg-white p-0.5"
+        aria-label={label}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium leading-tight">{label}</p>
+        {hint && <p className="text-xs text-muted-foreground leading-tight">{hint}</p>}
+      </div>
+      {val ? (
+        <Button variant="ghost" size="sm" className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground" onClick={onReset}>
+          Reset
+        </Button>
+      ) : (
+        <span className="text-xs text-muted-foreground/50 pr-2 shrink-0">{resetLabel}</span>
+      )}
+    </div>
+  );
+}
+
+// ── InstitutionThemeCard ─────────────────────────────────────────────────────
+
+function InstitutionThemeCard({
+  supabase,
+  institutionId,
+  institutionSlug,
+}: {
+  supabase: ReturnType<typeof createClient>;
+  institutionId: string | null;
+  institutionSlug: string | null;
+}) {
+  const [theme, setTheme] = useState<InstitutionTheme>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!institutionId) return;
+    setLoading(true);
+    supabase
+      .from('institutions')
+      .select('theme')
+      .eq('id', institutionId)
+      .maybeSingle()
+      .then(({ data }) => {
+        setTheme(asInstitutionTheme(data?.theme));
+        setLoading(false);
+      });
+  }, [supabase, institutionId]);
+
+  const set = (patch: Partial<InstitutionTheme>) => setTheme((t) => ({ ...t, ...patch }));
+
+  const save = async () => {
+    if (!institutionId) return;
+    setSaving(true);
+    // Convert to a plain record, stripping empty strings so unset fields stay
+    // truly inherited at the course level.
+    const clean: Record<string, string> = {};
+    for (const [k, v] of Object.entries(theme)) {
+      if (v != null && String(v).trim()) clean[k] = String(v).trim();
+    }
+    const { error } = await supabase
+      .from('institutions')
+      .update({ theme: clean })
+      .eq('id', institutionId);
+    setSaving(false);
+    if (error) toast.error('Failed to save theme', { description: error.message });
+    else toast.success('Institution theme saved');
+  };
+
+  // Institution branding — used as gradient fallback colours.
+  const branding = getInstitutionBranding(institutionSlug);
+
+  // Resolved preview values — show system defaults when the field is unset.
+  const lessonColor  = theme.lesson_title_color   || '#64748b';
+  const slideColor   = theme.slide_title_color    || '#0F172A';
+  const numberColor  = theme.number_color         || '#64748b';
+  const progressColor = theme.progress_color      || '#1E3A5F';
+  const trackColor   = theme.progress_track_color || '#f1f5f9';
+  const blockStyle   = theme.default_block_style  || 'glass';
+  const bg           = theme.default_background   ?? '';
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Palette className="h-5 w-5 text-muted-foreground" />
+          <div>
+            <CardTitle>Appearance</CardTitle>
+            <CardDescription>
+              Global brand defaults for this institution. Every course inherits these unless it overrides them.
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="space-y-7 max-w-2xl">
+
+            {/* ── BRANDING ─────────────────────────────────────────────── */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+              <SectionHeading
+                icon={<Palette className="w-4 h-4" />}
+                title="Branding"
+                hint="Primary colours used for interactive controls, buttons, and navigation chrome"
+              />
+              <div className="space-y-3">
+                <ColorRow
+                  label="Brand accent"
+                  hint="Sliders, progress bars, primary buttons"
+                  value={theme.accent_color}
+                  fallback="#1E3A5F"
+                  onChange={(v) => set({ accent_color: v })}
+                  onReset={() => set({ accent_color: undefined })}
+                  resetLabel="inherit"
+                />
+                <ColorRow
+                  label="Slider colour"
+                  hint="Slider track + thumb (blank = brand accent)"
+                  value={theme.slider_accent}
+                  fallback="#1E3A5F"
+                  onChange={(v) => set({ slider_accent: v })}
+                  onReset={() => set({ slider_accent: undefined })}
+                  resetLabel="inherit"
+                />
+                <ColorRow
+                  label="Menu tint"
+                  hint="Lesson sidebar chrome tint (blank = neutral frosted glass)"
+                  value={theme.chrome_accent}
+                  fallback="#1E3A5F"
+                  onChange={(v) => set({ chrome_accent: v })}
+                  onReset={() => set({ chrome_accent: undefined })}
+                  resetLabel="none"
+                />
+              </div>
+            </div>
+
+            {/* ── SLIDE HEADER ─────────────────────────────────────────── */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+              <SectionHeading
+                icon={<Type className="w-4 h-4" />}
+                title="Slide Header"
+                hint="The bar above every slide: lesson eyebrow, slide headline, counter, and progress bar"
+              />
+
+              {/* Live preview */}
+              <div className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 mb-4">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="min-w-0">
+                    <span
+                      className="text-[11px] font-bold uppercase tracking-wider block leading-tight"
+                      style={{ color: lessonColor }}
+                    >
+                      Lesson Title
+                    </span>
+                    <span
+                      className="text-lg font-black block leading-tight mt-0.5"
+                      style={{ color: slideColor }}
+                    >
+                      Slide Headline
+                    </span>
+                  </div>
+                  <span className="text-sm font-bold tabular-nums shrink-0 pt-0.5" style={{ color: numberColor }}>
+                    3 / 10
+                  </span>
+                </div>
+                <div className="w-full rounded-full h-[3px]" style={{ backgroundColor: trackColor }}>
+                  <div className="h-[3px] rounded-full" style={{ width: '30%', backgroundColor: progressColor }} />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <ColorRow label="Lesson title (eyebrow)"  value={theme.lesson_title_color}   fallback="#64748b" onChange={(v) => set({ lesson_title_color: v })}   onReset={() => set({ lesson_title_color: undefined })} />
+                <ColorRow label="Slide title (headline)"  value={theme.slide_title_color}    fallback="#0F172A" onChange={(v) => set({ slide_title_color: v })}    onReset={() => set({ slide_title_color: undefined })} />
+                <ColorRow label="Slide counter"           value={theme.number_color}         fallback="#64748b" onChange={(v) => set({ number_color: v })}         onReset={() => set({ number_color: undefined })} />
+                <ColorRow label="Progress bar fill"       value={theme.progress_color}       fallback="#1E3A5F" onChange={(v) => set({ progress_color: v })}       onReset={() => set({ progress_color: undefined })} />
+                <ColorRow label="Progress bar track"      value={theme.progress_track_color} fallback="#f1f5f9" onChange={(v) => set({ progress_track_color: v })} onReset={() => set({ progress_track_color: undefined })} />
+              </div>
+            </div>
+
+            {/* ── SLIDE DEFAULTS ───────────────────────────────────────── */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+              <SectionHeading
+                icon={<SlidersHorizontal className="w-4 h-4" />}
+                title="Slide Defaults"
+                hint="Applied to every slide in every course unless the course or slide overrides them"
+              />
+
+              {/* Block style */}
+              <p className="text-sm font-medium mb-1">Default Block Style</p>
+              <p className="text-xs text-muted-foreground mb-3">How component containers look across all courses</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                {BLOCK_STYLES.map((s) => {
+                  const active = blockStyle === s.value;
+                  return (
+                    <button
+                      key={s.value}
+                      type="button"
+                      onClick={() => set({ default_block_style: s.value })}
+                      className={`flex flex-col items-start gap-1.5 p-2.5 rounded-xl border text-left transition-all ${
+                        active
+                          ? 'border-[#1E3A5F] bg-blue-50 ring-1 ring-[#1E3A5F]/30'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                      }`}
+                    >
+                      <div className={`w-full h-5 rounded-md ${s.preview}`} />
+                      <span className={`text-[11px] font-semibold leading-tight ${active ? 'text-[#1E3A5F]' : 'text-gray-700'}`}>
+                        {s.label}
+                      </span>
+                      <span className="text-[9px] text-gray-400 leading-tight">{s.description}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {theme.default_block_style && (
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground hover:text-foreground mb-5"
+                  onClick={() => set({ default_block_style: undefined })}
+                >
+                  ↩ Reset to Light Glass
+                </button>
+              )}
+              {!theme.default_block_style && <div className="mb-5" />}
+
+              {/* Default background */}
+              <p className="text-sm font-medium mb-1">Default Background</p>
+              <p className="text-xs text-muted-foreground mb-3">Slide background for all courses unless overridden</p>
+              <div className="flex gap-1.5 flex-wrap mb-2">
+                {BG_PRESETS.map((preset) => (
+                  <button
+                    key={preset.value || 'inherit'}
+                    type="button"
+                    onClick={() => set({ default_background: preset.value || undefined })}
+                    className={`px-2.5 py-1 text-xs rounded-lg transition-colors border ${
+                      bg === preset.value
+                        ? 'border-[#1E3A5F] text-[#1E3A5F] bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+              {bg.startsWith('#') && (
+                <div className="flex items-center gap-3 mt-2">
+                  <input
+                    type="color"
+                    value={bg}
+                    onChange={(e) => set({ default_background: e.target.value })}
+                    className="h-9 w-11 shrink-0 rounded border border-gray-200 cursor-pointer bg-white p-0.5"
+                    aria-label="Custom background colour"
+                  />
+                  <span className="text-xs text-muted-foreground font-mono">{bg}</span>
+                </div>
+              )}
+            </div>
+
+            {/* ── TITLE SLIDE ──────────────────────────────────────────── */}
+            <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4 space-y-5">
+              <SectionHeading
+                icon={<ImageIcon className="w-4 h-4" />}
+                title="Title Slide"
+                hint="Default appearance for title slides across all courses"
+              />
+
+              {/* Gradient */}
+              <div>
+                <p className="text-sm font-medium mb-1">Gradient colours</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Shown when no background image is set. Blank = use institution brand colours
+                  ({branding.primaryColor} → {branding.secondaryColor}).
+                </p>
+                {/* Live gradient preview */}
+                <div
+                  className="w-full h-10 rounded-lg mb-3 border border-gray-200"
+                  style={{
+                    background: `linear-gradient(to right, ${theme.title_gradient_from || branding.primaryColor}, ${theme.title_gradient_to || branding.secondaryColor})`,
+                  }}
+                />
+                <div className="space-y-3">
+                  <ColorRow
+                    label="Gradient start"
+                    value={theme.title_gradient_from}
+                    fallback={branding.primaryColor}
+                    onChange={(v) => set({ title_gradient_from: v })}
+                    onReset={() => set({ title_gradient_from: undefined })}
+                    resetLabel="brand colour"
+                  />
+                  <ColorRow
+                    label="Gradient end"
+                    value={theme.title_gradient_to}
+                    fallback={branding.secondaryColor}
+                    onChange={(v) => set({ title_gradient_to: v })}
+                    onReset={() => set({ title_gradient_to: undefined })}
+                    resetLabel="brand colour"
+                  />
+                </div>
+              </div>
+
+              {/* Default background image */}
+              <div>
+                <p className="text-sm font-medium mb-1">Default background image</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Shown on title slides that have no per-lesson image. Overrides gradient.
+                </p>
+                {institutionId && (
+                  <DropZoneUploader
+                    bucket="canva-exports"
+                    pathPrefix={`institution-assets/${institutionId}/title-bg/`}
+                    accept="image/*"
+                    label="Upload background image"
+                    currentUrl={theme.default_title_background_url ?? undefined}
+                    onUpload={(url) => set({ default_title_background_url: url })}
+                    onRemove={() => set({ default_title_background_url: undefined })}
+                    previewMode="image"
+                  />
+                )}
+              </div>
+
+              {/* Logo */}
+              <div>
+                <p className="text-sm font-medium mb-1">Default logo</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Shown in the bottom-left footer of every title slide.
+                </p>
+                {institutionId && (
+                  <DropZoneUploader
+                    bucket="canva-exports"
+                    pathPrefix={`institution-assets/${institutionId}/logo/`}
+                    accept="image/*"
+                    label="Upload logo image"
+                    currentUrl={theme.default_title_logo_url ?? undefined}
+                    onUpload={(url) => set({ default_title_logo_url: url })}
+                    onRemove={() => set({ default_title_logo_url: undefined })}
+                    previewMode="image"
+                    className="mb-2"
+                  />
+                )}
+                <Label htmlFor="title-logo" className="text-xs text-muted-foreground">Or paste a URL</Label>
+                <Input
+                  id="title-logo"
+                  className="mt-1"
+                  placeholder="https://…/logo.png  (blank = use institution logo)"
+                  value={theme.default_title_logo_url ?? ''}
+                  onChange={(e) => set({ default_title_logo_url: e.target.value || undefined })}
+                />
+              </div>
+            </div>
+
+            {/* ── ACTIONS ──────────────────────────────────────────────── */}
+            <div className="flex items-center justify-between pt-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground gap-1.5"
+                onClick={() => setTheme({})}
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset all to defaults
+              </Button>
+              <Button onClick={save} disabled={saving}>
+                {saving ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving…</>
+                ) : (
+                  'Save theme'
+                )}
+              </Button>
+            </div>
+
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Verification codes ────────────────────────────────────────────────────────
 
 interface VerificationCode {
   id: string;
@@ -26,14 +460,14 @@ interface VerificationCode {
   institution_id: string | null;
 }
 
-/** Resolve the current tenant's institution_id from the cookie set by middleware. */
-function useInstitutionId(supabase: ReturnType<typeof createClient>) {
-  const [institutionId, setInstitutionId] = useState<string | null>(null);
+/** Resolve the current tenant's institution id + slug from the middleware cookie. */
+function useInstitutionContext(supabase: ReturnType<typeof createClient>) {
+  const [ctx, setCtx] = useState<{ id: string | null; slug: string | null }>({ id: null, slug: null });
   useEffect(() => {
     const slugCookie = document.cookie
       .split('; ')
       .find((c) => c.startsWith('institution_slug='));
-    const slug = slugCookie?.split('=')[1];
+    const slug = slugCookie?.split('=')[1] ?? null;
     if (slug) {
       supabase
         .from('institutions')
@@ -41,11 +475,11 @@ function useInstitutionId(supabase: ReturnType<typeof createClient>) {
         .eq('slug', slug)
         .maybeSingle()
         .then(({ data }) => {
-          if (data) setInstitutionId(data.id);
+          if (data) setCtx({ id: data.id, slug });
         });
     }
   }, [supabase]);
-  return institutionId;
+  return ctx;
 }
 
 export default function AdminSettingsPage() {
@@ -63,7 +497,7 @@ export default function AdminSettingsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const supabase = createClient();
-  const institutionId = useInstitutionId(supabase);
+  const { id: institutionId, slug: institutionSlug } = useInstitutionContext(supabase);
 
   const loadCodes = useCallback(async () => {
     if (!institutionId) return;
@@ -136,8 +570,8 @@ export default function AdminSettingsPage() {
       setDialogOpen(false);
       resetForm();
       loadCodes();
-    } catch (error: any) {
-      toast.error('Operation failed', { description: error.message });
+    } catch (error: unknown) {
+      toast.error('Operation failed', { description: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setSubmitting(false);
     }
@@ -207,10 +641,12 @@ export default function AdminSettingsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Admin Settings</h1>
           <p className="text-muted-foreground mt-1">
-            Manage verification codes for instructor signup
+            Institution appearance &amp; instructor signup codes
           </p>
         </div>
       </div>
+
+      <InstitutionThemeCard supabase={supabase} institutionId={institutionId} institutionSlug={institutionSlug} />
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -280,17 +716,11 @@ export default function AdminSettingsPage() {
                           <p className="text-sm text-muted-foreground mb-2">{code.description}</p>
                         )}
                         <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                          <span>
-                            Uses: {code.current_uses} / {code.max_uses}
-                          </span>
+                          <span>Uses: {code.current_uses} / {code.max_uses}</span>
                           {code.expires_at && (
-                            <span>
-                              Expires: {new Date(code.expires_at).toLocaleDateString()}
-                            </span>
+                            <span>Expires: {new Date(code.expires_at).toLocaleDateString()}</span>
                           )}
-                          <span>
-                            Created: {new Date(code.created_at).toLocaleDateString()}
-                          </span>
+                          <span>Created: {new Date(code.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
                       <div className="flex gap-2">

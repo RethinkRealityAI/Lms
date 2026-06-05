@@ -1,9 +1,7 @@
 'use client';
 
-import { Save, Undo2, Redo2, Eye, Play, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone, Keyboard } from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
+import { Save, Undo2, Redo2, Play, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone, Keyboard, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { withInstitutionPath } from '@/lib/tenant/path';
 import { useEditorStore } from './editor-store-context';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
@@ -14,6 +12,7 @@ interface EditorToolbarProps {
   onDevicePreviewChange: (device: DevicePreview) => void;
   onPreviewLesson?: () => void;
   onShowShortcuts?: () => void;
+  onOpenSettings?: () => void;
 }
 
 const ACTION_LABELS: Record<string, string> = {
@@ -26,9 +25,7 @@ const ACTION_LABELS: Record<string, string> = {
   reorderSlides: 'reorder slides',
 };
 
-export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreviewChange, onPreviewLesson, onShowShortcuts }: EditorToolbarProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+export function EditorToolbar({ onSave, devicePreview, onDevicePreviewChange, onPreviewLesson, onShowShortcuts, onOpenSettings }: EditorToolbarProps) {
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
   const undo = useEditorStore((s) => s.undo);
@@ -117,22 +114,23 @@ export function EditorToolbar({ onSave, courseId, devicePreview, onDevicePreview
         <div className="w-px h-5 bg-gray-200 mx-1" />
         <button
           onClick={onPreviewLesson}
-          className="p-2 rounded hover:bg-gray-100 transition-colors"
-          title="Preview lesson"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+          title="Preview (opens on the current slide · desktop / tablet / mobile)"
         >
-          <Play className="w-4 h-4 text-gray-600" />
+          <Play className="w-4 h-4" />
+          <span className="text-xs font-medium hidden sm:inline">Preview</span>
         </button>
         <button
-          onClick={() => courseId && router.push(withInstitutionPath(`/admin/courses/${courseId}/preview`, pathname))}
+          onClick={onOpenSettings}
           className="p-2 rounded hover:bg-gray-100 transition-colors"
-          title="Preview full course"
+          title="Course settings — theme, colours, default slide style"
         >
-          <Eye className="w-4 h-4 text-gray-600" />
+          <Settings2 className="w-4 h-4 text-gray-600" />
         </button>
         <button
           onClick={onShowShortcuts}
           className="p-2 rounded hover:bg-gray-100 transition-colors"
-          title="Keyboard shortcuts (?)"
+          title="Keyboard shortcuts (Ctrl+?)"
         >
           <Keyboard className="w-4 h-4 text-gray-600" />
         </button>

@@ -7,6 +7,8 @@ export interface BlockEditorProps<TData = Record<string, unknown>> {
   data: TData;
   block: { id: string; title?: string };
   onChange: (data: TData) => void;
+  /** Active slide `settings.block_style` — used by blocks that inherit surface colors */
+  slideBlockStyle?: string;
 }
 
 export interface BlockViewerContext {
@@ -14,6 +16,19 @@ export interface BlockViewerContext {
   lessonId?: string;
   institutionId?: string;
   previewMode?: boolean;
+  /** Slide `settings.block_style` — applied by BlockSurface so viewers skip nested card chrome. */
+  blockStyle?: string;
+  /** True when rendered inside the editor's editable canvas (not the student/preview viewer).
+   *  Blocks that capture pointer events (scratch-reveal, match-pairs drags) should render a
+   *  static, non-interactive preview when this is set, to avoid hijacking editor drag/drop. */
+  editing?: boolean;
+  /** True when this is the ONLY block on its slide — fill-cell blocks grow to fill more
+   *  of the slide instead of hugging their (often small) intrinsic content height. */
+  soleBlock?: boolean;
+  /** Resolved theme cascade (course → institution → branding) for themeable blocks (slider). */
+  theme?: { accent: string; sliderAccent: string; chromeAccent: string | null; titleLogoUrl: string | null };
+  /** Called by media blocks (e.g. video) when they want the viewer to advance to the next slide. */
+  onAutoAdvance?: () => void;
 }
 
 export interface BlockViewerProps<TData = Record<string, unknown>> {

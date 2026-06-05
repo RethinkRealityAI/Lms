@@ -1,0 +1,157 @@
+{
+  "lessonId": "b909d501-ebc9-4814-8b8b-5dc579d1ea35",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Understanding Leadership",
+  "lessonDescription": null,
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Definition of Leadership",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/Leadership_5yGqB85_bdvjrm.jpg",
+                "alt": "Leadership",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>LEADERSHIP</strong> is the process of guiding and influencing others or a team towards a common vision or goal. It entails inspiring and motivating one's team, encouraging collaboration, and making decisions.</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Importance of Effective Leadership",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-4/images/Module_4_Leadership/Lesson_01_Understanding_Effective_Leadership/Leadership-Framework-Graphic-Final_ee7oge.png",
+                "alt": "Leadership Framework Graphic",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "objectFit": "contain",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Effective leadership is crucial for the success of any organization. It is important because it:</p>",
+            "mode": "standard",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              { "html": "<p>Impacts <strong>employee satisfaction</strong> and sense of value</p>", "animation": "none" },
+              { "html": "<p>Drives <strong>productivity</strong> and results</p>", "animation": "none" },
+              { "html": "<p>Shapes <strong>overall organizational performance</strong></p>", "animation": "none" },
+              { "html": "<p>Inspires and motivates the team</p>", "animation": "none" },
+              { "html": "<p>Encourages <strong>collaboration</strong> across the organization</p>", "animation": "none" }
+            ],
+            "bullet_style": "disc",
+            "enable_animations": false,
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>Effective leadership is not about power or control — it is about empowering others, fostering growth, and creating positive impact.</p>",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following best describes the primary role of leadership in an organization?",
+            "options": [
+              "Ensuring that all tasks are completed on time",
+              "Guiding and influencing others towards a common vision or goal",
+              "Enforcing company policies and regulations strictly",
+              "Managing the financial aspects of the organization"
+            ],
+            "correct_answer": "Guiding and influencing others towards a common vision or goal",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Leadership is fundamentally the process of guiding and influencing others towards a common vision or goal — not just task management or policy enforcement.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is effective leadership crucial for the success of an organization?",
+            "options": [
+              "It ensures that the organization's financial resources are managed efficiently.",
+              "It focuses solely on the production and sales targets of the organization.",
+              "It inspires and motivates the team, encourages collaboration, and impacts overall performance.",
+              "It enforces strict compliance with organizational rules and regulations."
+            ],
+            "correct_answer": "It inspires and motivates the team, encourages collaboration, and impacts overall performance.",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Effective leadership is crucial because it inspires and motivates the team, encourages collaboration, and positively impacts overall organizational performance.",
+            "gridX": 0, "gridY": 1, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

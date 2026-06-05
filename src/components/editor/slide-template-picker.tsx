@@ -11,7 +11,7 @@ interface SlideTemplatePickerProps {
   lessonId: string;
   onClose: () => void;
   /** When provided, called instead of writing directly to the store — allows DB-first creation */
-  onAddSlide?: (lessonId: string, slideData: Slide) => void;
+  onAddSlide?: (lessonId: string, slideData: Slide, template: SlideTemplateConfig) => void;
 }
 
 export function SlideTemplatePicker({ lessonId, onClose, onAddSlide }: SlideTemplatePickerProps) {
@@ -33,7 +33,7 @@ export function SlideTemplatePicker({ lessonId, onClose, onAddSlide }: SlideTemp
       updated_at: new Date().toISOString(),
     };
     if (onAddSlide) {
-      onAddSlide(lessonId, slideData);
+      onAddSlide(lessonId, slideData, template);
     } else {
       addSlide(lessonId, slideData);
     }
@@ -61,7 +61,7 @@ export function SlideTemplatePicker({ lessonId, onClose, onAddSlide }: SlideTemp
         <div className="p-6 overflow-y-auto grid grid-cols-3 gap-3">
           {SLIDE_TEMPLATES.map((template) => (
             <TemplateCard
-              key={template.type}
+              key={template.id}
               template={template}
               onSelect={handleSelect}
             />

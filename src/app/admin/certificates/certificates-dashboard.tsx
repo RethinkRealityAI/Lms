@@ -14,22 +14,24 @@ import { CertificatePreviewModal } from '@/components/certificates/certificate-p
 import { TemplateEditor } from '@/components/certificates/template-editor';
 import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { AwardCertificateModal } from '@/components/certificates/award-certificate-modal';
+import { ProgramsTab } from './programs-tab';
 import { toast } from 'sonner';
 import { Award, Plus, Pencil, Trash2, Search, Download, Eye } from 'lucide-react';
-import type { CertificateTemplate, CertificateWithDetails, CertificateData, CourseCertificateTemplate, Course } from '@/types';
+import type { CertificateTemplate, CertificateWithDetails, CertificateData, CourseCertificateTemplate, Course, ProgramWithCourses } from '@/types';
 
 interface Props {
   templates: CertificateTemplate[];
   certificates: CertificateWithDetails[];
   assignments: (CourseCertificateTemplate & { course_title: string; template_name: string })[];
   courses: Pick<Course, 'id' | 'title'>[];
+  programs: ProgramWithCourses[];
   institutionId: string;
   institutionName?: string;
 }
 
-type Tab = 'templates' | 'awarded' | 'assignments';
+type Tab = 'templates' | 'awarded' | 'assignments' | 'programs';
 
-export function CertificatesDashboard({ templates: initialTemplates, certificates: initialCerts, assignments: initialAssignments, courses, institutionId, institutionName: initialInstitutionName }: Props) {
+export function CertificatesDashboard({ templates: initialTemplates, certificates: initialCerts, assignments: initialAssignments, courses, programs, institutionId, institutionName: initialInstitutionName }: Props) {
   const router = useRouter();
   const supabase = createClient();
   const [instName, setInstName] = useState(initialInstitutionName ?? '');
@@ -277,7 +279,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
 
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
-        {(['templates', 'awarded', 'assignments'] as Tab[]).map((t) => (
+        {(['templates', 'programs', 'awarded', 'assignments'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => { setTab(t); setCreatingTemplate(false); setEditingTemplate(null); }}
@@ -285,10 +287,21 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
               tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            {t === 'templates' ? 'Templates' : t === 'awarded' ? 'Awarded' : 'Course Assignments'}
+            {t === 'templates' ? 'Templates' : t === 'programs' ? 'Programs' : t === 'awarded' ? 'Awarded' : 'Course Assignments'}
           </button>
         ))}
       </div>
+
+      {/* Programs Tab */}
+      {tab === 'programs' && (
+        <ProgramsTab
+          programs={programs}
+          courses={courses}
+          templates={templates}
+          institutionId={institutionId}
+          onChange={refresh}
+        />
+      )}
 
       {/* Templates Tab - Grid View */}
       {tab === 'templates' && !creatingTemplate && !editingTemplate && (
@@ -388,7 +401,9 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
                       <div className="text-xs text-slate-400">{cert.user?.email}</div>
                     </td>
                     <td className="px-4 py-3 text-slate-600">
-                      {cert.course?.title ?? <span className="text-amber-600 font-medium">Manual Award</span>}
+                      {cert.course?.title ?? (cert.program?.title
+                        ? <span className="inline-flex items-center gap-1 text-[#1E3A5F] font-semibold"><Award className="w-3 h-3" />{cert.program.title} <span className="text-[10px] uppercase tracking-wide text-slate-400">Program</span></span>
+                        : <span className="text-amber-600 font-medium">Manual Award</span>)}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs text-slate-500">{cert.certificate_number ?? '—'}</td>
                     <td className="px-4 py-3 text-slate-500">
@@ -521,7 +536,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
           template={previewCert.template}
           data={{
             student_name: previewCert.user?.full_name ?? previewCert.user?.email ?? 'Student',
-            course_title: previewCert.course?.title,
+            course_title: previewCert.course?.title ?? previewCert.program?.title,
             completion_date: new Date(previewCert.issued_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
             certificate_number: previewCert.certificate_number ?? '',
             institution_name: instName || 'Unknown Institution',

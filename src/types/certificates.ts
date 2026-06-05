@@ -80,6 +80,7 @@ export interface CertificateWithDetails {
   id: string;
   user_id: string;
   course_id: string | null;
+  program_id?: string | null;
   institution_id: string;
   template_id: string | null;
   issued_at: string;
@@ -89,6 +90,21 @@ export interface CertificateWithDetails {
   award_reason: string | null;
   user?: { full_name: string | null; email: string };
   course?: { title: string; description: string } | null;
+  program?: { title: string; description: string | null } | null;
   template?: CertificateTemplate | null;
   awarder?: { full_name: string | null } | null;
+}
+
+export interface Program {
+  id: string;
+  institution_id: string;
+  title: string;
+  description: string | null;
+  certificate_template_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProgramWithCourses extends Program {
+  courses: { id: string; title: string; order_index: number }[];
 }

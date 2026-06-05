@@ -1,0 +1,348 @@
+{
+  "lessonId": "8915729f-4a31-4103-8c3a-bdc836b3cd0a",
+  "lessonOrderIndex": 9,
+  "lessonTitle": "Evaluation",
+  "lessonDescription": "Appropriately say goodbye to volunteers when they leave the organization. Use an evaluation as a tool to help the volunteer program learn and grow. Find additional resources to support these processes.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Evaluation & Volunteer Transitions",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_09/slide_00_image_00.jpg",
+                "alt": "Volunteer evaluation and transitions",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "warning",
+            "title": "Leadership Escalation",
+            "html": "<p>Bring volunteer performance concerns to senior leadership immediately. You and senior leadership should determine the appropriate next steps together. Do not handle this alone or informally.</p>",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Context: The Trend Toward Short-Term Volunteering</h2><p>When we look at trends in volunteering, many volunteers seek <strong>short-term involvement</strong> with a project or organization. They want to give their time in a brief burst of energy then move on to their next opportunity.</p><p>Everything done throughout the volunteer engagement process — recruitment, orientation, recognition, and stewardship — contributes to the growth of a relationship. Even when a volunteer's time has ended, a solid foundation has been laid. When they're ready for a change, there are options to discuss with them.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Managing Volunteer Transitions</h2><p><strong>If a volunteer is not meeting expectations:</strong><br>It is vital that you bring this to <strong>senior leadership immediately</strong>. You and senior leadership should then determine the appropriate next steps. Do not handle this alone or informally.</p><p><strong>The purpose of evaluation:</strong><br>Effective evaluation strengthens a volunteer's experience by providing the <strong>opportunity to give and receive information</strong> about their experience — it's a two-way process.</p><p><strong>Timing of evaluation:</strong><br>Evaluation can be done informally or formally, depending on the role a volunteer is in. It may be different for each volunteer and take place at <strong>various times throughout the volunteers' tenure</strong> — not just at the end.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Evaluation Questions",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Types of Feedback Questions to Consider</h2>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 1
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_09/slide_01_image_01.jpg",
+                "alt": "Volunteer evaluation conversation",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "enableLightbox": true,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "Volunteer's Experience",
+            "items": [
+              {
+                "html": "<p>Did we proactively recognize them during their time?</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Did they feel there were continuous check-ins?</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Were their orientation or training needs regularly addressed?</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_09/slide_01_image_02.jpg",
+                "alt": "Volunteer feedback discussion",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "enableLightbox": true,
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "Process",
+            "items": [
+              {
+                "html": "<p>Were there any gaps in their onboarding?</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>Were role determinations clear and appropriate?</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>What needs attention for future volunteers?</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "General",
+            "items": [
+              {
+                "html": "<p>What should we <strong>start, stop, and continue</strong> doing?</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p>How likely are you to <strong>return as a volunteer</strong>?</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0,
+            "gridY": 5,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What should be done if a volunteer is not meeting expectations or needs to leave the organization?",
+            "options": [
+              "Immediately terminate their involvement without discussion",
+              "Ignore the issue and hope it resolves itself",
+              "Bring the matter to senior leadership to discuss appropriate next steps",
+              "Reduce their responsibilities without informing them"
+            ],
+            "correct_answer": "Bring the matter to senior leadership to discuss appropriate next steps",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Always bring volunteer performance issues to senior leadership immediately. Don't handle it alone or informally.",
+            "feedback_incorrect": "Not quite. It is vital to bring any performance concerns to senior leadership immediately — do not handle this alone or informally.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is a key trend in volunteering that organizations should be aware of?",
+            "options": [
+              "Volunteers are increasingly seeking short-term involvement",
+              "Volunteers prefer long-term, indefinite commitments",
+              "Volunteers are less interested in organizational goals",
+              "Volunteers are seeking more formalized roles"
+            ],
+            "correct_answer": "Volunteers are increasingly seeking short-term involvement",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Many volunteers today want to give their time in a brief burst of energy, then move on to their next opportunity.",
+            "feedback_incorrect": "Not quite. The trend shows volunteers increasingly prefer short-term engagements over open-ended commitments.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "When should an evaluation of a volunteer take place?",
+            "options": [
+              "At various times throughout their tenure, depending on their role",
+              "Only at the end of their volunteer tenure",
+              "Once a year, during the annual performance review",
+              "Only if there are issues with their performance"
+            ],
+            "correct_answer": "At various times throughout their tenure, depending on their role",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Evaluation should happen at various times throughout a volunteer's tenure, not just at the end.",
+            "feedback_incorrect": "Not quite. Evaluation can be informal or formal and should take place at various times throughout the volunteer's tenure, depending on their role.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Why is it important to have an evaluation process for volunteers?",
+            "options": [
+              "To collect fees for their participation",
+              "To provide opportunities to give and receive information about their experience",
+              "To lengthen their volunteering period",
+              "To compare volunteers against each other"
+            ],
+            "correct_answer": "To provide opportunities to give and receive information about their experience",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Effective evaluation is a two-way process that strengthens the volunteer's experience by providing the opportunity to give and receive information.",
+            "feedback_incorrect": "Not quite. Evaluation provides the opportunity to give and receive information about the volunteer's experience — it is a two-way process.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

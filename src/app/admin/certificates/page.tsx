@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getTenantContext } from '@/lib/tenant/server';
 import { getCertificateTemplates, getCourseCertificateAssignments } from '@/lib/db/certificate-templates';
 import { getIssuedCertificates } from '@/lib/db/certificates';
+import { getPrograms } from '@/lib/db/programs';
 import { getInstitutionName } from '@/lib/db/institutions';
 import { CertificatesDashboard } from './certificates-dashboard';
 
@@ -27,11 +28,12 @@ export default async function CertificatesPage() {
 
   if (!institutionId) return <p className="p-8">No institution found.</p>;
 
-  const [templates, certificates, assignments, institutionName] = await Promise.all([
+  const [templates, certificates, assignments, institutionName, programs] = await Promise.all([
     getCertificateTemplates(supabase, institutionId),
     getIssuedCertificates(supabase, institutionId),
     getCourseCertificateAssignments(supabase, institutionId),
     getInstitutionName(supabase, institutionId),
+    getPrograms(supabase, institutionId),
   ]);
 
   const { data: courses } = await supabase
@@ -46,6 +48,7 @@ export default async function CertificatesPage() {
       certificates={certificates}
       assignments={assignments}
       courses={courses ?? []}
+      programs={programs}
       institutionId={institutionId}
       institutionName={institutionName}
     />

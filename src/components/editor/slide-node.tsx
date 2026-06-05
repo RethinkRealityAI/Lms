@@ -1,30 +1,59 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Move, Copy, Pencil } from 'lucide-react';
+import { Trash2, Move, Copy, Pencil, ChevronUp, ChevronDown } from 'lucide-react';
 import { SlideThumbnail } from './slide-thumbnail';
 import { useEditorStore } from './editor-store-context';
 import { MoveSlideDialog } from './move-slide-dialog';
+import { DeleteConfirmDialog } from './delete-confirm-dialog';
+import { createClient } from '@/lib/supabase/client';
+import { deleteSlide as dbDeleteSlide } from '@/lib/db/slides';
 import type { Slide } from '@/types';
+
+const EMPTY_SLIDES: Slide[] = [];
 
 interface SlideNodeProps {
   slide: Slide;
   lessonId: string;
+  slideIndex: number;
   onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
   onDuplicateSlide?: (slideId: string, lessonId: string) => void;
 }
 
-export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: SlideNodeProps) {
+export function SlideNode({ slide, lessonId, slideIndex, onMoveSlide, onDuplicateSlide }: SlideNodeProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const removeSlide = useEditorStore((s) => s.removeSlide);
   const updateSlide = useEditorStore((s) => s.updateSlide);
+  const reorderSlides = useEditorStore((s) => s.reorderSlides);
+  const lessonSlides = useEditorStore((s) => s.slides.get(lessonId) ?? EMPTY_SLIDES);
+  const institutionId = useEditorStore((s) => s.institutionId);
   const modules = useEditorStore((s) => s.modules);
   const lessons = useEditorStore((s) => s.lessons);
+  const slideBlocks = useEditorStore((s) => s.blocks.get(slide.id));
   const isSelected = selectedEntity?.type === 'slide' && selectedEntity.id === slide.id;
+  // Keep the slide highlighted while editing a block that lives on it, so the
+  // structure panel always reflects the slide currently being worked on.
+  const containsSelectedBlock =
+    selectedEntity?.type === 'block' &&
+    (slideBlocks?.some((b) => b.id === selectedEntity.id) ?? false);
+  const isActive = isSelected || containsSelectedBlock;
+
+  const isFirst = slideIndex === 0;
+  const isLast = slideIndex >= lessonSlides.length - 1;
+
+  function moveSlide(e: React.MouseEvent, dir: -1 | 1) {
+    e.stopPropagation();
+    const target = slideIndex + dir;
+    if (target < 0 || target >= lessonSlides.length) return;
+    const ids = lessonSlides.map((s) => s.id);
+    [ids[slideIndex], ids[target]] = [ids[target], ids[slideIndex]];
+    reorderSlides(lessonId, ids);
+  }
 
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const renameInputRef = useRef<HTMLInputElement>(null);
@@ -77,10 +106,32 @@ export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: Sl
     setIsRenaming(false);
   }
 
+  // Trash button: open the in-app confirmation modal (not the native browser dialog).
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation();
-    if (confirm(`Delete slide "${slide.title ?? slide.slide_type}"?`)) {
+    setContextMenu(null);
+    setShowDeleteConfirm(true);
+  }
+
+  async function confirmDelete() {
+    setShowDeleteConfirm(false);
+    // DB-first (matches the shell's delete path): persist the soft-delete BEFORE
+    // removing it locally, otherwise the slide reappears on refresh because the
+    // editor load query filters on deleted_at IS NULL. Without this the structure-
+    // panel trash button only mutated local state and never hit the database.
+    try {
+      const supabase = createClient();
+      if (institutionId) {
+        await dbDeleteSlide(supabase, slide.id, institutionId);
+      }
       removeSlide(lessonId, slide.id);
+      // If the deleted slide was selected, fall back to its parent lesson.
+      if (selectedEntity?.type === 'slide' && selectedEntity.id === slide.id) {
+        selectEntity({ type: 'lesson', id: lessonId });
+      }
+    } catch (err) {
+      console.error('Failed to delete slide:', err);
+      alert('Could not delete the slide. Please try again.');
     }
   }
 
@@ -92,6 +143,7 @@ export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: Sl
   }
 
   const displayTitle = slide.title || slide.slide_type;
+  const slideLabel = `${slideIndex + 1}. ${displayTitle}`;
 
   return (
     <>
@@ -107,7 +159,7 @@ export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: Sl
           setContextMenu({ x: e.clientX, y: e.clientY });
         }}
         className={`flex items-center gap-1.5 px-2 py-1.5 ml-8 rounded cursor-pointer group transition-colors ${
-          isSelected ? 'bg-[#DC2626] text-white' : 'hover:bg-gray-50 text-gray-600'
+          isActive ? 'bg-[#DC2626] text-white' : 'hover:bg-gray-50 text-gray-600'
         }`}
       >
         <SlideThumbnail slide={slide} />
@@ -128,19 +180,43 @@ export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: Sl
             placeholder={slide.slide_type}
           />
         ) : (
-          <span className="text-xs truncate flex-1 min-w-0" title={displayTitle}>
-            {displayTitle}
-          </span>
+          <>
+            <span className="text-[10px] font-semibold tabular-nums shrink-0 opacity-70">{slideIndex + 1}</span>
+            <span className="text-xs truncate flex-1 min-w-0" title={slideLabel}>
+              {displayTitle}
+            </span>
+          </>
         )}
         {!isRenaming && (
-          <button
-            onClick={handleDelete}
-            className={`p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
-              isSelected ? 'hover:bg-red-700' : 'hover:bg-gray-200'
-            }`}
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
+          <div className="flex items-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => moveSlide(e, -1)}
+              disabled={isFirst}
+              title="Move slide up"
+              className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed ${
+                isActive ? 'hover:bg-red-700' : 'hover:bg-gray-200'
+              }`}
+            >
+              <ChevronUp className="w-3 h-3" />
+            </button>
+            <button
+              onClick={(e) => moveSlide(e, 1)}
+              disabled={isLast}
+              title="Move slide down"
+              className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed ${
+                isActive ? 'hover:bg-red-700' : 'hover:bg-gray-200'
+              }`}
+            >
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            <button
+              onClick={handleDelete}
+              title="Delete slide"
+              className={`p-0.5 rounded ${isActive ? 'hover:bg-red-700' : 'hover:bg-gray-200'}`}
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          </div>
         )}
       </div>
 
@@ -211,6 +287,14 @@ export function SlideNode({ slide, lessonId, onMoveSlide, onDuplicateSlide }: Sl
           onClose={() => setShowMoveDialog(false)}
         />
       )}
+
+      {/* In-app delete confirmation (replaces the native browser confirm dialog) */}
+      <DeleteConfirmDialog
+        open={showDeleteConfirm}
+        entityType="slide"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </>
   );
 }

@@ -180,13 +180,15 @@ export async function moveSlideToLesson(
     await reorderSlides(supabase, fromLessonId, sourceSlides.map(s => s.id), institutionId);
   }
 
-  // 4. Log activity
-  await supabase.from('activity_log').insert({
-    institution_id: institutionId,
-    entity_type: 'slide',
-    entity_id: slideId,
-    action: 'move',
-    details: { from_lesson_id: fromLessonId, to_lesson_id: toLessonId },
+  // 4. Log activity — a cross-lesson move is an update of the slide's lesson_id.
+  // (Was a raw insert into a non-existent `activity_log` table with an invalid
+  // 'move' action and a `details` column — it silently failed every time.)
+  await logActivity(supabase, {
+    institutionId,
+    entityType: 'slide',
+    entityId: slideId,
+    action: 'update',
+    changes: { from_lesson_id: fromLessonId, to_lesson_id: toLessonId },
   });
 
   return { success: true };
@@ -258,6 +260,24 @@ export async function duplicateSlide(
         clonedBlocks.push(newBlock);
       }
     }
+  }
+
+  // 5. Move the copy to sit directly after its source (it was created at the end).
+  // Reindexing the whole lesson keeps order_index gap-free and persists the position
+  // so the duplicate stays put after a refresh.
+  const { data: lessonSlides } = await supabase
+    .from('slides')
+    .select('id')
+    .eq('lesson_id', lessonId)
+    .is('deleted_at', null)
+    .order('order_index', { ascending: true });
+  if (lessonSlides && lessonSlides.length > 0) {
+    const ordered = lessonSlides.map((s) => s.id).filter((id) => id !== newSlide.id);
+    const srcPos = ordered.indexOf(slideId);
+    const insertAt = srcPos >= 0 ? srcPos + 1 : ordered.length;
+    ordered.splice(insertAt, 0, newSlide.id);
+    await reorderSlides(supabase, lessonId, ordered, institutionId);
+    newSlide.order_index = insertAt;
   }
 
   return { slide: newSlide, blocks: clonedBlocks };

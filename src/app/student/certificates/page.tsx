@@ -71,7 +71,7 @@ export default function CertificatesPage() {
       toast.success('Verification link copied to clipboard');
     } else {
       const instLabel = institutionName || 'our Learning Platform';
-      const message = `I've completed ${cert.course?.title ?? 'a course'} through ${instLabel}!`;
+      const message = `I've completed ${cert.course?.title ?? cert.program?.title ?? 'a course'} through ${instLabel}!`;
       await navigator.clipboard.writeText(message);
       toast.success('Copied to clipboard!');
     }
@@ -79,7 +79,7 @@ export default function CertificatesPage() {
 
   const buildCertData = (cert: CertificateWithDetails): CertificateData => ({
     student_name: cert.user?.full_name ?? cert.user?.email ?? 'Student',
-    course_title: cert.course?.title,
+    course_title: cert.course?.title ?? cert.program?.title,
     completion_date: new Date(cert.issued_at).toLocaleDateString('en-US', {
       month: 'long', day: 'numeric', year: 'numeric',
     }),
@@ -154,7 +154,12 @@ export default function CertificatesPage() {
 
                   <CardContent className="p-5 space-y-3">
                     <div>
-                      <h3 className="font-black text-lg text-slate-900">{cert.course?.title ?? 'Certificate of Achievement'}</h3>
+                      <h3 className="font-black text-lg text-slate-900 flex items-center gap-1.5">
+                        {cert.course?.title ?? cert.program?.title ?? 'Certificate of Achievement'}
+                        {!cert.course && cert.program && (
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Program</span>
+                        )}
+                      </h3>
                       <p className="text-sm text-slate-500 mt-0.5">
                         Issued {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                       </p>

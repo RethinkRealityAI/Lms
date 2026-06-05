@@ -9,7 +9,14 @@ import { calloutDataSchema } from './callout/schema';
 import { quizInlineDataSchema } from './quiz-inline/schema';
 import { videoDataSchema } from './video/schema';
 import { pageBreakDataSchema } from './page-break/schema';
+import { sliderDataSchema } from './slider/schema';
+import { scratchRevealDataSchema } from './scratch-reveal/schema';
+import { matchPairsDataSchema } from './match-pairs/schema';
+import { fillBlankDataSchema } from './fill-blank/schema';
+import { tableDataSchema } from './table/schema';
 import { surveyDataSchema } from './survey/schema';
+import { contentListDataSchema } from './content-list/schema';
+import { imageCompareDataSchema } from './image-compare/schema';
 
 registerBlockType({
   type: 'rich_text',
@@ -29,12 +36,12 @@ registerBlockType({
 
 registerBlockType({
   type: 'image_gallery',
-  label: 'Image Gallery',
-  description: 'Swipeable image gallery or slider.',
+  label: 'Image',
+  description: 'A single image, or switch to a gallery / slider / carousel.',
   icon: 'images',
   category: 'media',
   dataSchema: imageGalleryDataSchema,
-  defaultData: { images: [], mode: 'gallery' as const },
+  defaultData: { images: [], mode: 'single' as const, objectFit: 'contain' as const, displaySize: 'md' as const },
   ViewerComponent: React.lazy(() => import('@/components/blocks/image-gallery/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/image-gallery/editor').then((m) => ({ default: m.ImageGalleryEditor }))
@@ -46,11 +53,20 @@ registerBlockType({
 registerBlockType({
   type: 'cta',
   label: 'Call to Action',
-  description: 'Styled link button for external content.',
+  description: 'Styled link button for external content — customizable color, label, size, shape, and alignment.',
   icon: 'mouse-pointer-click',
   category: 'navigation',
   dataSchema: ctaDataSchema,
-  defaultData: { text: '', button_label: 'Click Here' },
+  defaultData: {
+    text: '',
+    button_label: 'Click Here',
+    button_style: 'solid' as const,
+    font_size: 'md' as const,
+    align: 'center' as const,
+    radius: 'lg' as const,
+    full_width: false,
+    show_icon: true,
+  },
   ViewerComponent: React.lazy(() => import('@/components/blocks/cta/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/cta/editor').then((m) => ({ default: m.CTAEditor }))
@@ -66,7 +82,15 @@ registerBlockType({
   icon: 'info',
   category: 'content',
   dataSchema: calloutDataSchema,
-  defaultData: { variant: 'info' as const, html: '' },
+  defaultData: {
+    mode: 'callout' as const,
+    variant: 'info' as const,
+    html: '',
+    bubble_text: '',
+    direction: 'right' as const,
+    bubble_style: 'light' as const,
+    avatar_style: 'circle' as const,
+  },
   ViewerComponent: React.lazy(() => import('@/components/blocks/callout/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/callout/editor').then((m) => ({ default: m.CalloutEditor }))
@@ -150,6 +174,123 @@ registerBlockType({
 });
 
 registerBlockType({
+  type: 'slider',
+  label: 'Slider',
+  description: 'Self-assessment or survey scale with numeric range.',
+  icon: 'sliders-horizontal',
+  category: 'interactive',
+  dataSchema: sliderDataSchema,
+  defaultData: {
+    question: '',
+    min_value: 1,
+    max_value: 10,
+    increment: 1,
+    decimals: 0,
+    show_ticks: true,
+    required: false,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/slider/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/slider/editor').then((m) => ({ default: m.SliderEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'scratch_reveal',
+  label: 'Scratch to Reveal',
+  description: 'Scratch off a cover to reveal an image or message underneath.',
+  icon: 'sparkles',
+  category: 'interactive',
+  dataSchema: scratchRevealDataSchema,
+  defaultData: {
+    before: { type: 'text' as const, text: 'Scratch to reveal!', bg_color: '#1A3C6E', text_color: '#FFFFFF' },
+    after: { type: 'text' as const, text: 'Surprise! 🎉', bg_color: '#FFFFFF', text_color: '#0F172A' },
+    brush_size: 42,
+    reveal_threshold: 55,
+    animation: 'confetti' as const,
+    aspect: '16/9' as const,
+    fit: 'contain' as const,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/scratch-reveal/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/scratch-reveal/editor').then((m) => ({ default: m.ScratchRevealEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'image_compare',
+  label: 'Before / After',
+  description: 'Drag a slider to compare two images side by side or top to bottom.',
+  icon: 'columns-2',
+  category: 'interactive',
+  dataSchema: imageCompareDataSchema,
+  defaultData: {
+    before: { url: '' },
+    after: { url: '' },
+    initial_position: 50,
+    direction: 'horizontal' as const,
+    aspect: '16/9' as const,
+    fit: 'cover' as const,
+    handle_style: 'circle' as const,
+    handle_color: '#FFFFFF',
+    divider_color: '#FFFFFF',
+    show_labels: 'always' as const,
+    require_interaction: false,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/image-compare/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/image-compare/editor').then((m) => ({ default: m.ImageCompareEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'match_pairs',
+  label: 'Drag to Match',
+  description: 'Match prompts to their answers — image or text, drag or tap.',
+  icon: 'shuffle',
+  category: 'assessment',
+  dataSchema: matchPairsDataSchema,
+  defaultData: {
+    pairs: [],
+    prompt_side: 'left' as const,
+    shuffle: true,
+    show_feedback: true,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/match-pairs/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/match-pairs/editor').then((m) => ({ default: m.MatchPairsEditor }))
+  ),
+  version: 1,
+});
+
+registerBlockType({
+  type: 'fill_blank',
+  label: 'Fill in the Blank',
+  description: 'A passage with blanks — learners drag (or tap) words from a bank into the gaps.',
+  icon: 'text-cursor-input',
+  category: 'assessment',
+  dataSchema: fillBlankDataSchema,
+  defaultData: {
+    instructions: 'Drag each word into the correct blank.',
+    text: 'Water is made of [hydrogen] and [oxygen].',
+    distractors: ['carbon'],
+    shuffle: true,
+    show_feedback: true,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/fill-blank/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/fill-blank/editor').then((m) => ({ default: m.FillBlankEditor }))
+  ),
+  version: 1,
+});
+
+registerBlockType({
   type: 'survey',
   label: 'Survey',
   description: 'Multi-question survey with mixed question types and saved responses.',
@@ -164,6 +305,62 @@ registerBlockType({
   ViewerComponent: React.lazy(() => import('@/components/blocks/survey/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/survey/editor').then((m) => ({ default: m.SurveyEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'table',
+  label: 'Table',
+  description: 'A titled data table with columns, rows, alignment, striping, and theme colours.',
+  icon: 'table',
+  category: 'content',
+  dataSchema: tableDataSchema,
+  defaultData: {
+    title: '',
+    columns: [
+      { id: 'col-1', label: 'Column 1', align: 'left' },
+      { id: 'col-2', label: 'Column 2', align: 'left' },
+    ],
+    rows: [
+      { id: 'row-1', cells: { 'col-1': '', 'col-2': '' } },
+      { id: 'row-2', cells: { 'col-1': '', 'col-2': '' } },
+    ],
+    striped: true,
+    first_column_header: false,
+    density: 'comfortable',
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/table/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/table/editor').then((m) => ({ default: m.TableEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'content_list',
+  label: 'List',
+  description: 'Bulleted/numbered list OR an expand-collapse accordion (title + revealed content), with links, sizing, colors, and entrance animations.',
+  icon: 'list',
+  category: 'content',
+  dataSchema: contentListDataSchema,
+  defaultData: {
+    items: [],
+    display_mode: 'list' as const,
+    bullet_style: 'disc' as const,
+    font_size: 'auto' as const,
+    accordion_icon: 'caret' as const,
+    accordion_icon_position: 'right' as const,
+    accordion_multiple: false,
+    accordion_default_open: 'none' as const,
+    enable_animations: false,
+    animation_stagger_ms: 120,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/content-list/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/content-list/editor').then((m) => ({ default: m.ContentListEditor }))
   ),
   completionCriteria: () => true,
   version: 1,

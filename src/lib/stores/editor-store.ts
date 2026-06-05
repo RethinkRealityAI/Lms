@@ -1,6 +1,9 @@
 import { createStore } from 'zustand/vanilla';
 import type { Slide, EntitySelection, EditorAction, InstitutionTheme, CourseStatus } from '@/types';
+import type { CourseThemeSettings } from '@/lib/content/course-theme';
+import type { InstitutionTheme as InstitutionDbTheme } from '@/lib/tenant/institution-theme';
 import { publishCourse as dbPublishCourse } from '@/lib/db';
+import { getBlockGridLayout, GRID_COLS } from '@/lib/content/gridConstants';
 
 export interface ModuleData {
   id: string;
@@ -10,6 +13,8 @@ export interface ModuleData {
   description?: string;
 }
 
+import type { TitleSlideSettings } from '@/lib/content/title-slide-settings';
+
 export interface LessonData {
   id: string;
   title: string;
@@ -18,6 +23,7 @@ export interface LessonData {
   order_index: number;
   description?: string;
   title_image_url?: string | null;
+  title_slide_settings?: TitleSlideSettings | null;
 }
 
 export interface BlockData {
@@ -35,6 +41,7 @@ interface Snapshot {
   slides: Map<string, Slide[]>;
   blocks: Map<string, BlockData[]>;
   courseTheme: Record<string, unknown>;
+  themeSettings: CourseThemeSettings;
 }
 
 export interface EditorState {
@@ -48,6 +55,9 @@ export interface EditorState {
   slides: Map<string, Slide[]>;
   blocks: Map<string, BlockData[]>;
   courseTheme: Record<string, unknown>;
+  themeSettings: CourseThemeSettings;
+  /** Institution-wide theme loaded from `institutions.theme` — used as cascade layer below course settings. */
+  institutionTheme: InstitutionDbTheme;
   selectedEntity: EntitySelection | null;
   previewSlideIndex: number;
   isDirty: boolean;
@@ -60,11 +70,15 @@ export interface EditorState {
   publishCourse: () => Promise<void>;
   selectEntity: (entity: EntitySelection | null) => void;
   updateCourseTheme: (changes: Partial<InstitutionTheme>) => void;
+  /** Global course settings (header colours, default block style + background) — courses.theme_settings */
+  updateThemeSettings: (changes: Partial<CourseThemeSettings>) => void;
+  /** Set the institution theme after async fetch — no undo entry, not a dirty change. */
+  setInstitutionTheme: (theme: InstitutionDbTheme) => void;
   addModule: (module: ModuleData) => void;
   updateModule: (moduleId: string, changes: Partial<Pick<ModuleData, 'title' | 'description'>>) => void;
   removeModule: (moduleId: string) => void;
   addLesson: (moduleId: string, lesson: LessonData) => void;
-  updateLesson: (moduleId: string, lessonId: string, changes: Partial<Pick<LessonData, 'title' | 'description' | 'title_image_url'>>) => void;
+  updateLesson: (moduleId: string, lessonId: string, changes: Partial<Pick<LessonData, 'title' | 'description' | 'title_image_url' | 'title_slide_settings'>>) => void;
   removeLesson: (moduleId: string, lessonId: string) => void;
   addSlide: (lessonId: string, slide: Slide) => void;
   removeSlide: (lessonId: string, slideId: string) => void;
@@ -73,6 +87,12 @@ export interface EditorState {
   moveSlideToLesson: (slideId: string, fromLessonId: string, toLessonId: string) => void;
   addBlock: (slideId: string, block: BlockData) => void;
   updateBlock: (slideId: string, blockId: string, changes: Partial<BlockData>) => void;
+  /** Auto-fit a block's grid height to its content and push blocks below it down/up (atomic, no undo entry) */
+  fitBlockHeight: (slideId: string, blockId: string, gridH: number) => void;
+  /** Move a block up (-1) or down (+1) one slot in visual order, then compact (single undo entry) */
+  moveBlockVertical: (slideId: string, blockId: string, dir: -1 | 1) => void;
+  /** Set a block's grid width (columns), clamp its x to stay on-grid, then compact (single undo entry) */
+  setBlockWidth: (slideId: string, blockId: string, gridW: number, align?: 'left' | 'center' | 'right') => void;
   removeBlock: (slideId: string, blockId: string) => void;
   reorderBlocks: (slideId: string, blockIds: string[]) => void;
   duplicateBlock: (slideId: string, blockId: string, newBlockId: string, newData: Record<string, unknown>) => void;
@@ -92,11 +112,64 @@ export interface EditorState {
     courseId: string;
     institutionId?: string;
     courseStatus?: CourseStatus;
+    courseTheme?: Record<string, unknown>;
     modules: ModuleData[];
     lessons: Map<string, LessonData[]>;
     slides: Map<string, Slide[]>;
     blocks: Map<string, BlockData[]>;
   }) => void;
+}
+
+/**
+ * Vertical compaction — the same algorithm react-grid-layout uses for
+ * `compactType="vertical"`. Pulls every block up to the lowest gridY where it
+ * doesn't collide with an already-placed block sharing any horizontal span.
+ *
+ * This is the single source of truth for block positions: it fills gaps left by
+ * deletes/resizes, removes overlaps from drags, and guarantees the editor canvas
+ * and the student CSS-grid viewer (which reads gridY directly) always agree.
+ * gridX/gridW (the column) are preserved; only gridY changes. Unchanged blocks
+ * keep their identity so React re-renders stay minimal.
+ */
+function compactBlocksVertical(blocks: BlockData[]): BlockData[] {
+  // Place in visual order: top-to-bottom, then left-to-right.
+  const order = blocks
+    .map((b) => ({ b, g: getBlockGridLayout((b.data ?? {}) as Record<string, unknown>) }))
+    .sort((a, z) => a.g.gridY - z.g.gridY || a.g.gridX - z.g.gridX);
+
+  const placed: Array<{ x: number; y: number; w: number; h: number }> = [];
+  const newYById = new Map<string, number>();
+
+  for (const { b, g } of order) {
+    // Start at the top and push down past every placed block that overlaps this
+    // block's horizontal span. Loop until no collision remains (handles cascades).
+    let y = 0;
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const p of placed) {
+        const xOverlap = g.gridX < p.x + p.w && g.gridX + g.gridW > p.x;
+        const yOverlap = y < p.y + p.h && y + g.gridH > p.y;
+        if (xOverlap && yOverlap) {
+          y = p.y + p.h;
+          changed = true;
+        }
+      }
+    }
+    placed.push({ x: g.gridX, y, w: g.gridW, h: g.gridH });
+    newYById.set(b.id, y);
+  }
+
+  let mutated = false;
+  const result = blocks.map((b) => {
+    const g = getBlockGridLayout((b.data ?? {}) as Record<string, unknown>);
+    const newY = newYById.get(b.id);
+    if (newY == null || newY === g.gridY) return b;
+    mutated = true;
+    return { ...b, data: { ...((b.data ?? {}) as Record<string, unknown>), gridY: newY } };
+  });
+
+  return mutated ? result : blocks;
 }
 
 function snapshot(state: EditorState): Snapshot {
@@ -106,6 +179,7 @@ function snapshot(state: EditorState): Snapshot {
     slides: new Map(Array.from(state.slides.entries()).map(([k, v]) => [k, [...v]])),
     blocks: new Map(state.blocks),
     courseTheme: { ...state.courseTheme },
+    themeSettings: { ...state.themeSettings },
   };
 }
 
@@ -139,6 +213,7 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
     slides: snap.slides,
     blocks: snap.blocks,
     courseTheme: snap.courseTheme,
+    themeSettings: snap.themeSettings,
     isDirty: true,
   };
 }
@@ -155,6 +230,8 @@ export function createEditorStore() {
     slides: new Map(),
     blocks: new Map(),
     courseTheme: {},
+    themeSettings: {},
+    institutionTheme: {},
     selectedEntity: null,
     previewSlideIndex: 0,
     isDirty: false,
@@ -193,6 +270,16 @@ export function createEditorStore() {
         ...push(s, snap, 'updateCourseTheme', 'course'),
       }));
     },
+
+    updateThemeSettings: (changes) => {
+      const snap = snapshot(get());
+      set((s) => ({
+        themeSettings: { ...s.themeSettings, ...changes },
+        ...push(s, snap, 'updateThemeSettings', 'course'),
+      }));
+    },
+
+    setInstitutionTheme: (theme) => set({ institutionTheme: theme }),
 
     addModule: (module) => {
       const snap = snapshot(get());
@@ -233,7 +320,20 @@ export function createEditorStore() {
       set((s) => {
         const next = new Map(s.lessons);
         const lessons = next.get(moduleId) ?? [];
-        next.set(moduleId, lessons.map((l) => l.id === lessonId ? { ...l, ...changes } : l));
+        next.set(
+          moduleId,
+          lessons.map((l) => {
+            if (l.id !== lessonId) return l;
+            const merged = { ...l, ...changes };
+            if (changes.title_slide_settings !== undefined) {
+              merged.title_slide_settings = {
+                ...(l.title_slide_settings ?? {}),
+                ...(changes.title_slide_settings ?? {}),
+              };
+            }
+            return merged;
+          }),
+        );
         return { lessons: next, ...push(s, snap, 'updateLesson', lessonId) };
       });
     },
@@ -333,7 +433,9 @@ export function createEditorStore() {
             : b
         );
         const merged = [...updated, block].sort((a, b) => a.order_index - b.order_index);
-        next.set(slideId, merged);
+        // Compact so the new block settles into the stack with no gap/overlap,
+        // keeping the student CSS-grid view (which reads gridY) consistent.
+        next.set(slideId, compactBlocksVertical(merged));
         return { blocks: next, ...push(s, snap, 'addBlock', block.id) };
       });
     },
@@ -351,12 +453,103 @@ export function createEditorStore() {
       });
     },
 
+    fitBlockHeight: (slideId, blockId, gridH) => {
+      set((s) => {
+        const blocks = s.blocks.get(slideId) ?? [];
+        const target = blocks.find((b) => b.id === blockId);
+        if (!target) return {} as Partial<EditorState>;
+        const td = (target.data ?? {}) as Record<string, unknown>;
+        const old = getBlockGridLayout(td);
+        if (gridH === old.gridH) return {} as Partial<EditorState>;
+        // Apply the new height, then vertically compact so blocks below settle
+        // (grow → push down, shrink → pull up) with no gaps or overlaps. Replaces
+        // the old manual single-direction shift, which couldn't handle multi-column
+        // layouts or shrink-with-gap-fill and fought the canvas compaction.
+        const resized = blocks.map((b) => (b.id === blockId ? { ...b, data: { ...td, gridH } } : b));
+        const compacted = compactBlocksVertical(resized);
+        const next = new Map(s.blocks);
+        next.set(slideId, compacted);
+        // mark dirty so it persists, but don't pollute the undo stack with auto-fits
+        return { blocks: next, isDirty: true } as Partial<EditorState>;
+      });
+    },
+
+    moveBlockVertical: (slideId, blockId, dir) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const blocks = s.blocks.get(slideId) ?? [];
+        if (blocks.length < 2) return {} as Partial<EditorState>;
+        // Visual order: top-to-bottom, then left-to-right.
+        const order = blocks
+          .map((b) => ({ b, g: getBlockGridLayout((b.data ?? {}) as Record<string, unknown>) }))
+          .sort((a, z) => a.g.gridY - z.g.gridY || a.g.gridX - z.g.gridX);
+        const pos = order.findIndex((x) => x.b.id === blockId);
+        if (pos === -1) return {} as Partial<EditorState>;
+        const targetPos = pos + dir;
+        if (targetPos < 0 || targetPos >= order.length) return {} as Partial<EditorState>;
+
+        // Swap the two neighbours' gridY. Compaction only uses gridY for ordering
+        // (it re-stacks each block from the top), so swapping the order keys and
+        // compacting guarantees a clean reorder with no gaps — including reaching
+        // the very bottom, which the old manual swap couldn't do reliably.
+        const a = order[pos];
+        const b = order[targetPos];
+        const ay = a.g.gridY;
+        const by = b.g.gridY;
+        const swapped = blocks.map((blk) => {
+          const bd = (blk.data ?? {}) as Record<string, unknown>;
+          if (blk.id === a.b.id) return { ...blk, data: { ...bd, gridY: by } };
+          if (blk.id === b.b.id) return { ...blk, data: { ...bd, gridY: ay } };
+          return blk;
+        });
+        const compacted = compactBlocksVertical(swapped);
+        // Keep order_index aligned with the new visual order so the structure tree matches.
+        const reindexed = compacted
+          .map((blk) => ({ blk, g: getBlockGridLayout((blk.data ?? {}) as Record<string, unknown>) }))
+          .sort((x, z) => x.g.gridY - z.g.gridY || x.g.gridX - z.g.gridX)
+          .map((x, i) => (x.blk.order_index === i ? x.blk : { ...x.blk, order_index: i }));
+        const next = new Map(s.blocks);
+        next.set(slideId, reindexed);
+        return { blocks: next, ...push(s, snap, 'moveBlockVertical', blockId) };
+      });
+    },
+
+    setBlockWidth: (slideId, blockId, gridW, align) => {
+      const snap = snapshot(get());
+      set((s) => {
+        const blocks = s.blocks.get(slideId) ?? [];
+        const target = blocks.find((b) => b.id === blockId);
+        if (!target) return {} as Partial<EditorState>;
+        const td = (target.data ?? {}) as Record<string, unknown>;
+        const w = Math.max(1, Math.min(GRID_COLS, Math.round(gridW)));
+        // Resolve horizontal position. Default keeps the current x but clamps it so
+        // the block never overflows the grid; align lets the UI snap left/center/right.
+        const curX = typeof td.gridX === 'number' ? (td.gridX as number) : 0;
+        let x: number;
+        if (align === 'center') x = Math.floor((GRID_COLS - w) / 2);
+        else if (align === 'right') x = GRID_COLS - w;
+        else if (align === 'left') x = 0;
+        else x = Math.min(Math.max(0, curX), GRID_COLS - w);
+        const resized = blocks.map((b) =>
+          b.id === blockId ? { ...b, data: { ...td, gridW: w, gridX: x } } : b,
+        );
+        // Compact so a widened block that now overlaps a side-by-side neighbour
+        // pushes it cleanly below (editor canvas + student CSS-grid stay in sync).
+        const compacted = compactBlocksVertical(resized);
+        const next = new Map(s.blocks);
+        next.set(slideId, compacted);
+        return { blocks: next, ...push(s, snap, 'setBlockWidth', blockId) };
+      });
+    },
+
     removeBlock: (slideId, blockId) => {
       const snap = snapshot(get());
       set((s) => {
         const existing = s.blocks.get(slideId) ?? [];
+        // Remove, then compact so blocks below pull up to fill the gap.
+        const compacted = compactBlocksVertical(existing.filter((b) => b.id !== blockId));
         const next = new Map(s.blocks);
-        next.set(slideId, existing.filter((b) => b.id !== blockId));
+        next.set(slideId, compacted);
         return { blocks: next, ...push(s, snap, 'removeBlock', blockId) };
       });
     },
@@ -582,6 +775,7 @@ export function createEditorStore() {
         slides: data.slides,
         blocks: data.blocks,
         courseTheme: {},
+        themeSettings: (data.courseTheme ?? {}) as CourseThemeSettings,
         isDirty: false,
         isSaving: false,
         isPublishing: false,

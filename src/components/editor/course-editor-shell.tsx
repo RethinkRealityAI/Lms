@@ -13,6 +13,9 @@ import { EditorDndContext } from './dnd/editor-dnd-context';
 import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { LessonPreviewDialog } from './lesson-preview-dialog';
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts-dialog';
+import { CourseSettingsModal } from './course-settings-modal';
+import { resolvePreviewTarget } from './preview-target';
+import type { SlideTemplateConfig } from '@/lib/content/slide-templates';
 import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
@@ -75,6 +78,7 @@ function EditorContent({ courseId }: { courseId: string }) {
   const [devicePreview, setDevicePreview] = useState<DevicePreview>('desktop');
   const [lessonPreviewOpen, setLessonPreviewOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // ── Persistence: save ──────────────────────────────────────────────────────
 
@@ -133,14 +137,32 @@ function EditorContent({ courseId }: { courseId: string }) {
       for (const lesson of lessonList) {
         lessonPromises.push(
           tracked(
-            dbUpdateLesson(supabase, lesson.id, { title: lesson.title, description: lesson.description, title_image_url: lesson.title_image_url ?? null }),
+            dbUpdateLesson(supabase, lesson.id, {
+              title: lesson.title,
+              description: lesson.description,
+              title_image_url: lesson.title_image_url ?? null,
+              title_slide_settings: (lesson.title_slide_settings ?? {}) as Record<string, unknown>,
+            }),
             `lesson ${lesson.id}`,
           ),
         );
       }
     }
 
-    await Promise.all([...slidePromises, ...blockPromises, ...modulePromises, ...lessonPromises]);
+    // Persist course-level theme settings (global course settings modal)
+    const courseThemePromise = tracked(
+      (async () => {
+        const { error } = await supabase
+          .from('courses')
+          .update({ theme_settings: state.themeSettings ?? {} })
+          .eq('id', state.courseId ?? courseId)
+          .eq('institution_id', institutionId);
+        if (error) throw error;
+      })(),
+      'course theme',
+    );
+
+    await Promise.all([...slidePromises, ...blockPromises, ...modulePromises, ...lessonPromises, courseThemePromise]);
 
     if (failCount > 0) {
       toast.error('Some changes failed to save', {
@@ -219,7 +241,7 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   // ── Persistence: add slide (DB-first) ─────────────────────────────────────
 
-  const handleAddSlide = useCallback(async (lessonId: string, slideData: Parameters<typeof addSlide>[1]) => {
+  const handleAddSlide = useCallback(async (lessonId: string, slideData: Parameters<typeof addSlide>[1], template?: SlideTemplateConfig) => {
     if (!institutionId) return;
     try {
       const { createSlide: dbCreateSlide } = await import('@/lib/db/slides');
@@ -242,7 +264,43 @@ function EditorContent({ courseId }: { courseId: string }) {
       // Select the new slide immediately
       selectEntity({ type: 'slide', id: slide.id });
 
-      // Auto-add appropriate block based on slide type
+      const templateBlocks = template?.defaultBlocks ?? [];
+      if (templateBlocks.length > 0) {
+        const { createBlock: dbCreateBlock } = await import('@/lib/db/blocks');
+        let failures = 0;
+        for (let i = 0; i < templateBlocks.length; i++) {
+          const tb = templateBlocks[i];
+          const blockData = { ...tb.data, gridX: 0, gridY: i * 3, gridW: 12, gridH: 3 };
+          try {
+            const blockResult = await dbCreateBlock(supabase, {
+              lesson_id: lessonId,
+              slide_id: slide.id,
+              block_type: tb.block_type,
+              data: blockData,
+              order_index: i,
+              institution_id: institutionId,
+            });
+            addBlock(slide.id, {
+              id: blockResult.id,
+              slide_id: blockResult.slide_id,
+              block_type: blockResult.block_type,
+              data: blockResult.data,
+              order_index: blockResult.order_index,
+              is_visible: blockResult.is_visible,
+            });
+          } catch (blockErr) {
+            failures++;
+            console.error('Failed to add template block:', tb.block_type, blockErr);
+          }
+        }
+        if (failures > 0) {
+          toast.error(`Slide created but ${failures} block(s) failed to save`);
+        }
+        selectEntity({ type: 'slide', id: slide.id });
+        return;
+      }
+
+      // Fallback: single default block by slide type (legacy path when no template passed)
       // Canvas slides start empty — the design frame is created by CanvasSlideEditor on mount.
       let defaultBlockType = null;
       switch (slide.slide_type) {
@@ -250,6 +308,8 @@ function EditorContent({ courseId }: { courseId: string }) {
           // No default block — canvas uses tldraw for free-form layout
           break;
         case 'interactive':
+          defaultBlockType = 'iframe';
+          break;
         case 'quiz':
           defaultBlockType = 'quiz_inline';
           break;
@@ -568,12 +628,16 @@ function EditorContent({ courseId }: { courseId: string }) {
     try {
       const supabase = createClient();
       const { slide: newSlide, blocks: newBlocks } = await dbDuplicateSlide(supabase, slideId, lessonId, institutionId);
-      // Add to store
+      // Add to store — insert directly after the source slide (not at the end) and
+      // reindex order_index so the local order matches what the DB just persisted.
       const state = store.getState();
       const existingSlides = [...(state.slides.get(lessonId) ?? [])];
-      existingSlides.push(newSlide);
+      const srcIndex = existingSlides.findIndex((s) => s.id === slideId);
+      const insertAt = srcIndex >= 0 ? srcIndex + 1 : existingSlides.length;
+      existingSlides.splice(insertAt, 0, newSlide);
+      const reindexed = existingSlides.map((s, i) => (s.order_index === i ? s : { ...s, order_index: i }));
       const nextSlides = new Map(state.slides);
-      nextSlides.set(lessonId, existingSlides);
+      nextSlides.set(lessonId, reindexed);
 
       const nextBlocks = new Map(state.blocks);
       nextBlocks.set(newSlide.id, newBlocks.map(b => ({
@@ -690,6 +754,9 @@ function EditorContent({ courseId }: { courseId: string }) {
       ? selectedEntity.type
       : null;
 
+  // Resolve which lesson/slide a preview should open on, from the current selection
+  const previewTarget = resolvePreviewTarget(selectedEntity, slides, blocks);
+
   return (
     <>
       <EditorToolbar
@@ -699,6 +766,7 @@ function EditorContent({ courseId }: { courseId: string }) {
         onDevicePreviewChange={setDevicePreview}
         onPreviewLesson={() => setLessonPreviewOpen(true)}
         onShowShortcuts={() => setShortcutsOpen(true)}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
       <EditorDndContext
         onAddBlock={handleAddBlock}
@@ -746,12 +814,19 @@ function EditorContent({ courseId }: { courseId: string }) {
       {lessonPreviewOpen && (
         <LessonPreviewDialog
           courseId={courseId}
-          onClose={() => setLessonPreviewOpen(false)}
+          onClose={(lastDevice) => {
+            setLessonPreviewOpen(false);
+            if (lastDevice) setDevicePreview(lastDevice);
+          }}
+          initialLessonId={previewTarget.lessonId}
+          initialSlideId={previewTarget.slideId}
+          initialDevice={devicePreview}
         />
       )}
       {shortcutsOpen && (
         <KeyboardShortcutsDialog onClose={() => setShortcutsOpen(false)} />
       )}
+      <CourseSettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>
   );
 }
@@ -762,7 +837,7 @@ function getDefaultBlockData(blockType: string): Record<string, unknown> {
     case 'rich_text':
       return { html: '' };
     case 'image_gallery':
-      return { images: [] };
+      return { images: [], mode: 'single', objectFit: 'contain', displaySize: 'md' };
     case 'callout':
       return { style: 'info', title: 'Note', body: 'Enter callout text...' };
     case 'video':
@@ -770,7 +845,50 @@ function getDefaultBlockData(blockType: string): Record<string, unknown> {
     case 'cta':
       return { text: 'Learn more', button_label: 'Visit Link', url: 'https://example.com' };
     case 'quiz_inline':
-      return { question: 'Enter your question', options: [], correct_index: 0 };
+      return {
+        question_type: 'multiple_choice',
+        question: 'Enter your question',
+        options: ['Option A', 'Option B', 'Option C', 'Option D'],
+        correct_answer: 'Option A',
+        show_feedback: true,
+      };
+    case 'content_list':
+      return {
+        items: [{ html: '<p></p>', animation: 'none' }],
+        bullet_style: 'disc',
+        font_size: 'auto',
+        enable_animations: false,
+      };
+    case 'scratch_reveal':
+      return {
+        before: { type: 'text', text: 'Scratch to reveal!', bg_color: '#1A3C6E', text_color: '#FFFFFF' },
+        after: { type: 'text', text: 'Surprise! 🎉', bg_color: '#FFFFFF', text_color: '#0F172A' },
+        brush_size: 42, reveal_threshold: 55, animation: 'confetti', aspect: '16/9', fit: 'contain',
+      };
+    case 'image_compare':
+      return {
+        before: { url: '' },
+        after: { url: '' },
+        initial_position: 50,
+        direction: 'horizontal',
+        aspect: '16/9',
+        fit: 'cover',
+        handle_style: 'circle',
+        handle_color: '#FFFFFF',
+        divider_color: '#FFFFFF',
+        show_labels: 'always',
+        require_interaction: false,
+      };
+    case 'match_pairs':
+      return {
+        pairs: [
+          { id: 'p1', prompt: { type: 'text', text: 'Term A' }, match: { type: 'text', text: 'Definition A' } },
+          { id: 'p2', prompt: { type: 'text', text: 'Term B' }, match: { type: 'text', text: 'Definition B' } },
+        ],
+        prompt_side: 'left', shuffle: true, show_feedback: true,
+      };
+    case 'survey':
+      return { title: 'Survey', submit_label: 'Submit Survey', questions: [] };
     case 'pdf':
       return { url: '' };
     case 'iframe':
@@ -823,11 +941,39 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
           courseId,
           institutionId,
           courseStatus: data.course.status as import('@/types').CourseStatus,
+          courseTheme: data.course.theme_settings ?? {},
           modules: data.modules,
           lessons: data.lessonsByModule,
           slides: data.slidesByLesson,
           blocks: data.blocksBySlide,
         });
+
+        // Fetch institution theme (cascade layer below course settings) — fire-and-forget.
+        supabase.from('institutions').select('theme').eq('id', institutionId).maybeSingle()
+          .then(({ data: instData }) => {
+            if (instData?.theme && typeof instData.theme === 'object') {
+              store.getState().setInstitutionTheme(instData.theme as import('@/lib/tenant/institution-theme').InstitutionTheme);
+            }
+          });
+
+        // Resume on the slide the admin was viewing in preview (?lesson=&slide=).
+        // Uses window.location to avoid a Suspense boundary for useSearchParams.
+        try {
+          const sp = new URLSearchParams(window.location.search);
+          const slideParam = sp.get('slide');
+          const lessonParam = sp.get('lesson');
+          let slideExists = false;
+          if (slideParam) {
+            for (const list of data.slidesByLesson.values()) {
+              if (list.some((s) => s.id === slideParam)) { slideExists = true; break; }
+            }
+          }
+          if (slideParam && slideExists) {
+            store.getState().selectEntity({ type: 'slide', id: slideParam });
+          } else if (lessonParam) {
+            store.getState().selectEntity({ type: 'lesson', id: lessonParam });
+          }
+        } catch { /* no-op: selection is best-effort */ }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load course');
       } finally {

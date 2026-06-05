@@ -1,0 +1,290 @@
+{
+  "lessonId": "34ecb61b-6f13-40b4-9346-950c75b7f7af",
+  "lessonOrderIndex": 6,
+  "lessonTitle": "Orientation and Training",
+  "lessonDescription": "Explain the importance of Orientation & Training and view it as ongoing processes that support the volunteers' success. Ask volunteers about their goals, interests and skills and explore ways to match them to roles. Develop training & orientation practices that equip volunteers with the knowledge and information they need.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Orientation & Training",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_06/slide_00_image_00.jpg",
+                "alt": "Volunteers standing at a table",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>What is Orientation?</h2><p>Orientation is the process of supporting volunteers to understand the organization, its vision and goals and the relationship they have with the organization.</p><p>There are <strong>three types of orientation:</strong></p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>Social Orientation</strong> — Orient the volunteer to the work environment — dress code, hours of operation, housekeeping, general norms.</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>System Orientation</strong> — Help the volunteer understand how their role fits into the <strong>larger context of the organization</strong>. Where do they fit? How does their work connect to the mission?</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Position Orientation</strong> — Review the role description, answer questions, and reinforce the importance of asking for help when needed.</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "decimal",
+            "font_size": "auto",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Best Practices for Orientation & Training",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_06/slide_01_image_01.jpg",
+                "alt": "Two people in a volunteer onboarding conversation",
+                "caption": null
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>Assign a mentor or partner</strong> — a senior volunteer or organizational leader — to guide new volunteers through onboarding</p>",
+                "animation": "up"
+              },
+              {
+                "html": "<p>Ask volunteers about their <strong>goals, interests, and skills</strong> early in the process to match them to the most meaningful roles</p>",
+                "animation": "up"
+              },
+              {
+                "html": "<p>Treat orientation and training as <strong>ongoing processes</strong>, not one-time events</p>",
+                "animation": "up"
+              },
+              {
+                "html": "<p>Check in regularly to ensure volunteers have the skills and knowledge they need to succeed</p>",
+                "animation": "up"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "font_size": "auto",
+            "enable_animations": true,
+            "animation_stagger_ms": 120,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_06/slide_01_image_02.jpg",
+                "alt": "Seasoned volunteer supervisor with new volunteer",
+                "caption": null
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_06/slide_01_image_03.jpg",
+                "alt": "Lively group discussion during volunteer training",
+                "caption": null
+              }
+            ],
+            "mode": "gallery",
+            "aspectRatio": "4/3",
+            "objectFit": "cover",
+            "enableLightbox": true,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following best describes the purpose of orientation for volunteers?",
+            "options": [
+              "To support volunteers in understanding the organization, its vision, and their relationship with it",
+              "To evaluate the volunteer's performance",
+              "To conduct a background check on the volunteer",
+              "To assign specific tasks to the volunteer"
+            ],
+            "correct_answer": "To support volunteers in understanding the organization, its vision, and their relationship with it",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Orientation is about supporting volunteers to understand the organization, its vision, and their role within it.",
+            "feedback_incorrect": "Not quite. Think about what orientation is designed to help volunteers understand.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is an effective way to provide orientation to new volunteers?",
+            "options": [
+              "Assign a mentor or partner, such as a senior volunteer or a leader",
+              "Have them start working immediately without any introduction",
+              "Give them a volunteer handbook and leave them to read it on their own",
+              "Conduct a formal training session once a year"
+            ],
+            "correct_answer": "Assign a mentor or partner, such as a senior volunteer or a leader",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Assigning a mentor or senior volunteer partner guides new volunteers through onboarding effectively.",
+            "feedback_incorrect": "Not quite. Consider which approach gives new volunteers personal guidance through the onboarding process.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What is the importance of asking volunteers about their goals, interests, and skills during the orientation and training process?",
+            "options": [
+              "To match them to roles that align with their preferences and strengths",
+              "To ensure they understand the organization's rules",
+              "To keep a record of their personal information",
+              "To establish their availability for shifts"
+            ],
+            "correct_answer": "To match them to roles that align with their preferences and strengths",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Understanding a volunteer's goals, interests, and skills helps match them to the most meaningful roles.",
+            "feedback_incorrect": "Not quite. Consider how knowing a volunteer's goals and strengths shapes the roles they are placed in.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which type of orientation focuses on helping the volunteer understand how their role fits into the larger context of the organization?",
+            "options": [
+              "System",
+              "Social",
+              "Operational",
+              "Position"
+            ],
+            "correct_answer": "System",
+            "show_feedback": true,
+            "feedback_correct": "Correct! System Orientation helps volunteers understand how their role fits into the larger organizational context.",
+            "feedback_incorrect": "Not quite. Review the three types of orientation and which one addresses the bigger organizational picture.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}

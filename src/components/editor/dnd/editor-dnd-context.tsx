@@ -15,6 +15,25 @@ import {
   type DragOverEvent,
   type CollisionDetection,
 } from '@dnd-kit/core';
+
+// Custom sensor: skips elements with data-no-dnd="true" so react-grid-layout
+// drag handles don't get intercepted by dnd-kit, preventing the "stuck" drag state.
+class SmartPointerSensor extends PointerSensor {
+  static activators = [
+    {
+      eventName: 'onPointerDown' as const,
+      handler({ nativeEvent: event }: { nativeEvent: PointerEvent }): boolean {
+        if (!event.isPrimary || event.button !== 0) return false;
+        let el: Element | null = event.target as Element;
+        while (el) {
+          if ((el as HTMLElement).dataset?.noDnd === 'true') return false;
+          el = el.parentElement;
+        }
+        return true;
+      },
+    },
+  ];
+}
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { BlockDragOverlay } from './block-drag-overlay';
 import type { DropPos } from '@/lib/content/gridConstants';
@@ -59,7 +78,7 @@ export function EditorDndContext({
   const [dropTarget, setDropTarget] = useState<DropTarget>({ overId: null, overCanvas: false });
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(SmartPointerSensor, {
       activationConstraint: { distance: 5 },
     }),
     useSensor(KeyboardSensor, {

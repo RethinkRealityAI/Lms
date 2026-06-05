@@ -11,6 +11,10 @@ function sanitizeHtml(html: string): string {
   // can't load in the browser. The actual images live in separate image_gallery blocks
   // with absolute CDN URLs.
   result = result.replace(/<img\s+[^>]*src=["'](?!https?:\/\/|data:)[^"']*["'][^>]*\/?>/gi, '');
+  // Neutralise dangerous link protocols (javascript:, vbscript:, data:text/html).
+  result = result.replace(/(<a\b[^>]*\bhref=)(["'])\s*(?:javascript|vbscript|data):[^"']*\2/gi, '$1$2#$2');
+  // Ensure every link opens safely in a new tab.
+  result = result.replace(/<a\b(?![^>]*\btarget=)/gi, '<a target="_blank" rel="noopener noreferrer nofollow"');
   return result;
 }
 
@@ -20,7 +24,7 @@ export default function RichTextViewer({ data }: BlockViewerProps<RichTextData>)
     return (
       <div className="space-y-6">
         {sorted.map((seg, i) => (
-          <div key={i} className="rich-text-viewer prose prose-xl max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(seg.text) }} />
+          <div key={i} className="rich-text-viewer prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(seg.text) }} />
         ))}
       </div>
     );
@@ -28,7 +32,7 @@ export default function RichTextViewer({ data }: BlockViewerProps<RichTextData>)
 
   return (
     <div
-      className="rich-text-viewer prose prose-xl max-w-none dark:prose-invert"
+      className="rich-text-viewer prose max-w-none"
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.html) }}
     />
   );

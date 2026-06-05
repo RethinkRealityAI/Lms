@@ -58,7 +58,12 @@ export async function deleteLesson(
 export async function updateLesson(
   supabase: SupabaseClient,
   lessonId: string,
-  changes: { title?: string; description?: string; title_image_url?: string | null },
+  changes: {
+    title?: string;
+    description?: string;
+    title_image_url?: string | null;
+    title_slide_settings?: Record<string, unknown> | null;
+  },
 ): Promise<void> {
   const { error } = await supabase
     .from('lessons')

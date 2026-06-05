@@ -6,6 +6,11 @@ export interface SlideFrameProps {
   lessonTitle: string;
   slideTitle?: string | null;
   slideTitleColor?: string;
+  /** Course-level header theming (from global course settings). All optional. */
+  lessonTitleColor?: string;
+  numberColor?: string;
+  progressColor?: string;
+  progressTrackColor?: string;
   currentSlide: number;
   totalSlides: number;
   children: ReactNode;
@@ -21,6 +26,10 @@ export function SlideFrame({
   lessonTitle,
   slideTitle,
   slideTitleColor,
+  lessonTitleColor,
+  numberColor,
+  progressColor,
+  progressTrackColor,
   currentSlide,
   totalSlides,
   children,
@@ -32,37 +41,51 @@ export function SlideFrame({
   hideNext,
 }: SlideFrameProps) {
   const progress = totalSlides > 0 ? ((currentSlide) / totalSlides) * 100 : 0;
+  const eyebrowColor = lessonTitleColor || '#64748b';
+  const headlineColor = slideTitleColor || '#0F172A';
+  const barColor = progressColor || '#1E3A5F';
 
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden">
       <div className="px-5 pt-3 pb-3 shrink-0 border-b border-slate-100">
-        <div className="flex items-center justify-between mb-2">
-          <div className="truncate pr-4 min-w-0">
-            <span className="text-sm font-black uppercase tracking-widest text-[#1E3A5F] block truncate">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div className="min-w-0">
+            {/* Lesson title = small eyebrow / kicker */}
+            <span
+              className="text-[11px] font-bold uppercase tracking-wider block break-words leading-tight"
+              style={{ color: eyebrowColor }}
+            >
               {lessonTitle}
             </span>
+            {/* Slide title = the prominent headline the learner should focus on */}
             {slideTitle && (
               <span
-                className="text-xs font-semibold block truncate mt-0.5"
-                style={{ color: slideTitleColor || '#64748b' }}
+                className="text-lg sm:text-xl font-black block break-words leading-tight mt-0.5"
+                style={{ color: headlineColor }}
               >
                 {slideTitle}
               </span>
             )}
           </div>
-          <span className="text-sm font-bold text-slate-500 shrink-0">
+          <span
+            className="text-sm font-bold shrink-0 tabular-nums pt-0.5"
+            style={{ color: numberColor || '#64748b' }}
+          >
             {currentSlide} / {totalSlides}
           </span>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-[3px]">
+        <div
+          className="w-full rounded-full h-[3px]"
+          style={{ backgroundColor: progressTrackColor || '#f1f5f9' }}
+        >
           <div
-            className="bg-[#1E3A5F] h-[3px] rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            className="h-[3px] rounded-full transition-all duration-300"
+            style={{ width: `${progress}%`, backgroundColor: barColor }}
           />
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         {children}
       </div>
 
@@ -91,8 +114,11 @@ export function SlideFrame({
 }
 
 export function SlideContentArea({ children }: { children: ReactNode }) {
+  // `slide-cq` makes this a query container (see globals.css) so blocks respond
+  // to the slide width, not the viewport — keeping editor preview ≈ real device.
+  // Outer padding is intentionally minimal: per-block containers own the padding.
   return (
-    <div className="px-3 py-3 sm:px-5 sm:py-4 overflow-y-auto flex-1 flex flex-col gap-4">
+    <div className="slide-cq px-1.5 py-1.5 overflow-y-auto flex-1 flex flex-col gap-2.5">
       {children}
     </div>
   );

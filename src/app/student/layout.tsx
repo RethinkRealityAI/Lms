@@ -61,6 +61,7 @@ export default async function StudentLayout({
         userName={fullName}
         avatarUrl={avatarUrl}
         title={`${institutionSlug.toUpperCase()} LMS`}
+        institutionSlug={institutionSlug}
       />
       <main className="pt-16">
         {children}

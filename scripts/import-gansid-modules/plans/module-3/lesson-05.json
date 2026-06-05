@@ -1,0 +1,322 @@
+{
+  "lessonId": "99cc1b5a-3360-4d1f-8e2f-882b9b2399ba",
+  "lessonOrderIndex": 5,
+  "lessonTitle": "Recruitment",
+  "lessonDescription": "Explain and identify the key steps and tasks associated with the recruitment phase. Understand how to ask volunteers about their goals, interests and skills and explore ways to match them to roles.",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Recruitment: The Four Key Activities",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "The Four Key Activities of Recruitment",
+            "items": [
+              {
+                "html": "<p><strong>Plan</strong> — Identify your needs</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Sourcing</strong> — Identify places you would like to recruit from</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Applying</strong> — Define the application process volunteers need to complete in order to join</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Selecting and Appointing</strong> — Find the right fit for them and your organization</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "decimal",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_05/slide_00_image_00.jpg",
+                "caption": "Volunteers standing at a table — recruitment in action",
+                "alt": "Volunteers at a recruitment table"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Plan & Source",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>1. Plan: Identify Your Needs</h2><p>As part of your volunteer objectives and goals, take some time to define the roles and responsibilities volunteers could fill to help shore up the gaps within your organization.</p><h3>Risk Assessment</h3><p>Be sure to identify any risks that may come along with onboarding external parties into your organization. The comfort, safety, and well-being of employees is of utmost importance.</p><h3>Role Description</h3><p>Clear, defined expectations and descriptions of the skills required to satisfy the role are critical. The more discrete the roles can be made with explicit details about what the role is responsible for, the better.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_05/slide_02_image_01.jpg",
+                "caption": "One-on-one discussion between a recruiter and volunteer candidate",
+                "alt": "Recruiter in one-on-one discussion"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "callout",
+            "variant": "tip",
+            "title": "Tip",
+            "html": "<p>Be flexible! The more planned and clear you are about your needs, the easier it will be for you to adjust and/or change roles to meet them.</p>",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>2. Sourcing: Identify Where to Recruit From</h2><p>Three key methods for sourcing volunteers:</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 1
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "table",
+          "title": null,
+          "data": {
+            "columns": [
+              {
+                "id": "method",
+                "label": "Method",
+                "align": "left"
+              },
+              {
+                "id": "description",
+                "label": "Description",
+                "align": "left"
+              }
+            ],
+            "rows": [
+              {
+                "id": "r1",
+                "cells": {
+                  "method": "Broad Based",
+                  "description": "Wide outreach to the general public"
+                }
+              },
+              {
+                "id": "r2",
+                "cells": {
+                  "method": "Targeted",
+                  "description": "Focused outreach to specific communities or skill groups"
+                }
+              },
+              {
+                "id": "r3",
+                "cells": {
+                  "method": "Peer-to-Peer",
+                  "description": "Leveraging existing volunteers to recruit others in their networks"
+                }
+              }
+            ],
+            "gridX": 0,
+            "gridY": 5,
+            "gridW": 12,
+            "gridH": 3,
+            "first_column_header": true
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_05/slide_02_image_02.jpg",
+                "caption": "Manager talking to a group of prospective volunteers",
+                "alt": "Manager addressing a group"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 8,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>3. Applying: Define the Application Process</h2><ul><li>Applying requires some form of an intake process</li><li>Make it easy for your volunteers to join your team</li><li>Ensure you have a clear and step-by-step general intake form</li><li>This form should be straightforward so that volunteers of any skill level can express their interest in securing a volunteer role</li></ul><h2>4. Selecting and Appointing: Find the Right Fit</h2><p><strong>Screening Phase:</strong> Selection requires an unbiased assessment of the volunteer candidate's skills and experiences to ensure the role is the best fit for them.</p><p><strong>Decision Phase:</strong> Once you have completed the screening steps associated with the application, determine whether the prospective volunteer is a good fit for the role. Be sure to inform the successful applicant of your decision.</p><h3>Welcoming New Volunteers</h3><p>Once selected, welcome your new volunteer(s) warmly to the team!</p><h3>Redirection</h3><p>In the event a volunteer doesn't fit the role description or the organization, feel free to redirect them to another role better suited to them or a partner organization. Do not simply reject — redirect.</p>",
+            "mode": "standard",
+            "gridX": 0,
+            "gridY": 11,
+            "gridW": 12,
+            "gridH": 4
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/gansid-modules/module-3/lesson_05/slide_02_image_03.jpg",
+                "caption": "Experienced manager conducting a volunteer interview",
+                "alt": "Manager conducting an interview"
+              }
+            ],
+            "mode": "single",
+            "aspectRatio": "16/9",
+            "objectFit": "cover",
+            "enableLightbox": false,
+            "gridX": 0,
+            "gridY": 15,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "status": "published",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "Which of the following is NOT one of the four key activities in the recruitment phase?",
+            "options": [
+              "Training volunteers",
+              "Identifying your needs",
+              "Sourcing volunteers",
+              "Defining the application process"
+            ],
+            "correct_answer": "Training volunteers",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Training is part of Orientation, not Recruitment. The four recruitment activities are: Plan, Sourcing, Applying, and Selecting & Appointing.",
+            "feedback_incorrect": "Not quite. Think about which activity belongs to the onboarding phase rather than the recruitment phase.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "multiple_choice",
+            "question": "What should you do if a volunteer does not fit the role description or the organization?",
+            "options": [
+              "Inform them they are not accepted and end the process",
+              "Redirect them to another role better suited to them or a partner organization",
+              "Ask them to reapply later",
+              "Provide them with additional training to fit the role"
+            ],
+            "correct_answer": "Redirect them to another role better suited to them or a partner organization",
+            "show_feedback": true,
+            "feedback_correct": "Correct! Do not simply reject — redirect. Guide volunteers to a role or organization better suited to their skills and interests.",
+            "feedback_incorrect": "Remember the key principle from this lesson: do not simply reject — redirect volunteers to a role or organization that better suits them.",
+            "shuffle_options": true,
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideIndex": 0,
+      "note": "The hero image (slide_00_image_00.jpg) showing volunteers at a table could alternatively be presented as a scratch_reveal or image_compare if a before/after visual is sourced in a future content update. Currently rendered as a single image_gallery block."
+    }
+  ]
+}

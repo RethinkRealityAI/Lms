@@ -5,6 +5,8 @@ import {
   ListChecks,
   Quote,
   Image as ImageIcon,
+  List,
+  BookOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -88,6 +90,44 @@ export const BLOCK_PRESETS: BlockPreset[] = [
     data: {
       mode: 'gallery',
       images: [{ url: '', alt: '', caption: 'Describe this image...' }],
+    },
+  },
+  {
+    id: 'animated-list',
+    label: 'Animated List',
+    description: 'Bullet list with entrance animations',
+    icon: List,
+    color: 'text-sky-600 bg-sky-50',
+    blockType: 'content_list',
+    data: {
+      items: [
+        { html: '<p>First point</p>', animation: 'left' },
+        { html: '<p>Second point</p>', animation: 'right' },
+        { html: '<p>Third point</p>', animation: 'up' },
+      ],
+      bullet_style: 'disc',
+      font_size: 'auto',
+      enable_animations: true,
+      animation_stagger_ms: 150,
+    },
+  },
+  {
+    id: 'references-list',
+    label: 'References List',
+    description: 'Numbered citations with links',
+    icon: BookOpen,
+    color: 'text-slate-600 bg-slate-50',
+    blockType: 'content_list',
+    data: {
+      items: [
+        {
+          html: '<p><strong>Author, A.</strong> (2024). <em>Title</em>. <a href="https://example.com" target="_blank">https://example.com</a></p>',
+          animation: 'none',
+        },
+      ],
+      bullet_style: 'decimal',
+      font_size: 'auto',
+      enable_animations: false,
     },
   },
 ];

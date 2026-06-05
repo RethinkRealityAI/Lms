@@ -1,32 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Play, AlertCircle } from 'lucide-react';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
+import type { VideoData } from '@/lib/content/blocks/video/schema';
+import { YouTubePlayer } from './youtube-player';
 
-type EmbedResult =
-  | { type: 'youtube' | 'vimeo'; embedUrl: string }
-  | { type: 'video'; embedUrl: string };
-
-function resolveEmbedUrl(url: string): EmbedResult {
-  const ytMatch = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
-  );
-  if (ytMatch) {
-    return { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}` };
-  }
-  const vimeoMatch = url.match(/vimeo\.com\/(?:[^/]+\/)*(\d+)/);
-  if (vimeoMatch) {
-    return { type: 'vimeo', embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
-  }
-  return { type: 'video', embedUrl: url };
+function youtubeId(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function vimeoId(url: string): string | null {
+  const m = url.match(/vimeo\.com\/(?:[^/]+\/)*(\d+)/);
+  return m ? m[1] : null;
 }
 
-export default function VideoViewer({
-  data,
-}: BlockViewerProps<{ url: string; poster?: string; caption?: string; autoplay?: boolean }>) {
+export default function VideoViewer({ data, context, onComplete }: BlockViewerProps<VideoData>) {
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const endedRef = useRef(false);
+
+  const editing = context?.editing === true;
+  const advance = () => {
+    if (editing) return;
+    onComplete?.();
+    context?.onAutoAdvance?.();
+  };
 
   if (!data.url) {
     return (
@@ -51,42 +51,91 @@ export default function VideoViewer({
     );
   }
 
-  const { type, embedUrl } = resolveEmbedUrl(data.url);
+  const ytId = youtubeId(data.url);
+  const vId = vimeoId(data.url);
 
-  return (
-    <div className="space-y-2.5">
-      {type === 'video' ? (
-        <video
-          src={embedUrl}
-          poster={data.poster || undefined}
-          controls
-          autoPlay={data.autoplay}
-          onError={() => setVideoError(true)}
-          className="w-full aspect-video rounded-xl object-contain bg-black"
-        >
-          Your browser does not support the video tag.
-        </video>
-      ) : (
+  // ── YouTube: content-sized card (title + 16:9 video + controls) ──
+  if (ytId) {
+    return (
+      <div className="w-full flex flex-col">
+        <YouTubePlayer
+          videoId={ytId}
+          title={data.title}
+          start={data.start}
+          end={data.end}
+          autoplay={data.autoplay}
+          showSkip={data.show_skip}
+          inert={editing}
+          onEnded={() => { if (data.auto_progress) advance(); else onComplete?.(); }}
+          onSkip={advance}
+        />
+        {data.caption && (
+          <p className="text-sm opacity-70 italic px-3.5 py-2 border-t border-current/10 shrink-0">{data.caption}</p>
+        )}
+      </div>
+    );
+  }
+
+  // ── Vimeo: plain responsive iframe ──
+  if (vId) {
+    const params = new URLSearchParams();
+    if (data.autoplay) params.set('autoplay', '1');
+    if (data.start) params.set('#t', `${Math.floor(data.start)}s`);
+    const src = `https://player.vimeo.com/video/${vId}${params.toString() ? `?${params.toString()}` : ''}`;
+    return (
+      <div className="space-y-2.5">
         <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-900">
           {!iframeLoaded && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
-              <div className="text-center">
-                <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-xs text-white/50">Loading video...</p>
-              </div>
+              <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             </div>
           )}
           <iframe
-            src={`${embedUrl}${data.autoplay ? '?autoplay=1' : ''}`}
+            src={src}
             className="absolute inset-0 w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="autoplay; fullscreen; picture-in-picture"
             allowFullScreen
             title="Video"
             onLoad={() => setIframeLoaded(true)}
             onError={() => setVideoError(true)}
           />
         </div>
-      )}
+        {data.caption && <p className="text-sm text-gray-500 italic">{data.caption}</p>}
+      </div>
+    );
+  }
+
+  // ── Direct file (mp4/webm/…): native element with start/end + auto-progress ──
+  return (
+    <div className="space-y-2.5">
+      <video
+        ref={videoRef}
+        src={data.start ? `${data.url}#t=${Math.floor(data.start)}` : data.url}
+        poster={data.poster || undefined}
+        controls
+        autoPlay={data.autoplay}
+        onError={() => setVideoError(true)}
+        onLoadedMetadata={() => {
+          if (videoRef.current && data.start) videoRef.current.currentTime = data.start;
+        }}
+        onTimeUpdate={() => {
+          const v = videoRef.current;
+          if (!v || endedRef.current) return;
+          if (data.end && v.currentTime >= data.end) {
+            endedRef.current = true;
+            v.pause();
+            if (data.auto_progress) advance(); else onComplete?.();
+          }
+        }}
+        onEnded={() => {
+          if (endedRef.current) return;
+          endedRef.current = true;
+          if (data.auto_progress) advance(); else onComplete?.();
+        }}
+        className="w-full aspect-video rounded-xl object-contain bg-black"
+      >
+        Your browser does not support the video tag.
+      </video>
       {data.caption && <p className="text-sm text-gray-500 italic">{data.caption}</p>}
     </div>
   );

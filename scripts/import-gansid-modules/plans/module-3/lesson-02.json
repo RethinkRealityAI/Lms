@@ -1,0 +1,53 @@
+{
+  "lessonId": "2926d108-d0a7-4a0b-a204-b44256f1ea70",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Learning Objectives",
+  "lessonDescription": "By the end of this module, learners will be able to:",
+  "titleSlideSettings": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "status": "published",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "items": [
+              {
+                "html": "<p><strong>Understand</strong> what is effective volunteer management</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Explain and identify</strong> the functions and tasks associated with components of the recruitment process</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Understand</strong> orientation &amp; training and the importance of each as an ongoing process that supports and compels volunteers to remain committed and better able to deliver on their tasks</p>",
+                "animation": "left"
+              },
+              {
+                "html": "<p><strong>Recognize</strong> the difference between formal and informal recognition activities and understand how to recognize volunteers successfully</p>",
+                "animation": "left"
+              }
+            ],
+            "display_mode": "list",
+            "bullet_style": "disc",
+            "font_size": "auto",
+            "enable_animations": true,
+            "animation_stagger_ms": 150,
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": []
+}
