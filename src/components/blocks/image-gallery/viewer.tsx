@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { ImageGalleryData } from '@/lib/content/blocks/image-gallery/schema';
-import { DISPLAY_SIZE_IMG_CLASS, loadViewedImageIndices, resolveCaptionColor, saveViewedImageIndices } from '@/lib/content/blocks/image-gallery/display-utils';
+import { loadViewedImageIndices, resolveCaptionColor, saveViewedImageIndices } from '@/lib/content/blocks/image-gallery/display-utils';
+import { buildImageResponsiveCss } from '@/lib/content/blocks/image-gallery/responsive';
 
 type ImageItem = ImageGalleryData['images'][number];
 
@@ -17,9 +18,9 @@ function isLoadableUrl(url: string): boolean {
 }
 
 function ImageWithFallback({
-  src, alt, className, fitClass, style, imgClassName,
+  src, alt, className, style, imgClassName,
 }: {
-  src: string; alt: string; className?: string; fitClass?: string; style?: React.CSSProperties; imgClassName?: string;
+  src: string; alt: string; className?: string; style?: React.CSSProperties; imgClassName?: string;
 }) {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -46,7 +47,7 @@ function ImageWithFallback({
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
-        className={`${imgClassName ?? 'w-full h-full'} ${fitClass ?? 'object-contain'} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`${imgClassName ?? 'w-full h-full'} lms-img-el transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
     </div>
   );
@@ -71,7 +72,6 @@ function hasFixedAspect(aspectRatio: string | undefined): boolean {
 // ─── Shared interaction props ─────────────────────────────────────────────────
 
 type InteractionConfig = {
-  imgSizeClass: string;
   hideCaptionInGrid: boolean;
   clickForMore: boolean;
   clickHint: string;
@@ -83,14 +83,10 @@ type InteractionConfig = {
 function BlockImage({
   image,
   aspectRatio,
-  fitClass,
-  imgSizeClass,
   rounded = true,
 }: {
   image: ImageItem;
   aspectRatio: string | undefined;
-  fitClass: string;
-  imgSizeClass: string;
   rounded?: boolean;
 }) {
   const roundClass = rounded ? 'rounded-xl overflow-hidden' : '';
@@ -101,8 +97,7 @@ function BlockImage({
           src={image.url}
           alt={image.alt ?? ''}
           className="w-full h-full"
-          imgClassName={cn('w-full h-full', imgSizeClass)}
-          fitClass={fitClass}
+          imgClassName="w-full h-full"
         />
       </div>
     );
@@ -112,8 +107,7 @@ function BlockImage({
       src={image.url}
       alt={image.alt ?? ''}
       className={cn('w-full', roundClass)}
-      imgClassName={cn('w-full h-auto max-w-full mx-auto block', imgSizeClass)}
-      fitClass={fitClass}
+      imgClassName="w-full h-auto max-w-full mx-auto block"
     />
   );
 }
@@ -368,8 +362,8 @@ function CardLightbox({ images, index, onClose, onNavigate }: {
 
 // ─── Layout views ─────────────────────────────────────────────────────────────
 
-function SingleImageView({ image, aspectRatio, fitClass, onOpen, interaction }: {
-  image: ImageItem; aspectRatio: string | undefined; fitClass: string;
+function SingleImageView({ image, aspectRatio, onOpen, interaction }: {
+  image: ImageItem; aspectRatio: string | undefined;
   onOpen?: () => void; interaction: InteractionConfig;
 }) {
   return (
@@ -378,8 +372,6 @@ function SingleImageView({ image, aspectRatio, fitClass, onOpen, interaction }: 
         <BlockImage
           image={image}
           aspectRatio={aspectRatio}
-          fitClass={fitClass}
-          imgSizeClass={interaction.imgSizeClass}
         />
       </ImageClickShell>
       <GridCaption text={image.caption} hidden={interaction.hideCaptionInGrid} color={interaction.captionColor} />
@@ -387,14 +379,12 @@ function SingleImageView({ image, aspectRatio, fitClass, onOpen, interaction }: 
   );
 }
 
-function GalleryView({ images, aspectRatio, fitClass, columns, stacked, onOpen, interaction }: {
-  images: ImageItem[]; aspectRatio: string | undefined; fitClass: string;
-  columns: number; stacked: boolean; onOpen?: (i: number) => void; interaction: InteractionConfig;
+function GalleryView({ images, aspectRatio, onOpen, interaction }: {
+  images: ImageItem[]; aspectRatio: string | undefined;
+  onOpen?: (i: number) => void; interaction: InteractionConfig;
 }) {
-  const cols = stacked ? 1 : columns;
-
   return (
-    <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+    <div className="lms-img-grid gap-3">
       {images.map((img, i) => (
         <figure key={i} className="min-w-0">
           <ImageClickShell
@@ -406,8 +396,6 @@ function GalleryView({ images, aspectRatio, fitClass, columns, stacked, onOpen, 
             <BlockImage
               image={img}
               aspectRatio={aspectRatio}
-              fitClass={fitClass}
-              imgSizeClass={interaction.imgSizeClass}
             />
           </ImageClickShell>
           <GridCaption text={img.caption} hidden={interaction.hideCaptionInGrid} color={interaction.captionColor} />
@@ -417,8 +405,8 @@ function GalleryView({ images, aspectRatio, fitClass, columns, stacked, onOpen, 
   );
 }
 
-function SliderView({ images, aspectRatio, fitClass, onOpen, interaction }: {
-  images: ImageItem[]; aspectRatio: string | undefined; fitClass: string;
+function SliderView({ images, aspectRatio, onOpen, interaction }: {
+  images: ImageItem[]; aspectRatio: string | undefined;
   onOpen?: (i: number) => void; interaction: InteractionConfig;
 }) {
   const [current, setCurrent] = useState(0);
@@ -433,8 +421,6 @@ function SliderView({ images, aspectRatio, fitClass, onOpen, interaction }: {
         <BlockImage
           image={images[current]}
           aspectRatio={aspectRatio}
-          fitClass={fitClass}
-          imgSizeClass={interaction.imgSizeClass}
         />
       </ImageClickShell>
       <GridCaption text={images[current].caption} hidden={interaction.hideCaptionInGrid} color={interaction.captionColor} />
@@ -458,8 +444,8 @@ function SliderView({ images, aspectRatio, fitClass, onOpen, interaction }: {
   );
 }
 
-function CarouselView({ images, aspectRatio, fitClass, onOpen, interaction }: {
-  images: ImageItem[]; aspectRatio: string | undefined; fitClass: string;
+function CarouselView({ images, aspectRatio, onOpen, interaction }: {
+  images: ImageItem[]; aspectRatio: string | undefined;
   onOpen?: (i: number) => void; interaction: InteractionConfig;
 }) {
   const [offset, setOffset] = useState(0);
@@ -509,8 +495,6 @@ function CarouselView({ images, aspectRatio, fitClass, onOpen, interaction }: {
               <BlockImage
                 image={img}
                 aspectRatio={aspectRatio}
-                fitClass={fitClass}
-                imgSizeClass={interaction.imgSizeClass}
               />
             </ImageClickShell>
           </div>
@@ -547,18 +531,18 @@ const CONTAINER_CLASS: Record<string, string> = {
 export default function ImageGalleryViewer({ data, block, context, onComplete }: BlockViewerProps<ImageGalleryData>) {
   const images = (data.images ?? []).filter((i) => i?.url);
   const aspectRatio = data.aspectRatio;
-  const fitClass = data.objectFit === 'cover' ? 'object-cover' : 'object-contain';
   const clickForMore = data.clickForMore === true;
   const hideCaptionInGrid = clickForMore || data.captionInGrid === false;
   const lightboxEnabled = (data.enableLightbox !== false || clickForMore) && context?.editing !== true;
   const containerClass = CONTAINER_CLASS[data.containerStyle ?? 'inherit'] ?? '';
-  const sizeClass = DISPLAY_SIZE_IMG_CLASS[data.displaySize ?? 'md'];
   const markClicked = data.markClicked !== false;
   const clickHint = data.clickHint?.trim() || 'Tap for more';
   const captionColor = resolveCaptionColor(data.captionColor, context?.blockStyle);
   const lessonId = context?.lessonId;
   const blockId = block.id;
   const canPersist = !!lessonId && !context?.editing && !context?.previewMode;
+
+  const { className: respClass, css: respCss } = buildImageResponsiveCss(blockId, data);
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [clickedIndices, setClickedIndices] = useState<Set<number>>(() =>
@@ -599,7 +583,6 @@ export default function ImageGalleryViewer({ data, block, context, onComplete }:
   }, [clickedIndices, images.length, data.requireAllClicked, onComplete, context?.editing]);
 
   const interaction: InteractionConfig = {
-    imgSizeClass: sizeClass,
     hideCaptionInGrid,
     clickForMore,
     clickHint,
@@ -623,21 +606,18 @@ export default function ImageGalleryViewer({ data, block, context, onComplete }:
 
   let body: React.ReactNode;
   if (mode === 'single') {
-    body = <SingleImageView image={images[0]} aspectRatio={aspectRatio} fitClass={fitClass} onOpen={open ? () => open(0) : undefined} interaction={interaction} />;
+    body = <SingleImageView image={images[0]} aspectRatio={aspectRatio} onOpen={open ? () => open(0) : undefined} interaction={interaction} />;
   } else if (mode === 'slider') {
-    body = <SliderView images={images} aspectRatio={aspectRatio} fitClass={fitClass} onOpen={open} interaction={interaction} />;
+    body = <SliderView images={images} aspectRatio={aspectRatio} onOpen={open} interaction={interaction} />;
   } else if (mode === 'carousel') {
-    body = <CarouselView images={images} aspectRatio={aspectRatio} fitClass={fitClass} onOpen={open} interaction={interaction} />;
+    body = <CarouselView images={images} aspectRatio={aspectRatio} onOpen={open} interaction={interaction} />;
   } else if (images.length === 1) {
-    body = <SingleImageView image={images[0]} aspectRatio={aspectRatio} fitClass={fitClass} onOpen={open ? () => open(0) : undefined} interaction={interaction} />;
+    body = <SingleImageView image={images[0]} aspectRatio={aspectRatio} onOpen={open ? () => open(0) : undefined} interaction={interaction} />;
   } else {
     body = (
       <GalleryView
         images={images}
         aspectRatio={aspectRatio}
-        fitClass={fitClass}
-        columns={data.columns ?? 2}
-        stacked={data.gridLayout === 'stacked'}
         onOpen={open}
         interaction={interaction}
       />
@@ -659,22 +639,25 @@ export default function ImageGalleryViewer({ data, block, context, onComplete }:
 
   return (
     <>
-      {showPrompt && promptPosition === 'top' && <div className="mb-3">{promptEl}</div>}
-      {imageBody}
-      {showPrompt && promptPosition === 'bottom' && <div className="mt-3">{promptEl}</div>}
-      {showProgress && (
-        <p
-          className={cn(
-            'mt-3 text-center text-xs font-medium',
-            clickedIndices.size >= images.length ? 'text-emerald-600' : 'text-[color:var(--surface-text-muted,#64748b)]',
-          )}
-          role="status"
-        >
-          {clickedIndices.size >= images.length
-            ? 'All images viewed — you can continue'
-            : `${clickedIndices.size} of ${images.length} viewed — open each image to continue`}
-        </p>
-      )}
+      <style dangerouslySetInnerHTML={{ __html: respCss }} />
+      <div className={cn('lms-img-resp', respClass)}>
+        {showPrompt && promptPosition === 'top' && <div className="mb-3">{promptEl}</div>}
+        {imageBody}
+        {showPrompt && promptPosition === 'bottom' && <div className="mt-3">{promptEl}</div>}
+        {showProgress && (
+          <p
+            className={cn(
+              'mt-3 text-center text-xs font-medium',
+              clickedIndices.size >= images.length ? 'text-emerald-600' : 'text-[color:var(--surface-text-muted,#64748b)]',
+            )}
+            role="status"
+          >
+            {clickedIndices.size >= images.length
+              ? 'All images viewed — you can continue'
+              : `${clickedIndices.size} of ${images.length} viewed — open each image to continue`}
+          </p>
+        )}
+      </div>
       {lightboxIndex !== null && (
         clickForMore ? (
           <CardLightbox
