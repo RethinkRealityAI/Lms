@@ -9,6 +9,8 @@ export interface BlockEditorProps<TData = Record<string, unknown>> {
   onChange: (data: TData) => void;
   /** Active slide `settings.block_style` — used by blocks that inherit surface colors */
   slideBlockStyle?: string;
+  /** Active editor device preview, mapped to a responsive breakpoint. Defaults to 'desktop'. */
+  breakpoint?: 'mobile' | 'tablet' | 'desktop';
 }
 
 export interface BlockViewerContext {

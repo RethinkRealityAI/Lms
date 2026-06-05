@@ -44,6 +44,8 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
   const switchBlockType = useEditorStore((s) => s.switchBlockType);
   const slides = useEditorStore((s) => s.slides);
   const themeSettings = useEditorStore((s) => s.themeSettings);
+  const devicePreview = useEditorStore((s) => s.devicePreview);
+  const breakpoint = devicePreview === 'mobile' ? 'mobile' : devicePreview === 'tablet' ? 'tablet' : 'desktop';
 
   // Find the block across all slides
   let foundBlock: { slideId: string; block: BlockData } | null = null;
@@ -314,6 +316,7 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
           data={block.data}
           block={{ id: block.id, title: '' }}
           slideBlockStyle={slideBlockStyle}
+          breakpoint={breakpoint}
           onChange={(newData) => {
             updateBlock(slideId, blockId, { data: newData as Record<string, unknown> });
           }}

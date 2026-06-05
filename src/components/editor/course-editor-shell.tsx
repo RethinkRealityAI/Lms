@@ -75,7 +75,8 @@ function EditorContent({ courseId }: { courseId: string }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [structureCollapsed, setStructureCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
-  const [devicePreview, setDevicePreview] = useState<DevicePreview>('desktop');
+  const devicePreview = useEditorStore((s) => s.devicePreview) as DevicePreview;
+  const setDevicePreview = useEditorStore((s) => s.setDevicePreview);
   const [lessonPreviewOpen, setLessonPreviewOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);

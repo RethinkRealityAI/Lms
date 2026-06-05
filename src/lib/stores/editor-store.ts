@@ -104,6 +104,8 @@ export interface EditorState {
   duplicateSelectedBlocks: (slideId: string) => void;
   alignBlocks: (slideId: string, alignment: 'left' | 'right' | 'top' | 'bottom' | 'distribute-h' | 'distribute-v') => void;
   setPreviewSlideIndex: (index: number) => void;
+  devicePreview: 'desktop' | 'tablet' | 'mobile';
+  setDevicePreview: (d: 'desktop' | 'tablet' | 'mobile') => void;
   markSaved: () => void;
   setSaveError: (error: string | null) => void;
   undo: () => void;
@@ -240,6 +242,7 @@ export function createEditorStore() {
     selectedBlockIds: new Set<string>(),
     undoStack: [],
     redoStack: [],
+    devicePreview: 'desktop',
 
     setCourseStatus: (status) => set({ courseStatus: status }),
 
@@ -618,6 +621,8 @@ export function createEditorStore() {
     },
 
     setPreviewSlideIndex: (index) => set({ previewSlideIndex: index }),
+
+    setDevicePreview: (d) => set({ devicePreview: d }),
 
     markSaved: () => set({ isDirty: false, isSaving: false, lastSaveError: null }),
 
