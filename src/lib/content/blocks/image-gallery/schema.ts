@@ -2,6 +2,18 @@ import { z } from 'zod';
 
 export const imageGalleryDisplaySizeSchema = z.enum(['sm', 'md', 'lg', 'xl']);
 
+export const imageWidthPresetSchema = z.enum(['full', 'lg', 'md', 'sm']);
+export const imageAlignSchema = z.enum(['left', 'center', 'right']);
+
+/** Per-breakpoint overridable sizing fields (all optional — absent = inherit). */
+export const imageResponsiveOverrideSchema = z.object({
+  objectFit: z.enum(['cover', 'contain']).optional(),
+  displaySize: imageGalleryDisplaySizeSchema.optional(),
+  columns: z.number().int().min(1).max(4).optional(),
+  widthPreset: imageWidthPresetSchema.optional(),
+  align: imageAlignSchema.optional(),
+});
+
 export const imageGalleryDataSchema = z.object({
   images: z.array(z.object({
     url: z.string().url(),
@@ -49,7 +61,19 @@ export const imageGalleryDataSchema = z.object({
   prompt: z.string().optional(),
   /** Where to render the prompt relative to the image(s). `'none'` hides it. */
   promptPosition: z.enum(['none', 'top', 'bottom']).default('none').optional(),
+  /** Desktop base: how wide the image/gallery is within its slide cell. */
+  widthPreset: imageWidthPresetSchema.default('full').optional(),
+  /** Desktop base: horizontal alignment when widthPreset < full. */
+  align: imageAlignSchema.default('center').optional(),
+  /** Per-breakpoint sizing overrides. Desktop = base fields above. */
+  responsive: z.object({
+    tablet: imageResponsiveOverrideSchema.optional(),
+    mobile: imageResponsiveOverrideSchema.optional(),
+  }).optional(),
 });
 
 export type ImageGalleryData = z.infer<typeof imageGalleryDataSchema>;
 export type ImageGalleryDisplaySize = z.infer<typeof imageGalleryDisplaySizeSchema>;
+export type ImageWidthPreset = z.infer<typeof imageWidthPresetSchema>;
+export type ImageAlign = z.infer<typeof imageAlignSchema>;
+export type ImageResponsiveOverride = z.infer<typeof imageResponsiveOverrideSchema>;
