@@ -1,0 +1,353 @@
+{
+  "lessonId": "1f90134c-7704-4578-ac3a-7ca4770cfacc",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Anti-Oppressive/Anti-Racist Practice and Mental Health Resources for Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Identify elements of trauma informed care" },
+              { "html": "Discuss stressors for people with Sickle Cell Disease, especially upon arrival to the Emergency Department" },
+              { "html": "Identify available mental health resources in Ontario" }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Reflection Exercise",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Consider your social location and position as a healthcare provider. What are some ways that you see systems of privilege and oppression play out in healthcare on a day-to-day basis?</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Strengths-Based Practice/Resilience-Building",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>An approach that focuses on strengths as opposed to deficits:</p><ul><li>People are resourceful and resilient</li><li>Strengths include knowledges, skills, coping strategies, relationships, values, hopes, and dreams</li><li>People develop strengths and resilience in the face adversity</li></ul><p>Individuals and families can identify their own strengths. As healthcare workers, we can also support people with sickle cell disease and their families identify and amplify these strengths.</p><p>Examples of strengths in people with sickle cell disease, their families, and their communities:</p><ul><li>Faith and Spirituality</li><li>Existing coping strategies</li><li>Worldview and outlook</li><li>Sense of purpose and values</li><li>Support networks and community roots</li><li>Past experiences and knowledge of solving problems</li></ul>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 5
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/collab_gdl0wg.png",
+                "caption": "collab_gdl0wg.png"
+              }
+            ],
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "callout",
+          "title": "",
+          "data": {
+            "text": "Resource: \"Cosplaying to Cope\" shows how one person with Sickle Cell Disease draws upon their unique skills and talents to manage their condition and live a fulfilling life.: https://www.rbcd.ca/blog/my-sickle-cell-disease-warrior-blood-moon-cosplaying-to-cope",
+            "gridX": 0, "gridY": 8, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Reflection Exercise:</strong> Think about a time where you have experienced a personal challenge. How did you get through it? What unique strengths were helpful? What did you learn from that experience?</p>",
+            "gridX": 0, "gridY": 11, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Let's look at what a trauma informed approach to care for patients in the ED, considering what might be running through a patient's mind",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "How am I gonna pay rent?" },
+              { "html": "Do I have sick time?" },
+              { "html": "I am going to my refugee hearing date" },
+              { "html": "I have no health insurance coverage" },
+              { "html": "I'm gonna fail my course" },
+              { "html": "My group members are gonna think I am a flake" },
+              { "html": "My teachers will think I am lying" },
+              { "html": "How am I gonna get my shift covered?" },
+              { "html": "My boss is going to fire me!" },
+              { "html": "Who is gonna watch my kids?" },
+              { "html": "Who is gonna pick up my kids from school?" },
+              { "html": "How long will my kid be in hospital?" },
+              { "html": "How am I gonna look after everyone else?" },
+              { "html": "They are gonna think I am a drug seeker" },
+              { "html": "They won't believe my pain is real" },
+              { "html": "I'm going to get bad care" }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 6
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/Finances_qg12gv.png",
+                "caption": "Finances"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/Immigration_zpipjq.png",
+                "caption": "Immigration"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/School_cw6gds.png",
+                "caption": "School"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/Employment_pkirrv.png",
+                "caption": "Employment"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/Family_es2g2d.png",
+                "caption": "Family"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_03_AntiOppressiveAntiRacist_Practice_and_Mental_Health_Resource/previous_vy5m9h.png",
+                "caption": "Previous experiences"
+              }
+            ],
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 4
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Trauma-Informed Practices in Healthcare",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Now that we have gone over the mental health challenges and strategies for wellness, let's review what Mental Health resources are available to help you help your patient.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Mental Health Resources",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "24/7 Telephone Counselling<br>a. Suicide Crisis Help Line (Canada-Wide) Call 988 or visit www.988.ca<br>b. Kids Help Phone (Canada-wide for youth 29 and under) Call 1-800-668-6868 or Text 686868" },
+              { "html": "Engage Primary Care" },
+              { "html": "Provider 211 (Finding local community resources) Call 211 or visit www.211ontario.ca" },
+              { "html": "ConnexOntario (Access to addiction, mental health, and problem gambling services) Call 1-866-5531-2600 or visit www.connexontario.ca" },
+              { "html": "Bounce Back (Coaching support for mental health and wellbeing) Visit www.bouncebackontario.ca" },
+              { "html": "Ontario Structured Psychotherapy (OHIP-funded psychotherapy from a cognitive behavioural therapy approach) Visit https://www.ontariohealth.ca/getting-health-care/mental-health-addictions/depression-anxiety-ontario-structured-psychotherapy" },
+              { "html": "Hospital-Based Mental Health Programs" },
+              { "html": "Employment-Based Mental Health Programs and Coverage" }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 6
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "The Iceberg Model",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "title": "",
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=ye7TVMl-_TQ",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 4
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Reflection Exercise: Trauma-Informed Care",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Write down one thing about how you will commit to practising trauma informed care. This can be a trauma-informed practice you hope to integrate into your work.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Lived Experience Advocate: What Mental Health Resources Do You Use?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Thea Campbell is a person with Sickle Cell Disease who wanted to ensure healthcare professionals incorporate mental health services into the care of their patients, by sharing how she utilizes these essential services.</p><p><strong>Note:</strong> Thea refers to her disease as &quot;being a carrier to Sickle Cell Anemia&quot;, but she does have Sickle Cell Disease and is not a Carrier who would have Sickle Cell Trait.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "video",
+          "title": "",
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=a9vuflpRyEo",
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 4
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "People with sickle cell disease and their families have developed strengths through their experiences of adversity." },
+              { "html": "Mental Health resources can be a maze to navigate - it's hard to find services, Don't not give up and seek help." }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Anucha, U., Srikanthan, S., Siad Togane, R., &amp; Galabuzi, G. E. (2017). Doing right together for black youth: What we learned from the community engagement sessions for the Ontario black youth action plan. Youth Research and Evaluation eXchange" },
+              { "html": "Burnes, D. P., Antle, B. J., Williams, C. C., &amp; Cook, L. (2008). Mothers raising children with sickle cell disease at the intersection of race, gender, and illness stigma. Health &amp; Social Work, 33(3), 211–220. https://doi.org/10.1093/hsw/33.3.211" },
+              { "html": "Cosplaying to Cope with sickle cell disease: https://www.rbcd.ca/blog/my-sickle-cell-disease-warrior-blood-moon-cosplaying-to-cope" },
+              { "html": "Disability Justice Network of Ontario https://www.djno.ca/glossary#:~:text=Ableism%3A%20Ableism%20is%20a%20set,%27fixed%27%20or%20%27protected." },
+              { "html": "Dyson S. (2019). Sickle cell and the social sciences: Health, racism and disablement." },
+              { "html": "Dyson, S. M., Atkin, K. M., Berghs, M. J., &amp; Greene, A. M. (2021). On the possibility of a disabled life in capitalist ruins: Black workers with sickle cell disorder in England. Social Science &amp; Medicine, 272, 113713." },
+              { "html": "https://blackhealthalliance.ca/home/antiblack-racism/" },
+              { "html": "https://www.homelesshub.ca/about-homelessness/education-training-employment/poverty" },
+              { "html": "https://www.rbcd.ca/blog/down-with-capitalism-how-to-take-better-care-of-yourself-while-living-with-sickle-cell-disease" },
+              { "html": "https://www.traumainformedcare.chcs.org/what-is-trauma-informed-care/" },
+              { "html": "Menschner, C. and Maul, A. (2016). Key Ingredients for Successful Trauma-Informed Care Implementation. Center for Health Care Strategies" },
+              { "html": "Ontario Health. (2023). Sickle cell disease: Care for people of all ages. King's Printer for Ontario. https://hqontario.ca/Portals/0/documents/evidence/quality-standards/qs-sickle-cell-disease-quality-standard-en.pdf" },
+              { "html": "Pendergrast, J., Ajayi, L. T., Kim, E., Campitelli, M. A., &amp; Graves, E. (2023). Sickle cell disease in Ontario, Canada: an epidemiologic profile based on health administrative data. Canadian Medical Association Open Access Journal, 11(4), E725-E733." },
+              { "html": "Routledge. Saleeby, D. (2000). Power in the people: Strengths and hope. Advances in Social Work, 1(2), pp. 127-136" },
+              { "html": "Srikanthan, S. &amp; Ngo, J. (In Press). A Narrative Therapy Approach to Living with Chronic Illness. Health &amp; Social Work." },
+              { "html": "Srikanthan, S. (2023). Contested disability: sickle cell disease. Health &amp; Social Work, 48(3), 209-216." },
+              { "html": "The Iceberg Model https://www.youtube.com/watch?v=ye7TVMl-_TQ" },
+              { "html": "Srikanthan, S. (2021). Values not our own: Interrogating psychosocial suitability in the transplant social work assessment. Health &amp; Social Work, 46(4), 308-311." },
+              { "html": "Srikanthan, S. (2024). Whiteout: a social history of sickle cell disease in Ontario, Canada. Critical Public Health, 34(1). 1-11." }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 8
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The Strengths-Based Practice slide combines two reflection exercises and the main prose into one slide. If slide length is a concern, the second reflection exercise (Think about a time...) could be split onto its own slide.",
+      "reason": "The second reflection exercise (line 194 in source) immediately follows the Strengths-Based Practice section prose and the collab image — merging keeps thematic unity, but the slide is dense."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The ED stressors slide has 16 bullet thoughts plus 6 images. The 6 images could be split into two image_gallery blocks (3 each), interspersed between the bullet groups, if the gallery renders too dense.",
+      "reason": "6 images in a single gallery block may be visually crowded; splitting into two blocks with the content_list between them could improve readability."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "The 'Trauma-Informed Practices in Healthcare' slide title has no body content from the source beyond the transitional sentence. Consider whether EdApp had a hidden list or infographic here that was not captured in the Markdown.",
+      "reason": "The source has only the bold header 'Trauma-Informed Practices in Healthcare' followed by a transitional sentence — no substantive body. This may have been an interactive EdApp screen with hidden content not exported to Markdown."
+    }
+  ]
+}

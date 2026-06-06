@@ -1,0 +1,231 @@
+{
+  "lessonId": "d8184daa-5c48-4eeb-b9d7-695770372599",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Treating Pain at Home and Targeting Pathobiology of Vaso-Occlusive Episodes in Sickle Cell Disease (SCD)",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Review current gold standard of therapy of vaso-occlusive episodes" },
+              { "html": "Identify research studies focused on targeting the pathobiology of Sickle Cell Disease" },
+              { "html": "Discuss how to treat vaso-occlusive episodes at home" }
+            ],
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Current Gold Standard Therapy for Adults",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": []
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Treating Vaso-occlusive Episodes At Home",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>To start our innovations in Sickle Cell journey, let's start with work that is being done around treating VOEs at home.</p><p><strong>Drepadom - a Homecare Protocol for Vaso-Occlusive Crisis for Sickle Cell Disease Patients (Pelinski et al.)</strong></p><p>DREPADOM is a home-care protocol for VOC management for low-risk patients.</p><p>Risk is determined by the validated PRESEV score (Bartolucci – eBioMed 2016) that evaluates the risk of developing Acute Chest Syndrome (ACS).</p><p>Eligibility for DREPADOM: • Patients arriving at the ER for VOC with a PRESEV score ≤ 6 and not presenting any exclusion criteria • Patients discharged from at least 3 days of hospitalization for VOC and/or ACS</p><p>Coordinator coordinates delivery of PO/parenteral treatments (including opioids), and home oxygen, to the patients' home within four hours.</p><p>Homecare nurse performs house calls twice a day.</p><p>Daily review of decision-making algorithm supervised by SCD experts to determine stopping/continuing outpatient follow-up vs. rehospitalization.</p><p>Of 209 patients (105 from ED and 104 from Early Release), 22 (11%) were re-admitted to hospital for uncontrolled/chest pain, ACS, and infections. Study conclusion: Drepadom is a successful and safe tool to reduce hospital stay for SCD patients.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 6
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Targeting the Pathobiology of Sickle Cell Disease Current Innovations",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Instead of focusing on treating the pain, let's look at innovations that are focused on targeting the pathobiology of SCD to prevent pain/complications.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 2
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Targeting Vaso-Occlusive Episodes",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>To get us started, let's jump right to the innovations focused on targeting VOCs.</p><p><strong>Crizanlizumab</strong></p><ul><li>Approved by FDA in 2019</li></ul><p><strong>Mechanism:</strong></p><ul><li>Monoclonal antibody for P-selectin, which is expressed on the surface of endothelial cells and platelets and promotes adhesion</li></ul><p><strong>Evidence:</strong></p><ul><li>SUSTAIN trial (Phase II)</li><li>High dose vs placebo had reduction in VOCs but no change in hospitalization rates</li></ul><p><strong>Cost:</strong></p><ul><li>Estimated $96,000/year</li></ul><p><em>Photo credit: (Salinas Cisneros G, &amp; Thein SL., 2020); Karki, N &amp; Kutlar, A. (2021)</em></p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 4
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_01_Treating_Pain_at_Home_and_Targeting_Pathobiology_of_VasoOccl/Pathobio_voc_v3o8lm.png",
+                "alt": "Pathobio_voc_v3o8lm.png"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 4,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_01_Treating_Pain_at_Home_and_Targeting_Pathobiology_of_VasoOccl/crizanlizuman_hsew23.png",
+                "alt": "crizanlizuman_hsew23.png"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 7,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Crizanlizumab (Adakveo) Trial #1",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": []
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Crizanlizumab (Adakveo) Trial #2",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": []
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Research is being done to find ways to treat vaso-occlusive episodes at home, to improve quality of life for those living with SCD" },
+              { "html": "The pathobiology of SCD can be targeted towards vaso-occlusion, inflammation, Hb S polymerization, and changing the genotype" },
+              { "html": "There are promising treatments on the horizon that are not looking at ways of treating the pain, but instead are looking for ways to prevent the pain from happening in the 1st place" }
+            ],
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Abboud, M. Cançado, R., De Montalembert, M., Smith, W., Rimawi, H., Voskaridou, E., Guvenc, B., Keefe, D., Grosch, K., Nassin, M., Watson, J., Yssel, J., Reshetnyak, E., &amp; Dei Adomakoh, Y. (2023). Efficacy, Safety, and Biomarker Analysis of 5 Mg and 7.5 Mg Doses of Crizanlizumab in Patients with Sickle Cell Disease: Primary Analyses from the Phase III STAND Study. <em>Blood</em>, 142 (Supplement 1)." },
+              { "html": "Agrawal RK, Patel RK, Shah V, Nainiwal L, Trivedi B. Hydroxyurea in sickle cell disease: drug review. <em>Indian J Hematol Blood Transfus</em>. 2014;30(2):91-96. doi:10.1007/s12288-013-0261-4" },
+              { "html": "Ataga, K., Kutlar, A., Kanter, J., Liles, D., Cancado, R., Friedrisch, J., Guthrie, T., Knight-Madden, J., Alvarez, O., Gordeuk, V., Gualandro, S., Colella, M., Smith, W., Rollins,S., Stocker, J., &amp; Rother, R. (2017). Crizanlizumab for the Prevention of Pain Crises in Sickle Cell Disease. <em>New England Journal of Medicine</em> 376. 429-439." },
+              { "html": "Ataga, K., Kutlar, A., Kanter, J., Liles, D., Cancado, R., Friedrisch, J., Guthrie, T., Knight-Madden, J., Alvarez, O., Gordeuk, MD, Sandra Gualandro, V., Pereira Collela, M., Smith, W., Rollins, S., Stocker, J., &amp; Rother, R. (2016). SUSTAIN: A Multicenter, Randomized, Placebo-Controlled, Double-Blind, 12-Month Study to Assess Safety and Efficacy of SelG1 with or without Hydroxyurea Therapy in Sickle Cell Disease Patients with Sickle Cell-Related Pain Crises. <em>Blood</em> 128 (22)." },
+              { "html": "Karki, N. &amp; Kutlar, A. (2021). P-Selectin Blockade in the Treatment of Painful Vaso-Occlusive Crises in Sickle Cell Disease: A Spotlight on Crizanlizumab. <em>Journal of Pain Research</em>:14 849–856." },
+              { "html": "Patient Information Handout: <a href=\"https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf\" target=\"_blank\" rel=\"noopener\">https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf</a>" },
+              { "html": "Paul S. Swerdlow; Red Cell Exchange in Sickle Cell Disease. <em>Hematology Am Soc Hematol Educ Program</em> 2006; 2006 (1): 48–53. doi: <a href=\"https://doi.org/10.1182/asheducation-2006.1.48\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1182/asheducation-2006.1.48</a>" },
+              { "html": "Pelinski, Y., De Luna, G., Kassasseya, C., Morabito, A., Ngwem, E., Arlet, J., Genty, I., Honsel, V., Habibi, A., Le Jeune, S., and Bartolucci, P. (2023). Drepadom - a Homecare Protocol for Vaso-Occlusive Crisis for Sickle Cell Disease Patients. <em>Blood</em>, 142 (Supplement 1), 793." }
+            ],
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 6
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "Merge into slide 2 or remove — this bare header ('Current Gold Standard Therapy for Adults') has no body text and no images in Lesson 1. Consider adding a brief introductory sentence or merging with the Treating VOEs At Home slide as a sub-heading if the course editor has content to add.",
+      "reason": "Source has only the bold header with no supporting body prose or images under it in this lesson's section."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The transitional sentence ('Instead of focusing on treating the pain...') was placed here as the body of the 'Targeting the Pathobiology...' slide. Consider whether it should instead be the closing sentence of slide 2 (Treating VOEs at Home).",
+      "reason": "In the source MD this sentence appears as a standalone bold line between the DREPADOM content and the Pathobiology header — it functions as a transition and could belong to either adjacent slide."
+    },
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "Slides 5 and 6 ('Crizanlizumab (Adakveo) Trial #1' and 'Trial #2') are bare headers with no body text and no Lesson-01 images. They were likely intended to display trial data images/charts that are absent from this lesson's image manifest. Consider populating with trial detail prose from the SUSTAIN/STAND studies referenced in the References slide, or merging into slide 4.",
+      "reason": "EdApp slide structure referenced two trial slides but no body or images for them exist in Lesson 1 source."
+    },
+    {
+      "slideOrderIndex": 6,
+      "suggestion": "Same as slide 5 — bare header with no body or images.",
+      "reason": "No supporting content in source for this slide beyond the header text."
+    }
+  ]
+}

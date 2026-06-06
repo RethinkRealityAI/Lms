@@ -1,0 +1,204 @@
+{
+  "lessonId": "93a6da7a-814c-42af-b4af-4c1e9e5c9550",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Partnering with Primary Care Providers in Improve Outcomes For Individuals With SCD",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Identify barriers Primary Care Providers (PCPs) experience in caring for individuals with SCD" },
+              { "html": "Dispel myths PCPs may hold that create barriers to collaborative care" },
+              { "html": "List challenges faced by patients in accessing care with a/their PCP" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Primary Care Providers",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Primary care providers play an integral role in the overall health and well being of individuals they care for, and in specific, individuals with SCD.</p><p>Due to advances in medical treatments, individuals with SCD are living longer lives and there is limited knowledge on the care needs amongst healthcare providers across sectors (acute, specialist, and primary care) on the comprehensive care needs for these patients.</p><p>The role of PCPs is vast and includes, but is not limited to: counselling, health promotion, education, disease prevention, health maintenance, and diagnosis. Some PCPs also support pain management for both acute and chronic episodes.</p><p>By partnering with their patients, who are the experts of their condition, and other health professionals, such as haematologists, ophthalmologists, and pain specialist, PCPs can help to align care with the established standards, overall improving the quality of life and outcomes for their patient(s).</p><p>Another important point to raise is the lack of specialists in SCD that exists. Depending on location, not all individuals with SCD have an option of going to a specialist.</p><p>Leveraging partnerships with PCPs will further help to drive down the costs to the healthcare system. Episodic, acute ED visits would be reduced, patients getting lost to follow up would decline, etc., due to collaborative care.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "PCP Comfort Level Caring for Individuals with SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Before:</strong> According to Whiteman et. al., (2015), there are a small number of PCPs who indicate they feel comfortable providing care to individuals with SCD</p><p><strong>After:</strong> 32% of General Internists and 35% of Paediatricians are comfortable as the PCP for individuals with SCD and expressed difficulty accessing an SCD hematologist or SCD center for support</p><h3>Why the Discomfort? According to Whiteman et. al. (2015)</h3><h3>Perceptions of Addiction/Opioid Use Disorder</h3><p><strong>Before:</strong> In a study by Shapiro et. al., (1997) they found that 53% of ED physicians and 23% of Haematologists thought more than 20% of adult patients with SCD are addicted to opioids.</p><p><strong>After:</strong> In the case of children, 24% of the ED physicians thought that more than 20% of patients are addicted.</p><h3>Are SCD Patients Dying From Opioids Use Disorder?</h3><p><strong>After:</strong> Ruta and Ballas (2016) showed that deaths related to opioid pain relievers for patients with SCD was low at 0.05%</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Opioid/Substance Use Disorder",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_01_Partnering_with_Primary_Care_Providers_in_Improve_Outcomes_F/oud_u4j0xu.png",
+                "alt": "oud_u4j0xu.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Additional Patient Reports",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Additional Patient Reports (Whiteman et. al., 2015)</strong><br>Participants reported the following:</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Difficulty scheduling urgent appointments" },
+              { "html": "Lack of communication between PCPs and other members of the patient's care team" },
+              { "html": "Lack of follow-up after hospital discharge" },
+              { "html": "Concerns regarding pain management" },
+              { "html": "Lack of knowledge of SCD, including knowledge of guidelines for SCD management" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>The patient, family, primary care physician, and other medical staff must come together in collaboration to provide comprehensive care to individuals with SCD and improve patient outcomes and experiences.</strong></p><p><strong>What is the role of each team member in the care of individuals with Sickle Cell Disease?</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": "",
+          "data": {
+            "question": "What are 2 reasons regular check-ups are important for individuals with SCD?",
+            "question_type": "select_all",
+            "options": [
+              "To monitor health status and detect complications early",
+              "To receive vaccinations",
+              "To manage pain symptoms",
+              "To improve overall well-being"
+            ],
+            "correct_answer": [
+              "To monitor health status and detect complications early",
+              "To improve overall well-being"
+            ],
+            "feedback_correct": "To monitor health status and detect complications early and to improve overall wellbeing"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Although there are greater than 60% of PCPs who do not feel comfortable providing care to individuals with SCD, partnering with haematologists, sickle cell clinics, and the patient/family will help to reduce the discomfort" },
+              { "html": "Opioid use disorder (OUD) is uncommon for individuals with SCD; reduce screening for OUD and increase screening for disease modifying/chelation therapy, as appropriate" },
+              { "html": "Patients and families/caregivers can sense the discomfort and lack of confidence of their PCP. Ask your patient questions, they are the expert and they can help guide you through the new and unfamiliar aspects of care" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Whiteman, L., Haywood, C., Lanzkron, S., Strouse, J., Feldman, L., and Stewart, R. 2015. Primary Care Providers' Comfort Levels in Caring for Patients with Sickle Cell Disease. <em>Southern Medical Journal</em> 108(9)" },
+              { "html": "Onimoe, G., &amp; Rotz, S. 2020. Sickle cell disease: A primary care update. <em>Cleveland Clinic Journal of Medicine</em>, 87(1)" },
+              { "html": "Shapiro, B., Benjamin, B., Payne, R., and Heidrich, G. (1997). Sickle Cell-Related Pain: Perceptions of Medical Practitioners. <em>Journal of Pain and Symptom Management</em>, 14 (3), 168-174." },
+              { "html": "Ruta, N., &amp; Ballas, S. (2016). The Opioid Drug Epidemic and Sickle Cell Disease: Guilt by Association, <em>Pain Medicine</em>, Volume 17, Issue 10, Pages 1793–1798" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The 'Why the Discomfort?' section header (line 35 in MD) has no standalone body prose — it acts as a thematic sub-heading only. Treated as an h3 within the rich_text block rather than a separate slide.",
+      "reason": "Source has an empty-body section header mid-slide; folding it in as a sub-heading avoids an empty text block."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "'What is the role of each team member in the care of individuals with Sickle Cell Disease?' is an open reflection prompt with no answer options and no Explanation in the source. Rendered as rich_text per spec.",
+      "reason": "Single-prompt / no-option item — not a quiz_inline candidate."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "Quiz has two ✓ options → select_all type. correct_answer is an array of both correct option strings.",
+      "reason": "Two marked-correct options require select_all rather than multiple_choice."
+    }
+  ]
+}

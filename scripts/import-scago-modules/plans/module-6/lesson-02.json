@@ -1,0 +1,512 @@
+{
+  "lessonId": "54189237-6962-45e1-9ebd-e5c6155c245a",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Transition Navigator Role",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "Learning Objectives",
+          "data": {
+            "style": "bullet",
+            "items": [
+              { "id": "lo1", "html": "Define the Transition Navigator Role" },
+              { "id": "lo2", "html": "Review an example of the the Transition Navigator role" },
+              { "id": "lo3", "html": "Review resources to support transition planning" },
+              { "id": "lo4", "html": "Identify ways to measure transition success" }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Supporting Transitions",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Supporting Transitions",
+          "data": {
+            "html": "<h2>Supporting Transitions</h2><p>In lessons 1, and 2, we learned about some of the barriers patient's and families face during the transition from pediatric to adult care.</p><p>Support during the transition period can help reduce some of these barriers.</p><p>Different transition support models exist, depending on program needs and available resources.</p><p>At SickKids and UHN, a Transition Navigator (TN) role has been created</p><p>The TN supports patients and families with transition preparation, transfer to adult care, and post-transfer support in the adult care setting.</p><p>This Transition model is based on recommendations for transition planning: <a href=\"http://www.gottransition.org\" target=\"_blank\" rel=\"noopener\">www.gottransition.org</a></p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "What is the Transition Navigator Role?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "What is the Transition Navigator Role?",
+          "data": {
+            "html": "<h2>What is the Transition Navigator Role?</h2>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "What are the responsibilities of Transition Navigator?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "What are the responsibilities of Transition Navigator?",
+          "data": {
+            "html": "<h2>What are the responsibilities of Transition Navigator?</h2>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Sample Transition Model",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Sample Transition Model",
+          "data": {
+            "html": "<h2>Sample Transition Model</h2><p>To help with visualizing what the TN does, let's walk through a sample model from SickKids and UHN.</p><p>In this model, the TN meets with patients and their caregivers starting as early as 12 years of age and is a part of their journey in the paediatric setting until the age of 18.</p><p>At first contact with the patients the TN:</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "At First Contact",
+          "data": {
+            "style": "bullet",
+            "items": [
+              { "id": "fc1", "html": "Introduces idea of transitioning between paediatric and adult health care at 18 years of age" },
+              { "id": "fc2", "html": "Discusses shifting from family-centered to patient-centered care to patients and their parents/caregivers" },
+              { "id": "fc3", "html": "Encourages teens to become more active in their health care (e.g. booking own appointments)" },
+              { "id": "fc4", "html": "Collaborates in the development of the skills needed to teens to successfully self-manage their disease" },
+              { "id": "fc5", "html": "Explores caregiver and family perspectives how to support transition for the patient" }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": "TN Role Description",
+          "data": {
+            "html": "<p>The TN role is described to teen and parents/caregivers, includes information such as:</p>",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "title": "TN Role Information",
+          "data": {
+            "style": "bullet",
+            "items": [
+              { "id": "tn1", "html": "Providing education around topics related to transition" },
+              { "id": "tn2", "html": "Supporting teen in creating goals" },
+              { "id": "tn3", "html": "Monitoring progress" },
+              { "id": "tn4", "html": "Learning how to schedule and manage healthcare appointments" },
+              { "id": "tn5", "html": "Accompanying patient to visits as needed" }
+            ],
+            "gridX": 0, "gridY": 8, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "image_gallery",
+          "title": "Sample Transition Model Images",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/SCAGO_LANDCSCAPE_ICONS_si0qys.png",
+                "alt": "SCAGO_LANDCSCAPE_ICONS_si0qys.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/boy_dad_fg0tfm.png",
+                "alt": "boy_dad_fg0tfm.png"
+              }
+            ],
+            "gridX": 0, "gridY": 11, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Reflection: Age to Start Transitions",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Reflection Prompt",
+          "data": {
+            "html": "<p><strong>Transitions should be started at age 12 and continued beyond the transition at 18 years of age.</strong></p><p><em>Fix this <strong>INCORRECT</strong> statement by crossing out <strong>two</strong> wrong words.</em></p><p><strong>Answer:</strong> Transition <strong>planning</strong> should be started at age 12 and continued beyond the transition at 18 years of age.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Transition Navigator and Ongoing Support",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Transition Navigator and Ongoing Support",
+          "data": {
+            "html": "<h2>Transition Navigator and Ongoing Support</h2><p>At the age of 17 (typically 2-3 months before the 18th birthday), patients attend specialized paeds/adult transition clinic visit which coincides with their final paediatric clinic visit and their 1st adult clinic visit.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Transition Navigator and Ongoing Support Images",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/0001-2550578303758522617_tltn5z.png",
+                "alt": "0001-2550578303758522617_tltn5z.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/27_jjl9ka.png",
+                "alt": "27_jjl9ka.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/0001-2789269086623804662_zyywsj.png",
+                "alt": "0001-2789269086623804662_zyywsj.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/0001-9213653959477618594_v1qjhf.png",
+                "alt": "0001-9213653959477618594_v1qjhf.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/0001-2003390954138050650_zhuryr.png",
+                "alt": "0001-2003390954138050650_zhuryr.png"
+              }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "How Do TNs Provide Support?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "How Do TNs Provide Support?",
+          "data": {
+            "html": "<h2>How Do TNs Provide Support?</h2>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Measuring Transition - Some Considerations",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Measuring Transition",
+          "data": {
+            "html": "<h2>Measuring Transition - Some Considerations</h2><p>Measuring transition can be difficult as results are not clear right away</p><p>It is important to track patient outcomes to ensure needs are being met</p><p>Some options to track transition outcomes include:</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "Transition Outcome Tracking Options",
+          "data": {
+            "style": "bullet",
+            "items": [
+              { "id": "mt1", "html": "Patient/family feedback surveys" },
+              { "id": "mt2", "html": "Appointment attendance" },
+              { "id": "mt3", "html": "Quality of life surveys" },
+              { "id": "mt4", "html": "Participating in a quality improvement and/or research studies to review effectiveness of supports provided." }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check",
+          "data": {
+            "question_type": "true_false",
+            "question": "When transitioning from paediatric to adult healthcare, the focus moves from family-centred care to patient-centred care.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "This statement is true. Although patients are at the center of care in the adult setting, many young people still rely on support from their families and caregivers, and this should be encouraged and acknowledged as a strength by the healthcare team.",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "What Do Transition Navigators Help With?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Transition Navigator Q&A",
+          "data": {
+            "html": "<p>Transition planning should start early, around age 12, and support is provided post-transfer to adult care to ensure a seamless transition.</p><p><strong>Question:</strong> Hey! Can you remind me what transition navigators help with?</p><p><strong>Answer:</strong> To improve rates of successful transitions, through support, education, and resourcefulness</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "Transition Resources",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Transition Resources Header",
+          "data": {
+            "html": "<h2>Transition Resources</h2>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "Transition Resources",
+          "data": {
+            "style": "bullet",
+            "items": [
+              { "id": "tr1", "html": "Transition information for young adults in Ontario - <a href=\"http://www.rbcd.ca/blog/category/Transition\" target=\"_blank\" rel=\"noopener\">www.rbcd.ca/blog/category/Transition</a>" },
+              { "id": "tr2", "html": "Health Care Transition Model and resources to develop programs - <a href=\"http://www.gottransition.org\" target=\"_blank\" rel=\"noopener\">www.gottransition.org</a>" },
+              { "id": "tr3", "html": "Transition Resource Guide for Students with Disabilities - <a href=\"http://www.transitionresourceguide.ca\" target=\"_blank\" rel=\"noopener\">www.transitionresourceguide.ca</a>" }
+            ],
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 12,
+      "slideType": "content",
+      "title": "Samantha's Transition",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Samantha's Transition",
+          "data": {
+            "html": "<h2>Samantha's Transition</h2><p>Samantha is almost 18 and about to attend a transition clinic from pediatric to adult care. She is feeling nervous about leaving the pediatric center she has attended since she was born. In addition, she will be moving away to start University in a new city and is worried about managing her health condition while living on her own.</p><p>In this scenario, here are some examples of where a TN might be able to support her:</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Samantha's Transition Images",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/sam_lxruny.png",
+                "alt": "sam_lxruny.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_03_Transition_Navigator_Role/dorm_lkyyey.png",
+                "alt": "dorm_lkyyey.png"
+              }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": "Psychosocial Support",
+          "data": {
+            "html": "<p><strong>Psychosocial Support:</strong></p><ul><li>Acknowledge feelings of nervousness with different changes occurring in her life</li><li>Review her support system within and outside of the healthcare team and review if any additional supports or referrals are needed</li><li>Screen for mental health concerns and provide referrals to supports</li><li>Highlight Samantha's strengths</li><li>Include Samantha's family / caregivers in developing a support plan</li></ul>",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": "Academic Support",
+          "data": {
+            "html": "<p><strong>Academic Support:</strong></p><ul><li>Review post-secondary supports she can register for including academic accommodations, and help her with this process</li><li>Review her school's other support systems such as peer support, academic workshops, counselling, and transition to post-secondary orientation sessions</li><li>Schedule a check in with Samantha in the near future, to assist with any follow up support from today's meeting</li></ul>",
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "title": "Healthcare Navigation",
+          "data": {
+            "html": "<p><strong>Healthcare Navigation:</strong></p><ul><li>Review with Samantha and her support system considerations for moving away from the family home and managing her health condition such as locations of local emergency department, pharmacy, and how to contact her health care team</li><li>Review the process for transition to adult care, so Samantha and her family / caregivers can ask questions about the process</li><li>Ensure medical team reviews considerations such as signs and symptoms to seek emergency care for her health condition, and information about her medication</li><li>Ensure Samantha has access to her medical information such as using a health passport ( <a href=\"http://www.myhealthpassport.ca\" target=\"_blank\" rel=\"noopener\">www.myhealthpassport.ca</a> ) or registering for her care system's electronic patient portal.</li></ul>",
+            "gridX": 0, "gridY": 12, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 13,
+      "slideType": "content",
+      "title": "Video: Transferring from SickKids to Toronto General Hospital",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "title": "Transferring from SickKids to Toronto General Hospital",
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=OcgFuxuOrNw?si=NEuGu1ZKXzgeCSgM",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 14,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Summary",
+          "data": {
+            "html": "<h2>Summary</h2>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "Summary Points",
+          "data": {
+            "style": "bullet",
+            "items": [
+              { "id": "s1", "html": "Transition Navigators are a value add to the transition of AYA patients." },
+              { "id": "s2", "html": "Transitions should be started at age 12 and continued beyond the transition at 18 years of age." },
+              { "id": "s3", "html": "Incorporate the use of standardized tools for transition readiness, such as the Transition Readiness Assessment Questionnaire (Brown &amp; Sobota, 2016)." },
+              { "id": "s4", "html": "Transition involves more than just healthcare, also includes other life transitions such as transition to university/college, work, etc." }
+            ],
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 15,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "References",
+          "data": {
+            "html": "<h2>References</h2>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "References List",
+          "data": {
+            "style": "decimal",
+            "items": [
+              { "id": "r1", "html": "Allemang B, Allan K, Johnson C, Cheong M, Cheung P, Odame I, et al. Impact of a transition program with navigator on loss to follow-up, medication adherence, and appointment attendance in hemoglobinopathies. Pediatr Blood Cancer. 2019 Aug;66(8):e27781." },
+              { "id": "r2", "html": "Allemang BA, Bradley J, Leone R, Henze M. Transitions to Postsecondary Education in Young Adults with Hemoglobinopathies: Perceptions of Patients and Staff. Pediatr Qual Saf. 2020 Oct;5(5):e349" },
+              { "id": "r3", "html": "Bradley, J., Lee, Z., &amp; Cheong, M. (2024). Developing a transition workshop for adolescents with sickle cell disease. Science Direct, 2 (2024)" },
+              { "id": "r4", "html": "Got Transition. n.d. Retrieved from <a href=\"https://www.gottransition.org/\" target=\"_blank\" rel=\"noopener\">https://www.gottransition.org/</a>" },
+              { "id": "r5", "html": "The Red Blood Cells Disorders Blog. (2024). Retrieved from: <a href=\"http://www.rbcd.ca/blog/category/Transition\" target=\"_blank\" rel=\"noopener\">www.rbcd.ca/blog/category/Transition</a>" },
+              { "id": "r6", "html": "Transition Resource Guide. (2024). Transition Resource Guide for Students with Disabilities Transition to Post-Secondary Education. Retrieved from: <a href=\"https://www.transitionresourceguide.ca/\" target=\"_blank\" rel=\"noopener\">https://www.transitionresourceguide.ca/</a>" }
+            ],
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "Slide 2 ('What is the Transition Navigator Role?') and Slide 3 ('What are the responsibilities of Transition Navigator?') are bare-header-only slides with no body text — the source MD has no content under these headers. Consider whether images from the lesson should be attached here or whether the content lives in the EdApp interactive layer that is not represented in the Markdown.",
+      "reason": "Both headers appear in the MD with no body text beneath them before the next bold section. Kept as rich_text per spec but flagged because they may need images or content that was in the EdApp interactive layer."
+    },
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "Slide 5 is a reflection/correction prompt ('Fix this INCORRECT statement by crossing out two wrong words'). Rendered as rich_text with the Explanation as the model answer. This was originally an interactive EdApp activity — flagged as candidate in case the team prefers a different treatment.",
+      "reason": "Single-option / open reflection prompt — spec rule 4 says render as rich_text, not quiz_inline."
+    },
+    {
+      "slideOrderIndex": 10,
+      "suggestion": "Slide 10 renders the 'Hey! Can you remind me what transition navigators help with?' as a rich_text Q&A because it has only one option (✓) and no distractors — a 1-option quiz is not valid. Flagged as candidate in case the team wants to add distractors to make it a proper multiple-choice quiz.",
+      "reason": "Single-option reveal — spec rule 4 explicitly forbids 1-option quiz_inline and forbids inventing distractors."
+    }
+  ]
+}

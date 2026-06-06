@@ -1,0 +1,352 @@
+{
+  "lessonId": "1a1d46f5-e972-4f60-b3b9-3236b00b9b93",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Bias and Barriers in Healthcare",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Clearly define and understand the concept of bias in the context of hemoglobinopathy practice" },
+              { "html": "Develop an awareness of how implicit/unconscious bias may impact healthcare decisions and communication" },
+              { "html": "Appreciate the voice of the patient and their experiences with bias when seeking healthcare" }
+            ]
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Cognitive Bias",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>“Repeated pattern of thinking that may help people make quicker decisions but can lead to inaccurate or unreasonable conclusions.” Hammond et. al., 2021</p><p>A way to think of cognitive bias is as an <strong>algorithm that the mind uses</strong> to help us to sort ideas and thoughts more quickly.</p>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Implicit Bias",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Question:</strong> “I am having a pain crisis, and to help my pain, I need 10 mg of dilaudid over 20 minutes.”</p><p><strong>Answer: False.</strong> During a pain crisis many patients are viewed as drug seekers, when in fact they just need higher doses of opioids to relieve their excruciating pain, which they get judged for by healthcare providers.</p>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Implicit/Unconscious Biases",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>We all have unconscious biases. None of us are immune, and we have to be intentional so that we can identify them and reduce their influence on our decision-making.</p><p>Photo credit: (<a href=\"https://www.tmc.edu/news/2019/10/best-intentions-wont-solve-implicit-bias-in-health-care/\" target=\"_blank\" rel=\"noopener\">https://www.tmc.edu/news/2019/10/best-intentions-wont-solve-implicit-bias-in-health-care/</a>)</p><p>There is a great deal of evidence that demonstrates healthcare professionals exhibit the same levels of unconscious bias as the wider population.</p><p>In medicine, unconscious bias will lead to unintended disparities in recruitment, patient care, and opportunities.</p>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_02_Bias_and_Barriers_in_Healthcare/Module_8_-_ABR_and_SCD.pptx_2_noxyd7.png",
+                "alt": "Implicit/Unconscious Bias in Clinical Medicine — System 1 Thinking"
+              }
+            ]
+          },
+          "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 4
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Implicit/Unconscious Bias in Clinical Medicine = SYSTEM 1 THINKING (Adapted from JACC Basic Transl Sci. 2021 Jan; 6(1): 78–85.)</p><p>Let’s take a moment now to review Dual Process Theory, which tries to explain how thought can arise in two different ways… or as a result of two different processes that are either unconscious (or System 1 thinking) or consciously controlled (System 2 thinking).</p><p>In a nutshell, System 1 thinking processes manifest almost instantly and are often rooted in subconscious mental processes… that are based on our personal histories and experiences. Implicit bias arises from System 1 processes.</p><p>Biased thoughts will result from automatic, intuitive and often irrational thought processes that influence our decision-making. They are hardwired, subconscious, or gained by repeated experience. We resort to them because they are fast and they are familiar.</p><p>In medicine, there are many forms of cognitive bias, including implicit bias, and we revert to these thinking processes when… we need to make quick decisions, when we are under stress, or when we are in familiar and seemingly repeated situations.</p><p>In medicine, cognitive bias will create mental shortcuts that we apply subconsciously to simplify our decision-making. The problem is that these biases can often lead to incorrect conclusions, and it is well-documented in the medical literature that these shortcuts can lead to medical errors.</p>"
+          },
+          "gridX": 0, "gridY": 7, "gridW": 12, "gridH": 4
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "System 1 or System 2 Thinking?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Photo credit: (<a href=\"https://steadycompounding.com/personal-finance/3-cognitive-biases/\" target=\"_blank\" rel=\"noopener\">https://steadycompounding.com/personal-finance/3-cognitive-biases/</a>)</p><p>Thought processes make up the majority of our thinking processes. It is fascinating and perhaps a bit unsettling to know that the cognitive psychology literature strongly supports that the majority of our decisions are made based on intuition and instinct.</p><p>System 2 thinking is conscious, aware and considerate… but we are not as rational as we think. System 2 processes are usually activated when we are doing something that’s challenging or something that doesn’t come naturally to us. This is the mind’s slower, analytical mode where reason dominates.</p><p>We hardly rely on these rational thought processes, but our conscious and logical thinking is what we must rely on so that we can reduce the influence of our implicit biases on our clinical decisions.</p><p><strong>In medicine, unconscious bias will lead to unintended disparities in recruitment, patient care, and opportunities.</strong></p>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 4
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Case Study",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Review the case study below and prepare to answer a knowledge check question.</p>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_02_Bias_and_Barriers_in_Healthcare/2_hor_1-2_hfarhg.png",
+                "alt": "Case study slide 1"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_02_Bias_and_Barriers_in_Healthcare/2_hor_1-2_2_zpijfl.png",
+                "alt": "Case study slide 2"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_02_Bias_and_Barriers_in_Healthcare/2_hor_1-2_3_ooene9.png",
+                "alt": "Case study slide 3"
+              }
+            ]
+          },
+          "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 4
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>If you were the medical student in this scenario, what is one action you could have done or said to the family to help redirect their attention and questions to the doctor?</p>"
+          },
+          "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 2
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Advocating for Equitable Care",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "title": null,
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=E-30KzS2REU&t=152s",
+            "title": "Advocating for Equitable Care",
+            "caption": "plays from 2:32 to 4:34"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 5
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Listen to Your Patients",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The Provincial Council for Maternal and Child Health &amp; Ministry of Health and Long-Term Care invited people with sickle cell disease to participate in a focus group to share their experiences when they or their loved ones found it necessary to seek care in an emergency department. Quotes from that session are included below:</p><blockquote><p>“ED is for emergencies. It is an emergency… that is why I am here.”</p></blockquote><blockquote><p>“It is a fear of how you will be treated.”</p></blockquote><blockquote><p>“There is a visual disconnect. You are not bleeding or broken.”</p></blockquote><blockquote><p>“Yes, I look this way, but you cannot see my pain.”</p></blockquote><blockquote><p>“I know what I need. I’ve been going through this for years. It may not be the standard dose, but I need it.”</p></blockquote><blockquote><p>“One time I was yelling for help and they called security and security threatened to call the cops because I was irate about a lack of care”</p></blockquote><blockquote><p>“When it is painful it is really painful so you don’t really want to live. I don’t want to go to the hospital. I wish doctors got the urgency to help people.”</p></blockquote><blockquote><p>“I’ve had this all my life, I have no veins left and I tell them that and they say ‘oh we have someone who is really good (at starting IVs)’ and an hour later I’ve had 12 pokes and no pain medication, not even anything orally.”</p></blockquote><blockquote><p>“…..frustrated with having a voice that gets drowned out by other conditions”</p></blockquote>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 6
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Words Matter!",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>As a part of training for healthcare professionals, time is spent with various team members to learn about and emulate what they learn in the care of their patients.</p><p>What we may not all be cognizant of is the impact language has on our thoughts and decision making.</p><p>Take a moment to read the neutral note on the left and the stigmatizing note on the right from the image below.</p><p>Photo credit: Goddu et. al., 2018</p><p>Would it surprise you to learn that residents who read the stigmatizing note were less likely to prescribe pain meds and have more negative attitudes towards patients with sickle cell disease?</p><p><strong>Words Matter!</strong></p>"
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_02_Bias_and_Barriers_in_Healthcare/stigmatizing_note_kwm8qz.jpg",
+                "alt": "Neutral note vs. stigmatizing note comparison. Photo credit: Goddu et. al., 2018"
+              }
+            ]
+          },
+          "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 4
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Clinicians who include stigmatizing language in their documentation are also more likely to have negative attitudes towards patients with SCD and prescribe less pain medications.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "As healthcare professionals it is our duty to ensure we provide safe care to patients by knowing our own positionality in each situation as being on the top (privilege) or the bottom (oppression) of the coin, increasing diversity of healthcare teams, and avoiding the use of stigmatizing language."
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Racial concordance between patients and their providers can improve communication, trust, and adherence to medical advice.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "As healthcare professionals it is our duty to ensure we provide safe care to patients by knowing our own positionality in each situation as being on the top (privilege) or the bottom (oppression) of the coin, increasing diversity of healthcare teams, and avoiding the use of stigmatizing language."
+          },
+          "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "In the coin model, the top of the coin represents oppression and the bottom of the coin represents privilege.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "As healthcare professionals it is our duty to ensure we provide safe care to patients by knowing our own positionality in each situation as being on the top (privilege) or the bottom (oppression) of the coin, increasing diversity of healthcare teams, and avoiding the use of stigmatizing language."
+          },
+          "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Bias in healthcare is harmful to patient outcomes, experiences, and safety" },
+              { "html": "Implicit bias arises from System 1 thinking, which is rooted in subconscious mental processes that are based on our personal histories and experiences" },
+              { "html": "Reduced pain management, less referrals to specialist, delays in care, and poor maternal outcomes are just some examples of how implicit bias manifests in care" }
+            ]
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Chua, T. (2021). How Can You Overcome the 3 Cognitive Biases that Hurt Your Returns. <em>Steady Compounding</em>. Retrieved from: <a href=\"https://steadycompounding.com/personal-finance/3-cognitive-biases/\" target=\"_blank\" rel=\"noopener\">https://steadycompounding.com/personal-finance/3-cognitive-biases/</a>" },
+              { "html": "George, C. (2019). ‘Best intentions’ won’t solve implicit bias in health care. <em>Texas Medical Centre (TMC)</em>. Retrieved from: <a href=\"https://www.tmc.edu/news/2019/10/best-intentions-wont-solve-implicit-bias-in-health-care/\" target=\"_blank\" rel=\"noopener\">https://www.tmc.edu/news/2019/10/best-intentions-wont-solve-implicit-bias-in-health-care/</a>" },
+              { "html": "Global News. (2024). Sickle Cell Disease Awareness. Retrieved from: <a href=\"https://youtu.be/E-30KzS2REU\" target=\"_blank\" rel=\"noopener\">https://youtu.be/E-30KzS2REU</a>" },
+              { "html": "Hammond, M, Stehlik, J, Drakos, S., &amp; Afoury, A. (2021). Bias in Medicine: Lessons Learned and Mitigation Strategies. <em>Journal of American College of Cardiology Basic Translational Science</em>." },
+              { "html": "Marcelin, J., Siraj, D., Victor, R., Kotadia, S., &amp; Maldonado, Y. (2019). The Impact of Unconscious Bias in Healthcare: How to Recognize and Mitigate It. <em>Journal of Infectious Diseases</em>. 220 (Suppl 2). S62–S73." },
+              { "html": "Goddu, A., O’Conor, K., Lanzkron, S., Saheed, M., Saha, S., Peek, M., Haywood Jr, C., &amp; Beach, M. (2018). Do Words Matter? Stigmatizing Language and the Transmission of Bias in the Medical Record. <em>Journal of General Internal Medicine</em>, 33(5):685-691" }
+            ]
+          },
+          "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 5
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The 'Implicit Bias' section presents a single-answer reveal question ('I am having a pain crisis, I need 10 mg of dilaudid...' → only ✓ False, no distractors). Rendered as rich_text with the explanation as the model answer. Could be made a quiz_inline if a second distractor option ('True') were added by content owners.",
+      "reason": "Single-option quiz — spec forbids 1-option quiz_inline and prohibits inventing distractors"
+    },
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "The open reflection prompt ('If you were the medical student in this scenario, what is one action you could have done or said...') has no answer options and is an open-ended tap-to-respond prompt. Rendered as rich_text. Could become a survey block if content owners supply a text-input question.",
+      "reason": "Open reflection prompt with no options — spec treats these as rich_text, not quiz_inline"
+    }
+  ]
+}

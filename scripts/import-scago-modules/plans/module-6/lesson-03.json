@@ -1,0 +1,113 @@
+{
+  "lessonId": "d0281f9e-0a21-4b84-be59-6ef26c6d4d3d",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Reflective Case Study",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Introduction to Bethany",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Introduction to Bethany",
+          "data": {
+            "html": "<p>We have been able to define transitions, consider evidence based approaches for successful transitions, and introduced to the benefits of the Transition Navigator role.</p><p>Now it's time for you to meet Bethany who is a 27 year old young adult who has sickle cell disease. She transitioned from paediatric to adult care almost 10 years ago.</p><p>So listen to her story and reflect on ways you could help her.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "media",
+      "title": "Bethany's Transition",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "title": "Bethany's Transition",
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=LwM-p08a_zw",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Reflection",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Reflection Prompt",
+          "data": {
+            "html": "<p><strong>What is one thing you could do as a healthcare provider to improve Bethany's transition?</strong></p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "Summary",
+          "data": {
+            "items": [
+              { "html": "Transition from paediatric to adult care is complex" },
+              { "html": "As healthcare professionals, you must listen to and partner with your patients to advocate for the best care and access to resources to help improve transitions" },
+              { "html": "With the right supports in place, education available, and access to care that AYAs need, transitions can be successful" }
+            ],
+            "style": "bullet",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "Render as open text-entry survey question instead of rich_text",
+      "reason": "The reflection prompt 'What is one thing you could do as a healthcare provider to improve Bethany's transition?' is an open-ended question with no answer options or explanation. Per spec it must be rich_text (not quiz_inline). A future platform survey block with open text-entry would be the ideal interaction if desired."
+    }
+  ]
+}

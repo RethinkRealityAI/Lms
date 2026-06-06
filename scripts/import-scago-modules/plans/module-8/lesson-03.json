@@ -1,0 +1,114 @@
+{
+  "lessonId": "34ff69f3-0fd1-4452-9ce6-9d668a6e6943",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Patient Perspective on Advocacy",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Appreciate the patient's perspective on their experiences in advocacy" },
+              { "html": "Identify enablers to advocacy needed for people with Sickle Cell Disease" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "How Advocacy Has Helped Me",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "title": null,
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=LzyPjwJpk_E",
+            "title": "How Advocacy Has Helped Me"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>What is one thing you would have done differently as the healthcare provider caring for this patient in the ED, to improve her experience?</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Advocacy is active, taking place anywhere, at any time." },
+              { "html": "To reduce power imbalances, partnering with patients to advocate for what they need is imperative" },
+              { "html": "Empower patients to advocate for themselves and leverage your positionality as a HCP to dismantling barriers and create equitable access for all patients." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "References",
+      "settings": {
+        "background": "#FFFFFF",
+        "block_style": "glass"
+      },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Amutah, C., Greenidge, K., Mante, A., Munyikwa, M., Surya, S., Higginbotham, E., Jones, D., Lavizzo-Mourey, R., Roberts, D., Tsai, J., &amp; Aysola, J. (2021). Misrepresenting Race — The Role of Medical Schools in Propagating Physician Bias. <em>New England Journal of Medicine</em>, 384 (9), 872-828." },
+              { "html": "<a href=\"http://www.surgeryredesign.com\" target=\"_blank\" rel=\"noopener\">www.surgeryredesign.com</a>" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The reflection prompt 'What is one thing you would have done differently as the healthcare provider caring for this patient in the ED, to improve her experience?' is an open reflection with no options. Rendered as rich_text per spec. Consider using a survey block if the platform captures free-text responses.",
+      "reason": "Open/reflection prompt — no answer options in source; spec forbids inventing distractors and mandates rich_text for single-option or no-option reveals."
+    }
+  ]
+}

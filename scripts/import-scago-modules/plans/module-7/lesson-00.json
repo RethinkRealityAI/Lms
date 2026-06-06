@@ -1,0 +1,286 @@
+{
+  "lessonId": "66fc7d57-494a-4e10-ba80-c4d03398cab1",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Power and Privilege",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Explain the concepts of power and privilege in the context of hemoglobinopathy practice" },
+              { "html": "Recognize existing power structures within healthcare systems and their potential impact on patients and practitioners" },
+              { "html": "Discuss the implications of bias on patient outcomes and healthcare disparities" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Introduction",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Prejudice is a burden that confuses the past, threatens the future and renders the present inaccessible.</strong></p><p><strong>What is Social Identity?</strong> Social identity is the perceived membership within certain social groups based on specific physical, social and/or mental characteristics.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Strategies for Prevention",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Our social identities will come with varying levels of power and privilege.</p><p>The centre of the wheel represents the highest position of power and privilege. The further your social identities are from the power centre, the more marginalized you will be and the more exposed you will be to discrimination.</p><p>You can see how this tool can be used to reflect upon your social power in relation to that of your patients, colleagues, etc. We have to understand where we are coming from and what privileges we bring with us so that we can be effective allies.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/Module_8_-_ABR_and_SCD.pptx_efzj1s.jpg",
+                "caption": "Photo credit: Bauer, 2021"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Privilege",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Privilege <em>priv-i-lege | noun</em></strong></p><p><strong>Before:</strong> PRIVILEGE ≠ SPOILED<br><strong>After:</strong> PRIVILEGE = SYSTEMIC ADVANTAGE</p><p><strong>Top of the coin:</strong> You have an advantage others do not. You did not earn it. You have it because of who you happen to be.</p><p><strong>The coin:</strong> The social structure that produces and maintains inequality, e.g., sexism, racism, ableism.</p><p><strong>Bottom of the coin:</strong> You have a disadvantage others do not. You did not earn it. You have it because of who you happen to be.</p><p>You cannot have health inequity on one side (bottom of the coin) without having privilege on the other (top of the coin).</p><p>Coins = society-level norms or structures that give unearned advantages or disadvantages to individuals, that is whether they want it or not and whether they are aware of it or not.</p><p>If one side of the coin is privilege, then the other is oppression.</p><p>Coins intersect leading to complex systems of inequality. Photo credit: (Nixon, 2019)</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Social Identity Components",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Match the Social Identity component with their description:</strong></p><p><strong>DYNAMIC</strong> — Chosen or born into and is visible or invisible.</p><p><strong>SOCIOLOGICAL</strong> — The ranking of identities and differences is determined by society.</p><p><strong>SALIENT</strong> — The importance of an identity may vary depending on the social context.</p><p><strong>MULTIPLE</strong> — We all have multiple identities in different combinations.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Intersectionality",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Some parts of us will align with privilege and some parts with injustice. In some cases, these different parts of our identity can have a compounding effect and result in greater disadvantages in society.</p><p>For example, any woman could face gender inequality at work, but a Muslim woman may also encounter discrimination because of her race and religious self-affiliation.</p><p>We should shift our thinking about bias and privilege from a singular view of self to a multidimensional view that accounts for the way that each one of us, our peers, friends, families and patients will encounter the world. Photo credit: (Hardy, 2015)</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/AFAEF_mrqob7.jpg",
+                "caption": "Photo credit: (Hardy, 2015)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "You can have health inequity on one side without having privilege on the other.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. You cannot have health inequity on one side without having privilege on the other."
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "If one side of the coin is privilege, then the other is inequity.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. If one side of the coin is privilege, then the other is oppression."
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Coins intersect leading to complex systems of privilege.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. Coins intersect, leading to complex systems of inequality."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Equality, Equity, and Justice",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>In society, disparities in privilege limit our ability to access resources, and it will cause inequality in our access to opportunities. We live in a world where the giving tree is crooked and there is an unequal distribution of and access to privilege and opportunities.</p><p>Equality will evenly distribute the same tools and support to everyone, but it does not mean that access to opportunities will be the same.</p><p>Equity implies that we give everyone the tools that they will need to access opportunities and reach their fullest potential.</p><p>The goal is to achieve social justice and to straighten the giving tree so that we will have a just society that inherently provides equitable access to privilege and opportunities for everyone.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/INEQUALITY_jatho7.png",
+                "caption": "Inequality"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/EQUALITY_ciessk.png",
+                "caption": "Equality"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/EQUITY_bijp02.png",
+                "caption": "Equity"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/JUSTICE_hzybpc.png",
+                "caption": "Justice"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/igh_wheel-en2_xs0ct9.png",
+                "caption": "Wheel of Power and Privilege"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_01_Power_and_Privilege/JUSTICE_bdyzbg.png",
+                "caption": "Justice"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Social identity is the perceived membership within certain social groups based on specific physical, social and/or mental characteristics." },
+              { "html": "Privilege is an unearned advantage that benefits one social group, while disadvantaging another group" },
+              { "html": "As health care professionals, we must move away from a reductionist and single-issue approach to patient care and consider the different dimensions and social identities that will influence the health of our patients." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Clerkin, C. (2023). Understand Social Identity to Lead in a Changing World. Centre for Creative Leadership. Retrieved from <a href=\"https://www.ccl.org/articles/leading-effectively-articles/understand-social-identity-to-lead-in-a-changing-world/\">https://www.ccl.org/articles/leading-effectively-articles/understand-social-identity-to-lead-in-a-changing-world/</a>" },
+              { "html": "Hardy, K. (2015). Race Inside and Outside the Therapy Room. Psychotherapy Network Symposium." },
+              { "html": "<a href=\"https://uxatt.com/wp-content/uploads/2020/06/equality-poster.jpg\">https://uxatt.com/wp-content/uploads/2020/06/equality-poster.jpg</a>" },
+              { "html": "Vox. 2019. The intersectionality wars. Retrieved from: <a href=\"https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination\">https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination</a>" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "Social Identity Components rendered as rich_text (not match_pairs)",
+      "reason": "Source has 'Match the Social Identity component with their description' with an Explanation listing DYNAMIC/SOCIOLOGICAL/SALIENT/MULTIPLE but no ✓/✗ option lines — no standard quiz format. Per spec rule 4, reveal prompts with no distractors render as rich_text with the answer displayed. match_pairs is forbidden for non-quiz informational content."
+    }
+  ]
+}

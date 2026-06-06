@@ -1,0 +1,158 @@
+{
+  "lessonId": "d562391a-c763-4577-a3b1-88ad0fe5cf3f",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Labour and Delivery and Post Partum in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Increase awareness of guidance for optimizing birth" },
+              { "html": "Identify and reduce risks in postpartum care" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Considerations for Labour and Delivery",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<h3>Inducing Labour</h3><p>Based on the American Society of Hematology (ASH) 2020 guidelines, it is recommended that labour be induced between 38 and 40 weeks.</p><p>Rationale: to decrease perinatal mortality, particularly for patients with SCD, related to placental abnormalities</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Optimal Intrapartum Care ASH (2020) Guidelines",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Good analgesia to manage pain" },
+              { "html": "Epidural analgesia is safe and effective for pregnant women with SCD." },
+              { "html": "Avoid dehydration to reduce risk of sickling crisis" },
+              { "html": "Regular monitoring of oxygen saturation" },
+              { "html": "Avoid protracted/prolonged labour." },
+              { "html": "Continuous electronic fetal monitoring due to increased risk of unexplained stillbirth and adverse perinatal outcomes for pregnant women with SCD." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Anaesthesia for C-sections",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Regional anesthesia is preferred for Cesarean section. General anesthesia is associated with higher risks of sickling complications.</p><p><strong>Vigilance around pain management is essential in the immediate post partum period. An acute pain crisis after delivery happens in approximately 25% of women. Hydration, oxygenation and early mobilization reduce pain crisis risk.</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "quiz",
+      "title": "Post Partum Considerations",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": "",
+          "data": {
+            "question_type": "true_false",
+            "question": "Spinal anaesthesia is recommended to reduce post partum VOE.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "Regional (spinal) anaesthesia is preferred over general anaesthesia which is associated with higher risks of sickling complications."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Optimizing intrapartum care is critical to reducing risks postpartum" },
+              { "html": "The postpartum period offers the opportunity to advise about optimization of future pregnancies and contraception." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Camous J, N'da A, Etienne-Julan M, Stéphan F. Anesthetic management of pregnant women with sickle cell disease--effect on postnatal sickling complications. Can J Anaesth. 2008 May;55(5):276-83" },
+              { "html": "https://www.canhaem.org/wp-content/uploads/2018/09/Contraception-Pre-Conception-Counseling-and-Pregnancy.pdf" },
+              { "html": "https://onlinelibrary-wiley-com.uhn.idm.oclc.org/doi/pdf/10.1111/bjh.13270" },
+              { "html": "Berghella, V. (Ed.). (2017). Maternal-Fetal Evidence Based Guidelines (3rd ed.). CRC Press" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The 'Inducing Labour' content uses a before/after flip-card format in the source. It has been rendered as a single rich_text with both parts joined. If the platform later supports a reveal/flip interaction, this could be revisited.",
+      "reason": "Source uses **Before:** / **After:** pattern (EdApp flip card). Spec does not define a flip-card block type, so content is rendered as unified prose."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The 'Anaesthesia for C-sections' before/after content and the post-delivery pain crisis paragraph are combined on one slide. If desired, the pain crisis paragraph could be moved to a standalone 'Post Partum Pain Management' slide.",
+      "reason": "The bold pain-crisis paragraph (line 244 in source MD) has no section header of its own and is immediately followed by the bare 'Post Partum Considerations' header, so it was grouped with the preceding anaesthesia content."
+    }
+  ]
+}

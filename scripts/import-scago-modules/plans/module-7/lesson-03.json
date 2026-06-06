@@ -1,0 +1,256 @@
+{
+  "lessonId": "f9395225-5195-4143-8120-6478d16dc606",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Providing Anti-Oppressive, Anti-Racist Healthcare in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Clearly define the concept of anti-racist healthcare within the context of sickle cell practice" },
+              { "html": "Recognize existing power structures within healthcare systems and their potential impact on patients and practitioners" },
+              { "html": "Discuss ways to promote equitable access to healthcare services for individuals with sickle cell disease, focusing on anti-racist policies and practices" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Introduction",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Let's now change gears and be concrete about how we can move towards Anti-Oppressive, Anti-Racist Healthcare practices.</p><p><strong>There are 3 spheres that we need to consider:</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Question and Actively Counter Stereotypes",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>When it comes to our bias in medicine and clinical teaching, we can minimize and replace negative stereotypes by actively countering them.</p><p>How do we do this on a practical level?</p><p>In 2021, a NEJM paper entitled “Misrepresenting Race — The Role of Medical Schools in Propagating Physician Bias”, Christina Amutah et al. discuss the misuse of race in medical school curricula and the harm that this causes by propagating physician bias. Their group also provided recommendations to improve the use of race in medical education and medical research.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_04_Providing_AntiOppressive_AntiRacist_Healthcare_in_Sickle_Cel/Copy_of_Module_8_-_ABR_and_SCD.pptx_1_ymzjsp.png",
+                "caption": "Photo credit: Amutah, et. al., 2021"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Becoming Anti-Racist",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>It is imperative as a clinician that you are able to identify your own biases and how they can or do impact care.</p><p>What zone are you in as we move towards anti-racist healthcare and practices? We all have work to do, and the 1st step is being able to identify where you are in this journey.</p><p>What education do you need to help inform your own changes? What education do your learners need to better arm them to deliver anti-oppressive, anti-racist healthcare to all patients?</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_04_Providing_AntiOppressive_AntiRacist_Healthcare_in_Sickle_Cel/Copy_of_Module_8_-_ABR_and_SCD.pptx_2_akuc4b.jpg",
+                "caption": "Photo credit: www.surgeryredesign.com"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_04_Providing_AntiOppressive_AntiRacist_Healthcare_in_Sickle_Cel/2_hor_1-2_15_cfsicd.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_04_Providing_AntiOppressive_AntiRacist_Healthcare_in_Sickle_Cel/2_hor_1-2_16_mnmt2l.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_04_Providing_AntiOppressive_AntiRacist_Healthcare_in_Sickle_Cel/2_hor_1-2_17_hypp9o.png",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Anti-Racist Healthcare Practice Needs to Target All Levels",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<ul><li><strong>GLOBALIZATION ENVIRONMENT</strong> - International</li><li><strong>MACRO LEVEL</strong> - Regional, Provincial &amp; National</li><li><strong>MESA LEVEL</strong> - HCP, Clinical Settings &amp; Community Engagement</li><li><strong>MICRO LEVEL</strong> - Patient &amp; Family</li></ul><blockquote><strong>“Healthcare professionals responsibly use their expertise and influence to advance the health and well-being of individual patients, communities, and populations.”</strong></blockquote>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Determine whether the following statements are true or false.</strong></p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Misuse of race in medical school curricula causes harm by propagating physician bias.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True. When it comes to our bias in medicine and clinical teaching, we can minimize and replace negative stereotypes by actively countering them."
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Unconscious bias and stereotypes do not affect clinical teaching, patient care and outcomes.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. Unconscious bias and stereotypes will negatively impact clinical teaching, patient care and outcomes."
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "The three spheres for anti-racist healthcare practices are: Education, HR recruitment practices, and Leadership.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. The three spheres for moving towards anti-racist, anti-oppressive healthcare practices are: Education, Representation & Leadership, & Healthcare Delivery."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "We have interconnected social identities, and some of these will afford us privilege while others will not." },
+              { "html": "We all have unconscious biases." },
+              { "html": "Unconscious bias and stereotypes negatively impact clinical teaching, patient care and outcomes." },
+              { "html": "We should actively counter stereotypes through meaningful diversity training and by being “upstanders”." },
+              { "html": "As an ally challenge the social hierarchies and existing inequities, to create a more equitable and just society." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Amutah, C., Greenidge, K., Mante, A., Munyikwa, M., Surya, S., Higginbotham, E., Jones, D., Lavizzo-Mourey, R., Roberts, D., Tsai, J., &amp; Aysola, J. (2021). Misrepresenting Race — The Role of Medical Schools in Propagating Physician Bias. <em>New England Journal of Medicine, 384</em>(9), 872–828." },
+              { "html": "<a href=\"http://www.surgeryredesign.com\">www.surgeryredesign.com</a>" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "Question 3 has contradictory source content: the ✓ marker is on 'True' but the Explanation says 'False. The three spheres... are Education, Representation & Leadership, & Healthcare Delivery' (not 'HR recruitment practices and Leadership' as stated in the question). The correct_answer follows the ✓ marker ('True') per spec, but feedback_correct uses the Explanation text which says 'False'. Consider fixing the question stem or flipping correct_answer to 'False' after content review.",
+      "reason": "Source contradiction: ✓ option conflicts with Explanation text; rendered verbatim from source as-is pending editorial review."
+    },
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "The source contains a 'Match the levels' exercise: 'Match the levels of the Anti-Racist Healthcare Practice with their descriptions' with 4 level mappings (International=Globalization Environment, Regional/Provincial/National=Macro Level, HCP/Clinical/Community=Mesa Level, Patient & Family=Micro Level). This was rendered as rich_text on slide 4 (Anti-Racist Healthcare Practice Needs to Target All Levels) via the Explanation text, since no selectable options/distractors appeared in the source. Could be implemented as a match_pairs block if interactive format is desired.",
+      "reason": "Matching exercise had no inline options in source; promoted to rich_text per spec rule for reveal/reflection prompts with no options."
+    }
+  ]
+}

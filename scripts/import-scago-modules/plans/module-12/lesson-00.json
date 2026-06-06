@@ -1,0 +1,269 @@
+{
+  "lessonId": "6b4648ad-f980-4cbf-89bb-e2f85c949590",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Prevention of Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Has a several points" },
+              { "html": "Displays each point with a bullet" },
+              { "html": "Is similar to a PowerPoint slide" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Prevention of Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Sickle cell disease (SCD) was initially endemic to sub-tropical and tropical regions. Carrier (trait) status conferred a level of protection from the lethal effects of malaria.</p><p>Migration of people from regions endemic to SCD has made SCD a global disease. High morbidity associated with SCD has placed a heavy burden on health care systems worldwide.</p><p>Research has shown while many people from ethnic groups at risk for SCD (people of Mediterranean, Middle Eastern, African, Caribbean, South Asian and South East Asian descent), may be familiar with the term SCD or know someone with SCD or sickle cell trait, they often do not have a good understanding of the inheritance pattern or symptoms of SCD.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/0001-3000943687239080688_siiw4v.png",
+                "alt": "0001-3000943687239080688_siiw4v.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/0001-5051207419753193348_nrnu7p.png",
+                "alt": "0001-5051207419753193348_nrnu7p.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The distinctive sickling nature of red blood cells and associated illnesses of SCD were first described more than 110 years ago, yet little progress has been made to slow the global spread of SCD.</p><p>While the social, political and economic aspects of SCD are very important, this module will focus on the role health care providers can play to help minimize the global health burden of sickle cell disease.</p><p>Screening should be offered to all prepubescent or pubescent children, despite ethnicity as anyone can be carrier of SCD.</p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/0001-3510976344026693821_b3mrzv.png",
+                "alt": "0001-3510976344026693821_b3mrzv.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/0001-3697875730941379263_w1qd1k.png",
+                "alt": "0001-3697875730941379263_w1qd1k.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Newborn Screening Ontario Timeline",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Every newborn child in Ontario is offered universal screening for some rare genetic, and metabolic disorders, including SCD.</strong></p><p>Sickle Cell Disease was added on November 24 2006 and was the 22nd disease to be added. There are now 29 diseases that are screened for at birth in Ontario.</p><p><em>2022, Newborn Screening Ontario</em></p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/nbs_timeline_r9a0eb.jpg",
+                "alt": "Newborn Screening Ontario Timeline"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Pre-Marital Counselling",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Post Pregnancy Supports</h3>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Patients who have SCD or known carriers of SCD, can be counselled or reminded of the inheritance pattern of SCD and disease presentation." },
+              { "html": "Some countries with a high prevalence of SCD have compulsory premarital screening programs for SCD. The primary aim of these programs is to prevent a marriage of people who have SCD or sickle cell trait." },
+              { "html": "Canada has no premarital screening programs for SCD. The topic of pre-marital counselling is sensitive and not without controversy." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Premarital Counselling in Saudi Arabia",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Why is premarital counselling required in Saudi Arabia?</strong></p><p>In 2004, premarital genetic screening was mandated in Saudi Arabia based on the high prevalence of SCD and Beta-Thalassemia, impact of these diseases on the quality of life of patients, and the financial impact on the healthcare system.</p><p>According to Memish &amp; Saeedi (2011), the higher frequency of consanguineous marriages, older ages of maternal and paternal family, and large family size may contribute to the high prevalence of SCD and Beta-Thalassemia in Saudi Arabia.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/prevalence_aiys8w.png",
+                "alt": "prevalence_aiys8w.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_12_Prevention_of_Sickle_Cell_Disease_and_the_Truth_Ab/Lesson_01_Prevention_of_Sickle_Cell_Disease/graph_marriage_u1g694.png",
+                "alt": "graph_marriage_u1g694.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "quiz",
+      "title": "Genetic Counselling: Understanding Your Genes",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question_type": "true_false",
+            "question": "Jennifer is 26 weeks pregnant, and now that she's pregnant she cannot be tested for sickle cell trait.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "Yes she can be tested, she just needs to ask her doctor, obstetrician or midwife for the test."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Many people are unaware of their sickle cell status and misinformed of the hereditary pattern of SCD" },
+              { "html": "Screening for SCD should begin pre or early adolescence or ideally prior to 10 week's gestation." },
+              { "html": "Parents who screen positive for sickle cell trait or have SCD, can be referred to a genetic counsellor during pregnancy." },
+              { "html": "All newborn babies in Ontario are offered Newborn Screening (NBS) for rare genetic and metabolic disorders, including SCD. Parents will only be notified if their baby has SCD, however, parents have to request the results for sickle cell trait status." },
+              { "html": "Compulsory premarital screening programs for sickle cell disease are common in many countries that have a higher rate of SCD – no such programs exist in Canada. Awareness, knowledge and education about SCD is valuable for everyone" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Esoh, K., Wonkam, A. (2021). Evolutionary history of sickle-cell mutation: implications for global genetic medicine. Human Molecular Genetics 30(2): R119-R128." },
+              { "html": "Piel, F.B., Steinberg, M.H., Rees, D.C. (2017). Sickle Cell Disease. The New England Journal of Medicine 376(16): 1561-1573" },
+              { "html": "Mburu, J., Odame, I. (2019). Sickle cell disease: Reducing the global disease burden. International Journal of Laboratory Hematology 41(Suppl. 1): 82-88" },
+              { "html": "Adigwe, O.P. (2022) Knowledge and awareness of sickle cell disease: a cross sectional study amongst unmarried adults in Nigeria's capital city. Journal of Community Genetics 13: 579-585" },
+              { "html": "Roche, R., Vignuda de Souza, T., de Cássia Melao de Morais, R., de Cássia Nunes Nascimento, L., Leontina do Couto, L., Fernandes de Abreu Farias, I. (2021) (Lack of) knowledge of mothers about sickle cell trait and disease: a qualitative study. Revista brasileira de enfermagem 75(1):e20201217. doi: 10.1590/0034-7167-2020-1217" },
+              { "html": "Savitt, TL., Goldberg, MF. Herrick's 1910 Case Report of Sickle Cell Anemia: The Rest of the Story (JAMA 26(2): 266-271" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 0,
+      "suggestion": "Learning Objectives bullets appear to be EdApp placeholder text ('Has a several points', 'Displays each point with a bullet', 'Is similar to a PowerPoint slide') — confirm these are intentional or replace with real objectives when available.",
+      "reason": "The three bullet items do not describe actual module learning objectives; they describe EdApp slide formatting. Transferred verbatim per spec but flagged for content review."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "'Post Pregnancy Supports' appears as a bare section header with no body — rendered as an h3 sub-heading above the Pre-Marital Counselling content_list. Confirm whether additional prose should appear under this header.",
+      "reason": "Source has 'Post Pregnancy Supports' (bold, line 47) with no body text before 'Pre Marital Counselling'. Treated as a contextual sub-heading on the same slide."
+    }
+  ]
+}

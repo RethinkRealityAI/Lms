@@ -1,0 +1,227 @@
+{
+  "lessonId": "4ee9f472-529c-4fbd-9182-5587841ceedd",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Review of Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Discuss what sickle cell disease is and the 2 hallmark components" },
+              { "html": "List common complications of SCD" },
+              { "html": "Identify opportunities for partnership with PCPs in the monitoring and dose escalation for Hydroxyurea" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Sickle Cell Disease Rapid Review",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>How Do I Diagnose SCD?</h3><p><strong>Which of the following is a common symptom of sickle cell disease?</strong></p><p>Fatigue</p><p><strong>How is Sickle Cell Disease diagnosed?</strong></p><p>Through a blood test, called a hemoglobin electrophoresis.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Some Clinical Manifestations of SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>HbF concentrations start to decrease after birth, around 4-6 months of age and this is when infants are more likely to start showing signs of VOE, since their HbS is now on the rise.</p><p>For infants, VOE presents itself as swollen hands and feet. This is called dactylitis.</p><p>During childhood and early adolescence, there are common delays in physical growth and sexual development.</p><p>Patients with SCD tend to have relatively low body fat and as such they are usually thin.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_02_Review_of_Sickle_Cell_Disease/complications_yzrg5h.png",
+                "alt": "complications_yzrg5h.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Complications of SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Patients on chronic transfusions are most likely receiving iron chelation therapy as well.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "The Essential Role of the PCP in Hydroxyurea (HU) Management",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Hydroxyurea has been used in patients with SCD for many decades and has helped to reduce pain crisis, hospitalizations, and emergency department visits, instead of just treating the pain.</p><p>HU is a once a day medication that is fairly inexpensive, easy to take, extensively studied, and readily available in most developed countries.</p><p>It is an anti neoplastic agent that can cause myelosuppression and as such requires close monitoring of lab values.</p><p>Approved in 1998 by FDA for use in SCD in adults. Has not been approved by Health Canada.</p><p>HU inhibits ribonucleotide reductase, a DNA synthesis enzyme. This causes haematopoiesis to be interrupted and leads to stress erythropoiesis in bone marrow.</p><p>The bone marrow starts producing the earlier progenitor erythrocyte cells that still contain HbF.</p><p>HbF does not adhere to other Hb molecules, which interrupts polymerization, effectively reducing HbS.</p><p>Target HbF: &gt;20%</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Reaching Maximum Tolerated Dose</h3><p>Primary care providers are in the position to help initiate, monitor, and titrate their patient's HU using the tables below and involving haematology for consultation.</p><p><strong>Side Effects</strong> • gastrointestinal problems • headache • drowsiness • skin and nail changes • Rare occasions - reports of hallucinations and seizures • Long-term use of hydroxyurea (&gt; 3 years) may induce leg ulcers</p><p><strong>Mortality Rates</strong> HU reduces mortality rates: • Adults - 40% reduced mortality • Children – 15-year survival rate is 99.4%, which is 4% higher than children not taking HU – 95.4%)</p><p><strong>Cancer Risk</strong> • The literature supports this as the biggest fear of PCPs around the use of HU • Fear their patient will develop cancer • 27% of pediatric providers • 40% of adult providers • Despite the substantial data and clinical experience to date that contradicts those concerns</p><p><strong>Pregnancy</strong> • Women should discontinue HU, once they are confirmed to be pregnant • Men can continue to take HU while trying to conceive with partner</p>"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_02_Review_of_Sickle_Cell_Disease/HU_chart_zvswta.png",
+                "alt": "HU_chart_zvswta.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_02_Review_of_Sickle_Cell_Disease/counts_chart_pu7kgy.png",
+                "alt": "counts_chart_pu7kgy.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "heading": "With an understanding of hydroxyurea, PCPs could assist by:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "doing patient education" },
+              { "html": "encouraging adherence to regimen" },
+              { "html": "alleviating misconceptions concerning adverse reactions/infertility" },
+              { "html": "help with monitoring tolerance and dose" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Sickle Cell Disease is a complex disease that requires the collaboration of multiple disciplines to optimize care outcomes and experiences." },
+              { "html": "The two hallmark components of SCD are hemolysis and vaso-occlusion" },
+              { "html": "PCPs are integral to the early identification of complications" },
+              { "html": "Monitoring bloodwork and adjusting doses of hydroxyurea, by the PCP, will give patients the best chance at being successful in maintaining their regimen." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Biodigital Human: Explore the Body in 3D. Retrieved from: <a href=\"https://human.biodigital.com/widgets/novartis-scd/?m=client/novartis_scd/sickle_cell_disease_audio_v2.json&initial=true&ui-info=true&ui-zoom=true&ui-share=false&uaid=4c4sk\" target=\"_blank\" rel=\"noopener\">https://human.biodigital.com/widgets/novartis-scd/</a>" },
+              { "html": "Hehre, R. 2020. Managing patients with sickle cell disease in primary care Robert Journal of the American Academy of PAs" },
+              { "html": "Moawad, H. 2023. Understanding Sickle Cell Anemia. Retrieved from: <a href=\"https://www.verywellhealth.com/sickle-cell-anemia-7507053\" target=\"_blank\" rel=\"noopener\">https://www.verywellhealth.com/sickle-cell-anemia-7507053</a>" },
+              { "html": "Onimoe, G., &amp; Rotz, S. 2020. Sickle cell disease: A primary care update. Cleveland Clinic Journal of Medicine, 87(1)" },
+              { "html": "Rees, D., Williams, T., &amp; Gladwin, M. 2010. Sickle Cell Disease. Seminar 376 (9757), 2018-2031." },
+              { "html": "Lai, R. 2024. The Role of the Primary Care Physician in SCD. Rare disease advisor." }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The 'Which of the following is a common symptom of sickle cell disease?' item has only one option (✓ Fatigue) — rendered as rich_text reveal. If additional distractor options are available from source material, this could be converted to a quiz_inline multiple_choice.",
+      "reason": "Single-option reveal — spec forbids 1-option quizzes and forbids inventing distractors"
+    },
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The 'How is Sickle Cell Disease diagnosed?' item has only one option (✓ Through a blood test, called a hemoglobin electrophoresis) — rendered as rich_text reveal. Could become quiz_inline if distractors are sourced from elsewhere in the module.",
+      "reason": "Single-option reveal — spec forbids 1-option quizzes and forbids inventing distractors"
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The 'Patients on chronic transfusions are most likely receiving iron chelation therapy as well.' item has only one option with matching Explanation — rendered as rich_text. Could be a true/false quiz_inline if the source structure is clarified as a knowledge check with True/False options.",
+      "reason": "Single-option reveal with no explicit True/False option markers — treated as rich_text per spec"
+    }
+  ]
+}

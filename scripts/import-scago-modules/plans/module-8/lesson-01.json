@@ -1,0 +1,288 @@
+{
+  "lessonId": "5e706ca0-95a0-4b21-86ca-0197afedcff3",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "What Does Sustainable Advocacy Look Like?",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Identify the most common health care setting HCP's can advocate for patients living with SCD." },
+              { "html": "Consider the holistic needs of a patient living with SCD beyond their medical diagnosis, as well as the social barriers often encountered." },
+              { "html": "Acknowledge the benefit of collaborating with other HCP's, community providers, patients and their families." },
+              { "html": "Discuss how HCP's can grow in their roles and positively influence change in their support of patients living with SCD." }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Things that HCPs Should Consider",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/10_p5fxyx.png", "alt": "10_p5fxyx.png" }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/11_bnglpb.png", "alt": "11_bnglpb.png" }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<ul><li>Patient's are much more than their diagnosis</li><li>The patient's perceived needs and concerns</li><li>The patient's understanding of their current situation</li><li>Can the patient identify influences on their current health concerns/crisis?</li><li>Patient's perceived barriers to care and overall SCD management</li><li>Do they have access to primary and comprehensive care?</li><li>What does their personal support system look like?</li><li>Patient's perspective on the most appropriate intervention and their supportive needs</li><li>It is important to support and validate patient's willingness to reach out for support, as well as their current situation</li></ul>",
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 4
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/Copy_of_SCAGO_VERTICAL_SERIES_obgyrm.png", "alt": "Copy_of_SCAGO_VERTICAL_SERIES_obgyrm.png" }
+            ],
+            "gridX": 0, "gridY": 10, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Questions to Consider",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Reducing Disparities in Care</strong> Consider the disparity in healthcare access among the SCD population and how you can help to mitigate that disparity.</p><ul><li>Check your biases</li><li>Validate the patient's experience</li><li>Consider how you can role model care that seeks to educate, empower, and encourage patients in their disease management.</li><li>Intervene where there are blocks/barriers; being willing to extend scope of advocacy beyond your role.</li><li>Understand the barriers that exist in healthcare.</li></ul>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 4
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Reflect on your role in educating, empowering, and encouraging patients in their disease management. How can you role model care that seeks to achieve these goals?</strong></p>",
+            "gridX": 0, "gridY": 4, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/16_jrijdf.png", "alt": "16_jrijdf.png" }
+            ],
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/13_hstl7b.png", "alt": "13_hstl7b.png" }
+            ],
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/14_aved36.png", "alt": "14_aved36.png" }
+            ],
+            "gridX": 0, "gridY": 12, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "After",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>After:</strong> Your patient is a person first; not a diagnosis.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/15_v0ka8u.png", "alt": "15_v0ka8u.png" }
+            ],
+            "gridX": 0, "gridY": 2, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/17_jiuwck.png", "alt": "17_jiuwck.png" }
+            ],
+            "gridX": 0, "gridY": 5, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/19_d1xxds.png", "alt": "19_d1xxds.png" }
+            ],
+            "gridX": 0, "gridY": 8, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/18_altkes.png", "alt": "18_altkes.png" }
+            ],
+            "gridX": 0, "gridY": 11, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_02_What_Does_Sustainable_Advocacy_Look_Like/Copy_of_SCAGO_LANDCSCAPE_ICONS_rkobqr.png", "alt": "Copy_of_SCAGO_LANDCSCAPE_ICONS_rkobqr.png" }
+            ],
+            "gridX": 0, "gridY": 14, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Reflect on ways in which healthcare providers can grow in their roles and positively influence change in their advocacy for patients with SCD.</strong></p>",
+            "gridX": 0, "gridY": 17, "gridW": 12, "gridH": 2
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Kanter, J., Liem, R., Bernaudin, F., Bolaños-Meade, J., Fitzhugh, C., Hankins, J., Murad, H., Panepinto, J., Rondelli, D., Shenoy, S., Wagner, J., Walters, M., Woolford, T., Meerpohl, J., Tisdale, J. (2021). Guidelines for sickle cell disease: stem cell transplantation. American Society of Hematology, 5(18)" },
+              { "html": "Morrone KA, Manwani D, Cabana MD. Efficient Clinical Counseling for Sickle Cell Disease. J Natl Med Assoc. 2021 Aug;113(4):382-387. doi: 10.1016/j.jnma.2021.01.006. Epub 2021 Feb 17." },
+              { "html": "National Academies of Sciences, Engineering, and Medicine; Health and Medicine Division; Board on Population Health and Public Health Practice; Committee on Addressing Sickle Cell Disease: A Strategic Plan and Blueprint for Action; 2020" }
+            ],
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 4
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "Reflection prompt 'Reflect on your role in educating, empowering, and encouraging patients...' is an open-ended reflection with no answer options — rendered as rich_text. Consider whether the platform's journal/reflection widget would better serve this prompt.",
+      "reason": "Source has 'Tap the pencil below to share your insights' — an EdApp free-text journal entry, not a quiz. No options to validate against."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "Reflection prompt 'Reflect on ways in which healthcare providers can grow in their roles and positively influence change...' is an open-ended reflection with no answer options — rendered as rich_text. Consider whether the platform's journal/reflection widget would better serve this prompt.",
+      "reason": "Source has 'Tap the pencil below to share your insights' — an EdApp free-text journal entry, not a quiz. No options to validate against."
+    }
+  ]
+}

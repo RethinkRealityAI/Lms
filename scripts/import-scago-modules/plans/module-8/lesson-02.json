@@ -1,0 +1,164 @@
+{
+  "lessonId": "6cea4d09-b9e1-4e6a-ac49-8c4ee7868234",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Advocacy Matters: I Want to Be A Part of the Solution",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Review reflection of an inpatient nurse caring for a patient with SCD" },
+              { "html": "Identify barriers to care experienced by patients with SCD" },
+              { "html": "List ways to improve care as a healthcare professional for patients with SCD" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Reflections of a Nurse",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Malina has been working for over 5 years as a nurse on the medicine inpatient unit and she has cared for Sarita on a number of occasions.</p><p>Sarita is a 27 year old patient with Sickle Cell Disease who comes to your emergency department 4-5 times a year for pain relief related to her vaso-occlusive episode.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_03_Advocacy_Matters_I_Want_to_Be_A_Part_of_the_Solution_Healthc/Sarita_nurse_cshcnf.png",
+                "alt": "Sarita nurse"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_03_Advocacy_Matters_I_Want_to_Be_A_Part_of_the_Solution_Healthc/sarita_t9pexc.png",
+                "alt": "Sarita"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>From a healthcare practitioner point of view, what might be some challenges to providing timely and effective advocacy for patients?</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Reflections of a Nurse Continued",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Malina can't imagine how it feels for Sarita and what she goes through every time she comes to hospital. Malina wants the best for Sarita and shares more with us now about her role as an active advocate.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>How can healthcare providers ensure they are not perpetuating harmful stereotypes?</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Final Reflections of a Nurse",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Sarita's experiences are not individualized in nature and is the norm as opposed to the exception for people with SCD. Malina partners with Sarita to meet her where she's at and to advocate for her needs without any judgement. Listen to Malina's final reflections and consider how you would help Sarita if this were you in this situation.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>What is one strategy you will incorporate into your practice, to reduce racial barriers to care for individuals with SCD?</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Every patient has their own voice, we just need listen" },
+              { "html": "Perpetuating stereotypes about patients is harmful and not patient centric." },
+              { "html": "Sickle Cell is about much more than just pain. We have to consider all domains of care and how they influence each other, positively or negatively." }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "Two images (Sarita_nurse_cshcnf.png, sarita_t9pexc.png) placed as a gallery — consider whether they should be displayed as two separate single-image blocks if they carry distinct semantic meaning (e.g. nurse vs. patient separately labelled).",
+      "reason": "Source lists them consecutively with no interleaving text between them; gallery grouping is the most natural fit but layout reviewers may want individual captions."
+    },
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The reflection question 'From a healthcare practitioner point of view...' has no answer options and no Explanation — rendered as rich_text per spec. If a future revision supplies MCQ options, convert to quiz_inline.",
+      "reason": "Open reflection prompt; spec requires rich_text for prompts with no options."
+    },
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The reflection question 'How can healthcare providers ensure they are not perpetuating harmful stereotypes?' has no answer options — rendered as rich_text. Convert to quiz_inline if options are added.",
+      "reason": "Open reflection prompt with no options or Explanation in source."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The reflection question 'What is one strategy you will incorporate...' has no answer options — rendered as rich_text. Convert to quiz_inline if options are added.",
+      "reason": "Open reflection prompt with no options or Explanation in source."
+    }
+  ]
+}

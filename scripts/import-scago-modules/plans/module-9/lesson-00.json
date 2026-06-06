@@ -1,0 +1,368 @@
+{
+  "lessonId": "bbf808a8-bfb2-4720-93f7-29238f1014cf",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Fertility and Contraception in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Discuss contraceptive options for women with sickle cell disease (SCD)" },
+              { "html": "Discuss strategies to optimize the chances of conception" },
+              { "html": "Review pregnancy risks for women with SCD" },
+              { "html": "Review options for reducing the chances of having a child with SCD" }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Supporting Fertility",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Fertility Concerns For Individuals With Sickle Cell Disease</p>"
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 2
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_01_Fertility_and_Contraception_in_Sickle_Cell_Disease/0001-4117834685980688825_c5zajy.png",
+                "alt": "0001-4117834685980688825_c5zajy.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_01_Fertility_and_Contraception_in_Sickle_Cell_Disease/0001-7017026948670410834_jds3xw.png",
+                "alt": "0001-7017026948670410834_jds3xw.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_01_Fertility_and_Contraception_in_Sickle_Cell_Disease/tubal_dx_hjugco.png",
+                "alt": "tubal_dx_hjugco.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_01_Fertility_and_Contraception_in_Sickle_Cell_Disease/0001-2710459802676867983_bijbgz.png",
+                "alt": "0001-2710459802676867983_bijbgz.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_01_Fertility_and_Contraception_in_Sickle_Cell_Disease/0001-7017026951410792126_epoqcs.png",
+                "alt": "0001-7017026951410792126_epoqcs.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_01_Fertility_and_Contraception_in_Sickle_Cell_Disease/0001-6315591308866024619_ei3g5k.png",
+                "alt": "0001-6315591308866024619_ei3g5k.png"
+              }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 2,
+          "gridW": 12,
+          "gridH": 5
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Factors Impacting Fertility in Individuals with SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Reducing the Number of SCD Births</h2><p>Screen the partner for sickle cell trait with a CBC and hemoglobin electrophoresis. If the partner has a hemoglobinopathy, then referral to a fertility clinic is recommended to review options, including in vitro fertilization with preimplantation genetic testing for having a child. (More to come on this later). There are options for antenatal testing, each with their own risks and benefits, and include:</p><ul><li>Chorionic Villus Sampling at 11-14 weeks</li><li>Amniocentesis at &gt;15 weeks</li></ul>"
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 3
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>Risks of Having a Child with SCD</h2><p>Deciding how, when, and if to have children can be an emotionally challenging, particularly when there is a chance of having a child with SCD.</p><p>Stigma surrounding reproductive choices, including pursing fertility treatments, abortion, or having an offspring with SCD adds to the complexity.</p><p>Financial barriers may further impact decision making.</p>"
+          },
+          "gridX": 0,
+          "gridY": 3,
+          "gridW": 12,
+          "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Which of the following are fertility concerns for individuals pregnant with Sickle Cell Disease? (Select all that apply)",
+            "question_type": "select_all",
+            "options": [
+              "Ovulatory Dysfunction",
+              "Tubal Disease",
+              "Uterocervical Factors",
+              "Number of previous pregnancies",
+              "Unexplained infertility"
+            ],
+            "correct_answer": [
+              "Ovulatory Dysfunction",
+              "Tubal Disease",
+              "Uterocervical Factors",
+              "Unexplained infertility"
+            ],
+            "feedback_correct": "Individuals with sickle cell disease have fertility concerns that include: • Ovulatory Dysfunction • Tubal Disease • Uterocervical Factors • Male Factors • Unexplained Infertility"
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 4
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "A Bit About Assisted Reproduction",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><em>Brief Overview of In Vitro Fertilization (IVF)</em></p><h2>PGT-M</h2><p><strong>Before:</strong> PGT-M is for monogenic disorders which are disorders that are affected by a single gene and includes SCD</p><p><strong>After:</strong> PGT-M technology allows for the identification of affected embryos so that only the unaffected embryos may be transferred into the uterus</p>"
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 3
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h2>IVF Considerations for People with SCD</h2>"
+          },
+          "gridX": 0,
+          "gridY": 3,
+          "gridW": 12,
+          "gridH": 1
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Tailored medications to reduce risk of ovarian hyperstimulation syndrome (OHSS)" },
+              { "html": "Multidisciplinary team approach" },
+              { "html": "Supportive counseling and encouragement." },
+              { "html": "High live birth rates have been published for couples doing IVF with PGT-M" }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 4,
+          "gridW": 12,
+          "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Contraception and Pre Conception in Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>To aid in informed decision making for individuals with SCD, we will briefly review contraception and pre-conception.</p><p>Although there are limited data on the reproductive health for individuals with SCD, there are clear suggestions of:</p>"
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 2
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "higher rates of unintended pregnancies" },
+              { "html": "with lower than average use of contraception" }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 2,
+          "gridW": 12,
+          "gridH": 2
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Among other factors, decisions about contraception should be encouraged.</p><p>Contraception is the prevention of pregnancy and examples include:</p>"
+          },
+          "gridX": 0,
+          "gridY": 4,
+          "gridW": 12,
+          "gridH": 2
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "barrier methods" },
+              { "html": "intrauterine devices" },
+              { "html": "progesterone-only hormonal contraception (progestin only pill, Depot progestin or progestin-secreting intrauterine system) which has been shown to potentially lower vaso-occlusive episodes (VOE)" }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 6,
+          "gridW": 12,
+          "gridH": 3
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Oral contraceptive pill, patch, or ring – contraindicated in women with a history of venous thromboembolism</p><p>For those trying to prevent pregnancy, we must facilitate access to safe and effective contraception.</p><p>For those who would like to conceive a child, they must be provided with appropriate pre-conception screening and genetic counseling for individuals with SCD and their partners.</p><p>PGT-M is for monogenic disorders which are disorders that are affected by a single gene and includes Sickle Cell Disease.</p>"
+          },
+          "gridX": 0,
+          "gridY": 9,
+          "gridW": 12,
+          "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "People with SCD can experience infertility due to the same causes at the general population but may be more likely to have diminished ovarian reserve" },
+              { "html": "Several options exist for achieving pregnancy and people at risk of having a child with SCD should be counselled about options including IVF with PGT-M" },
+              { "html": "Fertility preservation is an important consideration in people facing a potential stem cell transplant" },
+              { "html": "People with SCD are at high risk for unintended pregnancy and should be counselled about contraceptive options" }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 3
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Berghella, V. (Ed.). (2017). Maternal-Fetal Evidence Based Guidelines (3rd ed.). CRC Press. JAMA Network Open. 2023;6(2)" },
+              { "html": "CanHaem Consensus Statement. (2018). Retrieved from: https://www.canhaem.org/wp-content/uploads/2018/09/Contraception-Pre-Conception-Counseling-and-Pregnancy.pdf" },
+              { "html": "Ghafuri DL, Stimpson SJ, Day ME, James A, DeBaun MR, Sharma D. Fertility challenges for women with sickle cell disease. Expert Rev Hematol. 2017 Oct;10(10):891-901. doi: 10.1080/17474086.2017.1367279. Epub 2017 Sep 11" },
+              { "html": "https://www.scdfc.org/news/what-is-sickle-cell-trait" },
+              { "html": "Igboeli P, Walker W, McHugh A, Sultan A, Al-Hendy A. Burden of Uterine Fibroids: An African Perspective, A Call for Action and Opportunity for Intervention. Curr Opin Gynecol Obstet. 2019;2(1):287-294" },
+              { "html": "Pecker LH,. Fertil Steril. 2018 Sep;110(4):720-731" },
+              { "html": "Pecker LH, Hussain S, Mahesh J, Varadhan R, Christianson MS, Lanzkron S. (2022). Diminished ovarian reserve in young women with sickle cell anemia. Blood. 139(7):1111-1115." },
+              { "html": "Quinn CT, Ware RE. Reproductive equity: preserve the reserve. Blood. 2022 Feb 17;139(7):963-965" },
+              { "html": "Smith-Whitley K. Reproductive issues in sickle cell disease. Hematology Am Soc Hematol Educ Program. 2014 Dec 5;2014(1):418-24" },
+              { "html": "Vali S, Mukhtar S, Nandi A, et al. (2020). Cumulative outcome of pre-implantation genetic diagnosis for sickle cell disease: a 5-year review. Br J Haematol. 191(5):875-879" },
+              { "html": "Wilcox AJ, Weinberg CR, Baird DD. Timing of sexual intercourse in relation to ovulation. Effects on the probability of conception, survival of the pregnancy, and sex of the baby. N Engl J Med. 1995 Dec 7;333(23):1517-21" },
+              { "html": "World Health Organization (WHO). International Classification of Diseases, 11th Revision (ICD-11) Geneva: WHO 2018." }
+            ]
+          },
+          "gridX": 0,
+          "gridY": 0,
+          "gridW": 12,
+          "gridH": 6
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The 6 images under 'Supporting Fertility' were grouped into a single gallery. If they carry distinct captions or labels (visible in the original EdApp render), consider splitting into 2–3 gallery blocks of 2 images each with rich_text captions between them.",
+      "reason": "Source provides no caption text per image — only the section subtext 'Fertility Concerns For Individuals With Sickle Cell Disease'. The actual alt-text filenames are uninformative. Content planners may want to annotate these images individually once the visual content is reviewed."
+    },
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The bare header 'Factors Impacting Fertility in Individuals with SCD' has no body prose in the source — it was used as the slide title covering the 'Reducing the Number of SCD Births' and 'Risks of Having a Child with SCD' subsections. If these warrant separate slides, split at the h2 boundaries.",
+      "reason": "The two subsections are thematically distinct (clinical screening vs. psychosocial risks) and each has enough content for a standalone slide."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "Quiz uses question_type 'select_all'; verify that the loader/renderer supports this type for Lesson 1 import.",
+      "reason": "The source uses ✓/○ markers indicating multiple correct answers (4 of 5 options correct). The CLAUDE.md confirms select_all is supported in the block system."
+    },
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "The PGT-M statement at lines 81–82 ('PGT-M is for monogenic disorders...') with its verbatim Explanation was folded into the end of the Contraception slide prose rather than rendered as a separate quiz, because no options were listed in the source.",
+      "reason": "Per spec, single-option reveal/reflection prompts with no distractors render as rich_text. The explanation text is identical to the statement, adding no new information."
+    }
+  ]
+}

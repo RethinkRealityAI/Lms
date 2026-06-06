@@ -1,0 +1,150 @@
+{
+  "lessonId": "3a56ff41-b58c-44ae-ae4c-a6949b4b8ed5",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Improving Health Equity for Pregnant People with SCD",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Identify barriers to care for pregnant people with Sickle Cell Disease" },
+              { "html": "List proactive means of improving health equity for pregnant people with Sickle Cell Disease" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Health Equity for Pregnant People with Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>We have learned throughout the modules that people with SCD experience barriers to care that include racism, discrimination, and stigma.</p><p>In this lesson we will highlight some of the ongoing barriers faced by pregnant people with SCD, but also identify ways clinicians can mitigate obstetric racism and promote health equity strategies for improved patient care and outcomes.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Why Are We Talking about Racism in Obstetrical Care?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>According to Early et al. (2023) there were 3 categories for pregnant people with SCD that demonstrated statically significant differences from the control group: &bull; Hypertensive disorders of pregnancy &bull; Labor and delivery complications &bull; Hematologic and immunologic complications</p><p>The maternal mortality rate in deliveries among people with SCD was 26 times greater than in the non-Black control group and more than 10 times greater than among Black pregnant people without SCD</p><p><strong>Racism as a determinant of health, along with the intersection of class, gender, and access to health services, adversely affects Black women&rsquo;s health outcomes</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Reduction of Peripartum Racial and Ethnic Disparities",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>In an effort to reduce peripartum racial and ethnic disparites, a workgroup made up of representatives from Obstetrics, Maternal Fetal Medicine, Midwives, Maternal/Child, Family Physicians, and a School of Public Health was developed</p><p>This workgroup focused on the development of an evidence-based patient safety bundle.</p><p>The proposed bundle was to be feasible and actionable, and have the potential to improve the quality of maternal health care, while reducing racial and ethnic disparities in maternal morbidity and mortality.</p><p>Their work culminated in the development of a bundle that can be used by those who find them of benefit.</p><p>Resource: Reduction of Peripartum Racial and Ethnic Disparities Bundle: <a href=\"https://saferbirth.org/wp-content/uploads/Reduction-of-Peripartum-Racial-and-Ethnic-Disparities_FINAL-11.7.16.pdf\" target=\"_blank\" rel=\"noopener\">https://saferbirth.org/wp-content/uploads/Reduction-of-Peripartum-Racial-and-Ethnic-Disparities_FINAL-11.7.16.pdf</a></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Addressing Racial Disparities",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>To provide the highest quality care to patients, we must deliver care that is free of bias and includes: &bull; Speaking openly with patients about Black maternal health outcomes &bull; Professional development courses in anti-oppressive framework &bull; Engaging with your institution&rsquo;s anti-racism frameworks and policies</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Racism, discrimination, and stigma all negatively impact the experiences of pregnant people with Sickle Cell Disease" },
+              { "html": "Strategies such as aligning with your institutions anti-racism policy, attending continuing education, and engaging multi disciplinary team members in the care of pregnant people with SCD, will improve outcomes and experiences" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Boakye, P., Prendergast, N., Bandari, B., Brown, E., Odutayo, A., and Salami, S. (2023). Obstetric racism and perceived quality of maternity care in Canada: Voices of Black women. <em>Women's Health</em>, 19. 1-13." },
+              { "html": "Early, M. BA; Ahizechukwu C. Eke, MBChB, PhD; Alison Gemmill, PhD; Sophie Lanzkron, MD, MHS; Lydia H. Pecker, MD, MHS. (2023). Severe Maternal Morbidity and Mortality in Sickle Cell Disease in the National Inpatient Sample, 2012-2018. <em>Jama Network Open</em>, 6 (2)" },
+              { "html": "<a href=\"https://saferbirth.org/wp-content/uploads/Reduction_of_Peripartum_Racial_and_Ethnic.4.pdf\" target=\"_blank\" rel=\"noopener\">https://saferbirth.org/wp-content/uploads/Reduction_of_Peripartum_Racial_and_Ethnic.4.pdf</a>" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The source has a bare section header 'What is Obstetric Racism?' with no body text and no images. It was omitted as a standalone slide (spec forbids slides with zero text blocks and no images). Consider adding a definition or visual for this concept if source material becomes available.",
+      "reason": "Bare header — no body text, no images in manifest for Lesson 4."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The source has two consecutive bare headers ('Manifestations of Obstetric Racism' and 'Addressing Racial Disparities For Pregnant Patients') with no body text or images. Both were merged into slide 3 as <h3> sub-headings preceding the Reduction of Peripartum content, which immediately follows them in the source. If artwork or copy is later identified for these sections, they should be split into separate slides.",
+      "reason": "Bare headers merged to avoid empty-block slides per spec rule."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "The 'Addressing Racial Disparities' section in the source contains only an **Explanation:** paragraph (no question, no answer options). It was rendered as a rich_text block per spec (reveal/reflection prompts with no options → rich_text). No quiz_inline was created.",
+      "reason": "No question or options present — cannot form a valid quiz_inline."
+    }
+  ]
+}

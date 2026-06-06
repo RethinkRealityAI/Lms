@@ -1,0 +1,459 @@
+{
+  "lessonId": "e35a5e11-ac98-473a-bcc4-2b3372a796cc",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Defining Transitions and Identifying Barriers to Successful Transitions in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "Learning Objectives",
+          "data": {
+            "items": [
+              { "text": "Define transitions and highlight trends specific to Adolescents and Young Adults (AYAs) with Sickle Cell Disease" },
+              { "text": "Identify physical, psychological, and social challenges faced by youth with Sickle Cell Disease in relation to transition from paediatric to adult care" },
+              { "text": "List barriers and facilitators to transitions of Adolescents and Young Adults (AYAs) with Sickle Cell Disease" }
+            ],
+            "listStyle": "bullet",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Introduction",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Introduction",
+          "data": {
+            "html": "<h2>Introduction</h2><p>Living with Sickle Cell Disease (SCD) comes with multiple challenges in addition to physical pain. For instance, AYAs with SCD experience many life changes during the transition period.</p><p>In addition to moving from one healthcare setting to another, many AYAs are also balancing enrolling in post secondary school, adjusting to young adulthood, or starting a new job.</p><p>The goal of this lesson is to identify a list of possible approaches to support AYAs in developing transition skills that will support youth as they go through the multifaceted changes during the transition period.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Defining Transitions in Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Defining Transitions in Sickle Cell Disease",
+          "data": {
+            "html": "<h2>Defining Transitions in Sickle Cell Disease</h2><p>Transition in healthcare involves addressing medical, psychosocial, and educational needs as care shifts from child and family-centered to adult-oriented.</p><p>This process should begin around age 12, to start emphasizing self-management skills, vocational planning, and adolescent health education.</p><p>The exact count of sickle cell disease (SCD) patients in Ontario, Canada, remains unknown. A 2023 study estimated that about 1 in 4200 people in Ontario had SCD from 2007/08 to 2016/17. The median age among this population was <strong>24 years old</strong>. (1)</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Sickle Cell Disease in Ontario — Pendergrast et al., 2023",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/Screenshot_39_y9qu6p.png",
+                "alt": "Screenshot_39_y9qu6p.png",
+                "caption": "Click on the image to zoom in. Photo credit: Pendergrast, et. al., 2023"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Current State of Healthcare Transition for AYAs with SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Current State of Healthcare Transition for AYAs with SCD",
+          "data": {
+            "html": "<h2>Current State of Healthcare Transition for AYAs with SCD</h2><p>AYAs with SCD between 18-30 years old, compared to other age groups, have been shown to be more vulnerable during healthcare transition due to:</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "Vulnerability Factors",
+          "data": {
+            "items": [
+              { "text": "unpredictable symptoms" },
+              { "text": "frequent pain episodes" },
+              { "text": "high healthcare utilization" },
+              { "text": "more rehospitalizations related to pain management" },
+              { "text": "higher morbidity/mortality rates" }
+            ],
+            "listStyle": "bullet",
+            "gridX": 0,
+            "gridY": 2,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": "Mortality Study",
+          "data": {
+            "html": "<p>A study of data between 1999-2009 revealed higher mortality rates among AYAs aged 20-24 years, aligning with the transition from paediatric to adult care, with rates of 0.6/100,000 for 15-19-year-olds and 1.4/100,000 for 20-24-year-olds.</p>",
+            "gridX": 0,
+            "gridY": 5,
+            "gridW": 12,
+            "gridH": 2
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": "Age-Specific Mortality Rates — Brown Med-Peds",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/Screenshot_40_kr49cn.png",
+                "alt": "Screenshot_40_kr49cn.png",
+                "caption": "Click on the image to zoom in. Photo credit: Brown Med-Peds, n.d. This figure presents the age specific-mortality rates subdivided into four time periods (1979–1988, 1989–1998, 1999–2003, and 2004–2009). Note the decline in mortality over the years for ages < 14 years old and then starts to fluctuate and increase as age increases."
+              }
+            ],
+            "gridX": 0,
+            "gridY": 7,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check — Question 1",
+          "data": {
+            "question": "Mortality rates increase dramatically after childhood between the ages of 20-24.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True. Mortality rates increase dramatically after childhood between the ages of 20-24.",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check — Question 2",
+          "data": {
+            "question": "The transition period may risk treatment delays and service disengagement for young adults.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True. The transition period may risk treatment delays and service disengagement for young adults.",
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check — Question 3",
+          "data": {
+            "question": "AYAs with SCD are at lower risk of vulnerability during transition due to the unpredictable nature of their symptoms, frequent pain episodes, high healthcare utilization, more rehospitalizations related to pain management, and higher morbidity/mortality rates.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. AYAs with SCD are at higher risk of vulnerability during transition due to the unpredictable nature of their symptoms, frequent pain episodes, high healthcare utilization, more rehospitalizations related to pain management, and higher morbidity/mortality rates.",
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Navigating Multiple Transitions",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Navigating Multiple Transitions",
+          "data": {
+            "html": "<h2>Navigating Multiple Transitions</h2><p>AYAs with SCD face multiple simultaneous life transitions alongside transitioning from paediatric to adult healthcare services.</p><p><strong>School</strong> SCD complications like pain, cognitive deficits, and frequent hospitalizations harm school attendance and performance. Transitioning from high school to college can be tough for AYAs with SCD without proper planning. A study found 60% of 12-20-year-olds with SCD said it impacted their education, with 40% repeating grades, and those experiencing more hospitalizations reported it leading to lower grades.</p><p><strong>Social and Psychological</strong> AYA also express that they have insufficient time to develop relationships with peers in their early years and limited opportunities to engage in peer activities during the transition period, leading to feelings of isolation, fatigue, and mental distress.</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Navigating Multiple Transitions — Image 1",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/9_qirqgm.png",
+                "alt": "9_qirqgm.png"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": "Navigating Multiple Transitions — Image 2",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/10_h6a66q.png",
+                "alt": "10_h6a66q.png"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Ethical and Cultural Considerations",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Ethical and Cultural Considerations",
+          "data": {
+            "html": "<h2>Ethical and Cultural Considerations</h2>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 1
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Ethical and Cultural Considerations — Images",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/12_wkew5k.png",
+                "alt": "12_wkew5k.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/11_yrjne2.png",
+                "alt": "11_yrjne2.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/10_ilv7xt.png",
+                "alt": "10_ilv7xt.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/9_hhoex2.png",
+                "alt": "9_hhoex2.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/8_uwstjz.png",
+                "alt": "8_uwstjz.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/7_ywscmh.png",
+                "alt": "7_ywscmh.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/6_f5dgo1.png",
+                "alt": "6_f5dgo1.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_01_Defining_Transitions_and_Identifying_Barriers_to_Successful_/5_jfk4ef.png",
+                "alt": "5_jfk4ef.png"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 1,
+            "gridW": 12,
+            "gridH": 4
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": "Trust and Effective Communication",
+          "data": {
+            "html": "<p><strong>There needs to be an establishment of trust between HCP and SCD patient to remove barriers in accessing care.</strong></p><p>There needs to be an establishment of <strong>trust</strong> between HCP and SCD patient to <strong>remove</strong> barriers in accessing care.</p><h3>Tips for Effective Communication</h3><p>Photo credit: Patient Voices Network, 2021</p><p>Effective partnerships start with getting to know each other and working together to leverage experiences and abilities.</p><p>These tips help create a comfortable environment with shared understanding and communication which is open, honest and respectful.</p>",
+            "gridX": 0,
+            "gridY": 5,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Strategies to Reduce Barriers to Transition",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Strategies to Reduce Barriers to Transition",
+          "data": {
+            "html": "<h2>Strategies to Reduce Barriers to Transition</h2><p>Healthcare transition programs aid in preparing, transferring, and integrating young adults into adult care settings.</p><p>The 6 Core Elements of Health Care Transition is a set of principles and guidelines developed by the American Academy of Pediatrics, the American Academy of Family Physicians, and the American College of Physicians.</p><p>These elements aim to ensure a smooth transition from paediatric to adult healthcare for individuals with special healthcare needs.</p><p>Further information on implementation and guides can be found here: <a href=\"https://www.gottransition.org/\" target=\"_blank\" rel=\"noopener\">https://www.gottransition.org/</a></p><h3>The 6 Core Elements of Health Care Transitions</h3><h3>True or False?</h3>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "Summary",
+          "data": {
+            "items": [
+              { "text": "There are a number of gaps in the transition from paediatric centred to adult centred care." },
+              { "text": "Communication style and creating feelings of psychological safety with patients is key to creating trusting relationships and engagement in care." },
+              { "text": "The 6 core elements of healthcare transitions are: transition policy, transition planning, transfer of care, transfer readiness, transfer completion, and transition tracking and monitoring" }
+            ],
+            "listStyle": "bullet",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "References",
+          "data": {
+            "items": [
+              { "text": "Allemang B, Allan K, Johnson C, Cheong M, Cheung P, Odame I, et al. Impact of a transition program with navigator on loss to follow-up, medication adherence, and appointment attendance in hemoglobinopathies. Pediatr Blood Cancer. 2019 Aug;66(8):e27781." },
+              { "text": "Allemang BA, Bradley J, Leone R, Henze M. Transitions to Postsecondary Education in Young Adults with Hemoglobinopathies: Perceptions of Patients and Staff. Pediatr Qual Saf. 2020 Oct;5(5):e349" },
+              { "text": "Bemrich-Stolz C, Halanych J, Howard T, Hilliard L, Lebensburger J. Exploring Adult Care Experiences and Barriers to Transition in Adult Patients with Sickle Cell Disease. Int J Hematol Ther. 2015;1(1):10.15436/2381-1404.15.003." },
+              { "text": "Blakey AO, Lavarin C, Brochier A, Amaro CM, Eilenberg JS, Kavanagh PL, et al. Effects of Experienced Discrimination in Pediatric Sickle Cell Disease: Caregiver and Provider Perspectives. J Racial Ethn Health Disparities [Internet]. 2022 Dec 19 [cited 2023 Jun 25]; Available from: https://doi.org/10.1007/s40615-022-01483-4" },
+              { "text": "Brousseau DC, Owens PL, Mosso AL, Panepinto JA, Steiner CA. Acute care utilization and rehospitalizations for sickle cell disease. JAMA. 2010 Apr 7;303(13):1288–94." },
+              { "text": "Brown Med-Peds, n.d. Health Inequities in Sickle Cell Disease. Retrieved from: https://brownmedpedsresidency.org/sickle-cell-disparities/" },
+              { "text": "Bulgin D, Tanabe P, Jenerette C. Stigma of Sickle Cell Disease: A Systematic Review. Issues Ment Health Nurs. 2018 Aug;39(8):675–86." },
+              { "text": "Calhoun C, Luo L, Baumann AA, Bauer A, Shen E, McKay V, et al. Transition for Adolescents and Young Adults With Sickle Cell Disease in a US Midwest Urban Center: A Multilevel Perspective on Barriers, Facilitators, and Future Directions. J Pediatr Hematol Oncol. 2022 Jul 1;44(5):e872–80." },
+              { "text": "Clayton-Jones D, Matthie N, Treadwell M, Field JJ, Mager A, Sawdy R, et al. Social and Psychological Factors Associated With Health Care Transition for Young Adults Living With Sickle Cell Disease. J Transcult Nurs. 2021 Jan 1;32(1):21–9." },
+              { "text": "Crosby LE, Joffe NE, Irwin MK, Strong H, Peugh J, Shook L, et al. School Performance and Disease Interference in Adolescents with Sickle Cell Disease. Phys Disabil Educ Relat Serv. 2015;34(1):14–30." },
+              { "text": "Got Transition. n.d. Retrieved from https://www.gottransition.org/" },
+              { "text": "Hamideh D, Alvarez O. Sickle cell disease related mortality in the United States (1999-2009). Pediatr Blood Cancer. 2013 Sep;60(9):1482–6." },
+              { "text": "Patient Voices Network. 2021. Tips for Effective Communication. Retrieved from: https://patientvoicesbc.ca/resources/tips-tricks-effective-communication/" },
+              { "text": "Pendergrast J, Ajayi LT, Kim E, Campitelli MA, Graves E. Sickle cell disease in Ontario, Canada: an epidemiologic profile based on health administrative data. Can Med Assoc Open Access J. 2023 Jul 1;11(4):E725–33." },
+              { "text": "Rea KE, Cushman GK, Santee T, Mee L. Biopsychosocial factors related to transition among adolescents and young adults with sickle cell disease: A systematic review. Crit Rev Oncol Hematol. 2021 Nov;167:103498." },
+              { "text": "Saulsberry AC, Porter JS, Hankins JS. A program of transition to adult care for sickle cell disease. Hematol Am Soc Hematol Educ Program. 2019 Dec 6;2019(1):496–504." },
+              { "text": "Schraeder K, Allemang B, Felske AN, Scott CM, McBrien KA, Dimitropoulos G, et al. Community based Primary Care for Adolescents and Young Adults Transitioning From Pediatric Specialty Care: Results from a Scoping Review. J Prim Care Community Health. 2022 Jan 1;13:21501319221084890." },
+              { "text": "Stokoe M, Zwicker HM, Forbes C, Abu-Saris NELH, Fay-McClymont TB, Désiré N, et al. Health related quality of life in children with sickle cell disease: A systematic review and meta-analysis. Blood Rev. 2022 Nov 1;56:100982." },
+              { "text": "Stollon NB, Paine CW, Lucas MS, Brumley LD, Poole ES, Peyton T, et al. Transitioning Adolescents and Young Adults With Sickle Cell Disease From Pediatric to Adult Health Care: Provider Perspectives. J Pediatr Hematol Oncol. 2015 Nov;37(8):577–83." }
+            ],
+            "listStyle": "decimal",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 6,
+      "suggestion": "The 'Ethical and Cultural Considerations' section contains 8 images with no accompanying prose explaining what each image depicts. Consider whether the images carry explanatory text within the images themselves (carousel/infographic slides), or whether additional prose is available in source material. If the images are self-contained infographics, a gallery is appropriate.",
+      "reason": "8 consecutive images with no prose — source has only the bare section header 'Ethical and Cultural Considerations'. The trust/tips text that follows relates to the theme but was not explicitly a caption for these images."
+    },
+    {
+      "slideOrderIndex": 7,
+      "suggestion": "The 'The 6 Core Elements of Health Care Transitions' bold header and the standalone 'True or False?' bold line appear as bare headings with no content or options below them. These appear to be EdApp interactive/accordion placeholders that lost their content on export. If future source material reveals the 6 elements, they should be added as a content_list.",
+      "reason": "Source MD has '**The 6 Core Elements of Health Care Transitions**' followed immediately by '**True or False?**' with no list rows, options, or explanation — treated as rich_text headers per spec instruction, not fabricated content."
+    }
+  ]
+}

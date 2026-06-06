@@ -1,0 +1,279 @@
+{
+  "lessonId": "67185a5f-27ef-4b15-9041-71bde1d0159d",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Health Maintenance in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Define health maintenance in caring for patients with Sickle Cell Disease" },
+              { "html": "List both pharmacological and non pharmacological ways of dealing with the pain associated with SCD" },
+              { "html": "Identify ways PCPs can partner with haematologists in the comprehensive health maintenance and HU adherence for patients with SCD" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Introduction",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Before we jump into health maintenance for individuals with SCD, it's important to acknowledge the important role our primary care colleagues provide to promote the health of all patients. This includes routine health screening (for cancers, cardiovascular disease, etc), vaccinations, and comprehensive care that improves health outcomes in individuals with or without SCD.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Patient's Voice: Benefits of PCPs Collaborating in Care",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>There is a great deal of appreciation for our PCP partners and this patient wanted to share about her positive experiences she has had her PCP.</p><p>After listening, take a moment to reflect and think about one thing you are taking away with you after listening to Catherine's testimonial.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "What is Health Maintenance in SCD?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>PCPs can partner with haematologists and the patient to help maintain the best health quality of life possible for patients with SCD. Monitoring for signs of end organ damage, intervening early, and minimizing acute pain episodes will help contribute to improved outcomes. Some ways PCPs can lead and support care by:</p>",
+            "gridX": 0,
+            "gridY": 0,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Ordering recommended imaging and laboratory tests" },
+              { "html": "Referring patients to the appropriate specialists (e.g. – ophthalmology, nephrology, etc.)" },
+              { "html": "Help maintain vaccinations and adherent to prophylactic antibiotics (e.g. – penicillin VK)" }
+            ],
+            "gridX": 0,
+            "gridY": 3,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_03_Health_Maintenance_in_Sickle_Cell_Disease/life_expectancy_ifuecb.png",
+                "alt": "Life expectancy table",
+                "caption": "Tables from Hehre, 2020"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 6,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Common complications for individuals with SCD include:</p>",
+            "gridX": 0,
+            "gridY": 9,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Organ damage (kidney, liver, heart, lung)" },
+              { "html": "Avascular necrosis" },
+              { "html": "Cerebral infarction" },
+              { "html": "Retinopathy" },
+              { "html": "Leg ulcers" },
+              { "html": "Chronic anemia" }
+            ],
+            "gridX": 0,
+            "gridY": 12,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>The complications above can have an early onset, but the actual incidence with those complications increases with age.</p>",
+            "gridX": 0,
+            "gridY": 15,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_03_Health_Maintenance_in_Sickle_Cell_Disease/vaccine_kszcv1.png",
+                "alt": "Vaccination schedule",
+                "caption": "Tables from Hehre, 2020"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 18,
+            "gridW": 12,
+            "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_03_Health_Maintenance_in_Sickle_Cell_Disease/screening_g08dzu.png",
+                "alt": "Screening recommendations",
+                "caption": "Tables from Hehre, 2020"
+              }
+            ],
+            "gridX": 0,
+            "gridY": 21,
+            "gridW": 12,
+            "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "quiz",
+      "title": "Non Medicinal Ways to Wellness",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": "",
+          "data": {
+            "question": "There are medicinal and non medicinal ways of treating pain associated with SCD",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "It is imperative to incorporate both medicinal and non medicinal ways of treating the pain associated with SCD."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "To maximize outcomes for individuals with SCD, completing their regular health maintenance evaluations is essential." },
+              { "html": "To care for patients holistically, we must try pharmacological, non pharmacological, and adjunct therapies to be more wholesome in our approach" },
+              { "html": "Primary care providers are key partners in helping in the management of acute and chronic pain, as comfort grows as a clinician." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Hehre, R.J. (2020). Managing patients with sickle cell disease in primary care. Journal of the American Academy of PAs" },
+              { "html": "Onimoe, G., &amp; Rotz, S. 2020. Sickle cell disease: A primary care update. Cleveland Clinic Journal of Medicine, 87(1)" },
+              { "html": "Humphreys, J. V. (2012). The Management of Sickle Cell Disease in a Primary Care Setting. Journal of Family Medicine and Primary Care Volume 1 : Issue 1" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "Patient's Voice reflection prompt has no quiz options — rendered as rich_text",
+      "reason": "The source says 'take a moment to reflect and think about one thing you are taking away with you after listening to Catherine's testimonial.' This is an open reflection with no answer options and no Explanation feedback, so it cannot be a quiz_inline. Rendered verbatim as rich_text per spec rule for open reflection prompts."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "True/False correct_answer inferred as 'True' from Explanation tone",
+      "reason": "The source has no explicit ✓/✗ marker on True or False. The Explanation states 'It is imperative to incorporate both medicinal and non medicinal ways of treating the pain associated with SCD,' which affirms the statement as true. Correct_answer set to 'True' accordingly."
+    }
+  ]
+}

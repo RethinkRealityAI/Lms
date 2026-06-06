@@ -1,0 +1,308 @@
+{
+  "lessonId": "be1bd650-6a67-4ede-9ad3-ff157c93302a",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Evidence-Based Approaches to Support Transitions for AYAs with SCD",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "Learning Objectives",
+          "data": {
+            "items": [
+              { "text": "Review a variety of resources to aid in the transition of adolescents to adult care." },
+              { "text": "Discuss health living strategies that must also be a priority, to help keep patients as holistically healthy as they can be." },
+              { "text": "Identify strategies for being successful at school and work while managing the complexities of SCD." }
+            ],
+            "style": "bullet"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Transition Resources Overview",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Introduction",
+          "data": {
+            "html": "<p>Now that we have a better foundation on some transition challenges and enables, let's review specific resources for transitioning AYAs.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "Transition resources",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/13_p8xihp.png", "alt": "13_p8xihp" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/14_ckllfr.png", "alt": "14_ckllfr" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/15_jl2t5d.png", "alt": "15_jl2t5d" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/16_iqjjxl.png", "alt": "16_iqjjxl" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/17_hlpwtd.png", "alt": "17_hlpwtd" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/17_znuc8x.png", "alt": "17_znuc8x" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/19_dw6l4k.png", "alt": "19_dw6l4k" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/18_rj81jz.png", "alt": "18_rj81jz" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/20_vrjzct.png", "alt": "20_vrjzct" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/22_glqgwq.png", "alt": "22_glqgwq" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/23_owsqod.png", "alt": "23_owsqod" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/24_tthtg2.png", "alt": "24_tthtg2" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/24_mauefe.png", "alt": "24_mauefe" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/26_ioanfa.png", "alt": "26_ioanfa" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/26_d6fbcv.png", "alt": "26_d6fbcv" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Exercise and Nutrition",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Exercise and Nutrition",
+          "data": {
+            "html": "<h2>Exercise and Nutrition</h2>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Knowledge Check prompt",
+          "data": {
+            "html": "<p><strong>Knowledge Check</strong> Determine whether the following statements are true or false.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check Q1",
+          "data": {
+            "question_type": "true_false",
+            "question": "Motivated young individuals with good social support networks and supportive families tend to transition successfully.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True. Motivated young individuals with good social support networks and supportive families tend to transition successfully."
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check Q2",
+          "data": {
+            "question_type": "true_false",
+            "question": "Trusting relationships and open communication between patients and paediatric providers contribute to successful transitions.",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True. Trusting relationships and open communication between patients and paediatric providers contribute to successful transitions."
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "quiz_inline",
+          "title": "Knowledge Check Q3",
+          "data": {
+            "question_type": "true_false",
+            "question": "Social and family support plays a minor role in facilitating the transition process.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False. Social and family support plays a crucial role in facilitating the transition process."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Managing SCD in School or Work",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Managing SCD in School or Work",
+          "data": {
+            "html": "<h2>Managing SCD in School or Work</h2><p>If youth are moving to a different area for studies/employment, encourage them to find a healthcare provider, preferably with knowledge and experience with treating people with SCD.</p><p>Provide student health services the most up-to-date medical records before starting a school year. This is important in case of an emergency.</p><p>Include the types of accommodation youth may need:</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "Types of accommodation",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Frequent bathroom breaks" },
+              { "html": "Accommodation during extreme hot or cold weather:<ul><li>Allowing for water to be kept at desk/nearby</li><li>Allowing for layered clothing</li><li>Avoiding physical activities in extreme weather conditions</li></ul>" },
+              { "html": "Special care of injuries<ul><li>Never apply a cold pack to an injury or pain site</li></ul>" },
+              { "html": "Other accommodations suitable for youth" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": "More information",
+          "data": {
+            "html": "<p>To learn more information on post secondary school accommodations, check out the University Health Network Red Blood Cell Disorders Blog <a href=\"https://www.rbcd.ca/blog/accessibility-services-rbcd\" target=\"_blank\" rel=\"noopener\">https://www.rbcd.ca/blog/accessibility-services-rbcd</a></p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": "School and work images",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/6_xlebw2.png", "alt": "6_xlebw2" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/7_l9r6va.png", "alt": "7_l9r6va" },
+              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_6_Successful_Transitions_for_Adolescents_and_Young_Ad/Lesson_02_EvidenceBased_Approaches_to_Support_Transitions_for_AYAs_wit/8_zjkieu.png", "alt": "8_zjkieu" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "quiz",
+      "title": "True or False: Private Appointments",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": "Is the following statement true or false?",
+          "data": {
+            "question_type": "true_false",
+            "question": "Hold private appointments solely with the parent/s of AYAs during their transition into adulthood.",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "This statement is false. Include youth in the conversation about their comprehensive care plan. You may also schedule a private appointment without the parent/s to help them feel more comfortable with expressing their needs."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Community Resources",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": "Community Resources",
+          "data": {
+            "title": "Community Resources",
+            "body": "Consider referring patients to community supports such as those provided through SCAGO: https://sicklecellanemia.ca/transitioning-from-pediatric-to-adult-care, which provides supports like school-preparedness seminars and peer support groups."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "Summary header",
+          "data": {
+            "html": "<h2>Summary</h2>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "Summary points",
+          "data": {
+            "items": [
+              { "text": "There are numerous barriers to transition including adolescent self-management skill set, previous negative experiences in the emergency department, neurocognitive deficits due to stroke, sociodemographic factors, and psychosocial/emotional status." },
+              { "text": "The stigma around accommodations at school or work may make patients/families hesitant to speak about it. Help dispel myths, so they can be informed about resources that will benefit them." },
+              { "text": "Incorporate a variety of ways to collaborate with your patient for success. Problem solving education, disease specific education, and music therapy are a few examples." }
+            ],
+            "style": "bullet"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "References header",
+          "data": {
+            "html": "<h2>References</h2>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": "References",
+          "data": {
+            "items": [
+              { "text": "Allemang B, Allan K, Johnson C, Cheong M, Cheung P, Odame I, et al. Impact of a transition program with navigator on loss to follow-up, medication adherence, and appointment attendance in hemoglobinopathies. Pediatr Blood Cancer. 2019 Aug;66(8):e27781." },
+              { "text": "Allemang BA, Bradley J, Leone R, Henze M. Transitions to Postsecondary Education in Young Adults with Hemoglobinopathies: Perceptions of Patients and Staff. Pediatr Qual Saf. 2020 Oct;5(5):e349" },
+              { "text": "Bemrich-Stolz C, Halanych J, Howard T, Hilliard L, Lebensburger J. Exploring Adult Care Experiences and Barriers to Transition in Adult Patients with Sickle Cell Disease. Int J Hematol Ther. 2015;1(1):10.15436/2381-1404.15.003." },
+              { "text": "Blakey AO, Lavarin C, Brochier A, Amaro CM, Eilenberg JS, Kavanagh PL, et al. Effects of Experienced Discrimination in Pediatric Sickle Cell Disease: Caregiver and Provider Perspectives. J Racial Ethn Health Disparities [Internet]. 2022 Dec 19 [cited 2023 Jun 25]; Available from: https://doi.org/10.1007/s40615-022-01483-4" },
+              { "text": "Bulgin D, Tanabe P, Jenerette C. Stigma of Sickle Cell Disease: A Systematic Review. Issues Ment Health Nurs. 2018 Aug;39(8):675–86." },
+              { "text": "Brousseau DC, Owens PL, Mosso AL, Panepinto JA, Steiner CA. Acute care utilization and rehospitalizations for sickle cell disease. JAMA. 2010 Apr 7;303(13):1288–94." },
+              { "text": "Calhoun C, Luo L, Baumann AA, Bauer A, Shen E, McKay V, et al. Transition for Adolescents and Young Adults With Sickle Cell Disease in a US Midwest Urban Center: A Multilevel Perspective on Barriers, Facilitators, and Future Directions. J Pediatr Hematol Oncol. 2022 Jul 1;44(5):e872–80." },
+              { "text": "Clayton-Jones D, Matthie N, Treadwell M, Field JJ, Mager A, Sawdy R, et al. Social and Psychological Factors Associated With Health Care Transition for Young Adults Living With Sickle Cell Disease. J Transcult Nurs. 2021 Jan 1;32(1):21–9." },
+              { "text": "Crosby LE, Joffe NE, Irwin MK, Strong H, Peugh J, Shook L, et al. School Performance and Disease Interference in Adolescents with Sickle Cell Disease. Phys Disabil Educ Relat Serv. 2015;34(1):14–30." },
+              { "text": "Hamideh D, Alvarez O. Sickle cell disease related mortality in the United States (1999-2009). Pediatr Blood Cancer. 2013 Sep;60(9):1482–6." },
+              { "text": "Pendergrast J, Ajayi LT, Kim E, Campitelli MA, Graves E. Sickle cell disease in Ontario, Canada: an epidemiologic profile based on health administrative data. Can Med Assoc Open Access J. 2023 Jul 1;11(4):E725–33." },
+              { "text": "Rea KE, Cushman GK, Santee T, Mee L. Biopsychosocial factors related to transition among adolescents and young adults with sickle cell disease: A systematic review. Crit Rev Oncol Hematol. 2021 Nov;167:103498." },
+              { "text": "Saulsberry AC, Porter JS, Hankins JS. A program of transition to adult care for sickle cell disease. Hematol Am Soc Hematol Educ Program. 2019 Dec 6;2019(1):496–504." },
+              { "text": "Schraeder K, Allemang B, Felske AN, Scott CM, McBrien KA, Dimitropoulos G, et al. Community based Primary Care for Adolescents and Young Adults Transitioning From Pediatric Specialty Care: Results from a Scoping Review. J Prim Care Community Health. 2022 Jan 1;13:21501319221084890." },
+              { "text": "Stollon NB, Paine CW, Lucas MS, Brumley LD, Poole ES, Peyton T, et al. Transitioning Adolescents and Young Adults With Sickle Cell Disease From Pediatric to Adult Health Care: Provider Perspectives. J Pediatr Hematol Oncol. 2015 Nov;37(8):577–83." },
+              { "text": "Stokoe M, Zwicker HM, Forbes C, Abu-Saris NELH, Fay-McClymont TB, Désiré N, et al. Health related quality of life in children with sickle cell disease: A systematic review and meta-analysis. Blood Rev. 2022 Nov 1;56:100982." }
+            ],
+            "style": "decimal"
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The 'Exercise and Nutrition' slide contains only a header with no body text — this is a bare section marker in the source MD with no further prose before the knowledge check. Consider whether images 13–26 on slide 1 include any exercise/nutrition infographics that could be split here, or whether this slide should be merged into the knowledge-check slide as a lead-in header.",
+      "reason": "Source has 'Exercise and Nutrition' as a standalone bold header with no accompanying body text. Preserved verbatim per spec, but the slide is very sparse."
+    }
+  ]
+}

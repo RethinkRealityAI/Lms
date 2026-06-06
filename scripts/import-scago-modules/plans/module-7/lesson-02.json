@@ -1,0 +1,300 @@
+{
+  "lessonId": "8b1259cc-fdc0-44e5-a011-20a117b48808",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Allyship in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Clearly define the concept of allyship in the context of healthcare, specifically within the realm of sickle cell disease" },
+              { "html": "Identify the key characteristics and behaviors of effective allies in the healthcare setting" },
+              { "html": "Recognize the importance of intersectionality in allyship, considering how various factors such as race, gender, and socio-economic status intersect with care of people with sickle cell disease." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "How Do We Move Towards Anti-Racist Praxis in Healthcare?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Moving towards anti-racist praxis in medicine</p><p>Please click and zoom into the text. Photo credit: Crear-Perry et. al., 2020</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/Copy_of_Module_8_-_ABR_and_SCD.pptx_cmpmhz.png",
+                "caption": "Moving towards anti-racist praxis in medicine. Photo credit: Crear-Perry et. al., 2020"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "How do we Practice Critical Allyship?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>How can we, as healthcare providers, <strong>flip the coin</strong>?</p><p><strong>Do not use your expertise to help marginalized groups with 'their problems', rather, use your expertise to dismantle the system that made these coins possible.</strong></p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_9_n5evsi.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_8_tqxqmm.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_6_zwnbcn.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_7_soguw0.png",
+                "caption": ""
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_12_hferfw.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_13_oikze4.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_10_q7cdxq.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/2_hor_1-2_14_aj6wsh.png",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "How to be an Ally: 2. Reflect",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Cultural Humility</strong> (a.k.a. cultural sensitivity, cultural curiosity)</p><p>Please click to zoom into the image. Photo credit: Tervalon &amp; Murray-García, 1998</p><p>\"A lifelong process of self-reflection and self-critique whereby the individual not only learns about another's culture, but one starts with an examination of her/his own beliefs and cultural identities.\"</p><p>Please click to zoom into the image. Photo credit: ( https://cihr-irsc.gc.ca/images/igh_wheel-en.jpg )</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/Picture1_tr21zh.png",
+                "caption": "Photo credit: Tervalon &amp; Murray-García, 1998"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Through our self-reflection process, we should reflect upon our social power in relation to that of our patients, colleagues, learners, etc. Again, we are back to that wheel of power and privilege. What is your own privilege? And what about those who surround you as friends, colleagues and supports? We have to understand where we are coming from and what privileges we bring with us so that we can be effective allies.</p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/Module_8_-_ABR_and_SCD.pptx_ownpyx.jpg",
+                "caption": "Photo credit: https://cihr-irsc.gc.ca/images/igh_wheel-en.jpg"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "How to be an Ally: 3. Grow",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>As we become better at listening and reflecting on social identities and their impacts on us and those around us, we will grow to become more effective allies.</p><p>You have probably seen different versions of this learning and growth continuum. I adapted this from a version related to becoming anti-racist.</p><p>Please click and zoom into the various sections. Photo credit: (Adapted from Ibrahim, A., https://www.mcgill.ca/thewelloffice/files/thewelloffice/becomingantiracist.pdf )</p><p>Overcoming our biases to be effective allies is not an easy process. It will begin with personal reflection and will start from a place of fear and discomfort.</p><p>By actively seeking to know and understand the presence of bias and its influence on us as clinicians, teachers and learners in medicine, we will move from the stage of fear to learning and ultimately growing in our cultural humility, understanding and allyship.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_7_Moving_Towards_AntiOppressive_AntiRacist_Healthcare/Lesson_03_Allyship_in_Sickle_Cell_Disease/Copy_of_Module_8_-_ABR_and_SCD.pptx_2_qq5jgr.jpg",
+                "caption": "Photo credit: Adapted from Ibrahim, A., https://www.mcgill.ca/thewelloffice/files/thewelloffice/becomingantiracist.pdf"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "What is defined as \"a lifelong process of self-reflection and self-critique whereby the individual not only learns about another's culture but starts with an examination of her/his own beliefs and cultural identities\"?",
+            "question_type": "multiple_choice",
+            "options": ["Cultural Humility", "Cultural Awareness", "Cultural Competence", "Cultural Sensitivity"],
+            "correct_answer": "Cultural Humility",
+            "feedback_correct": "Cultural humility is defined as a lifelong process of self-reflection and self-critique, involving an individual's exploration of their own beliefs and cultural identities before learning about others' cultures. This approach emphasizes continuous learning and openness to understanding diverse cultural perspectives."
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Place these zones in order representing the steps in overcoming our biases to be effective allies:</strong></p><ol><li>Comfort Zone</li><li>Fear Zone</li><li>Learning Zone</li><li>Growth Zone</li></ol><p><strong>Explanation:</strong> In order to overcome our biases to be effective allies, these are the zones you must go through: Comfort Zone → Fear Zone → Learning Zone → Growth Zone</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Use your privilege to dismantle the system that made these coins possible" },
+              { "html": "In order to flip the coin of oppression, there has to be acknowledgement that the coin exists and there are two sides." },
+              { "html": "Cultural Humility (a.k.a. cultural sensitivity, cultural curiosity) \"A lifelong process of self-reflection and self-critique whereby the individual not only learns about another's culture, but one starts with an examination of her/his own beliefs and cultural identities.\" We have to start with ourselves before we can stand in solidarity with others." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Adapted from Andrew M. Ibrahim MD, MSc, https://www.mcgill.ca/thewelloffice/files/thewelloffice/becomingantiracist.pdf" },
+              { "html": "Crear-Perry, J., Maybank, A., Keeys, M., Mitchell, N., &amp; Godbolt, D. (2020). Moving towards anti-racist praxis in medicine. <em>Lancet</em>, 396 (10249):451-453" },
+              { "html": "Tervalon, M., Murray-García, J. (1998). Cultural Humility Versus Cultural Competence: A Critical Distinction in Defining Physician Training Outcomes in Multicultural Education. <em>Journal of Health Care for the Poor and Underserved</em>, 9 (2) , 117-125" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "The 'flip the coin' statement (\"Do not use your expertise to help marginalized groups with 'their problems', rather, use your expertise to dismantle the system that made these coins possible.\") appears with a matching **Explanation:** block — rendered as rich_text (not quiz_inline) because there are no ✓/✗ option lines; it is a single-option reveal/reflection prompt.",
+      "reason": "Spec rule 4: single-option reveals with no distractors must be rich_text, not quiz_inline."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "'Place these zones in order' (Comfort → Fear → Learning → Growth Zone) is an ordering exercise with no ✓/✗ markers — rendered as rich_text with the zones listed and the Explanation as the model answer.",
+      "reason": "Spec rule 4: ordering/sequencing prompts with no multiple-choice options are reflection prompts → rich_text, not quiz_inline."
+    },
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "Slide 2 has 8 images split into two gallery blocks of 4, interspersed after the rich_text. Consider whether a reviewer wants them all in one gallery-mode block or kept as two groups of 4.",
+      "reason": "8 images is a large gallery; splitting into two groups of 4 keeps the slide scannable while satisfying the no-image-only-slide rule."
+    }
+  ]
+}

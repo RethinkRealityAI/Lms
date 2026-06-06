@@ -1,0 +1,385 @@
+{
+  "lessonId": "b40ef613-729d-4afc-a6e6-31b9b691e6f4",
+  "lessonOrderIndex": 0,
+  "lessonTitle": "Advocacy in Sickle Cell Disease: An Essential Ingredient for Quality Care",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Define advocacy for people with Sickle Cell Disease" },
+              { "html": "Identify opportunities for advocacy in various time points on a SCD patients healthcare journey" },
+              { "html": "Appreciate the experience of SCD patients now and what they want for the future" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Introduction",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>While modern definitions of advocacy often refer to promotion of a cause or belief system, origins of this term refer to coming alongside another person to provide aid or support. As healthcare practitioners, you provide aid and assistance in a variety of ways to patients and families each day.</p><p><strong>Patients May Experience:</strong></p><p>Psychological impact, such as increased anxiety and concerns about their safety at all points during the medical encounter and even prior to arrival in hospital. Increased mistrust in the medical system and future avoidance of health care settings. Prolonged pain and needless suffering that could have been addressed promptly and effectively by an alert and compassionate healthcare provider. Worsening of physical symptoms and undertreatment of serious health complications because presenting concerns were not believed. Delayed presentation to hospital for urgent care because negative interactions with the healthcare team are anticipated.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Advocacy for Patients with Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Advocacy for patients with SCD is critical because health care teams largely lack knowledge about this condition and effective ways to treat it. There is also a significant power imbalance built into the medical encounter. Patients attempting to advocate for themselves by requesting particular treatments or treatment steps, especially in the throes of a pain crisis or complication, may find that their attempts are met with negativity by the healthcare team and may also find themselves labelled accordingly as demanding, drug-seeking, bossy, or rude. This only compounds patient distress and concern.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/1_q07ogu.png",
+                "alt": "1_q07ogu.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/2_npog8t.png",
+                "alt": "2_npog8t.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Dr. Carlton Haywood: The Problem and Our Opportunities",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Dr. Carlton Haywood, a researcher who lived (1976 - 2021) with SCD, speaks to the problem and our opportunities.</strong></p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/1_wov1fe.png",
+                "alt": "1_wov1fe.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/2_ffy0rw.png",
+                "alt": "2_ffy0rw.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/3_jajxm5.png",
+                "alt": "3_jajxm5.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/4_grmpvc.png",
+                "alt": "4_grmpvc.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Patient Experiences in Advocacy",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>What is one aspect of patient experience that can benefit from advocacy in the health care setting?</strong></p><p>Timely treatment of pain is a crucial aspect of patient experience that can significantly benefit from advocacy in the healthcare setting.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/5_l0nxaa.png",
+                "alt": "5_l0nxaa.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/6_s8nxfi.png",
+                "alt": "6_s8nxfi.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/7_exxj3k.png",
+                "alt": "7_exxj3k.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/8_kkveuz.png",
+                "alt": "8_kkveuz.png"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_8_Sustainable_Advocacy_in_Sickle_Cell_Disease_SCD/Lesson_01_Advocacy_in_Sickle_Cell_Disease_An_Essential_Ingredient_for_/9_rpcybt.png",
+                "alt": "9_rpcybt.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "quiz",
+      "title": "Knowledge Checks",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Which of the following resources can practitioners access to enhance advocacy for patients with sickle cell disease? Select all that apply.",
+            "question_type": "select_all",
+            "options": [
+              "Ontario Health Quality Standards for Sickle Cell Disease",
+              "Review patient's chart/history/care plan",
+              "Ask patient/caregiver",
+              "Outdated academic literature",
+              "Patient support organizations like SCAGO",
+              "Consultation with practitioners at specialized centers",
+              "Patient focused online groups and forums"
+            ],
+            "correct_answer": [
+              "Ontario Health Quality Standards for Sickle Cell Disease",
+              "Review patient's chart/history/care plan",
+              "Ask patient/caregiver",
+              "Patient support organizations like SCAGO",
+              "Consultation with practitioners at specialized centers"
+            ],
+            "feedback_correct": "Accessing resources that are reliable, evidence based, or based on the lived experience of your patient, will help you to align with best practices in advocating for the care of people with SCD."
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "How can your advocacy reduce the impact of bias or discrimination in the patient encounter or within subsequent care encounters? Select all that apply.",
+            "question_type": "select_all",
+            "options": [
+              "Centering patient voice",
+              "Reducing unnecessary suffering/harm",
+              "Creating trust",
+              "Reducing risk of complications",
+              "Ensuring equal distribution of hospital resources"
+            ],
+            "correct_answer": [
+              "Centering patient voice",
+              "Reducing unnecessary suffering/harm",
+              "Creating trust",
+              "Reducing risk of complications"
+            ],
+            "feedback_correct": "Through sustained and active advocacy, as a healthcare professional you can leverage your positionality to reduce the impact of bias or discrimination in the patient encounter."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Advocacy is not something that is done some of the time. Sustainable advocacy is what is needed for people with SCD." },
+              { "html": "People with Sickle Cell Disease experience bias and discrimination in their healthcare encounters, which reinforces the need for us as partners and advocates." },
+              { "html": "Being collaborative, validating experiences, and actively listening to people with SCD will benefit your patient and also you." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "CMPA, n.d. Advocacy for change: An important role to undertake with care. Retrieved from: <a href=\"https://www.cmpa-acpm.ca/en/advice-publications/browse-articles/2014/advocacy-for-change-an-important-role-to-undertake-with-care\" target=\"_blank\" rel=\"noopener\">https://www.cmpa-acpm.ca/en/advice-publications/browse-articles/2014/advocacy-for-change-an-important-role-to-undertake-with-care</a>" },
+              { "html": "Haywood, C. (2013). Disrespectful care in the treatment of sickle cell disease requires more than ethics consultation. <em>American Journal of Bioethics</em>, 13 (4):12-4" },
+              { "html": "John Hopkins Berman Institute of Bioethics. n.d. Sickle Cell Disease Module They Don't Believe Me. Retrieved from <a href=\"https://bioethics.jhu.edu/research-and-outreach/projects/vision-of-hope/sickle-cell-disease-modules/they-dont-believe-me/\" target=\"_blank\" rel=\"noopener\">https://bioethics.jhu.edu/research-and-outreach/projects/vision-of-hope/sickle-cell-disease-modules/they-dont-believe-me/</a>" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The 4 images on the Dr. Carlton Haywood slide (1_wov1fe, 2_ffy0rw, 3_jajxm5, 4_grmpvc) appear to be frames or slides from a video presentation by Dr. Haywood. The source says 'Press play to watch the video' but provides no YouTube or video URL — only static images. If a video URL becomes available, replace these image blocks with a single video block.",
+      "reason": "The Markdown includes a 'Press play to watch the video' prompt and 4 image frames but no video URL; content preserved as static images per available manifest data."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "The 'What is one aspect of patient experience...' item has only one ✓ option (Timely treatment of pain) with no distractors. Rendered as rich_text per spec. If additional distractor options are provided in a future source revision, convert to a quiz_inline multiple_choice.",
+      "reason": "Single-option reveal question — spec rule 4 prohibits building a 1-option quiz or inventing distractors."
+    },
+    {
+      "slideOrderIndex": 0,
+      "suggestion": "The lesson opens with a 'Welcome message from Mrs. Lanre Tunji-Ajayi' prompt that also says 'Press play to watch the video' — no video URL provided, so this was dropped. If a welcome video URL becomes available, add a video block to slide 1 (Introduction).",
+      "reason": "No video URL in source Markdown or image manifest for the welcome video."
+    }
+  ]
+}

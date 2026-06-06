@@ -1,0 +1,369 @@
+{
+  "lessonId": "6650013a-fe11-4d9b-9749-f8034d83151f",
+  "lessonOrderIndex": 1,
+  "lessonTitle": "Pregnancy Optimization in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Appreciate the maternal, fetal and pregnancy risks for pregnant people with sickle cell disease" },
+              { "html": "Review prepregnancy optimization and management during pregnancy" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Pregnancy Risks in Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Pregnancy in SCD is associated with increased pulmonary complications, infections, antepartum bleeding, incidence of pain episodes, venous thromboembolism (VTE), and hospitalization. People with SCD are also at an increased risk of pre-eclampsia and fetal growth restriction.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Lived Experience Advocate: Ms. Thea Campbell",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Thea wanted to take the opportunity to share her experiences with being pregnant and some of the challenges she faced, which may help you when you are caring for a person wanting to conceive or a pregnant person with SCD.</p><p><strong>Note:</strong> Thea refers to her disease as \"being a carrier to Sickle Cell Anemia\", but she does have Sickle Cell Disease and is not a Carrier who would have Sickle Cell Trait.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "video",
+          "title": null,
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=mesy-6IALX0",
+            "title": "Lived Experience Advocate: Ms. Thea Campbell"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_02_Pregnancy_Optimization_in_Sickle_Cell_Disease/reading_gaf2r6.png",
+                "alt": "reading_gaf2r6.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_02_Pregnancy_Optimization_in_Sickle_Cell_Disease/health_j3dvcw.png",
+                "alt": "health_j3dvcw.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Optimizing Organ Function and Reducing Drug Exposures Before Pregnancy",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Pre-pregnancy testing to optimize organ function for people with Sickle Cell Disease includes, but is not limited to:</p><ul><li><strong>Cardiac:</strong> Echocardiogram; Cardiac MRI with T2* for cardiac iron assessment</li><li><strong>Neurological:</strong> MRI brain</li><li><strong>Renal:</strong> Creatinine; Assessment of proteinuria</li></ul>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Maternal/Fetal Risks in Pregnancy: Preterm Preeclampsia",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Maternal and fetal risks in pregnancy for women with sickle cell disease is what we will review next.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Maternal/Fetal Risks in Pregnancy: Cardiac Iron Overload",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": []
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Maternal/Fetal Risks in Pregnancy: Pulmonary Complications",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Manifestations:</strong> Restrictive lung disease, airway hyper-responsiveness, pulmonary hypertension, and acute chest syndrome</p><p>Small airway closure</p><p>FEV1 &lt; 65 may predict risk of fetal death: OR 7.81, 95% CI 1.59–38.38, p = 0.01 (Hayfron-Benjamin, 2021)</p><p><strong>Management:</strong> Pulse oximetry at each visit. Consider home oxygen support in setting of hypoxia.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Pain Management in Pregnancy",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>The following can be administered chronically for pain during pregnancy:</p><ul><li>Acetaminophen</li><li>Morphine</li><li>Hydromorphone</li><li>Chronic use of NSAIDs is discouraged at any point in pregnancy, as it is associated with fetal renal compromise and oligohydramnios. It is contraindicated after 28 weeks' gestation given risk of premature closure of the ductus arteriosus.</li></ul><p><strong>Neonatal abstinence syndrome (NAS)</strong></p><ul><li>Results from the abrupt discontinuation of opioids at birth after a fetus has become physically dependent</li><li>Opioid induced physical dependence is a transient phenomenon and treated supportively. It is important to emphasize that optimal treatment of maternal pain (often achieved only with use of opioids) is paramount to avoid ACS and severe maternal morbidity, which can in turn increase fetal risk of adverse events</li><li>Opioids with slow clearance rates (buprenorphine) have less severe withdrawal vs intermediate (methadone) or fast (morphine) rates</li><li>In a study by Volkow (2016), 131 patients with SCD were using opioids and 4% had NAS</li></ul>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Asymptomatic UTIs",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Asymptomatic UTIs are common in pregnancy and can trigger a pain crisis. They increase the risk of pyelonephritis and in turn preterm labour. Monthly urine testing is recommended.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "Transfusions in Pregnancy in Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Transfusion for SCD-related complications should only be considered after discussion with haematology and careful reflection on the balance of benefits and risks such as hyperhemolysis, delayed transfusion reactions, and alloimmunization.</p><p>This chart depicts hemoglobin levels for non pregnant and pregnant patients with SCD. Note the lower hemoglobin levels in pregnant patients.</p><p>It is imperative that donor blood undergoes prophylactic red cell antigen matching for Rh (C/c, E/e) and K antigens.</p><p>Prophylactic transfusion can be considered for specific indications, after discussion with the Haematologist and MFM.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_02_Pregnancy_Optimization_in_Sickle_Cell_Disease/transfusion_xpltj5.png",
+                "alt": "Transfusion in SCD"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_02_Pregnancy_Optimization_in_Sickle_Cell_Disease/hb_levels_pg9mes.jpg",
+                "alt": "Hemoglobin levels in pregnant vs non-pregnant patients with SCD"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_02_Pregnancy_Optimization_in_Sickle_Cell_Disease/donor_blood_obqwq5.png",
+                "alt": "Donor blood"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_9_Fertility_Contraception_and_Pregnancy_in_Sickle_Cel/Lesson_02_Pregnancy_Optimization_in_Sickle_Cell_Disease/arm_kbbb77.png",
+                "alt": "Transfusion arm"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "What is Hyperhemolysis?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "The destruction of both transfused and autologous RBCs" },
+              { "html": "Can be immediate or delayed" },
+              { "html": "Accompanied by reticulocytopenia, worsening anemia" },
+              { "html": "Can induce multiorgan failure and death most likely due to damage to the underlying vasculature by released free Hb and heme" },
+              { "html": "Further transfusion increases risk of recurrence!" },
+              { "html": "Medications used in pregnancy for treatment include: Rituxan, Eculizumab, Erythropoietin, Toculizumab, Prednisone" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "Identifying Risk for Delayed Hemolytic Transfusion Reactions (DHTR) in Pregnancy",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<ul><li>Transfusion during pro-inflammatory events increases the risk of alloimmunization</li><li>Individuals with low number of previous transfusions or previous delayed hemolytic transfusion reactions are at high risk for DHTR — consider extended matching for Rh, K, Kidd, Duffy, and MNS</li><li>Jk, Ss, Fy Abs associated with a high risk of subsequent alloimmunization — extended matched advised</li><li>Autoantibodies, natural antibodies (anti-M, anti-Lewis) associated with low risk of subsequent immunization — CEK matched</li></ul><p>When total hemoglobin falls below pre-transfusion levels, suggests an accompanying fall in patient's own cells, indicating hyperhemolysis. Delayed hemolytic transfusion reaction in sickle cell indicated by rapid fall in HgbA cells.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 12,
+      "slideType": "content",
+      "title": "Fetal Monitoring",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": []
+    },
+    {
+      "orderIndex": 13,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Pregnancy is associated with the potential for severe maternal, fetal and pregnancy adverse events" },
+              { "html": "Prepregnancy counselling is essential to reduce those risks by educating about planning a pregnancy, discontinuing potentially teratogenic medications, optimizing organ function" },
+              { "html": "Multidisciplinary management once pregnancy is confirmed includes a Haematologist/MFM (or Obstetrician with expertise in SCD in pregnancy), Anaesthesia, and Paediatrics near birth" },
+              { "html": "Regular maternal and frequent fetal monitoring during pregnancy is necessary to reduce risks" },
+              { "html": "Transfusion during pregnancy is individualized, requires consultation with a Haematologist, and balances risks vs. benefits" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 14,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Asare EV, Olayemi E, Boafor T, Dei-Adomakoh Y, Mensah Dip E, Benjamin CH, Covert B, Kassim AA, James A, Rodeghier M, DeBaun MR, Oppong SA. Third trimester and early postpartum period of pregnancy have the greatest risk for ACS in women with SCD" },
+              { "html": "Brown JA, Sinkey RG, Steffensen TS, Louis-Jacques AF, Louis JM. Neonatal Abstinence Syndrome among Infants Born to Mothers with Sickle Cell Hemoglobinopathies. Am J Perinatol. 2020 Feb;37(3):326-332" },
+              { "html": "Chang JN, Magann EF, Novotny SA, Cooley CE, Gauss CH, Parrish MR, Morrison JC. Maternal/Perinatal Outcome in Women with Sickle Cell Disease: A Comparison of Two Time Periods. South Med J. 2018 Dec;111(12):742-745" },
+              { "html": "Chou ST, Alsawas M, Fasano RM, Field JJ, Hendrickson JE, Howard J, Kameka M, Kwiatkowski JL, Pirenne F, Shi PA, Stowell SR, Thein SL, Westhoff CM, Wong TE, Akl EA. American Society of Hematology 2020 guidelines for sickle cell disease: transfusion support. Blood Adv. 2020 Jan 28;4(2):327-355" },
+              { "html": "Coates TD, Wood JC. How we manage iron overload in sickle cell patients. Br J Haematol. 2017 Jun;177(5):703-716" },
+              { "html": "Grill S, Rusterholz C, Zanetti-Dällenbach R, Tercanli S, Holzgreve W, Hahn S, Lapaire O. Potential markers of preeclampsia--a review. Reprod Biol Endocrinol. 2009 Jul 14;7:70" },
+              { "html": "Habibi A, Cannas G, Bartolucci P, Voskaridou E, Joseph L, Bernit E, Gellen-Dautremer J, Charneau C, Ngo S, Galactéros F. (2023). Outcomes of Pregnancy in Sickle Cell Disease Patients: Results from the Prospective ESCORT-HU Cohort Study. Biomedicines.11(2):597" },
+              { "html": "Hayfron-Benjamin CF, Asare EV, Boafor T, Olayemi E, Dei-Adomakoh Y, Musah L, Mensah E, Beyuo T, Kassim AA, Rodeghier M, DeBaun MR, Oppong SA. Low FEV1 is associated with fetal death in pregnant women with sickle cell disease. Am J Hematol. 2021 Aug 1;96(8):E303-E306" },
+              { "html": "Inparaj S, Buckingham M, Oakley L, Seed PT, Lucas S, Oteng-Ntim E. Pulmonary complications for women with sickle cell disease in pregnancy: systematic review and meta-analysis. Thorax. 2020 Jul;75(7):568-575" },
+              { "html": "McElhatton PR, Roberts JC, Sullivan FM. The consequences of iron overdose and its treatment with desferrioxamine in pregnancy. Hum Exp Toxicol. 1991 Jul;10(4):251-9" },
+              { "html": "Meloni A, Puliyel M, Pepe A, Berdoukas V, Coates TD, Wood JC. Cardiac iron overload in sickle-cell disease. Am J Hematol. 2014 Jul;89(7):678-83" },
+              { "html": "Oteng-Ntim E, Ayensah B, Knight M, Howard J. Pregnancy outcome in patients with sickle cell disease in the UK--a national cohort study comparing sickle cell anaemia (HbSS) with HbSC disease. Br J Haematol. 2015 Apr;169(1):129-37" },
+              { "html": "Pecker LH, Nero A, Christianson M. (2022) No crystal stair: supporting fertility care and the pursuit of pregnancy in women with sickle cell disease. Hematology Am Soc Hematol Educ Program. 2022(1):459-466" },
+              { "html": "Pirenne F. Prevention of delayed hemolytic transfusion reaction. Transfus Clin Biol. 2019 May;26(2):99-101" },
+              { "html": "Pirenne F, Yazdanbakhsh K. How I safely transfuse patients with sickle-cell disease and manage delayed hemolytic transfusion reactions. Blood. 2018 Jun 21;131(25):2773-2781" },
+              { "html": "Porter B, Key NS, Jauk VC, Adam S, Biggio J, Tita A. Impact of sickle hemoglobinopathies on pregnancy-related venous thromboembolism. Am J Perinatol. 2014 Oct;31(9):805-9" },
+              { "html": "Rolnik DL, Wright D, Poon LC, O'Gorman N, Syngelaki A, de Paco Matallana C, Akolekar R, Cicero S, Janga D, Singh M, Molina FS, Persico N, Jani JC, Plasencia W, Papaioannou G, Tenenbaum-Gavish K, Meiri H, Gizurarson S, Maclagan K, Nicolaides KH. Aspirin versus Placebo in Pregnancies at High Risk for Preterm Preeclampsia. N Engl J Med. 2017 Aug 17;377(7):613-622" },
+              { "html": "Singer ST, Vichinsky EP. Deferoxamine treatment during pregnancy: is it harmful? Am J Hematol. 1999 Jan;60(1):24-6" },
+              { "html": "Smith-Whitley K. Complications in pregnant women with sickle cell disease. Hematology Am Soc Hematol Educ Program. 2019 Dec 6;2019(1):359-366" },
+              { "html": "Wilson RD. (2018). Woman's Pre-Conception Evaluation: Genetic and Fetal Risk Considerations for Counselling and Informed Choice. Journal of Obstetrics Gynaecology Canada. 40(7):935-949" },
+              { "html": "Wilson RD. (2019). Choosing Pre-conception Planning for Women/Families: Counselling and Informed Consent (Part 2) - Pre-conception Reproductive Planning, Lifestyle, Immunization, and Psychosocial Issues. Journal of Obstetrics Gynaecology Canada. 41(5):666-678" },
+              { "html": "Wilson RD, O'Connor DL. (2021). Maternal folic acid and multivitamin supplementation: International clinical evidence with considerations for the prevention of folate-sensitive birth defects. Prev Med Rep. ;24:101617" },
+              { "html": "Yawn BP, Buchanan GR, Afenyi-Annan AN, Ballas SK, Hassell KL, James AH, Jordan L, Lanzkron SM, Lottenberg R, Savage WJ, Tanabe PJ, Ware RE, Murad MH, Goldsmith JC, Ortiz E, Fulwood R, Horton A, John-Sowah J. Management of sickle cell disease: summary of the 2014 evidence-based report by expert panel members. JAMA. 2014 Sep 10;312(10):1033-48" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "The 'Optimizing Organ Function and Reducing Drug Exposures Before Pregnancy' section appears as two consecutive bare headers in the source ('...Before Pregnancy' and '...Before Pregnancy (Continued)') with no body text. The body prose was reconstructed from the Explanation text of the adjacent EdApp drag-and-drop gamification item (line 144). Review whether the original EdApp slides contained additional infographic or textual content that was not captured in the Markdown.",
+      "reason": "Two bare headers + EdApp drag-to-match gamification (no ✓/✗ options) with educational content only in its Explanation. Gamification dropped; content rendered as rich_text on slide 3."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "Slide 4 ('Preterm Preeclampsia') body contains only the transitional sentence from the source ('Maternal and fetal risks in pregnancy for woman with sickle cell disease is what we will review next') as no specific preeclampsia content was present in the Markdown. Slide 5 ('Cardiac Iron Overload') is a bare header with no body text at all. Review the original EdApp slides for infographic or detailed content for each of these two maternal/fetal risk categories.",
+      "reason": "Bare/near-bare headers with no or minimal educational body content in the source Markdown. Slide 5 rendered as an empty-block slide per spec."
+    },
+    {
+      "slideOrderIndex": 12,
+      "suggestion": "'Fetal Monitoring' is a bare header with no body text in the source. Review the original EdApp slide for content (e.g., monitoring schedule, parameters, guidelines) that may not have been captured in the Markdown.",
+      "reason": "Bare header — no body, no images, no list items in source."
+    }
+  ]
+}

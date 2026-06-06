@@ -1,0 +1,329 @@
+{
+  "lessonId": "6b2aac5c-f2c9-4238-9a1d-767a7713bdaa",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Community Health Centres Integrated Care Approach",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Identify the services provided by Black Creek and Taibu CHCs" },
+              { "html": "Identify programs in support of Black youth" },
+              { "html": "Acknowledge need for CHCs for Black/racialized populations" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Community Health Centres (CHC)",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>What is a CHC? • Not-for-profit • Community governed • Primary focus: improving health and well-being of equity deserving populations • Inclusive of those living on low income, new immigrants, complex mental health issues, and individuals without health insurance coverage</p><p>Services provided include: • Primary health care • Services that speak to the social determinants of health such as an education session to improve health literacy • Counselling • Screening clinics (e.g. – prostate/breast cancer screening) • Sexual health clinics</p><p>There are over 70 CHCs in Ontario. Use the link below to see a listing of them: <a href=\"https://www.ontario.ca/page/community-health-centres\" target=\"_blank\" rel=\"noopener\">https://www.ontario.ca/page/community-health-centres</a></p><p>Collaboration amongst PCPs, CHCs, and the Sickle Cell team is essential for improved access to integrated care that is evidence informed and free of bias.</p><p>Now let's take a look at 2 CHCs in Toronto, Black Creek CHC and Taibu CHC and the ways in which they provide services for individuals with SCD.</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/BCCHC_vlg9nk.png",
+                "alt": "BCCHC_vlg9nk.png"
+              }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/holistic_yaxiw0.png",
+                "alt": "holistic_yaxiw0.png"
+              }
+            ],
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/comm_ambassadors_gp3c6l.png",
+                "alt": "comm_ambassadors_gp3c6l.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/pact_tuyj9w.png",
+                "alt": "pact_tuyj9w.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/bcchc2_jmxvzt.png",
+                "alt": "bcchc2_jmxvzt.png"
+              }
+            ],
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "media",
+      "title": "Taibu's 15th Anniversary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "title": "",
+          "data": {
+            "provider": "youtube",
+            "url": "https://www.youtube.com/watch?v=ThGqq0xdbkw",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Substance Abuse Program for African Canadian and Caribbean Youth (SAPACCY)",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>SAPACCY is a compassionate Africentric approach in supporting Black youth aged 14-29 &amp; families with mental health and substance use services. Their well-being matters!</p><p>SAPACCY takes into consideration the unique challenges that Black youth and their families and caregivers face when they try to access care.</p><p>Examples of Causes Supported by SAPACCY:</p><p>Locations of SAPACCY across Ontario:</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/sappcy_se1rdw.png",
+                "alt": "sappcy_se1rdw.png"
+              }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/no_judge_vzf7nh.png",
+                "alt": "no_judge_vzf7nh.png"
+              }
+            ],
+            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/sap_examples_q0gb88.png",
+                "alt": "sap_examples_q0gb88.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/sapaccy_locations_munyrg.png",
+                "alt": "sapaccy_locations_munyrg.png"
+              }
+            ],
+            "gridX": 0, "gridY": 9, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "The Aya Circle of Care",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>The Aya Circle of Care program at Taibu was developed for the community to provide focused, individualized care and support to those of African/Caribbean or Black descent living with HIV.</p><p>\"We believe in the strength of our community and we are committed to serving you with respect and dignity\".</p><p>Let's see what services The AYA circle provides!</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/AYA_circle_unir78.png",
+                "alt": "AYA_circle_unir78.png"
+              }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Aya Circle of Care Supports",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Goals</strong> • Prevention • Restoration • Advancement</p><p><strong>Principles</strong> • Quality • Africentricity • Intersectionality</p><p><strong>Practice</strong> • Focus • Collaborate • Accessibility • Community</p>",
+            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/region_1_dpklvv.png",
+                "alt": "region_1_dpklvv.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/region_2_spgar7.png",
+                "alt": "region_2_spgar7.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_13_Partnering_with_Primary_Care_Providers_PCPs_to_Opt_v2/Lesson_04_Community_Health_Centres_Integrated_Care_Approach/region_3_r8ivfj.png",
+                "alt": "region_3_r8ivfj.png"
+              }
+            ],
+            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "CHCs are an integral resource in the community for individuals with SCD" },
+              { "html": "CHCs are partners with primary care providers, haematolgists, and patient facing support groups to collaboratively find solutions to inequities and barriers to care." },
+              { "html": "CHCs targets equity deserving groups to provide access to services that are culturally affirming and comprehensive in nature." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "References",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Black Creek Community Health Centre (2024). Retrieved from https://www.bcchc.com/" },
+              { "html": "Taibu Community Health Centre (2024). Retrieved from: https://www.taibuchc.ca/en/" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 1,
+      "suggestion": "The 5 Black Creek CHC images (BCCHC_vlg9nk, holistic_yaxiw0, comm_ambassadors_gp3c6l, pact_tuyj9w, bcchc2_jmxvzt) are presented sequentially in the source with no intervening prose. They may represent distinct program categories (holistic care, community ambassadors, PACT program, etc.) — consider splitting into two gallery blocks or adding alt-text captions once image content is confirmed.",
+      "reason": "Image content is unknown from filename alone; if the images carry distinct labelled sections, they may benefit from individual callouts rather than a combined gallery."
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "Source text 'Examples of Causes Supported by SAPACCY:' and 'Locations of SAPACCY across Ontario:' appear as bare label lines with no following text — the detail is carried entirely by the images (sap_examples_q0gb88, sapaccy_locations_munyrg). Confirm image content fully covers what those headings imply.",
+      "reason": "If the images render as infographics with embedded text, no additional block is needed; if they are decorative, the prose labels may need supplementary content."
+    },
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "YouTube URL in source contains a malformed query string ('?v=ThGqq0xdbkw?si=cJZpY6_v-wov-NIq' — double '?'). Canonical URL should be 'https://www.youtube.com/watch?v=ThGqq0xdbkw&si=cJZpY6_v-wov-NIq'. Confirm correct URL before import.",
+      "reason": "The double '?' in the source URL will cause the YouTube embed to fail; the si parameter should use '&' not '?'."
+    }
+  ]
+}
