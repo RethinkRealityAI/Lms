@@ -10,6 +10,27 @@ A multi-tenant Learning Management System built for the **Global Action Network 
 
 ---
 
+## Code Search — prefer Sourcegraph MCP (save tokens)
+
+For broad or cross-file code exploration ("where is X used", "find the component/function that…", "trace this flow"), **prefer the Sourcegraph MCP over local `Grep`/`Glob`/Explore-agent fan-out** — it returns ranked, scoped results in one round-trip instead of reading many files. Use local `Grep`/`Glob`/`Read` only for files you already know, or as the fallback below.
+
+**This is gated — confirm the MCP is connected first.** The server only attaches when `SOURCEGRAPH_ENDPOINT` + `SOURCEGRAPH_ACCESS_TOKEN` are set (see Setup) AND this repo is indexed on that instance. Check with `ToolSearch("nls_search keyword_search")`; if no `mcp__…__nls_search`/`keyword_search` tool exists, the MCP is **not available — go straight to `Grep`/`Glob`** and do not retry Sourcegraph this session.
+
+**When connected, usage:**
+- Always scope to this repo: add `repo:^github\.com/RethinkRealityAI/Lms$` to queries.
+- `keyword_search({ query })` — precise/regex (Sourcegraph syntax: `file:`, `lang:`, `type:symbol`). e.g. `repo:^github\.com/RethinkRealityAI/Lms$ registerBlockType type:symbol`.
+- `nls_search({ query })` — natural-language exploration ("how are slide backgrounds resolved?").
+- `read_file({ repo, path, startLine?, endLine? })` — fetch a confirmed file.
+- `go_to_definition` / `find_references` — symbol navigation.
+
+**Setup (one-time, user must do — I will not enter access tokens):**
+1. Ensure the private repo `RethinkRealityAI/Lms` is indexed on a Sourcegraph instance your token can read (public sourcegraph.com does NOT index private repos — use Sourcegraph Cloud/Enterprise or the app connected to your GitHub).
+2. Set env vars (the `sourcegraph` plugin's `.mcp.json` reads them): `SOURCEGRAPH_ENDPOINT` (e.g. `https://sourcegraph.com`) and `SOURCEGRAPH_ACCESS_TOKEN` (PAT with `mcp` scope), then restart Claude Code and confirm via `/mcp`.
+
+(There is no `AGENTS.md` in this repo; CLAUDE.md is the canonical context file.)
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -220,6 +241,9 @@ Legacy users: 2,868 imported from EdApp CSV.
 | 030 | survey_templates | `survey_templates` table (institution-scoped reusable configs), admin manage + authenticated read |
 | 031 | add_title_slide_settings | `lessons.title_slide_settings` jsonb column (`title_size`, `title_color`, `footer_text`, `footer_logo_url`) |
 | 032 | add_institution_update_policy | RLS UPDATE policy on `institutions` — admins can update their own institution; `platform_admin` can update any |
+| 033 | course_completion_feedback | `course_feedback_responses` table + `courses.completion_survey_template_id` (optional completion survey shown on the completion slide) |
+| 034 | cme_certificate_requests_and_legacy_claim | `cme_certificate_requests` table (status pending/issued/declined, one-pending-per-user, RLS: user self + admin); `has_completed_all_courses()`, `request_cme_certificate()` (eligibility-enforcing), `claim_my_legacy_profile()` (secure own-email retroactive claim), `admin_link_legacy_profile()` (admin manual link); `legacy_users` self-read policy; `claim_legacy_profile` EXECUTE revoked from clients |
+| 035 | harden_cme_and_legacy_claim_security | Audit follow-up: `SET search_path=public` on `is_admin()`/`claim_legacy_profile()`; caller-binding guard on `has_completed_all_courses` (no probing other users); strip default PUBLIC/anon EXECUTE from the 4 new RPCs; institution-scope admin RLS on `cme_certificate_requests` (platform_admin exempt) + `WITH CHECK` |
 
 ### RLS Pattern — CRITICAL
 
