@@ -1,0 +1,306 @@
+{
+  "lessonId": "dfc7838e-f436-46e3-b61b-48f2e8dec581",
+  "lessonOrderIndex": 3,
+  "lessonTitle": "Splenic Sequestration in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Identify splenic sequestration as a medical emergency" },
+              { "html": "Review presentation of patients with SCD and splenic sequestration" },
+              { "html": "List appropriate management strategies for splenic sequestration" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "quiz",
+      "title": "What are 3 possible differential diagnoses for Leila?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "What are 3 possible differential diagnoses for Leila?",
+            "question_type": "select_all",
+            "options": ["Sepsis", "Severe anemia", "Splenic sequestration", "Constipation"],
+            "correct_answer": ["Sepsis", "Severe anemia", "Splenic sequestration"],
+            "feedback_correct": "Based on Leila's case, Sepsis , Splenic sequestration and Severe anemia could be our possible diagnoses."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Spleen in SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Spleen is prone to injury in SCD - slow and open microcirculation favors deoxygenation, sickling and adhesion. Splenic dysfunction starts very early in life, mostly before the first birthday. Auto-splenectomy is completed by 5 years in most patients with HbSS and HbSβ0.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_04_Splenic_Sequestration_in_Sickle_Cell_Disease/SCAGO_ICONS_square_d5ssth.png",
+                "caption": "Photo credit: Brousse et. al., 2014"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "media",
+      "title": "Presentation of Splenic Sequestration in SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_04_Splenic_Sequestration_in_Sickle_Cell_Disease/2_hor_1-2_6_hrwpnr.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_04_Splenic_Sequestration_in_Sickle_Cell_Disease/2_hor_1-2_5_igi8lj.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_04_Splenic_Sequestration_in_Sickle_Cell_Disease/2_hor_1-2_ubm4fl.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_04_Splenic_Sequestration_in_Sickle_Cell_Disease/2_hor_1-2_2_fmnq9o.png",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Acute Splenic Sequestration",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "One of the earliest life-threatening complications of SCD." },
+              { "html": "Noted as early as 5 weeks; median age is 1.4 years of age." },
+              { "html": "Majority of events (75%) will occur before 2 years of age." },
+              { "html": "Lifelong prevalence 7-30%." },
+              { "html": "Associated clinical event in approximately 50% of patients." },
+              { "html": "50-75% risk of recurrence." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Management of Splenic Sequestration",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Chronic or Sub-acute Sequestration</h3>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Splenic sequestration is a medical emergency." },
+              { "html": "Early detection and parental education are key." },
+              { "html": "Urgent restoration of circulating blood volume is essential." },
+              { "html": "Treat with small volume simple red blood cell transfusions." },
+              { "html": "Risk of hyperviscosity with large-volume transfusions." },
+              { "html": "Consultation to ICU if hemodynamically stable." },
+              { "html": "Consideration of elective splenectomy by primary SCD team: After one episode of acute and/or life-threatening splenic sequestration Or recurrent subacute or chronic sequestrations" },
+              { "html": "Vaccination pre-splenectomy." },
+              { "html": "Penicillin prophylaxis post splenectomy." }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<h3>Prevention</h3>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "quiz",
+      "title": "What are the appropriate management strategies for splenic sequestration?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "What are the appropriate management strategies for splenic sequestration?",
+            "question_type": "select_all",
+            "options": [
+              "Consultation to ICU if hemodynamically stable",
+              "Small volume simple red blood cell transfusions",
+              "Penicillin prophylaxis post splenectomy",
+              "Vaccination post-splenectomy"
+            ],
+            "correct_answer": [
+              "Consultation to ICU if hemodynamically stable",
+              "Small volume simple red blood cell transfusions",
+              "Penicillin prophylaxis post splenectomy"
+            ],
+            "feedback_correct": "Here are some appropriate management strategies for splenic sequestration: Consultation to ICU if hemodynamically stable Small volume simple red blood cell transfusions Penicillin prophylaxis post splenectomy"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "quiz",
+      "title": "True or False? Drag to categorize the following statements",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Splenic sequestration can occur as early as 5 weeks of age.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True: Splenic sequestration can occur as early as 5 weeks of age."
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Patients with HbSC are at higher risk for splenic sequestration than patients with HbSS or HbSB0.",
+            "question_type": "true_false",
+            "options": ["True", "False"],
+            "correct_answer": "False",
+            "feedback_correct": "False: Patients with HbSC are at higher risk for splenic sequestration than patients with HbSS or HbSB0."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Splenic sequestration is a medical emergency!" },
+              { "html": "Characterized by the presence of an enlarging spleen and a sudden drop in hemoglobin concentration.." },
+              { "html": "Isolated or associated with other complications like infection or pain crisis." },
+              { "html": "Parental/caregiver education and use of hydroxyurea can help preserve spleen function and allow for early identification of the need to seek care." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Brousse, V., Buffet, P. and Rees, D. (2014), The spleen and sickle cell disease: the sick(led) spleen. Br J Haematol, 166: 165-176. https://doi.org/10.1111/bjh.12950" },
+              { "html": "Brousse, V., Elie, C., Benkerrou, M., Odièvre, M.-H., Lesprit, E., Bernaudin, F., Grimaud, M., Guitton, C., Quinet, B., Dangiolo, S. and de Montalembert, M. (2012), Acute splenic sequestration crisis in sickle cell disease: cohort study of 190 paediatric patients. British Journal of Haematology, 156: 643-648. https://doi.org/10.1111/j.1365-2141.2011.08999.x" },
+              { "html": "Kane I, Kumar A, Atalla E, et al. Splenic Sequestration Crisis. [Updated 2023 Jun 5]. In: StatPearls [Internet]. Treasure Island (FL): StatPearls Publishing; 2024 Jan-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK553164/" },
+              { "html": "El Hoss S, Cochet S, Marin M, Lapouméroulie C, Dussiot M, Bouazza N, Elie C, de Montalembert M, Arnaud C, Guitton C, Pellegrino B, Odièvre MH, Moati F, Le Van Kim C, Aronovicz YC, El Nemer W, Brousse V. Insights into determinants of spleen injury in sickle cell anemia. Blood Adv. 2019 Aug 13;3(15):2328-2336. doi: 10.1182/bloodadvances.2019000106" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "Presentation of Splenic Sequestration in SCD — 4-image gallery with no accompanying prose in the source",
+      "reason": "The source has a bare unbolded text line 'Presentation of Splenic Sequestration in SCD' followed by 4 images and no body text. The slide title carries the heading; the gallery is the only content. This satisfies the image-with-slide-title pattern but note the spec prefers ≥1 text block — however no prose exists in the source to add without fabricating."
+    },
+    {
+      "slideOrderIndex": 5,
+      "suggestion": "Chronic or Sub-acute Sequestration and Prevention merged into Management slide as subheadings",
+      "reason": "Both 'Chronic or Sub-acute Sequestration' and 'Prevention' are bare headers in the source with no body text. Per lesson-specific rules they are merged into the adjacent Management slide rather than emitting empty slides. Their section titles appear as <h3> subheadings within the Management rich_text blocks."
+    },
+    {
+      "slideOrderIndex": 7,
+      "suggestion": "True/False knowledge check rendered as two quiz_inline true_false blocks",
+      "reason": "The source 'True or False? Drag to categorize' section has no explicit ✓/○ option lines — only an Explanation giving the answers. Statements and correct answers are extracted from the Explanation verbatim: statement 1 (True) and statement 2 (False)."
+    }
+  ]
+}

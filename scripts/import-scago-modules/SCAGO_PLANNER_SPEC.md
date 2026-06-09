@@ -81,6 +81,9 @@ correctly: title on the slide, body in the block.)
 - **No paraphrasing / no generated content.** The only text you may generate is a single succinct
   `feedback_correct` sentence ONLY when a real quiz question has no `**Explanation:**` — grounded strictly
   in that lesson's own words.
+- **`correct_answer` is always a STRING, never an array.** For `select_all`, join the correct options
+  with `"; "` (semicolon + space), e.g. `"Sepsis; Severe anemia; Splenic sequestration"` — the viewer
+  does `correct_answer.split('; ')` and will CRASH on an array. Each item must exactly equal an option.
 - **Single native feedback.** Put feedback in `feedback_correct` (optionally `feedback_incorrect`).
   **Never set the `explanation` field** (it renders a redundant second box; loader rejects it).
 - **No quiz-like features for non-quiz content.** `match_pairs`, `categorize`, `scratch_reveal`,

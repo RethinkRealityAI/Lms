@@ -515,11 +515,15 @@ function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
   const [submitted, setSubmitted] = useState(false);
   const correctFiredRef = useRef(false);
 
-  // correct_answer is semicolon+space separated: "Option A; Option B; Option C"
-  const correctSet = useMemo(
-    () => new Set((data.correct_answer ?? '').split('; ').map(s => s.trim()).filter(Boolean)),
-    [data.correct_answer],
-  );
+  // correct_answer is normally semicolon+space separated ("Option A; Option B; Option C"),
+  // but tolerate a legacy/imported array shape too so a bad value never crashes the slide.
+  const correctSet = useMemo(() => {
+    const ca = data.correct_answer as unknown;
+    const parts = Array.isArray(ca)
+      ? ca.map(v => String(v))
+      : String(ca ?? '').split('; ');
+    return new Set(parts.map(s => s.trim()).filter(Boolean));
+  }, [data.correct_answer]);
 
   const isFullyCorrect = submitted &&
     checked.size === correctSet.size &&

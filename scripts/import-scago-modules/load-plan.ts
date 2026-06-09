@@ -67,6 +67,17 @@ function validate(plan: Plan): string[] {
           if (typeof d.correct_answer === 'string' && !opts.includes(d.correct_answer))
             errs.push(`slide ${s.orderIndex} block ${b.orderIndex}: correct_answer not in options`);
         }
+        // select_all: every correct item must be an option (loader joins arrays to a "; " string).
+        if (d.question_type === 'select_all') {
+          const opts = (d.options as string[]) ?? [];
+          const correct = Array.isArray(d.correct_answer)
+            ? (d.correct_answer as unknown[]).map(String)
+            : typeof d.correct_answer === 'string'
+              ? d.correct_answer.split(';').map((x) => x.trim()).filter(Boolean)
+              : [];
+          for (const c of correct)
+            if (!opts.includes(c)) errs.push(`slide ${s.orderIndex} block ${b.orderIndex}: select_all correct item not in options -> "${c}"`);
+        }
         // Single-feedback rule: the redundant `explanation` field is forbidden (renders a 2nd box).
         // SCAGO MD `**Explanation:**` text belongs in feedback_correct.
         if ('explanation' in d && d.explanation)
@@ -137,10 +148,22 @@ function normalizeContentListData(data: Record<string, unknown>): Record<string,
   return d;
 }
 
+/**
+ * quiz_inline: the viewer stores `correct_answer` as a SEMICOLON+SPACE separated STRING
+ * ("A; B; C") even for select_all (it does `correct_answer.split('; ')`). Planner agents often
+ * emit an array for select_all — join it so the viewer doesn't crash on `.split`.
+ */
+function normalizeQuizData(data: Record<string, unknown>): Record<string, unknown> {
+  const d = { ...data };
+  if (Array.isArray(d.correct_answer)) d.correct_answer = (d.correct_answer as unknown[]).map(String).join('; ');
+  return d;
+}
+
 function normalizeBlockData(blockType: string, data: Record<string, unknown>): Record<string, unknown> {
   if (blockType === 'image_gallery') return normalizeImageGalleryData(data);
   if (blockType === 'table') return normalizeTableData(data as TableData) as Record<string, unknown>;
   if (blockType === 'content_list') return normalizeContentListData(data);
+  if (blockType === 'quiz_inline') return normalizeQuizData(data);
   return data;
 }
 

@@ -1,0 +1,417 @@
+{
+  "lessonId": "6d33ba90-9e91-4723-b0af-100d23ad8e68",
+  "lessonOrderIndex": 2,
+  "lessonTitle": "Stroke in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Discover the leading cause of mortality and morbidity in SCD" },
+              { "html": "Categorize the different risk factors according to the different stroke subtypes" },
+              { "html": "Identify the different signs and symptoms of stroke" },
+              { "html": "List preventative strategies for strokes in the future" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "According to the Cooperative Study of Sickle Cell Disease, about 11% of children and young adults with Hb SS will develop stroke by 18 years of age and ~25% by 45 years of age",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>According to the Cooperative Study of Sickle Cell Disease, about 11% of children and young adults with Hb SS will develop stroke by 18 years of age and ~25% by 45 years of age.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "What is the stroke risk for children with SCD vs children without SCD?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>What is the stroke risk for children with SCD vs children without SCD?</strong></p><p><strong>A child with SCD has 333 times higher stroke risk!!</strong> The risk of stroke in general paediatric population is &lt;1%.</p><ul><li>About 11% of children and young adults with Hb SS will develop stroke by 18 years of age.</li><li>Approximately 25% by 45 years of age.</li></ul>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/0001-7388567239000854291_slbxhh.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/0001-4131338807151115569_atopn0.png",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Ischemic Stroke in SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Most common in children 2–5 years of age and adults over 30 years of age. Mostly results from stenosis or occlusion of big vessels in brain. Presentation depends on the location and size of the lesion.</p><p><strong>Risk Factors:</strong></p><ul><li>Transient ischemic attack (TIA)</li><li>Frequent acute chest syndrome (ACS)</li><li>ACS within 2 weeks</li><li>Hypoxia — daytime or nocturnal</li><li>Presence of high transcranial doppler (TCD) and/or silent cerebral infarct (SCI)</li></ul>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/ischemic_tq157p_whkmsn.jpg",
+                "caption": "Photo credit: https://radiologykey.com/"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Hemorrhagic Stroke in SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Most common in adults 20–29 years of age. Results from rupture of intracranial aneurysm or collaterals in association of moyamoya syndrome. Present with severe headaches and focal neurologic deficits. Reported mortality 30–50%.</p><p><strong>Risk Factors:</strong></p><ul><li>Older age</li><li>Low baseline Hb or acute anemia</li><li>High steady-state WBC</li><li>Hypertension</li></ul>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/hemorrhagic_m0buok_wq4joq.jpg",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "What is Silent Cerebral Infarct (SCI)?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Most common neurological entity in patients with SCD and is not age dependent. SCI is defined as abnormal MRI findings of the brain with normal neurological findings, without history of physical findings consistent with overt stroke. ~10–30% of patients will have changes on MRI.</p><p><strong>Prevalence of SCI approximately:</strong></p><ul><li>27% by 7 years of age</li><li>37% by 14 years of age</li><li>Continues into adult age and is most common in HbSS: 3–38% for Beta Sickle Thalassemia; 5–31% for HbSC</li></ul><p>Photo credit: DeBaun, M et al., 2012</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/sci_fosomi.jpg",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/sci2_vljxa9.jpg",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Signs and Symptoms of Stroke",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p>Recognizing the signs and symptoms of stroke is essential for prompt intervention. The images below illustrate key warning signs to watch for in patients with SCD.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/2_hor_1-2_iyjrss.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/2_hor_1-2_2_hhiqum.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/2_hor_1-2_3_fffmof.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/2_hor_1-2_4_kgjcl6.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/2_hor_1-2_5_v7bax1.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/0001-7319887346034904843_nkq2sp_hamphn.png",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "SCD Cerebral Vasculopathy",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Affects major arteries of brain" },
+              { "html": "Endothelial Activation → endothelial damage and hyperplasia → Stenosis" },
+              { "html": "Repeated sickling → intraluminal thrombosis → Occlusion" },
+              { "html": "Thinning of blood vessels may lead to aneurysm – present in approximately 10% of patients with SCD" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Thinning of blood vessels may lead to aneurysm – present in around 10% of patients with SCD.</strong> Thinning of blood vessels may lead to aneurysm – present in around 10% of patients with SCD.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Does Genotype Change Risk?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Risk Factors Specific to SCD for Stroke</strong></p><p>Hb SC patients are at lower risk of stroke compared to Hb SS patients. Lifetime risk of stroke is &gt;3%, but the risk is still 50–100 times higher than healthy Black children. Brazilian data suggest baseline lower TAMMV velocities for HbSC patients.</p><p>Risk for stroke in other double heterozygous genotypes (HbSD, HB SE, Hb beta thal, etc.) depends on patient's:</p><ul><li>Baseline hemoglobin</li><li>Evidence of hemolysis</li><li>Severity of SCD</li></ul>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": "",
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/0001-9146101138590947366_meukpr.png",
+                "caption": ""
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_03_Stroke_in_Sickle_Cell_Disease/scd_genotypes_other_ekostr.jpg",
+                "caption": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "Stroke Risk Screening / Preventative Maintenance",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>Preventative Maintenance</strong></p><ul><li>Annual TCD starts from 2 years of age through 16 years of age.</li><li>For patients with borderline TAMMV velocity – repeat in 3–6 months.</li><li>For patients with high TAMMV velocity – do MRI along with MRA and MRV.</li><li>No blood transfusion in 3 months prior to TCD Testing.</li><li>Patient preferably in their baseline health status.</li></ul>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "Screening Knowledge Checks",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>What is the significance of abnormal TAMMV (≥200 cm/s) in TCD Ultrasonography?</strong></p><p>It is strongly associated with a higher risk of stroke.</p><p><strong>Explanation:</strong> Abnormal TAMMV (≥200 cm/s) in TCD Ultrasonography is strongly associated with a higher risk of stroke.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": "",
+          "data": {
+            "html": "<p><strong>What is the recommended frequency for annual TCD screening in stroke risk screening?</strong></p><p>Annually.</p><p><strong>Explanation:</strong> Annual TCD screening is recommended as part of stroke risk screening.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "The highest risk for stroke is during the first decade, esp. during 2–5 years of age." },
+              { "html": "Risk factors for stroke in SCD include: Hemoglobin level, amount of Hb S, CNS vasculopathy, increased oxygen demand, prior cerebral infarct" },
+              { "html": "Transcranial doppler is a non-invasive and rapid test that is used for screening SCD patients at high risk for stroke." }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 12,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": "",
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Abboud MR, Cure J, Granger S, Gallagher D, Hsu L, Wang W, Woods G, Berman B, Brambilla D, Pegelow C, Lewin J, Zimmermann RA, Adams RJ. Magnetic resonance angiography in children with sickle cell disease and abnormal transcranial Doppler ultrasonography findings enrolled in the STOP study. Blood. 2004;103:2822–6." },
+              { "html": "Webb J, Kwiatkowski JL. Stroke in patients with sickle cell disease. Expert Rev Hematol. 2013 Jun;6(3):301-16. doi: 10.1586/ehm.13.25. PMID: 23782084." },
+              { "html": "DeBaun MR, Kirkham FJ. Central nervous system complications and management in sickle cell disease. Blood. 2016;127(7):829-838. doi: https://doi.org/10.1182/blood-2016-04-709626" },
+              { "html": "Luis A. Verduzco, David G. Nathan; Sickle cell disease and stroke. Blood 2009; 114 (25): 5117–5125. doi: https://doi.org/10.1182/blood-2009-05-220921" },
+              { "html": "https://radiologykey.com/" },
+              { "html": "Mirsky DM, Beslow LA, Amlie-Lefond C, Krishnan P, Laughlin S, Lee S, Lehman L, Rafay M, Shaw D, Rivkin MJ, Wintermark M; International Paediatric Stroke Study Neuroimaging Consortium and the Paediatric Stroke Neuroimaging Consortium. Pathways for Neuroimaging of Childhood Stroke. Pediatr Neurol. 2017 Apr;69:11-23. doi: 10.1016/j.pediatrneurol.2016.12.004. Epub 2017 Jan 25. PMID: 28274641." },
+              { "html": "Telen MJ. Beyond hydroxyurea: new and old drugs in the pipeline for sickle cell disease. Blood. 2016 Feb 18;127(7):810-9. doi: 10.1182/blood-2015-09-618553. Epub 2016 Jan 12. PMID: 26758919; PMCID: PMC4760087." },
+              { "html": "Kwaku Ohene-Frempong, Steven J. Weiner, Lynn A. Sleeper, Scott T. Miller, Stephen Embury, John W. Moohr, Doris L. Wethers, Charles H. Pegelow, Frances M. Gill, the Cooperative Study of Sickle Cell Disease; Cerebrovascular Accidents in Sickle Cell Disease: Rates and Risk Factors. Blood 1998; 91 (1): 288–294. doi: https://doi.org/10.1182/blood.V91.1.288" },
+              { "html": "Pegelow CH, Wang W, Granger S, Hsu LL, Vichinsky E, Moser FG, Bello J, Zimmerman RA, Adams RJ, Brambilla D; STOP Trial. Silent infarcts in children with sickle cell anemia and abnormal cerebral artery velocity. Arch Neurol. 2001 Dec;58(12):2017-21. doi: 10.1001/archneur.58.12.2017. PMID: 11735775." },
+              { "html": "Abboud MR, Yim E, Musallam KM, Adams RJ; STOP II Study Investigators. Discontinuing prophylactic transfusions increases the risk of silent brain infarction in children with sickle cell disease: data from STOP II. Blood. 2011 Jul 28;118(4):894-8. doi: 10.1182/blood-2010-12-326298. Epub 2011 Jun 1. PMID: 21633086; PMCID: PMC3148169." },
+              { "html": "M. R. DeBaun, L. C. Jordan, A. A. King, J. Schatz, E. Vichinsky, C. K. Fox, R. C. McKinstry, P. Telfer, M. A. Kraut, L. Daraz, F. J. Kirkham, M. H. Murad; American Society of Hematology 2020 guidelines for sickle cell disease: prevention, diagnosis, and treatment of cerebrovascular disease in children and adults. Blood Adv 2020; 4 (8): 1554–1588. doi: https://doi.org/10.1182/bloodadvances.2019001142" },
+              { "html": "Robert J. Adams, Virgil C. McKie, Lewis Hsu, Beatrice Files, Elliott Vichinsky, Charles Pegelow, Miguel Abboud, Dianne Gallagher, Abdullah Kutlar, Fenwick T. Nichols, Duane R. Bonds, Donald Brambilla, Gerald Woods, Nancy Olivieri, Catherine Driscoll, Scott Miller, Winfred Wang, Anne Hurlett, Charles Scher, Brian Berman, Elizabeth Carl, Anne M. Jones, E. Steve Roach, Elizabeth Wright, Robert A. Zimmerman, and Myron Waclawiw. Prevention of a First Stroke by Transfusions in Children with Sickle Cell Anemia and Abnormal Results on Transcranial Doppler Ultrasonography. NEJM 1998; 339:5-11" },
+              { "html": "Andria L. Ford, Dustin K. Ragan, Slim Fellah, Michael M. Binkley, Melanie E. Fields, Kristin P. Guilliams, Hongyu An, Lori C. Jordan, Robert C. McKinstry, Jin-Moo Lee, Michael R. DeBaun. Silent infarcts in sickle cell disease occur in the border zone region and are associated with low cerebral blood flow. Blood 2018, 132: 1714-23" },
+              { "html": "Michael R. DeBaun, F. Daniel Armstrong, Robert C. McKinstry, Russell E. Ware, Elliot Vichinsky, Fenella J. Kirkham; Silent cerebral infarcts: a review on a prevalent and progressive cause of neurologic injury in sickle cell anemia. Blood 2012; 119 (20): 4587–4596. doi: https://doi.org/10.1182/blood-2011-02-272682" },
+              { "html": "Kija EN, Saunders DE, Munubhi E, Darekar A, Barker S, Cox TCS, Mango M, Soka D, Komba J, Nkya DA, Cox SE, Kirkham FJ, Newton CRJC. Transcranial Doppler and Magnetic Resonance in Tanzanian Children With Sickle Cell Disease. Stroke. 2019 Jul;50(7):1719-1726. doi: 10.1161/STROKEAHA.118.018920. Epub 2019 Jun 14. PMID: 31195937; PMCID: PMC6594727" },
+              { "html": "Hankins JS, Fortner GL, McCarville MB, Smeltzer MP, Wang WC, Li CS, Ware RE. The natural history of conditional transcranial Doppler flow velocities in children with sickle cell anaemia. Br J Haematol. 2008 Jul;142(1):94-9. doi: 10.1111/j.1365-2141.2008.07167.x. Epub 2008 May 8. PMID: 18477038." }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 2,
+      "suggestion": "scratch_reveal",
+      "reason": "Source labels this 'Scratch to reveal the content' — the question is the cover, the answer text + images are the reveal. Rendered as rich_text per spec rule 4 (single-✓ reveal, no distractors)."
+    },
+    {
+      "slideOrderIndex": 6,
+      "suggestion": "Note: 'Categorize the Following Risk Factors' and 'Did you get them right?' are bare EdApp interactive headers with no exportable options or body text. Merged into the Signs and Symptoms slide as a preamble rich_text per lesson-specific rules.",
+      "reason": "EdApp interactive categorize activity — no options exported in the Markdown source. Cannot fabricate a categorize quiz per spec rule."
+    },
+    {
+      "slideOrderIndex": 7,
+      "suggestion": "Note: 'Thinning of blood vessels...' bold + identical Explanation rendered as rich_text reveal on the Vasculopathy slide.",
+      "reason": "Source shows a bold statement immediately followed by an identical Explanation — classic reveal pattern. Rendered as rich_text per lesson-specific rules."
+    },
+    {
+      "slideOrderIndex": 10,
+      "suggestion": "rich_text Q&A (two items)",
+      "reason": "Both screening questions have only a single ✓ option (no distractors). Per spec rule 4 and lesson-specific rules, rendered as rich_text bold question + answer + Explanation text, NOT quiz_inline."
+    }
+  ]
+}

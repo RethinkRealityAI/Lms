@@ -1,0 +1,397 @@
+{
+  "lessonId": "307cc831-d034-4900-9fe1-db4b26c54d60",
+  "lessonOrderIndex": 4,
+  "lessonTitle": "Acute Chest Syndrome in Sickle Cell Disease",
+  "lessonDescription": null,
+  "slides": [
+    {
+      "orderIndex": 0,
+      "slideType": "content",
+      "title": "Learning Objectives",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Define acute chest syndrome (ACS) in sickle cell disease (SCD)" },
+              { "html": "Identify diagnostic indicators of ACS" },
+              { "html": "Recognize the different risk factors for the development of ACS" },
+              { "html": "Identify best practices in the management of ACS" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
+      "slideType": "content",
+      "title": "Case 1",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>A 5-year-old girl with Hb SS had leg pains and chest/abdominal pain. While in the hospital, she developed a fever of 38.9°C. Her chest X-ray (CXR) was within normal limits (WNL). Nasopharyngeal swab (NPS) tested positive for parainfluenza.</p><p>Initially, she was managed with intravenous (IV) hydration at 1.5 times the normal maintenance rate and IV morphine. Over the course of a couple of days, she experienced increased work of breathing (WOB), leading to the activation of the PACE (Pediatric Acute Care Evaluation) rapid response team.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/xray_xiup6r.png",
+                "alt": "xray_xiup6r.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 2,
+      "slideType": "content",
+      "title": "Case 1 Continued",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>She was transferred to PICU (Pediatric Intensive Care Unit) due to hypoxia (oxygen saturation SpO2 80-84%).</p><p>Chest X-ray (CXR) showed worsening of lung infiltrates on both sides.</p><p>Complete blood count (CBC) revealed a hemoglobin (Hb) level of 69, a white blood cell count (WBC) of 31.5 (with an ANC, or absolute neutrophil count, of 23.6), and a platelet count of 236.</p><p>Blood gas analysis showed a pH of 7.27, bicarbonate (HCO3) level of 20, pO2 (partial pressure of oxygen) of 36, and pCO2 (partial pressure of carbon dioxide) of 44.</p><p>A diagnosis of acute chest crisis was made.</p><p>Treatment involved receiving continuous positive airway pressure (CPAP) and two packed red cell transfusions.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "quiz",
+      "title": "What are your current differential diagnoses for this patient?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "What are your current differential diagnoses for this patient?",
+            "question_type": "select_all",
+            "options": [
+              "Pneumonia",
+              "Fluid overload",
+              "Sepsis",
+              "Acute Chest Syndrome",
+              "Asthma Exacerbation"
+            ],
+            "correct_answer": ["Pneumonia", "Fluid overload", "Sepsis", "Acute Chest Syndrome"],
+            "feedback_correct": "All of these could be part of your differentials, except for Asthma Exacerbation. Learn about Acute Chest Syndrome on the next slide."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Understanding Acute Chest Syndrome",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "html": "<p><strong>ACS is a medical emergency! Don't hesitate to reach out to Haematology for consultation if you are ever unsure.</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Diagnosing Acute Chest Syndrome",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/2_hor_1-2_2_yhhjcd.png",
+                "alt": "2_hor_1-2_2_yhhjcd.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/2_hor_1-2_3_xznelh.png",
+                "alt": "2_hor_1-2_3_xznelh.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/2_hor_1-2_7_k3emlj.png",
+                "alt": "2_hor_1-2_7_k3emlj.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/0001-7501157648375250207_esmzmm.png",
+                "alt": "0001-7501157648375250207_esmzmm.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/2_hor_1-2_4_tuz4qj.png",
+                "alt": "2_hor_1-2_4_tuz4qj.png"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/2_hor_1-2_y1hrp2.png",
+                "alt": "2_hor_1-2_y1hrp2.png"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Chest Infiltrates and Clinical Symptoms",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Chest infiltrates may lag behind clinical symptoms by up to <strong>3 days</strong>.</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Pathogenesis of ACS",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>ACS is a type of acute lung injury that can lead to increased mortality and death. Learn more by tapping on the images below to zoom in.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/D1_htlu0v.jpg",
+                "alt": "Acute Chest Syndrome in children with sickle cell disease: Current perspectives on pathogenesis and treatment. Photo credit: Uwaezuoke, S. N., 2022"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/D2_wa9kei.jpg",
+                "alt": "Photo credit: Liebert, 2017"
+              },
+              {
+                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_5_Common_Complications_in_Sickle_Cell_Disease/Lesson_05_Acute_Chest_Syndrome_in_Sickle_Cell_Disease/sicklevortex_bqw6zx.jpg",
+                "alt": "Photo credits: Farkas, 2023"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "quiz",
+      "title": "Etiology or Associated Conditions With ACS",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Which of the following pathogens is most commonly associated with infection-related ACS?",
+            "question_type": "select_all",
+            "options": [
+              "Chlamydia",
+              "Mycoplasma Pneumonia",
+              "Staphylococcus Aureus",
+              "Streptococcus Pneumoniae"
+            ],
+            "correct_answer": [
+              "Chlamydia",
+              "Mycoplasma Pneumonia",
+              "Staphylococcus Aureus",
+              "Streptococcus Pneumoniae"
+            ],
+            "feedback_correct": "Infection-related ACS can involve various pathogens, including Chlamydia, Mycoplasma Pneumonia, Staphylococcus Aureus, and Streptococcus Pneumoniae."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "Risk Factors for the Development of ACS",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Young age" },
+              { "html": "SCD genotype Hb SS and Sβ0 > Hb SC and Hb Sβ+" },
+              { "html": "Lower concentration of Hb F (increase in HbF from 5-15% reduces the risk by half)" },
+              { "html": "Higher steady state Hb level" },
+              { "html": "Higher steady state RBC count" },
+              { "html": "Prior ACS (esp. &lt; 3 yrs of age)" },
+              { "html": "Greater than 3 severe VOC episodes" },
+              { "html": "History of asthma/airway hyperreactivity" },
+              { "html": "Smoking" },
+              { "html": "Recent trauma or surgery" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "In Which Age Group Is ACS Most Commonly Associated With Infection?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>In which age group is ACS most commonly associated with infection?</strong></p><p>Adolescents (10-19 years)</p><p>Adolescents in the age group of 10-19 years have a higher association of ACS with infection.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "Exchange Transfusions",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Why do we use exchange transfusions?</strong></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 12,
+      "slideType": "quiz",
+      "title": "Steady State Management",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "Besides removing sickle cells, what one other benefit does exchange transfusions offer in sickle cell disease?",
+            "question_type": "multiple_choice",
+            "options": [
+              "Reduces hemolysis",
+              "Decreases oxygen-carrying capacity",
+              "Increases platelet count",
+              "Improves lung function"
+            ],
+            "correct_answer": "Reduces hemolysis",
+            "feedback_correct": "Exchange transfusions help to reduce hemolysis in individuals with sickle cell disease, which is important for overall health."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 13,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "ACS is the leading cause of death in Sickle Cell Disease (SCD), responsible for around 25% of SCD-related deaths." },
+              { "html": "To be diagnosed with ACS, a patient must meet the following criteria: new pulmonary infiltrates on chest imaging (chest x-ray, CT) involving at least one lung segment; chest pain; fever; tachypnea, wheezing, rales, cough; hypoxemia; increased work of breathing" },
+              { "html": "Acute management includes: rapid identification, treatment with oxygen, hydration, pain medications, transfusions, antibiotics, and incentive spirometry" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 14,
+      "slideType": "content",
+      "title": "References",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Vichinsky EP, Neumayr LD, Earles AN, Williams R, Lennette ET, Dean D, Nickerson B, Orringer E, McKie V, Bellevue R, Daeschner C, Manci EA. Causes and outcomes of the acute chest syndrome in sickle cell disease. National Acute Chest Syndrome Study Group. N Engl J Med. 2000 Jun 22;342(25):1855-65. doi: 10.1056/NEJM200006223422502. Erratum in: N Engl J Med 2000 Sep 14;343(11):824. PMID: 10861320." },
+              { "html": "Colla JS, Kotini-Shah P, Soppet S, Chen YF, Molokie R, Prajapati P, Prendergast HM. Bedside ultrasound as a predictive tool for acute chest syndrome in sickle cell patients. Am J Emerg Med. 2018 Oct;36(10):1855-1861. doi: 10.1016/j.ajem.2018.07.006. Epub 2018 Jul 3. PMID: 30017686." },
+              { "html": "https://emcrit.org/ibcc/sickle-chest/ (Accessed February 4, 2024)" },
+              { "html": "Castro, DJ Brambilla, B Thorington, CA Reindorf, RB Scott, P Gillette, JC Vera, PS Levy; The acute chest syndrome in sickle cell disease: incidence and risk factors. The Cooperative Study of Sickle Cell Disease. Blood 1994; 84 (2): 643–649. doi: https://doi.org/10.1182/blood.V84.2.643.643" },
+              { "html": "Quinn CT, Shull EP, Ahmad N, Lee NJ, Rogers ZR, Buchanan GR. Prognostic significance of early vaso-occlusive complications in children with sickle cell anemia. Blood. 2007 Jan 1;109(1):40-5. doi: 10.1182/blood-2006-02-005082. Epub 2006 Aug 29. PMID: 16940426; PMCID: PMC1785069." },
+              { "html": "Jain S, Bakshi N, Krishnamurti L et al. Acute Chest Syndrome in Children with Sickle Cell Disease. Pediatric Allergy, Immunol Pulmonol 2017: 30 (4): 191-201" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "slideOrderIndex": 6,
+      "suggestion": "The 'Chest infiltrates may lag behind clinical symptoms by up to 3 days' source item uses a bold statement + verbatim Explanation. Rendered as rich_text per spec rule 4 (reveal/single-answer pattern, no distractors). Could alternatively be placed on the Diagnosing slide (orderIndex 5) as a concluding callout.",
+      "reason": "Source lines 441-442: bold statement with Explanation that is identical to the statement — classic EdApp tap-to-reveal; no quiz options present."
+    },
+    {
+      "slideOrderIndex": 11,
+      "suggestion": "Exchange Transfusions (orderIndex 11) is a bare header ('Why do we use exchange transfusions?'). The rhetorical question was retained as a rich_text body to avoid an empty-block slide. If the loader finds this too thin, consider merging this slide with the Steady State Management quiz (orderIndex 12).",
+      "reason": "Source line 482 is a bare bold header with no body prose. Spec forbids empty-block slides but also forbids fabricating content."
+    },
+    {
+      "slideOrderIndex": 10,
+      "suggestion": "In which age group is ACS most commonly associated with infection? — source has only a single ✓ option (Adolescents 10-19 years) and no distractors. Rendered as rich_text Q&A per spec rule 4. A future content update could add distractors to make this a proper quiz.",
+      "reason": "Source lines 478-480: bold question, Explanation, then single ✓ option — spec rule 4 mandates rich_text, not quiz_inline."
+    }
+  ]
+}
