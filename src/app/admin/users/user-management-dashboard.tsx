@@ -37,10 +37,13 @@ import {
   CheckCircle,
   AlertCircle,
   FileSpreadsheet,
+  Award,
+  Link2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Papa from 'papaparse';
 import { createClient } from '@/lib/supabase/client';
+import { resolveCmeRequest, adminLinkLegacyProfile } from '@/lib/db';
 import { GroupsTab } from '@/components/admin/groups-tab';
 import { UserDetailDialog } from '@/components/admin/user-detail-dialog';
 import type { LegacyUser, UserInvitation } from '@/types';
@@ -54,6 +57,8 @@ interface Props {
   activeUsers: ActiveUser[];
   invitations: UserInvitation[];
   legacyUsers: LegacyUser[];
+  pendingCmeByUser: Record<string, string>;
+  unclaimedLegacyUsers: LegacyUser[];
   institutionId: string;
 }
 
@@ -571,12 +576,45 @@ function ImportCsvModal({
 // Tab 1: Active Users
 // ---------------------------------------------------------------------------
 
-function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institutionId: string }) {
+function ActiveUsersTab({
+  users,
+  institutionId,
+  pendingCmeByUser,
+}: {
+  users: ActiveUser[];
+  institutionId: string;
+  pendingCmeByUser: Record<string, string>;
+}) {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [userGroupMap, setUserGroupMap] = useState<Record<string, string[]>>({});
   const [detailUser, setDetailUser] = useState<ActiveUser | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [resolvingId, setResolvingId] = useState<string | null>(null);
+
+  const handleMarkCmeIssued = async (userId: string) => {
+    const requestId = pendingCmeByUser[userId];
+    if (!requestId) return;
+    setResolvingId(userId);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Could not identify the current admin.');
+        return;
+      }
+      const { error } = await resolveCmeRequest(supabase, requestId, user.id, 'issued', institutionId);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      toast.success('Marked CME certificate as issued');
+      router.refresh();
+    } finally {
+      setResolvingId(null);
+    }
+  };
 
   useEffect(() => {
     async function loadUserGroups() {
@@ -669,7 +707,15 @@ function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institu
                           {initials(u.full_name, u.email)}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-bold text-slate-900">{u.full_name || 'Unnamed'}</p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-bold text-slate-900">{u.full_name || 'Unnamed'}</p>
+                            {pendingCmeByUser[u.id] && (
+                              <Badge className="font-bold bg-amber-50 text-amber-700 border-amber-200 text-[10px] px-1.5 py-0">
+                                <Award className="h-2.5 w-2.5 mr-1" />
+                                CME requested
+                              </Badge>
+                            )}
+                          </div>
                           <p className="text-xs text-slate-400 font-medium break-all">{u.email}</p>
                         </div>
                       </div>
@@ -692,6 +738,14 @@ function ActiveUsersTab({ users, institutionId }: { users: ActiveUser[]; institu
                     <td className="text-right py-3 px-4">
                       <ActionMenu>
                         <ActionItem onClick={() => { setDetailUser(u); setDetailOpen(true); }}>View Reviews & Surveys</ActionItem>
+                        {pendingCmeByUser[u.id] && (
+                          <ActionItem onClick={() => handleMarkCmeIssued(u.id)}>
+                            <span className="flex items-center gap-2 text-[#1E3A5F] font-semibold">
+                              <Award className="h-3 w-3" />
+                              {resolvingId === u.id ? 'Saving...' : 'Mark CME Issued'}
+                            </span>
+                          </ActionItem>
+                        )}
                         <ActionItem onClick={() => toast.info('Edit Details \u2014 Coming soon')}>Edit Details</ActionItem>
                         <ActionItem onClick={() => toast.info('Reset Password \u2014 Coming soon')}>Reset Password</ActionItem>
                         <ActionItem onClick={() => toast.info('Remove from Course \u2014 Coming soon')}>Remove from Course</ActionItem>
@@ -838,7 +892,139 @@ function PendingInvitesTab({ invitations }: { invitations: UserInvitation[] }) {
 
 const LEGACY_PAGE_SIZE = 50;
 
-function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institutionId: string }) {
+// ---------------------------------------------------------------------------
+// Link Legacy Account Dialog
+// ---------------------------------------------------------------------------
+
+function LinkLegacyDialog({
+  legacyUser,
+  activeUsers,
+  open,
+  onOpenChange,
+}: {
+  legacyUser: LegacyUser | null;
+  activeUsers: ActiveUser[];
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
+  const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [linking, setLinking] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setSearch('');
+      setSelectedUserId(null);
+    }
+  }, [open]);
+
+  const filtered = activeUsers.filter((u) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return (u.full_name || '').toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+  });
+
+  const handleLink = async () => {
+    if (!legacyUser || !selectedUserId) return;
+    setLinking(true);
+    try {
+      const supabase = createClient();
+      const { error } = await adminLinkLegacyProfile(supabase, legacyUser.id, selectedUserId);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      toast.success('Legacy account linked');
+      onOpenChange(false);
+      router.refresh();
+    } finally {
+      setLinking(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-black">Link Legacy Account</DialogTitle>
+          <DialogDescription>
+            Link{' '}
+            <span className="font-bold text-slate-700">
+              {legacyUser?.full_name || legacyUser?.email || 'this legacy user'}
+            </span>{' '}
+            to an existing active account.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3 py-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search active users by name or email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          <div className="max-h-64 overflow-y-auto border rounded-lg divide-y divide-slate-100">
+            {filtered.length === 0 ? (
+              <p className="text-sm text-slate-400 font-medium text-center py-8">No matching users.</p>
+            ) : (
+              filtered.slice(0, 50).map((u) => (
+                <button
+                  key={u.id}
+                  onClick={() => setSelectedUserId(u.id)}
+                  className={`w-full text-left px-3 py-2 flex items-center gap-3 transition-colors ${
+                    selectedUserId === u.id ? 'bg-blue-50' : 'hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="h-8 w-8 rounded-full bg-[#1E3A5F] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                    {initials(u.full_name, u.email)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 text-sm truncate">{u.full_name || 'Unnamed'}</p>
+                    <p className="text-xs text-slate-400 font-medium truncate">{u.email}</p>
+                  </div>
+                  {selectedUserId === u.id && (
+                    <CheckCircle className="h-4 w-4 text-blue-600 ml-auto shrink-0" />
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleLink}
+            disabled={!selectedUserId || linking}
+            className="bg-[#1E3A5F] hover:bg-[#162d4a] text-white gap-2"
+          >
+            <Link2 className="h-4 w-4" />
+            {linking ? 'Linking...' : 'Link Account'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function LegacyUsersTab({
+  users,
+  institutionId,
+  activeUsers,
+  unclaimedCount,
+}: {
+  users: LegacyUser[];
+  institutionId: string;
+  activeUsers: ActiveUser[];
+  unclaimedCount: number;
+}) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -846,6 +1032,8 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [bulkSending, setBulkSending] = useState(false);
   const [page, setPage] = useState(0);
+  const [linkUser, setLinkUser] = useState<LegacyUser | null>(null);
+  const [linkOpen, setLinkOpen] = useState(false);
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -947,6 +1135,12 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
   return (
     <>
       <ImportCsvModal open={showImport} onOpenChange={setShowImport} />
+      <LinkLegacyDialog
+        legacyUser={linkUser}
+        activeUsers={activeUsers}
+        open={linkOpen}
+        onOpenChange={setLinkOpen}
+      />
 
       <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.04)] bg-white mt-4">
         <CardHeader>
@@ -954,7 +1148,7 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
             <div>
               <CardTitle className="text-lg font-black text-slate-900">Legacy Users (EdApp)</CardTitle>
               <CardDescription className="font-medium text-slate-500">
-                {users.length} imported user{users.length !== 1 ? 's' : ''}{uninvitedCount > 0 ? ` \u00B7 ${uninvitedCount} not yet invited` : ''}.
+                {users.length} imported user{users.length !== 1 ? 's' : ''}{uninvitedCount > 0 ? ` \u00B7 ${uninvitedCount} not yet invited` : ''}{unclaimedCount > 0 ? ` \u00B7 ${unclaimedCount} unclaimed` : ''}.
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -1080,18 +1274,31 @@ function LegacyUsersTab({ users, institutionId }: { users: LegacyUser[]; institu
                           {legacyStatusBadge(u)}
                         </td>
                         <td className="text-right py-3 px-4">
-                          {canInvite && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleSendInvite(u)}
-                              disabled={sendingId === u.id}
-                              className="gap-1 text-xs"
-                            >
-                              <Send className="h-3 w-3" />
-                              {sendingId === u.id ? 'Sending...' : 'Invite'}
-                            </Button>
-                          )}
+                          <div className="flex items-center justify-end gap-1">
+                            {!u.linked_user_id && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => { setLinkUser(u); setLinkOpen(true); }}
+                                className="gap-1 text-xs"
+                              >
+                                <Link2 className="h-3 w-3" />
+                                Link to account…
+                              </Button>
+                            )}
+                            {canInvite && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleSendInvite(u)}
+                                disabled={sendingId === u.id}
+                                className="gap-1 text-xs"
+                              >
+                                <Send className="h-3 w-3" />
+                                {sendingId === u.id ? 'Sending...' : 'Invite'}
+                              </Button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1164,6 +1371,8 @@ export function UserManagementDashboard({
   activeUsers,
   invitations,
   legacyUsers,
+  pendingCmeByUser,
+  unclaimedLegacyUsers,
   institutionId,
 }: Props) {
   const [showInvite, setShowInvite] = useState(false);
@@ -1281,7 +1490,11 @@ export function UserManagementDashboard({
         </TabsList>
 
         <TabsContent value="active">
-          <ActiveUsersTab users={activeUsers} institutionId={institutionId} />
+          <ActiveUsersTab
+            users={activeUsers}
+            institutionId={institutionId}
+            pendingCmeByUser={pendingCmeByUser}
+          />
         </TabsContent>
 
         <TabsContent value="invites">
@@ -1289,7 +1502,12 @@ export function UserManagementDashboard({
         </TabsContent>
 
         <TabsContent value="legacy">
-          <LegacyUsersTab users={legacyUsers} institutionId={institutionId} />
+          <LegacyUsersTab
+            users={legacyUsers}
+            institutionId={institutionId}
+            activeUsers={activeUsers}
+            unclaimedCount={unclaimedLegacyUsers.length}
+          />
         </TabsContent>
 
         <TabsContent value="groups">

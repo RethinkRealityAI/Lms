@@ -342,3 +342,4 @@ export interface UserInvitation {
 
 export * from './groups';
 export * from './certificates';
+export * from './cme-requests';

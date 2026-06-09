@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
 import { getTenantContext } from '@/lib/tenant/server';
+import { getPendingCmeCount } from '@/lib/db';
 
 export default async function AdminLayout({
   children,
@@ -12,8 +13,10 @@ export default async function AdminLayout({
   // based on auth state. Always render the full admin shell to guarantee
   // SSR ↔ client HTML consistency and prevent hydration mismatches.
   const supabase = await createClient();
-  const { institutionSlug } = await getTenantContext();
+  const { institutionSlug, institutionId } = await getTenantContext();
   const { data: { user } } = await supabase.auth.getUser();
+
+  const pendingCme = institutionId ? await getPendingCmeCount(supabase, institutionId) : 0;
 
   // Fetch profile (best-effort — falls back to empty strings if unavailable)
   const { data: userData } = user
@@ -54,6 +57,7 @@ export default async function AdminLayout({
       href: '/admin/support',
       label: 'Support',
       icon: 'MessageSquare',
+      badge: pendingCme || undefined,
     },
     {
       href: '/admin/settings',

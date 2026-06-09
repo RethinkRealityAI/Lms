@@ -43,6 +43,7 @@ interface NavLink {
   href: string;
   label: string;
   icon: string;
+  badge?: number;
 }
 
 interface NavBarProps {
@@ -158,6 +159,14 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title, instituti
                   >
                     <Icon className="mr-1.5 h-3.5 w-3.5" />
                     {link.label}
+                    {typeof link.badge === 'number' && link.badge > 0 && (
+                      <span className={cn(
+                        'ml-1.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-black leading-none',
+                        isActive ? 'bg-white text-[#DC2626]' : 'bg-[#DC2626] text-white'
+                      )}>
+                        {link.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -253,6 +262,14 @@ export function NavBar({ links, userEmail, userName, avatarUrl, title, instituti
                   >
                     <Icon className="mr-3 h-5 w-5" />
                     {link.label}
+                    {typeof link.badge === 'number' && link.badge > 0 && (
+                      <span className={cn(
+                        'ml-2 inline-flex items-center justify-center min-w-[18px] h-4.5 px-1.5 rounded-full text-[10px] font-black leading-none',
+                        isActive ? 'bg-white text-[#DC2626]' : 'bg-[#DC2626] text-white'
+                      )}>
+                        {link.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

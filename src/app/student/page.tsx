@@ -3,6 +3,8 @@ import { getUserInstitutionId } from '@/lib/db/users';
 import { getVisibleCourseIds } from '@/lib/db/course-assignments';
 import { getTenantContext } from '@/lib/tenant/server';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
+import { getMyCmeRequest, isEligibleForCme } from '@/lib/db';
+import { CmeRequestBanner } from '@/components/student/cme-request-banner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -128,6 +130,13 @@ export default async function StudentPage() {
     : 0;
   const totalLessonsCompleted = completedLessonIds.size;
 
+  // CME certificate eligibility + current request (for the dashboard banner)
+  // Authoritative eligibility = completed every catalog course (server RPC), matching what
+  // request_cme_certificate enforces — avoids a banner/RPC mismatch under restricted visibility.
+  const eligible = await isEligibleForCme(supabase, user.id, institutionId);
+  const initialRequest = await getMyCmeRequest(supabase, user.id);
+  const profileHref = `/${institutionSlug}/student/profile`;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* Compact dark header — welcome + stats on one line */}
@@ -187,6 +196,18 @@ export default async function StudentPage() {
           </div>
         </div>
       </div>
+
+      {/* CME certificate banner */}
+      {(eligible || initialRequest?.status === 'pending' || initialRequest?.status === 'issued') && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <CmeRequestBanner
+            userId={user.id}
+            eligible={eligible}
+            initialRequest={initialRequest}
+            profileHref={profileHref}
+          />
+        </div>
+      )}
 
       {/* Course grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

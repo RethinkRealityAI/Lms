@@ -11,10 +11,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, CheckCircle, Award, BarChart3, Briefcase, Building2, Globe } from 'lucide-react';
-import type { User as UserType } from '@/types';
+import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, CheckCircle, Award, BarChart3, Briefcase, Building2, Globe, ScrollText, History, Link2 } from 'lucide-react';
+import type { User as UserType, CmeCertificateRequest } from '@/types';
 import { isAdminRole } from '@/lib/auth/roles';
 import type { StudentProgress } from '@/lib/db/analytics';
+import {
+  getMyCmeRequest,
+  isEligibleForCme,
+  requestCmeCertificate,
+  cancelMyCmeRequest,
+  getMyLegacyHistory,
+  claimMyLegacyProfile,
+  type LegacyHistory,
+} from '@/lib/db';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserType | null>(null);
@@ -22,6 +31,11 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [stats, setStats] = useState<StudentProgress | null>(null);
+  const [cmeRequest, setCmeRequest] = useState<CmeCertificateRequest | null>(null);
+  const [cmeEligible, setCmeEligible] = useState(false);
+  const [cmeBusy, setCmeBusy] = useState(false);
+  const [legacyHistory, setLegacyHistory] = useState<LegacyHistory | null>(null);
+  const [linkingLegacy, setLinkingLegacy] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
     bio: '',
@@ -69,6 +83,20 @@ export default function ProfilePage() {
         .eq('user_id', authUser.id)
         .maybeSingle();
       if (progressData) setStats(progressData as StudentProgress);
+
+      // Certificate of completion (CME) state + eligibility
+      if (data?.institution_id) {
+        const [request, eligible] = await Promise.all([
+          getMyCmeRequest(supabase, data.id),
+          isEligibleForCme(supabase, data.id, data.institution_id),
+        ]);
+        setCmeRequest(request);
+        setCmeEligible(eligible);
+      }
+
+      // Previous-platform (legacy) history, if a record is already linked
+      const history = await getMyLegacyHistory(supabase, authUser.id);
+      setLegacyHistory(history);
     }
     setLoading(false);
   };
@@ -189,6 +217,66 @@ export default function ProfilePage() {
       toast.error('Failed to send reset link', { description: error.message });
     } else {
       toast.success('Reset link sent!', { description: 'Check your email for the password reset instructions.' });
+    }
+  };
+
+  const handleRequestCme = async () => {
+    if (!user) return;
+    setCmeBusy(true);
+    try {
+      const { error } = await requestCmeCertificate(supabase, null);
+      if (error) {
+        toast.error('Could not submit request', { description: error });
+        return;
+      }
+      toast.success('Certificate request submitted', {
+        description: 'Your request is now pending review.',
+      });
+      const request = await getMyCmeRequest(supabase, user!.id);
+      setCmeRequest(request);
+    } finally {
+      setCmeBusy(false);
+    }
+  };
+
+  const handleCancelCme = async () => {
+    if (!cmeRequest || !user) return;
+    setCmeBusy(true);
+    try {
+      const { error } = await cancelMyCmeRequest(supabase, cmeRequest.id, user!.id);
+      if (error) {
+        toast.error('Could not cancel request', { description: error });
+        return;
+      }
+      toast.success('Request cancelled');
+      const request = await getMyCmeRequest(supabase, user!.id);
+      setCmeRequest(request);
+    } finally {
+      setCmeBusy(false);
+    }
+  };
+
+  const handleLinkLegacy = async () => {
+    setLinkingLegacy(true);
+    try {
+      const { claimed, reason, error } = await claimMyLegacyProfile(supabase);
+      if (error) {
+        toast.error('Could not link account', { description: error });
+        return;
+      }
+      if (claimed) {
+        toast.success('Linked!', { description: 'Your previous platform history is now connected.' });
+        if (user) {
+          const history = await getMyLegacyHistory(supabase, user.id);
+          setLegacyHistory(history);
+        }
+      } else if (reason === 'no_match') {
+        toast.info('No previous record found for your email');
+      } else {
+        toast.info('No previous record was linked');
+      }
+    } finally {
+      setLinkingLegacy(false);
     }
   };
 
@@ -499,6 +587,79 @@ export default function ProfilePage() {
         </Card>
       )}
 
+      {/* Certificate of Completion (CME) */}
+      <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden">
+        <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+          <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+            <ScrollText className="h-5 w-5 text-[#C8262A]" />
+            Certificate of Completion
+          </CardTitle>
+          <CardDescription className="font-medium text-slate-500">
+            Request your official certificate once you&apos;ve completed every module.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {cmeRequest?.status === 'issued' ? (
+            <div className="flex items-center gap-3 p-4 bg-green-50 rounded-2xl border border-green-100">
+              <CheckCircle className="h-6 w-6 text-green-600 shrink-0" />
+              <div>
+                <p className="font-bold text-green-800">Certificate issued ✓</p>
+                {cmeRequest.resolved_at && (
+                  <p className="text-xs text-green-700 font-medium mt-0.5">
+                    Issued {new Date(cmeRequest.resolved_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : cmeRequest?.status === 'pending' ? (
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 text-amber-600 shrink-0 animate-spin" />
+                <p className="font-bold text-amber-800">Requested — pending review</p>
+              </div>
+              <Button
+                variant="ghost"
+                onClick={handleCancelCme}
+                disabled={cmeBusy}
+                className="font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl shrink-0"
+              >
+                {cmeBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Cancel request
+              </Button>
+            </div>
+          ) : cmeEligible ? (
+            <div className="space-y-4">
+              {cmeRequest?.status === 'declined' && (
+                <p className="text-sm text-slate-500 font-medium">
+                  Your previous request was not approved. You can submit a new request below.
+                </p>
+              )}
+              <Button
+                onClick={handleRequestCme}
+                disabled={cmeBusy}
+                className="bg-[#C8262A] hover:bg-[#A81E22] text-white font-bold px-8 h-12 rounded-xl shadow-lg transition-all"
+              >
+                {cmeBusy ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <ScrollText className="mr-2 h-4 w-4" />
+                    Request Certificate of Completion
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 font-medium">
+              Complete all course modules to request your certificate of completion.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="grid gap-8 md:grid-cols-2">
         <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white overflow-hidden flex flex-col">
           <CardHeader className="border-b border-slate-50 bg-slate-50/30">
@@ -562,9 +723,47 @@ export default function ProfilePage() {
                 </div>
                 <Badge className="bg-slate-100 text-slate-600 border-none font-bold">Member</Badge>
               </div>
+              <div className="p-6 space-y-3">
+                <div className="flex justify-between items-center gap-3">
+                  <div>
+                    <span className="text-xs font-black uppercase tracking-widest text-slate-400 block mb-1">Used the previous SCAGO platform?</span>
+                    <span className="font-medium text-slate-500 text-sm">
+                      {legacyHistory ? 'Your old account is linked.' : 'Link it to carry over your history.'}
+                    </span>
+                  </div>
+                  {!legacyHistory && (
+                    <Button
+                      variant="outline"
+                      onClick={handleLinkLegacy}
+                      disabled={linkingLegacy}
+                      className="font-bold rounded-xl shrink-0 border-slate-200"
+                    >
+                      {linkingLegacy ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Link2 className="mr-2 h-4 w-4" />
+                      )}
+                      Link my old account
+                    </Button>
+                  )}
+                </div>
+                {legacyHistory && (
+                  <div className="flex items-start gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <History className="h-4 w-4 text-[#1A3C6E] shrink-0 mt-0.5" />
+                    <p className="text-sm font-medium text-slate-600">
+                      Previous platform history —{' '}
+                      <span className="font-bold text-slate-900">{Math.round(legacyHistory.completed_percent ?? 0)}% complete</span>
+                      {' · '}
+                      <span className="font-bold text-slate-900">{legacyHistory.completions ?? 0} courses</span>
+                      {' · avg score '}
+                      <span className="font-bold text-slate-900">{Math.round(legacyHistory.avg_score ?? 0)}%</span>
+                    </p>
+                  </div>
+                )}
+              </div>
               <div className="flex justify-between items-center p-6">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 font-bold p-0 h-auto"
                   asChild
                 >
