@@ -35,19 +35,46 @@ export default async function StudentPage() {
 
   let institutionId = await getUserInstitutionId(supabase, user.id);
 
-  // Self-heal: if institution_id is missing, use the tenant context (derived from URL slug)
-  // instead of redirect-looping to /login (which middleware bounces back here for authenticated users).
-  if (!institutionId && tenantInstitutionId) {
-    await supabase
-      .from('users')
-      .update({ institution_id: tenantInstitutionId })
-      .eq('id', user.id);
-    institutionId = tenantInstitutionId;
+  // Self-heal a missing institution_id from a TRUSTED source only — NEVER from the URL slug
+  // (the user controls the URL; a wrong-tenant link must not reassign their institution).
+  // Trusted order: signup metadata institution_slug -> a legacy record matching their email.
+  if (!institutionId) {
+    const metaSlug = String(
+      user.user_metadata?.institution_slug ?? user.app_metadata?.institution_slug ?? '',
+    ).toLowerCase().trim();
+    let healId: string | null = null;
+    if (metaSlug) {
+      const { data: inst } = await supabase
+        .from('institutions').select('id').eq('slug', metaSlug).maybeSingle();
+      healId = (inst?.id as string | undefined) ?? null;
+    }
+    if (!healId && user.email) {
+      const { data: legacy } = await supabase
+        .from('legacy_users').select('institution_id')
+        .eq('email', user.email.toLowerCase()).limit(1).maybeSingle();
+      healId = (legacy?.institution_id as string | undefined) ?? null;
+    }
+    if (healId) {
+      await supabase.from('users').update({ institution_id: healId }).eq('id', user.id);
+      institutionId = healId;
+    }
   }
 
-  // If we still have no institution, redirect to login — something is very wrong
+  // No trusted institution could be determined — do not guess from the URL.
   if (!institutionId) {
     redirect(`/${institutionSlug}/login`);
+  }
+
+  // Tenant guard: send a student viewing a tenant that isn't theirs back to their own tenant.
+  // Prevents wrong-tenant viewing and any URL-driven mis-scoping of courses/CME. platform_admin
+  // never reaches /student (middleware bounces admins to /admin), so tenant-switching is unaffected.
+  if (tenantInstitutionId && institutionId !== tenantInstitutionId) {
+    const { data: ownInst } = await supabase
+      .from('institutions').select('slug').eq('id', institutionId).maybeSingle();
+    const ownSlug = (ownInst?.slug as string | undefined) ?? null;
+    if (ownSlug && ownSlug !== institutionSlug) {
+      redirect(`/${ownSlug}/student`);
+    }
   }
 
   // Fetch user's display name
