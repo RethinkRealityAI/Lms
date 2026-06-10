@@ -24,3 +24,4 @@ export * from './cme-requests';
 export * from './events';
 export * from './admin-actions';
 export * from './email-templates';
+export * from './announcements';

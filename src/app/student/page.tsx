@@ -5,8 +5,9 @@ import { getTenantContext } from '@/lib/tenant/server';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { getMyCmeRequest, isEligibleForCme } from '@/lib/db';
 import { getProgramsWithProgress } from '@/lib/db/programs';
+import { getVisibleAnnouncements } from '@/lib/db/announcements';
 import { CmeRequestBanner } from '@/components/student/cme-request-banner';
-import { WelcomeBackBanner } from '@/components/student/welcome-back-banner';
+import { AnnouncementHost } from '@/components/announcements/announcement-host';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -65,28 +66,35 @@ export default async function StudentPage() {
     }
   }
 
-  // Fetch user's display name
+  // Fetch user's display name and created_at (needed for first_time audience targeting)
   const { data: userData } = await supabase
     .from('users')
-    .select('full_name')
+    .select('full_name, created_at')
     .eq('id', user.id)
     .single();
   const firstName = userData?.full_name?.split(' ')[0] ?? '';
+  const userCreatedAt: string | null = (userData as any)?.created_at ?? null;
 
-  // Check for a linked legacy record — to show the welcome-back banner once.
-  // Students can read their own legacy row; defensive try/catch so a missing
-  // table or RLS error never breaks the dashboard.
-  let showWelcomeBanner = false;
+  // Check for a linked legacy record — used for 'legacy_claimed' audience targeting.
+  // Defensive try/catch so a missing table or RLS error never breaks the dashboard.
+  let isLegacyClaimed = false;
   try {
     const { data: legacyRow } = await supabase
       .from('legacy_users')
-      .select('id, welcome_acknowledged_at')
+      .select('id')
       .eq('linked_user_id', user.id)
       .maybeSingle();
-    showWelcomeBanner = !!legacyRow && legacyRow.welcome_acknowledged_at == null;
+    isLegacyClaimed = !!legacyRow;
   } catch {
-    showWelcomeBanner = false;
+    isLegacyClaimed = false;
   }
+
+  // Fetch visible announcements for this user. Never breaks the dashboard.
+  const announcements = await getVisibleAnnouncements(supabase, {
+    userId: user.id,
+    userCreatedAt,
+    isLegacyClaimed,
+  }).catch(() => []);
 
   // Get visible course IDs based on access_mode + assignments
   const visibleIds = await getVisibleCourseIds(supabase, user.id, institutionId);
@@ -317,15 +325,24 @@ export default async function StudentPage() {
         </div>
       </div>
 
-      {/* Welcome-back banner for legacy users (shown once, dismissed via RPC) */}
-      {showWelcomeBanner && (
+      {/* Announcements (banners + modal) for this institution */}
+      {announcements.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          <WelcomeBackBanner
-            institutionName={branding.name}
-            contactEmail={branding.contactEmail}
-            institutionId={tenantInstitutionId ?? institutionId}
-            userEmail={user.email ?? ''}
-            userName={firstName || userData?.full_name || ''}
+          <AnnouncementHost
+            announcements={announcements}
+            branding={{
+              institutionName: branding.name,
+              contactEmail: branding.contactEmail,
+              logoUrl: branding.logoUrl ?? null,
+              primaryColor: branding.primaryColor,
+              secondaryColor: branding.secondaryColor,
+            }}
+            user={{
+              userId: user.id,
+              userName: userData?.full_name ?? '',
+              userEmail: user.email ?? '',
+              institutionId: tenantInstitutionId ?? institutionId,
+            }}
           />
         </div>
       )}
