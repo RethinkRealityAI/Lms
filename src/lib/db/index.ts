@@ -23,3 +23,4 @@ export * from './course-feedback';
 export * from './cme-requests';
 export * from './events';
 export * from './admin-actions';
+export * from './email-templates';

@@ -135,13 +135,12 @@ export async function getUserCourseProgress(
   if (lessonIds.length > 0) {
     const { data: progress } = await supabase
       .from('progress')
-      .select('lesson_id, completed_at')
+      .select('lesson_id, completed')
       .eq('user_id', userId)
+      .eq('completed', true)
       .in('lesson_id', lessonIds);
     completedLessonIds = new Set(
-      ((progress ?? []) as { lesson_id: string; completed_at: string | null }[])
-        .filter((p) => p.completed_at)
-        .map((p) => p.lesson_id),
+      ((progress ?? []) as { lesson_id: string }[]).map((p) => p.lesson_id),
     );
   }
 

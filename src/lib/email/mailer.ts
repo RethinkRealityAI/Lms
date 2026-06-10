@@ -20,7 +20,9 @@ export function isEmailConfigured(): boolean {
 
 /** Resolve the From header for an institution (env override → generic SMTP_FROM → branding default). */
 export function resolveEmailFrom(institutionSlug?: string | null): string | undefined {
-  const slug = institutionSlug?.toLowerCase();
+  let slug = institutionSlug?.toLowerCase();
+  // belt-and-suspenders: slug feeds an env-var name — never allow arbitrary keys
+  if (slug && !/^[a-z][a-z0-9-]{0,32}$/.test(slug)) slug = undefined;
   if (slug) {
     const perTenant = process.env[`SMTP_FROM_${slug.toUpperCase()}`];
     if (perTenant) return perTenant;

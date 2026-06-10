@@ -770,7 +770,7 @@ export default function AdminSettingsPage() {
               <CardTitle>Automated Email</CardTitle>
               <CardDescription>
                 Test certificate and course-assignment notifications for this institution.
-                Templates live in code ({`src/lib/email/templates.ts`}), not Supabase.
+                Templates are institution-specific and editable in the email_templates table.
               </CardDescription>
             </div>
           </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { sendEmail, isEmailConfigured } from '@/lib/email/mailer';
-import { courseAssignedEmail } from '@/lib/email/templates';
+import { renderSystemEmail, assignmentEmailVariables } from '@/lib/email/system-emails';
 
 /**
  * POST { courseId, userIds, dueDate? } — emails users that a course was
@@ -54,12 +54,17 @@ export async function POST(req: NextRequest) {
     let sent = 0;
     for (const r of recipients ?? []) {
       if (!r.email) continue;
-      const { subject, html } = courseAssignedEmail({
+      const { subject, html } = await renderSystemEmail({
+        supabase: service,
+        institutionId: course.institution_id,
         institutionSlug: slug,
-        recipientName: r.full_name,
-        courseTitle: course.title,
-        courseUrl,
-        dueDate: dueDate ?? null,
+        type: 'assignment',
+        variables: assignmentEmailVariables({
+          recipientName: r.full_name,
+          courseTitle: course.title,
+          courseUrl,
+          dueDate: dueDate ?? null,
+        }),
       });
       try {
         const result = await sendEmail({

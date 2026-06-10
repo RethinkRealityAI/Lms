@@ -249,7 +249,7 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      await revokeCertificates(supabase, certIds, user.id, reason);
+      await revokeCertificates(supabase, certIds, user.id, reason, institutionId);
       const now = new Date().toISOString();
       setCertificates((prev) =>
         prev.map((c) =>
@@ -265,8 +265,9 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
   };
 
   const handleRestore = async (certIds: string[]) => {
+    if (!confirm(`Restore ${certIds.length} certificate(s)? They become valid and verifiable again.`)) return;
     try {
-      await restoreCertificates(supabase, certIds);
+      await restoreCertificates(supabase, certIds, institutionId);
       setCertificates((prev) =>
         prev.map((c) =>
           certIds.includes(c.id)

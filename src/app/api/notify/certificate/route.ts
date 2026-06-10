@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { sendEmail, isEmailConfigured } from '@/lib/email/mailer';
-import { certificateIssuedEmail } from '@/lib/email/templates';
+import { renderSystemEmail, certificateEmailVariables } from '@/lib/email/system-emails';
 
 /**
  * POST { certificateId } — emails the certificate owner.
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const { data: cert } = await service
       .from('certificates')
       .select(`
-        id, user_id, certificate_number, revoked_at,
+        id, user_id, certificate_number, revoked_at, institution_id,
         course:courses!certificates_course_id_fkey(title),
         program:programs!certificates_program_id_fkey(title),
         owner:users!certificates_user_id_fkey(email, full_name, institution_id),
@@ -38,11 +38,15 @@ export async function POST(req: NextRequest) {
     if (!cert) return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
     if (cert.revoked_at) return NextResponse.json({ error: 'Certificate is revoked' }, { status: 409 });
 
-    // owner or admin only
+    // owner, or an admin of the certificate's institution (platform_admin exempt)
     if (cert.user_id !== user.id) {
-      const { data: caller } = await service.from('users').select('role').eq('id', user.id).maybeSingle();
+      const { data: caller } = await service
+        .from('users').select('role, institution_id').eq('id', user.id).maybeSingle();
       const isAdmin = caller && ['admin', 'platform_admin', 'institution_admin'].includes(caller.role);
       if (!isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      if (caller.role !== 'platform_admin' && caller.institution_id !== cert.institution_id) {
+        return NextResponse.json({ error: 'Certificate belongs to another institution' }, { status: 403 });
+      }
     }
 
     const owner = cert.owner as unknown as { email: string; full_name: string | null } | null;
@@ -53,14 +57,19 @@ export async function POST(req: NextRequest) {
 
     const slug = institution?.slug ?? 'gansid';
     const origin = req.nextUrl.origin;
-    const { subject, html } = certificateIssuedEmail({
+    const { subject, html } = await renderSystemEmail({
+      supabase: service,
+      institutionId: cert.institution_id,
       institutionSlug: slug,
-      recipientName: owner.full_name,
-      title: course?.title ?? program?.title ?? 'Certificate of Achievement',
-      isProgram: Boolean(program && !course),
-      certificateNumber: cert.certificate_number ?? '',
-      verifyUrl: `${origin}/verify/${cert.certificate_number}`,
-      certificatesUrl: `${origin}/${slug}/student/certificates`,
+      type: 'certificate',
+      variables: certificateEmailVariables({
+        recipientName: owner.full_name,
+        title: course?.title ?? program?.title ?? 'Certificate of Achievement',
+        isProgram: Boolean(program && !course),
+        certificateNumber: cert.certificate_number ?? '',
+        verifyUrl: `${origin}/verify/${cert.certificate_number}`,
+        certificatesUrl: `${origin}/${slug}/student/certificates`,
+      }),
     });
 
     const result = await sendEmail({

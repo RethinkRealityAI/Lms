@@ -20,9 +20,15 @@ export default async function StudentLayout({
   // Get user data from database
   const { data: userData, error: profileError } = await supabase
     .from('users')
-    .select('role, full_name, avatar_url')
+    .select('role, full_name, avatar_url, is_active')
     .eq('id', user.id)
     .single();
+
+  // Suspension gate (migration 038) — covers sessions that existed before the ban
+  if (userData && userData.is_active === false) {
+    await supabase.auth.signOut();
+    redirect(`/${institutionSlug}/login?error=${encodeURIComponent('Your account has been deactivated. Please contact your administrator.')}`);
+  }
 
   // Check role from profile or fallback to metadata
   const role = userData?.role || user.user_metadata?.role;

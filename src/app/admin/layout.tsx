@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { NavBar } from '@/components/nav-bar';
 import { getTenantContext } from '@/lib/tenant/server';
@@ -22,10 +23,16 @@ export default async function AdminLayout({
   const { data: userData } = user
     ? await supabase
         .from('users')
-        .select('role, full_name, avatar_url')
+        .select('role, full_name, avatar_url, is_active')
         .eq('id', user.id)
         .maybeSingle()
     : { data: null };
+
+  // Suspension gate (migration 038) — covers sessions that existed before the ban
+  if (userData && userData.is_active === false) {
+    await supabase.auth.signOut();
+    redirect(`/${institutionSlug}/admin/login?error=${encodeURIComponent('Your account has been deactivated.')}`);
+  }
 
   const fullName: string | undefined =
     userData?.full_name || user?.user_metadata?.full_name;

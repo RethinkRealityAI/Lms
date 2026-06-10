@@ -129,9 +129,10 @@ export async function revokeCertificates(
   supabase: SupabaseClient,
   certificateIds: string[],
   revokedBy: string,
-  reason?: string
+  reason?: string,
+  institutionId?: string
 ): Promise<void> {
-  const { error } = await supabase
+  let query = supabase
     .from('certificates')
     .update({
       revoked_at: new Date().toISOString(),
@@ -140,6 +141,8 @@ export async function revokeCertificates(
     })
     .in('id', certificateIds)
     .is('revoked_at', null);
+  if (institutionId) query = query.eq('institution_id', institutionId);
+  const { error } = await query;
 
   if (error) throw error;
 }
@@ -147,12 +150,15 @@ export async function revokeCertificates(
 /** Clears revocation on a certificate (admin "restore"). */
 export async function restoreCertificates(
   supabase: SupabaseClient,
-  certificateIds: string[]
+  certificateIds: string[],
+  institutionId?: string
 ): Promise<void> {
-  const { error } = await supabase
+  let query = supabase
     .from('certificates')
     .update({ revoked_at: null, revoked_by: null, revoke_reason: null, pdf_url: null })
     .in('id', certificateIds);
+  if (institutionId) query = query.eq('institution_id', institutionId);
+  const { error } = await query;
 
   if (error) throw error;
 }
