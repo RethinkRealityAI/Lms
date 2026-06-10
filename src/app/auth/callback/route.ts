@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { logSignInEvent } from '@/lib/db/events';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -47,17 +48,33 @@ export async function GET(request: NextRequest) {
       }
 
       if (data.user) {
+        // Look up profile to route to the right dashboard
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role, institution_id, is_active')
+          .eq('id', data.user.id)
+          .single();
+
+        // Suspension gate (migration 038)
+        if (userData && userData.is_active === false) {
+          await supabase.auth.signOut();
+          return NextResponse.redirect(
+            new URL(
+              `${loginUrl}?error=${encodeURIComponent('Your account has been deactivated. Please contact your administrator.')}`,
+              requestUrl.origin
+            )
+          );
+        }
+
+        // Sign-in analytics (migration 037) — best-effort
+        if (userData?.institution_id) {
+          await logSignInEvent(supabase, data.user.id, userData.institution_id);
+        }
+
         // If an explicit next param was provided, honour it
         if (next && next !== loginUrl) {
           return NextResponse.redirect(new URL(next, requestUrl.origin));
         }
-
-        // Look up profile to route to the right dashboard
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
 
         const role = userData?.role || 'student';
         const destination = ADMIN_ROLES.has(role)

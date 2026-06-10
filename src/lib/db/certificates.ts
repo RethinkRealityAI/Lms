@@ -73,9 +73,10 @@ export async function awardCertificates(
     awarded_by: string;
     award_reason: string;
   }
-): Promise<{ inserted: number; skipped: number }> {
+): Promise<{ inserted: number; skipped: number; insertedIds: string[] }> {
   let inserted = 0;
   let skipped = 0;
+  const insertedIds: string[] = [];
 
   for (const userId of input.user_ids) {
     const query = supabase
@@ -98,7 +99,7 @@ export async function awardCertificates(
       continue;
     }
 
-    const { error } = await supabase.from('certificates').insert({
+    const { data: created, error } = await supabase.from('certificates').insert({
       user_id: userId,
       course_id: input.course_id ?? null,
       program_id: input.program_id ?? null,
@@ -107,22 +108,50 @@ export async function awardCertificates(
       awarded_by: input.awarded_by,
       award_reason: input.award_reason,
       issued_at: new Date().toISOString(),
-    });
+    }).select('id').single();
 
-    if (!error) inserted++;
-    else skipped++;
+    if (!error && created?.id) {
+      inserted++;
+      insertedIds.push(created.id as string);
+    } else {
+      skipped++;
+    }
   }
 
-  return { inserted, skipped };
+  return { inserted, skipped, insertedIds };
 }
 
+/**
+ * Revocation is a status change (migration 037), not a DELETE — the row,
+ * number, and audit trail are preserved and the verify page shows "revoked".
+ */
 export async function revokeCertificates(
+  supabase: SupabaseClient,
+  certificateIds: string[],
+  revokedBy: string,
+  reason?: string
+): Promise<void> {
+  const { error } = await supabase
+    .from('certificates')
+    .update({
+      revoked_at: new Date().toISOString(),
+      revoked_by: revokedBy,
+      revoke_reason: reason ?? null,
+    })
+    .in('id', certificateIds)
+    .is('revoked_at', null);
+
+  if (error) throw error;
+}
+
+/** Clears revocation on a certificate (admin "restore"). */
+export async function restoreCertificates(
   supabase: SupabaseClient,
   certificateIds: string[]
 ): Promise<void> {
   const { error } = await supabase
     .from('certificates')
-    .delete()
+    .update({ revoked_at: null, revoked_by: null, revoke_reason: null, pdf_url: null })
     .in('id', certificateIds);
 
   if (error) throw error;
@@ -141,6 +170,7 @@ export async function getUserCertificates(
       template:certificate_templates!certificates_template_id_fkey(*)
     `)
     .eq('user_id', userId)
+    .is('revoked_at', null)
     .order('issued_at', { ascending: false });
 
   if (error) throw error;

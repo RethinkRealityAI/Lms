@@ -88,6 +88,9 @@ export interface CertificateWithDetails {
   pdf_url: string | null;
   awarded_by: string | null;
   award_reason: string | null;
+  revoked_at?: string | null;
+  revoked_by?: string | null;
+  revoke_reason?: string | null;
   user?: { full_name: string | null; email: string };
   course?: { title: string; description: string } | null;
   program?: { title: string; description: string | null } | null;

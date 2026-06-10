@@ -16,6 +16,7 @@ import { PublicNav } from '@/components/public-nav';
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, getInstitutionSlugFromCookie } from '@/lib/tenant/branding';
+import { logSignInEvent } from '@/lib/db/events';
 
 const adminSignInSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -129,6 +130,20 @@ export default function AdminLoginPage() {
 
             if (!data.user) {
                 throw new Error('Authentication failed. Please try again.');
+            }
+
+            // Suspension gate + sign-in analytics (migrations 037/038)
+            const { data: accountStatus } = await supabase
+                .from('users')
+                .select('institution_id, is_active')
+                .eq('id', data.user.id)
+                .maybeSingle();
+            if (accountStatus && accountStatus.is_active === false) {
+                await supabase.auth.signOut();
+                throw new Error('Your account has been deactivated. Please contact your administrator.');
+            }
+            if (accountStatus?.institution_id) {
+                void logSignInEvent(supabase, data.user.id, accountStatus.institution_id);
             }
 
             let userData = null as { role?: string } | null;

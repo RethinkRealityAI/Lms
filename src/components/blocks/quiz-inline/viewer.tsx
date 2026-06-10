@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo, type CSSProperties } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback, type CSSProperties } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
 import {
@@ -22,11 +23,49 @@ import {
 } from '@/lib/content/block-surface-tokens';
 import { formatQuizText } from '@/lib/content/format-quiz-text';
 
-export default function QuizInlineViewer({ data, context, onComplete }: BlockViewerProps<QuizInlineData>) {
+/** Called by each sub-viewer at the moment correctness is determined. */
+type OnAnswered = (answer: unknown, isCorrect: boolean) => void;
+
+export default function QuizInlineViewer({ data, block, context, onComplete }: BlockViewerProps<QuizInlineData>) {
   const [submitted, setSubmitted] = useState(false);
 
+  // Persist the student's answer to quiz_block_responses (fire-and-forget).
+  // Skipped entirely in preview/editor mode or when scoping context is missing.
+  const blockId = block?.id;
+  const questionType = data.question_type;
+  const persistAnswer = useCallback<OnAnswered>((answer, isCorrect) => {
+    if (!context || context.previewMode || context.editing) return;
+    const { courseId, lessonId, institutionId } = context;
+    if (!courseId || !lessonId || !institutionId || !blockId) return;
+    void (async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: existing } = await supabase
+        .from('quiz_block_responses')
+        .select('attempt_count')
+        .eq('block_id', blockId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      const { error } = await supabase
+        .from('quiz_block_responses')
+        .upsert({
+          institution_id: institutionId,
+          course_id: courseId,
+          lesson_id: lessonId,
+          block_id: blockId,
+          user_id: user.id,
+          response: { question_type: questionType, answer },
+          is_correct: isCorrect,
+          attempt_count: ((existing?.attempt_count as number | undefined) ?? 0) + 1,
+          answered_at: new Date().toISOString(),
+        }, { onConflict: 'block_id,user_id' });
+      if (error) throw error;
+    })().catch(console.error);
+  }, [context, blockId, questionType]);
+
   if (data.question_type === 'swipe') {
-    return <SwipeQuizViewer data={data} onCorrect={() => onComplete?.()} />;
+    return <SwipeQuizViewer data={data} onCorrect={() => onComplete?.()} onAnswered={persistAnswer} />;
   }
 
   if (data.question_type === 'multiple_choice' || data.question_type === 'true_false') {
@@ -37,16 +76,17 @@ export default function QuizInlineViewer({ data, context, onComplete }: BlockVie
         onSubmit={() => setSubmitted(true)}
         onRetry={() => setSubmitted(false)}
         onCorrect={() => onComplete?.()}
+        onAnswered={persistAnswer}
       />
     );
   }
 
   if (data.question_type === 'categorize' && data.categories) {
-    return <CategorizeViewer data={data} onCorrect={() => onComplete?.()} />;
+    return <CategorizeViewer data={data} onCorrect={() => onComplete?.()} onAnswered={persistAnswer} />;
   }
 
   if (data.question_type === 'select_all') {
-    return <SelectAllViewer data={data} onCorrect={() => onComplete?.()} />;
+    return <SelectAllViewer data={data} onCorrect={() => onComplete?.()} onAnswered={persistAnswer} />;
   }
 
   return (
@@ -64,12 +104,14 @@ function MultipleChoiceViewer({
   onSubmit,
   onRetry,
   onCorrect,
+  onAnswered,
 }: {
   data: QuizInlineData;
   submitted: boolean;
   onSubmit: () => void;
   onRetry: () => void;
   onCorrect?: () => void;
+  onAnswered?: OnAnswered;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const isCorrect = submitted && selected === data.correct_answer;
@@ -147,7 +189,11 @@ function MultipleChoiceViewer({
       <div className={SURFACE_ACTIONS}>
       {!submitted ? (
         <Button
-          onClick={() => selected !== null && onSubmit()}
+          onClick={() => {
+            if (selected === null) return;
+            onAnswered?.(selected, selected === data.correct_answer);
+            onSubmit();
+          }}
           disabled={selected === null}
           className={surfacePrimaryButtonClass()}
         >
@@ -175,7 +221,7 @@ function hexA(hex: string, alpha: number): string {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
-function SwipeQuizViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?: () => void }) {
+function SwipeQuizViewer({ data, onCorrect, onAnswered }: { data: QuizInlineData; onCorrect?: () => void; onAnswered?: OnAnswered }) {
   const leftLabel = ((data.options?.[0] ?? '').trim()) || 'Left';
   const rightLabel = ((data.options?.[1] ?? '').trim()) || 'Right';
 
@@ -224,6 +270,15 @@ function SwipeQuizViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
       onCorrect?.();
     }
   }, [finished, score, total, onCorrect]);
+
+  // Record the deck result once per run (correctness is determined at deck completion)
+  const answeredFiredRef = useRef(false);
+  useEffect(() => {
+    if (finished && total > 0 && !answeredFiredRef.current) {
+      answeredFiredRef.current = true;
+      onAnswered?.({ score, total }, score === total);
+    }
+  }, [finished, score, total, onAnswered]);
 
   const THRESHOLD = 80;
   const current = cards[index];
@@ -282,6 +337,7 @@ function SwipeQuizViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
   function restart() {
     if (timerRef.current) clearTimeout(timerRef.current);
     completeFiredRef.current = false;
+    answeredFiredRef.current = false;
     setIndex(0); setScore(0); setDragX(0); setDragging(false);
     setPhase('card'); setFlyOff(false); setLastCorrect(null); setFinished(false);
   }
@@ -510,7 +566,7 @@ function SwipeQuizViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
 
 // ─── Select All ───────────────────────────────────────────────────────────────
 
-function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?: () => void }) {
+function SelectAllViewer({ data, onCorrect, onAnswered }: { data: QuizInlineData; onCorrect?: () => void; onAnswered?: OnAnswered }) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [submitted, setSubmitted] = useState(false);
   const correctFiredRef = useRef(false);
@@ -612,7 +668,12 @@ function SelectAllViewer({ data, onCorrect }: { data: QuizInlineData; onCorrect?
       <div className={SURFACE_ACTIONS}>
       {!submitted ? (
         <Button
-          onClick={() => setSubmitted(true)}
+          onClick={() => {
+            const correct =
+              checked.size === correctSet.size && [...checked].every(c => correctSet.has(c));
+            onAnswered?.([...checked], correct);
+            setSubmitted(true);
+          }}
           disabled={checked.size === 0}
           className={surfacePrimaryButtonClass()}
         >
@@ -643,9 +704,11 @@ function shuffleArray<T>(arr: T[]): T[] {
 function CategorizeViewer({
   data,
   onCorrect,
+  onAnswered,
 }: {
   data: QuizInlineData;
   onCorrect?: () => void;
+  onAnswered?: OnAnswered;
 }) {
   const categories = data.categories ?? [];
 
@@ -729,6 +792,7 @@ function CategorizeViewer({
       );
     });
 
+    onAnswered?.(placements, correct);
     setSubmitted(true);
     setIsCorrect(correct);
   }

@@ -24,7 +24,13 @@ export async function getPrograms(
 
 export async function createProgram(
   supabase: SupabaseClient,
-  input: { institution_id: string; title: string; description?: string | null; certificate_template_id?: string | null },
+  input: {
+    institution_id: string;
+    title: string;
+    description?: string | null;
+    certificate_template_id?: string | null;
+    sequential?: boolean;
+  },
 ): Promise<Program> {
   const { data, error } = await supabase
     .from('programs')
@@ -33,6 +39,7 @@ export async function createProgram(
       title: input.title,
       description: input.description ?? null,
       certificate_template_id: input.certificate_template_id ?? null,
+      sequential: input.sequential ?? false,
     })
     .select('*')
     .single();
@@ -44,7 +51,7 @@ export async function updateProgram(
   supabase: SupabaseClient,
   institutionId: string,
   id: string,
-  changes: Partial<Pick<Program, 'title' | 'description' | 'certificate_template_id'>>,
+  changes: Partial<Pick<Program, 'title' | 'description' | 'certificate_template_id'>> & { sequential?: boolean },
 ): Promise<Program> {
   const { data, error } = await supabase
     .from('programs')
@@ -119,7 +126,8 @@ export async function getProgramCompletionCounts(
     .from('certificates')
     .select('program_id')
     .eq('institution_id', institutionId)
-    .not('program_id', 'is', null);
+    .not('program_id', 'is', null)
+    .is('revoked_at', null);
   if (error) throw error;
   const counts: Record<string, number> = {};
   for (const row of (data ?? []) as { program_id: string }[]) {
@@ -149,7 +157,8 @@ export async function getProgramsWithProgress(
   const { data: certs, error } = await supabase
     .from('certificates')
     .select('course_id, program_id')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .is('revoked_at', null);
   if (error) throw error;
 
   const completedCourses = new Set(

@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
   ChevronLeft, ChevronRight, Award, BookOpen,
-  Minimize2, Maximize2, Download, Share2, ExternalLink, Menu, X,
+  Minimize2, Maximize2, Download, Share2, ExternalLink, Menu, X, Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -577,6 +577,9 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [reviewLoading, setReviewLoading] = useState(false);
   const [existingReviewId, setExistingReviewId] = useState<string | null>(null);
 
+  // Sequential program lock — set to the blocking (earlier, incomplete) course title
+  const [lockedReason, setLockedReason] = useState<string | null>(null);
+
   // Completion feedback survey
   const [feedbackTemplateId, setFeedbackTemplateId] = useState<string | null>(null);
   const [feedbackTemplate, setFeedbackTemplate] = useState<SurveyTemplate | null>(null);
@@ -643,6 +646,64 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setPageLoading(false); return; }
 
+      // Sequential program guard — if this course sits inside a sequential program
+      // and an earlier-ordered course isn't certified yet, lock the viewer.
+      // Defensive: any failure here must never block the course from loading.
+      if (!previewMode) {
+        try {
+          const { data: pcs } = await supabase
+            .from('program_courses')
+            .select('program_id, programs(sequential)')
+            .eq('course_id', courseId);
+          const seqProgramIds = (pcs ?? [])
+            .filter((pc: any) => {
+              const prog = Array.isArray(pc.programs) ? pc.programs[0] : pc.programs;
+              return prog?.sequential === true;
+            })
+            .map((pc: any) => pc.program_id as string);
+
+          if (seqProgramIds.length > 0) {
+            const { data: allPcs } = await supabase
+              .from('program_courses')
+              .select('program_id, course_id, order_index')
+              .in('program_id', seqProgramIds)
+              .order('order_index', { ascending: true });
+            const programCourseIds = [...new Set((allPcs ?? []).map((pc: any) => pc.course_id as string))];
+
+            let certified = new Set<string>();
+            if (programCourseIds.length > 0) {
+              const { data: certs } = await supabase
+                .from('certificates')
+                .select('course_id')
+                .eq('user_id', user.id)
+                .in('course_id', programCourseIds)
+                .is('revoked_at', null);
+              certified = new Set((certs ?? []).map((c: any) => c.course_id as string));
+            }
+
+            for (const pid of seqProgramIds) {
+              const seq = (allPcs ?? []).filter((pc: any) => pc.program_id === pid);
+              const myIdx = seq.findIndex((pc: any) => pc.course_id === courseId);
+              if (myIdx <= 0) continue;
+              const blocker = seq.slice(0, myIdx).find((pc: any) => !certified.has(pc.course_id));
+              if (blocker) {
+                let prevTitle = 'the previous course';
+                try {
+                  const { data: prev } = await supabase
+                    .from('courses').select('title').eq('id', blocker.course_id).maybeSingle();
+                  if (prev?.title) prevTitle = prev.title;
+                } catch { /* keep fallback title */ }
+                setLockedReason(prevTitle);
+                setPageLoading(false);
+                return; // locked — skip enrollment/lessons entirely
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Sequential program check failed (ignored):', err);
+        }
+      }
+
       const { data: enrollment } = await supabase.from('course_enrollments').select('*')
         .eq('user_id', user.id).eq('course_id', courseId).single();
 
@@ -663,11 +724,27 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
       if (lessonsData) {
         setLessons(lessonsData);
+
+        // Fetch progress BEFORE picking the initial lesson so we can auto-resume
+        // at the first incomplete lesson.
+        const progressMap: Record<string, ProgressType> = {};
+        if (enrollment && lessonsData.length > 0) {
+          const { data: progressData } = await supabase.from('progress').select('*')
+            .eq('user_id', user.id).in('lesson_id', lessonsData.map(l => l.id));
+          if (progressData) {
+            progressData.forEach(p => { progressMap[p.lesson_id] = p; });
+            setProgress(progressMap);
+          }
+        }
+
         if (lessonsData.length > 0 && !selectedLesson) {
-          // Open the editor-requested lesson if provided, else the first lesson
+          // Open the editor-requested lesson if provided; otherwise auto-resume at
+          // the first incomplete lesson (falls back to the first lesson when all
+          // are complete or no progress exists). Only applies on initial load —
+          // user/embedded navigation afterwards is untouched.
           const initial = initialLessonId
             ? lessonsData.find(l => l.id === initialLessonId)
-            : null;
+            : lessonsData.find(l => !progressMap[l.id]?.completed);
           setSelectedLesson(initial ?? lessonsData[0]);
         }
 
@@ -712,18 +789,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         }
       }
 
-      if (enrollment) {
-        const lessonIds = (lessonsData ?? []).map(l => l.id);
-        if (lessonIds.length > 0) {
-          const { data: progressData } = await supabase.from('progress').select('*')
-            .eq('user_id', user.id).in('lesson_id', lessonIds);
-          if (progressData) {
-            const pm: Record<string, ProgressType> = {};
-            progressData.forEach(p => { pm[p.lesson_id] = p; });
-            setProgress(pm);
-          }
-        }
-      }
+      // (Progress is fetched above, before initial lesson selection.)
 
       // Completion feedback survey — load template + any existing response
       const { templateId: fbTemplateId, template: fbTemplate } = await getCompletionSurvey(supabase, courseId);
@@ -777,6 +843,12 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
             setShowCertModal(true);
             // Pre-generate PDF (fire-and-forget)
             fetch(`/api/certificates/${certData.certificate_id}/pdf`).catch(() => {});
+            // Email the student their certificate (fire-and-forget; no-op if SMTP unconfigured)
+            fetch('/api/notify/certificate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ certificateId: certData.certificate_id }),
+            }).catch(() => {});
           }
         }
         // Re-fetch progress silently (no jarring page refresh — local state already updated above)
@@ -1236,6 +1308,34 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           <p className="text-muted-foreground mb-4">Course not found.</p>
           <Button onClick={() => router.push(withInstitutionPath('/student', pathname))}>Back to Courses</Button>
         </CardContent></Card>
+      </div>
+    );
+  }
+
+  // Sequential program lock — show a locked panel instead of the course content
+  if (lockedReason) {
+    return (
+      <div className={`${outerHeightClass} flex items-center justify-center bg-[#F8FAFC] p-6`}>
+        <Card className="max-w-md w-full border-none shadow-md">
+          <CardContent className="py-12 flex flex-col items-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+              <Lock className="h-8 w-8 text-slate-400" />
+            </div>
+            <div className="space-y-1.5">
+              <h2 className="text-xl font-black text-slate-900">This course is locked</h2>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Complete <span className="font-semibold text-slate-700">{lockedReason}</span> first to unlock
+                {course?.title ? <> &quot;{course.title}&quot;</> : ' this course'}.
+              </p>
+            </div>
+            <Button
+              className="mt-2 bg-[#0F172A] hover:bg-[#1E293B] text-white font-bold"
+              onClick={() => router.push(withInstitutionPath('/student', pathname))}
+            >
+              Back to Dashboard
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

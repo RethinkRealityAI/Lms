@@ -9,22 +9,8 @@ import { CmeRequestBanner } from '@/components/student/cme-request-banner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { BookOpen, CheckCircle, TrendingUp, Target, GraduationCap, Award } from 'lucide-react';
+import { BookOpen, CheckCircle, TrendingUp, Target, GraduationCap, Award, Lock, Clock, Play } from 'lucide-react';
 import { redirect } from 'next/navigation';
-
-// Canonical module order for the GANSID Capacity Building Curriculum
-const MODULE_ORDER: Record<string, number> = {
-  '6b4906f1-803b-40bb-8582-d591220e5d09': 1,  // Fundamentals of Effective Advocacy
-  '823fe330-1df4-42ee-89af-d7df079958f5': 2,  // Fundraising Strategies that Drive Results
-  '9b228b9b-820f-4abb-92ac-d3a47091cab4': 3,  // Volunteer Management
-  '27692b1f-819f-4cfc-b2a0-2ae516c378e5': 4,  // Leadership
-  '73ab4867-f29a-4bd3-b9bf-5f84705d9747': 5,  // Project Management
-  '4d759125-3682-4698-83ae-8ba5a0e7630b': 6,  // Effective Communication
-  '5f779fd0-2926-4bd7-a085-5959df2a5c74': 7,  // Development of Impactful Strategic Work Plans
-  'd4657dcc-be32-489e-aed3-d8e4297a8a65': 8,  // Grant Writing
-  '2b746569-abd1-4b5f-805a-8015055f6e67': 9,  // Leadership: What Works and What Does Not Work
-  'f109c2ea-a204-42cf-9849-50676d3b9f44': 10, // The Final Quiz
-};
 
 export default async function StudentPage() {
   const supabase = await createClient();
@@ -91,18 +77,28 @@ export default async function StudentPage() {
 
   let coursesRaw: any[] = [];
   if (visibleIds.length > 0) {
-    const { data } = await supabase
+    const { data: primary } = await supabase
       .from('courses')
-      .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id')
+      .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id, display_order')
       .in('id', visibleIds);
-    coursesRaw = data ?? [];
+    if (primary) {
+      coursesRaw = primary;
+    } else {
+      // Defensive fallback if display_order isn't available yet
+      const { data: fallback } = await supabase
+        .from('courses')
+        .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id')
+        .in('id', visibleIds);
+      coursesRaw = (fallback ?? []).map((c) => ({ ...c, display_order: null }));
+    }
   }
 
-  // Sort by canonical module order
+  // Sort by display_order (nulls last), then title
   const sortedCourses = coursesRaw.sort((a: any, b: any) => {
-    const aOrder = MODULE_ORDER[a.id] ?? 999;
-    const bOrder = MODULE_ORDER[b.id] ?? 999;
-    return aOrder - bOrder;
+    const aOrder = a.display_order ?? Number.MAX_SAFE_INTEGER;
+    const bOrder = b.display_order ?? Number.MAX_SAFE_INTEGER;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return String(a.title ?? '').localeCompare(String(b.title ?? ''));
   });
 
   // Fetch enrollments for this student
@@ -169,6 +165,81 @@ export default async function StudentPage() {
   const programProgress = institutionId
     ? await getProgramsWithProgress(supabase, institutionId, user.id).catch(() => [])
     : [];
+
+  // "Continue where you left off" — most recently completed lesson in an enrolled,
+  // not-yet-finished course. Defensive: never break the dashboard if this fails.
+  let continueCourse: { id: string; title: string; percent: number } | null = null;
+  try {
+    const { data: recentRows } = await supabase
+      .from('progress')
+      .select('lesson_id, completed_at, lessons(course_id)')
+      .eq('user_id', user.id)
+      .order('completed_at', { ascending: false, nullsFirst: false })
+      .limit(25);
+    for (const row of recentRows ?? []) {
+      const lessonRel = (row as any).lessons;
+      const cid: string | undefined = Array.isArray(lessonRel)
+        ? lessonRel[0]?.course_id
+        : lessonRel?.course_id;
+      if (!cid || !enrolledIds.has(cid)) continue;
+      const prog = courseProgress[cid];
+      const percent = prog && prog.total > 0 ? Math.round((prog.completed / prog.total) * 100) : 0;
+      if (percent >= 100) continue;
+      const c = sortedCourses.find((x: any) => x.id === cid);
+      if (!c) continue;
+      continueCourse = { id: cid, title: c.title, percent };
+      break;
+    }
+  } catch {
+    continueCourse = null;
+  }
+
+  // Due dates — effective due date per course = earliest non-null across the user's
+  // direct assignments and group assignments. Defensive: empty on any failure.
+  const dueDates: Record<string, string> = {};
+  try {
+    const { data: userAssigns } = await supabase
+      .from('course_user_assignments')
+      .select('course_id, due_date')
+      .eq('user_id', user.id);
+    let groupAssigns: any[] = [];
+    const { data: memberships } = await supabase
+      .from('user_group_members')
+      .select('group_id')
+      .eq('user_id', user.id);
+    const groupIds = (memberships ?? []).map((m: any) => m.group_id).filter(Boolean);
+    if (groupIds.length > 0) {
+      const { data } = await supabase
+        .from('course_group_assignments')
+        .select('course_id, due_date')
+        .in('group_id', groupIds);
+      groupAssigns = data ?? [];
+    }
+    for (const a of [...(userAssigns ?? []), ...groupAssigns]) {
+      if (!a?.course_id || !a?.due_date) continue;
+      const existing = dueDates[a.course_id];
+      if (!existing || new Date(a.due_date).getTime() < new Date(existing).getTime()) {
+        dueDates[a.course_id] = a.due_date;
+      }
+    }
+  } catch {
+    // ignore — due-date badges are best-effort
+  }
+  const now = Date.now();
+
+  // Sequential program locks — courses after the first incomplete course in a
+  // sequential program are locked until the earlier ones are complete.
+  const lockedCourseIds = new Set<string>();
+  for (const program of programProgress) {
+    if (!(program as any).sequential) continue;
+    const completed = new Set(program.completedCourseIds);
+    const firstIncompleteIdx = program.courses.findIndex((c) => !completed.has(c.id));
+    if (firstIncompleteIdx === -1) continue;
+    for (let i = firstIncompleteIdx + 1; i < program.courses.length; i++) {
+      const c = program.courses[i];
+      if (!completed.has(c.id)) lockedCourseIds.add(c.id);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -291,6 +362,46 @@ export default async function StudentPage() {
         </div>
       )}
 
+      {/* Continue where you left off */}
+      {continueCourse && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <Card className="border-none shadow-sm bg-white overflow-hidden">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="rounded-full bg-[#DC2626]/10 p-2 shrink-0">
+                    <Play className="h-5 w-5 text-[#DC2626]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                      Continue where you left off
+                    </p>
+                    <p className="font-black text-slate-900 text-sm truncate">{continueCourse.title}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 sm:w-80 shrink-0">
+                  <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-[#0099CA] transition-all"
+                      style={{ width: `${continueCourse.percent}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-black text-slate-700 w-9 text-right">
+                    {continueCourse.percent}%
+                  </span>
+                  <Link
+                    href={`/${institutionSlug}/student/courses/${continueCourse.id}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#DC2626] hover:bg-[#B91C1C] px-4 py-2 rounded-full transition-colors shrink-0"
+                  >
+                    Continue
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Course grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {sortedCourses.length === 0 ? (
@@ -308,17 +419,20 @@ export default async function StudentPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedCourses.map((course: any) => {
-              const moduleNum = MODULE_ORDER[course.id];
+              const moduleNum = course.display_order ?? null;
               const isEnrolled = enrolledIds.has(course.id);
               const prog = courseProgress[course.id];
               const progressPercent =
                 prog?.total > 0 ? Math.round((prog.completed / prog.total) * 100) : 0;
               const isComplete = isEnrolled && progressPercent === 100;
+              const isLocked = !isComplete && lockedCourseIds.has(course.id);
+              const dueDate = !isComplete ? dueDates[course.id] : undefined;
+              const isOverdue = dueDate ? new Date(dueDate).getTime() < now : false;
 
-              return (
-                <Link key={course.id} href={`/${institutionSlug}/student/courses/${course.id}`}
-                  className="rounded-xl focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:outline-none">
-                  <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full overflow-hidden border border-slate-200 bg-white flex flex-col">
+              const card = (
+                  <Card className={`group transition-all duration-300 h-full overflow-hidden border border-slate-200 bg-white flex flex-col ${
+                    isLocked ? 'opacity-60' : 'hover:shadow-lg hover:-translate-y-1 cursor-pointer'
+                  }`}>
 
                     {/* Thumbnail */}
                     <div className="aspect-video w-full overflow-hidden relative bg-gradient-to-br from-[#1E3A5F] to-[#0F172A]">
@@ -344,15 +458,33 @@ export default async function StudentPage() {
                         </div>
                       )}
 
-                      {/* Complete badge */}
-                      {isComplete && (
+                      {/* Complete / lock / due badge */}
+                      {isComplete ? (
                         <div className="absolute top-2.5 right-2.5">
                           <Badge className="bg-green-500 text-white border-none font-bold text-[11px] gap-1 px-2 py-0.5 shadow-sm">
                             <CheckCircle className="h-3 w-3" />
                             Complete
                           </Badge>
                         </div>
-                      )}
+                      ) : isLocked ? (
+                        <div className="absolute top-2.5 right-2.5">
+                          <Badge className="bg-slate-700/90 backdrop-blur text-white border-none font-bold text-[10px] gap-1 px-2 py-0.5 shadow-sm">
+                            <Lock className="h-3 w-3" />
+                            Complete previous module first
+                          </Badge>
+                        </div>
+                      ) : dueDate ? (
+                        <div className="absolute top-2.5 right-2.5">
+                          <Badge className={`border-none font-bold text-[11px] gap-1 px-2 py-0.5 shadow-sm text-white ${
+                            isOverdue ? 'bg-red-600' : 'bg-amber-500'
+                          }`}>
+                            <Clock className="h-3 w-3" />
+                            {isOverdue
+                              ? 'Overdue'
+                              : `Due ${new Date(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+                          </Badge>
+                        </div>
+                      ) : null}
                     </div>
 
                     {/* Card body */}
@@ -385,6 +517,10 @@ export default async function StudentPage() {
                               </div>
                             )}
                           </div>
+                        ) : isLocked ? (
+                          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest inline-flex items-center gap-1">
+                            <Lock className="h-3 w-3" /> Locked
+                          </span>
                         ) : (
                           <span className="text-xs font-bold text-[#DC2626] uppercase tracking-widest inline-flex items-center gap-1 transition-opacity group-hover:opacity-80">
                             Start Course <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
@@ -393,6 +529,21 @@ export default async function StudentPage() {
                       </div>
                     </div>
                   </Card>
+              );
+
+              return isLocked ? (
+                <div
+                  key={course.id}
+                  aria-disabled="true"
+                  title="Complete previous module first"
+                  className="rounded-xl cursor-not-allowed"
+                >
+                  {card}
+                </div>
+              ) : (
+                <Link key={course.id} href={`/${institutionSlug}/student/courses/${course.id}`}
+                  className="rounded-xl focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:outline-none">
+                  {card}
                 </Link>
               );
             })}

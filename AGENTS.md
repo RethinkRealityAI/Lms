@@ -11,12 +11,13 @@
 - When committing: stage only related changes, write a concise message, and do not push unless explicitly asked.
 - Survey blocks should support institution-scoped reusable templates so configs are not recreated per course.
 - After substantial feature work, update `CLAUDE.md` and offer a dev server on port 3001 for manual testing.
+- GANSID module migration: no image-only slides (merge into content); group consecutive knowledge checks on one slide; single images use full width, original aspect ratio, contain fit, and large display size.
 
 ## Learned Workspace Facts
 
 - Multi-tenant LMS for **GANSID** and **SCAGO**; URL prefix `/{institutionSlug}/admin|student` rewrites to `/admin` and `/student` via middleware and `institution_slug` cookie.
 - Local dev server runs on **port 3001** (`npm run dev -- -p 3001`); Supabase OAuth callback is pinned to this port.
-- Live Supabase project `ylmnbbrpaeiogdeqezlo`; apply DDL/seeds via **Supabase MCP** (`apply_migration` / `execute_sql`) — no `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+- Live Supabase project `ylmnbbrpaeiogdeqezlo`; apply DDL/seeds via **Supabase MCP** (`apply_migration` / `execute_sql`); local dev has no `SUPABASE_SERVICE_ROLE_KEY` — production admin password reset/ban requires it server-side.
 - `platform_admin` accesses both tenants by switching URL prefix; other roles are institution-scoped.
 - Block types register in `src/lib/content/blocks/register-all.ts` (`'use client'`); must be imported from `lesson-block-renderer.tsx` for student rendering.
 - All `lib/db/` helpers accept a `SupabaseClient` param and must not import `@/lib/supabase/server` (client-bundle safe).
@@ -25,3 +26,6 @@
 - Default slide block container style is **`glass`** (`settings.block_style` / course theme `default_block_style`).
 - Slide navigation (Next/Previous/Complete) lives in the course-viewer footer; CTA blocks are external content links only.
 - Primary admin preview is the toolbar **Preview** portal (`LessonPreviewDialog`); tablet/mobile use embedded `CourseViewer` in a device-sized iframe for true media-query parity.
+- GANSID module content rebuild uses `scripts/import-gansid-modules/` (plan JSON + `load-plan.ts`); authoritative source is `../Course SCORM packages/Module N/`.
+- Certificate and assignment emails go through `/api/notify/*` (nodemailer); require `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` in production or emails no-op. Optional per-tenant From headers: `SMTP_FROM_GANSID`, `SMTP_FROM_SCAGO`, with `SMTP_FROM` as generic fallback.
+- Admin password reset and user ban use the Supabase service role via `SUPABASE_SERVICE_ROLE_KEY` (server-only).

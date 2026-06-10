@@ -10,7 +10,7 @@ import {
   backfillProgramCertificates, getProgramCompletionCounts,
 } from '@/lib/db/programs';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, GraduationCap, BookOpen, Award, X, GripVertical, Users } from 'lucide-react';
+import { Plus, Pencil, Trash2, GraduationCap, BookOpen, Award, X, GripVertical, Users, ListOrdered } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -43,10 +43,11 @@ interface Draft {
   title: string;
   description: string;
   certificate_template_id: string | null;
+  sequential: boolean;
   courseIds: string[]; // ordered
 }
 
-const empty = (): Draft => ({ title: '', description: '', certificate_template_id: null, courseIds: [] });
+const empty = (): Draft => ({ title: '', description: '', certificate_template_id: null, sequential: false, courseIds: [] });
 
 // ── Sortable row for a selected course ───────────────────────────────────────
 function SortableCourseRow({ id, position, title, onRemove }: { id: string; position: number; title: string; onRemove: () => void }) {
@@ -108,6 +109,8 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
     setEditing({
       id: p.id, title: p.title, description: p.description ?? '',
       certificate_template_id: p.certificate_template_id,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sequential: (p as any).sequential ?? false,
       courseIds: p.courses.map(c => c.id),
     });
   }
@@ -123,12 +126,14 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
         await updateProgram(supabase, institutionId, programId, {
           title: editing.title.trim(), description: editing.description.trim() || null,
           certificate_template_id: editing.certificate_template_id,
+          sequential: editing.sequential,
         });
       } else {
         const created = await createProgram(supabase, {
           institution_id: institutionId, title: editing.title.trim(),
           description: editing.description.trim() || null,
           certificate_template_id: editing.certificate_template_id,
+          sequential: editing.sequential,
         });
         programId = created.id;
       }
@@ -215,6 +220,17 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
               <Input value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })}
                 placeholder="Shown on the certificate / program page" className="mt-1" />
             </div>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={editing.sequential}
+                onChange={e => setEditing({ ...editing, sequential: e.target.checked })}
+                className="h-4 w-4 rounded border-slate-300 accent-[#1E3A5F]"
+              />
+              <span className="text-sm text-slate-700 font-medium">Courses must be completed in order</span>
+              <span className="text-xs text-slate-400">(sequential program)</span>
+            </label>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
@@ -313,6 +329,12 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-50 text-green-700 font-medium">
                       <Users className="w-3 h-3" /> {completionCounts[p.id] ?? 0} completed
                     </span>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {Boolean((p as any).sequential) && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#1E3A5F]/10 text-[#1E3A5F] font-medium">
+                        <ListOrdered className="w-3 h-3" /> Sequential
+                      </span>
+                    )}
                   </div>
                   {p.courses.length > 0 && (
                     <ol className="mt-3 space-y-1">

@@ -21,3 +21,5 @@ export * from './surveys';
 export * from './survey-templates';
 export * from './course-feedback';
 export * from './cme-requests';
+export * from './events';
+export * from './admin-actions';

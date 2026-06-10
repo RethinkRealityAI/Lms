@@ -17,6 +17,7 @@ import { BookOpen, Loader2, Mail, Lock, User, CheckCircle2, Globe, MailCheck, Ar
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
+import { logSignInEvent } from '@/lib/db/events';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -165,6 +166,20 @@ function LoginContent() {
 
       if (!data.user) {
         throw new Error('Authentication failed. Please try again.');
+      }
+
+      // Suspension gate + sign-in analytics (migrations 037/038)
+      const { data: accountStatus } = await supabase
+        .from('users')
+        .select('institution_id, is_active')
+        .eq('id', data.user.id)
+        .maybeSingle();
+      if (accountStatus && accountStatus.is_active === false) {
+        await supabase.auth.signOut();
+        throw new Error('Your account has been deactivated. Please contact your administrator.');
+      }
+      if (accountStatus?.institution_id) {
+        void logSignInEvent(supabase, data.user.id, accountStatus.institution_id);
       }
 
       let userData = null;

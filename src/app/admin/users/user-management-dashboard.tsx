@@ -39,11 +39,14 @@ import {
   FileSpreadsheet,
   Award,
   Link2,
+  Download,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Papa from 'papaparse';
 import { createClient } from '@/lib/supabase/client';
 import { resolveCmeRequest, adminLinkLegacyProfile } from '@/lib/db';
+import { setUserRole, adminUpdateUserProfile, type AppRole } from '@/lib/db/admin-actions';
+import { getUserAuthActivity, type UserAuthActivity } from '@/lib/db/events';
 import { GroupsTab } from '@/components/admin/groups-tab';
 import { UserDetailDialog } from '@/components/admin/user-detail-dialog';
 import type { LegacyUser, UserInvitation } from '@/types';
@@ -573,6 +576,221 @@ function ImportCsvModal({
 }
 
 // ---------------------------------------------------------------------------
+// Change Role Dialog
+// ---------------------------------------------------------------------------
+
+const ROLE_OPTIONS: { value: AppRole; label: string }[] = [
+  { value: 'student', label: 'Student' },
+  { value: 'admin', label: 'Admin' },
+  { value: 'institution_admin', label: 'Institution Admin' },
+  { value: 'platform_admin', label: 'Platform Admin' },
+];
+
+function EditUserDetailsDialog({
+  user,
+  open,
+  onOpenChange,
+}: {
+  user: ActiveUser | null;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
+  const router = useRouter();
+  const [fullName, setFullName] = useState('');
+  const [occupation, setOccupation] = useState('');
+  const [affiliation, setAffiliation] = useState('');
+  const [country, setCountry] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!open || !user) return;
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('users')
+        .select('full_name, occupation, affiliation, country')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      setFullName(data?.full_name ?? user.full_name ?? '');
+      setOccupation(data?.occupation ?? '');
+      setAffiliation(data?.affiliation ?? '');
+      setCountry(data?.country ?? '');
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const supabase = createClient();
+      await adminUpdateUserProfile(supabase, user.id, {
+        full_name: fullName,
+        occupation,
+        affiliation,
+        country,
+      });
+      toast.success('User details updated');
+      onOpenChange(false);
+      router.refresh();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update user');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-black">Edit User Details</DialogTitle>
+          <DialogDescription>
+            Update profile fields for{' '}
+            <span className="font-bold text-slate-700">{user?.email}</span>.
+          </DialogDescription>
+        </DialogHeader>
+
+        {loading ? (
+          <div className="flex justify-center py-8 text-slate-400 text-sm font-medium">Loading…</div>
+        ) : (
+          <div className="space-y-3 py-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-full-name">Full name</Label>
+              <Input id="edit-full-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-occupation">Occupation</Label>
+              <Input id="edit-occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-affiliation">Affiliation</Label>
+              <Input id="edit-affiliation" value={affiliation} onChange={(e) => setAffiliation(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-country">Country</Label>
+              <Input id="edit-country" value={country} onChange={(e) => setCountry(e.target.value)} />
+            </div>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={saving || loading || !user}
+            className="bg-[#1E3A5F] hover:bg-[#162d4a] text-white"
+          >
+            {saving ? 'Saving…' : 'Save Details'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChangeRoleDialog({
+  user,
+  open,
+  onOpenChange,
+}: {
+  user: ActiveUser | null;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
+  const router = useRouter();
+  const [role, setRole] = useState<AppRole>('student');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open && user) {
+      setRole(
+        (ROLE_OPTIONS.some((r) => r.value === user.role) ? user.role : 'student') as AppRole,
+      );
+    }
+  }, [open, user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const supabase = createClient();
+      await setUserRole(supabase, user.id, role);
+      toast.success(`Role updated to ${role.replace(/_/g, ' ')}`);
+      onOpenChange(false);
+      router.refresh();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update role');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-black">Change Role</DialogTitle>
+          <DialogDescription>
+            Update the role for{' '}
+            <span className="font-bold text-slate-700">{user?.full_name || user?.email}</span>.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-2 py-2">
+          <Label className="font-bold text-slate-700">Role</Label>
+          <Select value={role} onValueChange={(v) => setRole(v as AppRole)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              {ROLE_OPTIONS.map((r) => (
+                <SelectItem key={r.value} value={r.value}>
+                  {r.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-slate-400 font-medium">
+            You cannot change your own role. Only platform admins can grant Platform Admin.
+          </p>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={saving || !user || role === user.role}
+            className="bg-[#1E3A5F] hover:bg-[#162d4a] text-white"
+          >
+            {saving ? 'Saving...' : 'Save Role'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// CSV export helper
+// ---------------------------------------------------------------------------
+
+function csvEscape(value: string): string {
+  return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+// ---------------------------------------------------------------------------
 // Tab 1: Active Users
 // ---------------------------------------------------------------------------
 
@@ -592,6 +810,72 @@ function ActiveUsersTab({
   const [detailUser, setDetailUser] = useState<ActiveUser | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolvingId, setResolvingId] = useState<string | null>(null);
+  const [authActivity, setAuthActivity] = useState<Record<string, UserAuthActivity>>({});
+  const [roleUser, setRoleUser] = useState<ActiveUser | null>(null);
+  const [roleOpen, setRoleOpen] = useState(false);
+  const [editUser, setEditUser] = useState<ActiveUser | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [actionBusyId, setActionBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const map = await getUserAuthActivity(createClient());
+        if (!cancelled) setAuthActivity(map);
+      } catch {
+        // Non-fatal — column simply shows em-dashes.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const postUserAction = async (
+    action: 'ban' | 'unban' | 'send_password_reset',
+    userId: string,
+  ) => {
+    const res = await fetch('/api/admin/users/actions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, userId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) throw new Error(data.error || 'Request failed');
+  };
+
+  const handleSendReset = async (u: ActiveUser) => {
+    setActionBusyId(u.id);
+    try {
+      await postUserAction('send_password_reset', u.id);
+      toast.success(`Password reset email sent to ${u.email}`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send password reset');
+    } finally {
+      setActionBusyId(null);
+    }
+  };
+
+  const handleToggleActive = async (u: ActiveUser) => {
+    const suspended = u.is_active === false;
+    if (!suspended) {
+      const ok = window.confirm(
+        `Deactivate ${u.full_name || u.email}? They will no longer be able to sign in.`,
+      );
+      if (!ok) return;
+    }
+    setActionBusyId(u.id);
+    try {
+      await postUserAction(suspended ? 'unban' : 'ban', u.id);
+      toast.success(suspended ? `${u.email} reactivated` : `${u.email} deactivated`);
+      router.refresh();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update user');
+    } finally {
+      setActionBusyId(null);
+    }
+  };
 
   const handleMarkCmeIssued = async (userId: string) => {
     const requestId = pendingCmeByUser[userId];
@@ -645,6 +929,38 @@ function ActiveUsersTab({
     return matchesSearch && matchesRole;
   });
 
+  const handleExportCsv = () => {
+    if (filtered.length === 0) {
+      toast.info('No users to export');
+      return;
+    }
+    const header = ['Name', 'Email', 'Role', 'Active', 'Enrolled Courses', 'Last Sign-in', 'Joined'];
+    const lines = filtered.map((u) =>
+      [
+        u.full_name ?? '',
+        u.email,
+        u.role,
+        u.is_active === false ? 'no' : 'yes',
+        String(u.enrollment_count),
+        authActivity[u.id]?.last_sign_in_at ?? '',
+        u.created_at,
+      ]
+        .map(csvEscape)
+        .join(','),
+    );
+    const csv = [header.map(csvEscape).join(','), ...lines].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${filtered.length} user${filtered.length !== 1 ? 's' : ''}`);
+  };
+
   return (
     <>
     <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.04)] bg-white mt-4">
@@ -676,6 +992,10 @@ function ActiveUsersTab({
               <option value="instructor">Instructor</option>
               <option value="student">Student</option>
             </select>
+            <Button variant="outline" onClick={handleExportCsv} className="gap-2 shrink-0">
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
           </div>
         </div>
       </CardHeader>
@@ -693,6 +1013,7 @@ function ActiveUsersTab({
                   <th className={`${TH} text-center`}>Role</th>
                   <th className={`${TH} text-right`}>Courses</th>
                   <th className={`${TH} text-right`}>Last Active</th>
+                  <th className={`${TH} text-right`}>Last Sign-in</th>
                   <th className={`${TH} text-left`}>Groups</th>
                   <th className={`${TH} text-right`}>Joined</th>
                   <th className={`${TH} text-right w-10`}></th>
@@ -708,7 +1029,14 @@ function ActiveUsersTab({
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-bold text-slate-900">{u.full_name || 'Unnamed'}</p>
+                            <p className={`font-bold ${u.is_active === false ? 'text-slate-400' : 'text-slate-900'}`}>
+                              {u.full_name || 'Unnamed'}
+                            </p>
+                            {u.is_active === false && (
+                              <Badge className="font-bold bg-red-50 text-red-600 border-red-200 text-[10px] px-1.5 py-0">
+                                Suspended
+                              </Badge>
+                            )}
                             {pendingCmeByUser[u.id] && (
                               <Badge className="font-bold bg-amber-50 text-amber-700 border-amber-200 text-[10px] px-1.5 py-0">
                                 <Award className="h-2.5 w-2.5 mr-1" />
@@ -725,6 +1053,11 @@ function ActiveUsersTab({
                     <td className="text-right py-3 px-4 text-xs text-slate-500 font-medium">
                       {relativeDate(u.last_activity)}
                     </td>
+                    <td className="text-right py-3 px-4 text-xs text-slate-500 font-medium">
+                      {authActivity[u.id]?.last_sign_in_at
+                        ? relativeDate(authActivity[u.id].last_sign_in_at)
+                        : 'Never'}
+                    </td>
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
                         {(userGroupMap[u.id] ?? []).map((groupName, i) => (
@@ -737,7 +1070,8 @@ function ActiveUsersTab({
                     </td>
                     <td className="text-right py-3 px-4">
                       <ActionMenu>
-                        <ActionItem onClick={() => { setDetailUser(u); setDetailOpen(true); }}>View Reviews & Surveys</ActionItem>
+                        <ActionItem onClick={() => { setDetailUser(u); setDetailOpen(true); }}>View Details</ActionItem>
+                        <ActionItem onClick={() => { setEditUser(u); setEditOpen(true); }}>Edit Details</ActionItem>
                         {pendingCmeByUser[u.id] && (
                           <ActionItem onClick={() => handleMarkCmeIssued(u.id)}>
                             <span className="flex items-center gap-2 text-[#1E3A5F] font-semibold">
@@ -746,9 +1080,17 @@ function ActiveUsersTab({
                             </span>
                           </ActionItem>
                         )}
-                        <ActionItem onClick={() => toast.info('Edit Details \u2014 Coming soon')}>Edit Details</ActionItem>
-                        <ActionItem onClick={() => toast.info('Reset Password \u2014 Coming soon')}>Reset Password</ActionItem>
-                        <ActionItem onClick={() => toast.info('Remove from Course \u2014 Coming soon')}>Remove from Course</ActionItem>
+                        <ActionItem onClick={() => { setRoleUser(u); setRoleOpen(true); }}>Change Role</ActionItem>
+                        <ActionItem onClick={() => handleSendReset(u)}>
+                          {actionBusyId === u.id ? 'Working...' : 'Send Password Reset'}
+                        </ActionItem>
+                        <ActionItem onClick={() => handleToggleActive(u)}>
+                          {u.is_active === false ? (
+                            <span className="font-semibold text-green-700">Reactivate</span>
+                          ) : (
+                            <span className="font-semibold text-red-600">Deactivate</span>
+                          )}
+                        </ActionItem>
                       </ActionMenu>
                     </td>
                   </tr>
@@ -765,6 +1107,8 @@ function ActiveUsersTab({
       open={detailOpen}
       onOpenChange={setDetailOpen}
     />
+    <ChangeRoleDialog user={roleUser} open={roleOpen} onOpenChange={setRoleOpen} />
+    <EditUserDetailsDialog user={editUser} open={editOpen} onOpenChange={setEditOpen} />
     </>
   );
 }

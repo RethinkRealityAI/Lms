@@ -158,3 +158,32 @@ export async function getVisibleCourseIds(
 
   return [...openCourseIds, ...visibleRestricted];
 }
+
+/** Apply the same optional due date to all user/group assignments for a course. */
+export async function setCourseAssignmentDueDate(
+  supabase: SupabaseClient,
+  courseId: string,
+  dueDate: string | null,
+): Promise<void> {
+  const [userRes, groupRes] = await Promise.all([
+    supabase.from('course_user_assignments').update({ due_date: dueDate }).eq('course_id', courseId),
+    supabase.from('course_group_assignments').update({ due_date: dueDate }).eq('course_id', courseId),
+  ]);
+  if (userRes.error) throw userRes.error;
+  if (groupRes.error) throw groupRes.error;
+}
+
+/** Active user ids belonging to any of the given groups (legacy-only members excluded). */
+export async function getGroupMemberUserIds(
+  supabase: SupabaseClient,
+  groupIds: string[],
+): Promise<string[]> {
+  if (groupIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from('user_group_members')
+    .select('user_id')
+    .in('group_id', groupIds)
+    .not('user_id', 'is', null);
+  if (error) throw error;
+  return [...new Set((data ?? []).map((row) => row.user_id as string))];
+}

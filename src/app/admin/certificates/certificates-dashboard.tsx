@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { createClient } from '@/lib/supabase/client';
 import { createCertificateTemplate, updateCertificateTemplate, deleteCertificateTemplate, assignCourseTemplate, removeCourseTemplate } from '@/lib/db/certificate-templates';
-import { revokeCertificates } from '@/lib/db/certificates';
+import { revokeCertificates, restoreCertificates } from '@/lib/db/certificates';
 import { CertificateRenderer } from '@/components/certificates/certificate-renderer';
 import { CertificatePreviewModal } from '@/components/certificates/certificate-preview-modal';
 import { TemplateEditor } from '@/components/certificates/template-editor';
@@ -16,7 +16,7 @@ import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { AwardCertificateModal } from '@/components/certificates/award-certificate-modal';
 import { ProgramsTab } from './programs-tab';
 import { toast } from 'sonner';
-import { Award, Plus, Pencil, Trash2, Search, Download, Eye } from 'lucide-react';
+import { Award, Plus, Pencil, Trash2, Search, Download, Eye, RotateCcw } from 'lucide-react';
 import type { CertificateTemplate, CertificateWithDetails, CertificateData, CourseCertificateTemplate, Course, ProgramWithCourses } from '@/types';
 
 interface Props {
@@ -243,13 +243,40 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
   };
 
   const handleRevoke = async (certIds: string[]) => {
-    if (!confirm(`Revoke ${certIds.length} certificate(s)? This cannot be undone.`)) return;
+    if (!confirm(`Revoke ${certIds.length} certificate(s)? They stay on record and can be restored later.`)) return;
+    const reasonInput = prompt('Reason for revocation (optional):');
+    const reason = reasonInput?.trim() || undefined;
     try {
-      await revokeCertificates(supabase, certIds);
-      setCertificates((prev) => prev.filter((c) => !certIds.includes(c.id)));
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await revokeCertificates(supabase, certIds, user.id, reason);
+      const now = new Date().toISOString();
+      setCertificates((prev) =>
+        prev.map((c) =>
+          certIds.includes(c.id)
+            ? { ...c, revoked_at: now, revoked_by: user.id, revoke_reason: reason ?? null }
+            : c,
+        ),
+      );
       toast.success(`${certIds.length} certificate(s) revoked`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to revoke');
+    }
+  };
+
+  const handleRestore = async (certIds: string[]) => {
+    try {
+      await restoreCertificates(supabase, certIds);
+      setCertificates((prev) =>
+        prev.map((c) =>
+          certIds.includes(c.id)
+            ? { ...c, revoked_at: null, revoked_by: null, revoke_reason: null }
+            : c,
+        ),
+      );
+      toast.success(`${certIds.length} certificate(s) restored`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to restore');
     }
   };
 
@@ -396,9 +423,19 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
               </thead>
               <tbody>
                 {filteredCerts.map((cert) => (
-                  <tr key={cert.id} className="border-b last:border-b-0 hover:bg-slate-50">
+                  <tr key={cert.id} className={`border-b last:border-b-0 hover:bg-slate-50 ${cert.revoked_at ? 'bg-red-50/40' : ''}`}>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900">{cert.user?.full_name ?? '—'}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900">{cert.user?.full_name ?? '—'}</span>
+                        {cert.revoked_at && (
+                          <Badge
+                            className="bg-red-100 text-red-700 border-none text-[10px] cursor-default"
+                            title={cert.revoke_reason ? `Reason: ${cert.revoke_reason}` : 'No reason recorded'}
+                          >
+                            Revoked
+                          </Badge>
+                        )}
+                      </div>
                       <div className="text-xs text-slate-400">{cert.user?.email}</div>
                     </td>
                     <td className="px-4 py-3 text-slate-600">
@@ -421,9 +458,16 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
                         <Button size="sm" variant="ghost" onClick={() => window.open(`/api/certificates/${cert.id}/pdf`, '_blank')}>
                           <Download className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleRevoke([cert.id])}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        {cert.revoked_at ? (
+                          <Button size="sm" variant="ghost" className="text-emerald-600 hover:text-emerald-700" title="Restore certificate" onClick={() => handleRestore([cert.id])}>
+                            <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                            Restore
+                          </Button>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="text-red-500" title="Revoke certificate" onClick={() => handleRevoke([cert.id])}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

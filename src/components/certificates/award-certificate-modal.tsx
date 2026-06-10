@@ -145,6 +145,15 @@ export function AwardCertificateModal({
         description: result.skipped > 0 ? `${result.skipped} skipped (already awarded)` : undefined,
       });
 
+      // Fire-and-forget certificate emails for newly inserted awards
+      for (const certId of result.insertedIds) {
+        fetch('/api/notify/certificate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ certificateId: certId }),
+        }).catch(() => {});
+      }
+
       onAwarded();
       onClose();
     } catch (err) {

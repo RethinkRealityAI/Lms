@@ -57,6 +57,14 @@ export interface StudentProgress {
   last_activity: string | null;
 }
 
+export interface LessonFunnelRow {
+  lesson_id: string;
+  title: string;
+  order_index: number;
+  /** distinct users with completed progress on this lesson */
+  completed_count: number;
+}
+
 // ── Query helpers ────────────────────────────────────────────────────────────
 
 /**
@@ -209,10 +217,12 @@ export async function getCourseStats(
 export async function getEnrollmentTrend(
   supabase: SupabaseClient,
   institutionId: string,
+  days = 90,
 ): Promise<EnrollmentTrend[]> {
   // The v_enrollment_trend view has no institution_id column.
   // Query course_enrollments directly, joining through courses for filtering.
-  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+  const windowDays = Math.min(Math.max(days, 7), 365);
+  const rangeStart = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
 
@@ -220,7 +230,7 @@ export async function getEnrollmentTrend(
     .from('course_enrollments')
     .select('enrolled_at, courses!inner(institution_id)')
     .eq('courses.institution_id', institutionId)
-    .gte('enrolled_at', ninetyDaysAgo);
+    .gte('enrolled_at', rangeStart);
 
   if (error || !data) return [];
 
@@ -233,7 +243,7 @@ export async function getEnrollmentTrend(
 
   // Generate all days in range
   const result: EnrollmentTrend[] = [];
-  const start = new Date(ninetyDaysAgo);
+  const start = new Date(rangeStart);
   const end = new Date();
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const day = d.toISOString().split('T')[0];
@@ -245,10 +255,12 @@ export async function getEnrollmentTrend(
 export async function getCompletionTrend(
   supabase: SupabaseClient,
   institutionId: string,
+  days = 90,
 ): Promise<CompletionTrend[]> {
   // The v_completion_trend view has no institution_id column.
   // Query progress directly, joining through lessons → courses for filtering.
-  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+  const windowDays = Math.min(Math.max(days, 7), 365);
+  const rangeStart = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
 
@@ -257,7 +269,7 @@ export async function getCompletionTrend(
     .select('completed_at, lessons!inner(courses!inner(institution_id))')
     .eq('completed', true)
     .eq('lessons.courses.institution_id', institutionId)
-    .gte('completed_at', ninetyDaysAgo);
+    .gte('completed_at', rangeStart);
 
   if (error || !data) return [];
 
@@ -270,7 +282,7 @@ export async function getCompletionTrend(
   }
 
   const result: CompletionTrend[] = [];
-  const start = new Date(ninetyDaysAgo);
+  const start = new Date(rangeStart);
   const end = new Date();
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const day = d.toISOString().split('T')[0];
@@ -290,6 +302,51 @@ export async function getStudentProgress(
     .order('completed_lessons', { ascending: false });
   if (error) return [];
   return (data ?? []) as StudentProgress[];
+}
+
+/**
+ * Per-lesson completion funnel for a course: lessons in order with the count
+ * of distinct users who completed each lesson — shows where learners drop off.
+ */
+export async function getLessonFunnel(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<LessonFunnelRow[]> {
+  const { data: lessons, error: lessonsError } = await supabase
+    .from('lessons')
+    .select('id, title, order_index')
+    .eq('course_id', courseId)
+    .is('deleted_at', null)
+    .order('order_index', { ascending: true });
+
+  if (lessonsError || !lessons || lessons.length === 0) return [];
+
+  const lessonIds = lessons.map((l) => l.id);
+  const { data: progressRows, error: progressError } = await supabase
+    .from('progress')
+    .select('lesson_id, user_id')
+    .eq('completed', true)
+    .in('lesson_id', lessonIds);
+
+  const usersByLesson = new Map<string, Set<string>>();
+  if (!progressError) {
+    for (const row of progressRows ?? []) {
+      if (!row.lesson_id || !row.user_id) continue;
+      let set = usersByLesson.get(row.lesson_id);
+      if (!set) {
+        set = new Set<string>();
+        usersByLesson.set(row.lesson_id, set);
+      }
+      set.add(row.user_id);
+    }
+  }
+
+  return lessons.map((l) => ({
+    lesson_id: l.id,
+    title: l.title ?? 'Untitled lesson',
+    order_index: Number(l.order_index) || 0,
+    completed_count: usersByLesson.get(l.id)?.size ?? 0,
+  }));
 }
 
 export async function getStudentProgressById(

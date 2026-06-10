@@ -11,10 +11,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Key, Loader2, Copy, CheckCircle2, Palette, RotateCcw, Type, SlidersHorizontal, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Key, Loader2, Copy, CheckCircle2, Palette, RotateCcw, Type, SlidersHorizontal, Image as ImageIcon, Database, Mail } from 'lucide-react';
 import { asInstitutionTheme, type InstitutionTheme, type BlockStyle } from '@/lib/tenant/institution-theme';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
+import { pruneContentActivityLog } from '@/lib/db/admin-actions';
 
 // ── Constants shared with course-settings-modal ──────────────────────────────
 
@@ -496,6 +497,16 @@ export default function AdminSettingsPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [pruneDays, setPruneDays] = useState('90');
+  const [pruning, setPruning] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<{
+    configured: boolean;
+    from: string | null;
+    institutionSlug: string;
+  } | null>(null);
+  const [emailTestTo, setEmailTestTo] = useState('');
+  const [emailTestType, setEmailTestType] = useState<'certificate' | 'assignment'>('certificate');
+  const [emailTesting, setEmailTesting] = useState(false);
   const supabase = createClient();
   const { id: institutionId, slug: institutionSlug } = useInstitutionContext(supabase);
 
@@ -519,6 +530,56 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     if (institutionId) loadCodes();
   }, [institutionId, loadCodes]);
+
+  useEffect(() => {
+    fetch('/api/notify/test')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setEmailStatus({
+            configured: Boolean(data.configured),
+            from: data.from ?? null,
+            institutionSlug: data.institutionSlug ?? institutionSlug ?? 'gansid',
+          });
+        }
+      })
+      .catch(() => {});
+  }, [institutionSlug]);
+
+  const handleSendTestEmail = async () => {
+    setEmailTesting(true);
+    try {
+      const res = await fetch('/api/notify/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: emailTestType,
+          ...(emailTestTo.trim() ? { to: emailTestTo.trim() } : {}),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Failed to send test email');
+      }
+      if (data.reason === 'smtp_not_configured') {
+        toast.error('SMTP is not configured', {
+          description: 'Set SMTP_HOST, SMTP_USER, and SMTP_PASS in your server environment.',
+        });
+        return;
+      }
+      if (data.sent) {
+        toast.success('Test email sent', {
+          description: `${data.type} template → ${data.to}${data.from ? ` (from ${data.from})` : ''}`,
+        });
+      } else {
+        toast.error('Email was not sent', { description: data.reason ?? 'Unknown reason' });
+      }
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send test email');
+    } finally {
+      setEmailTesting(false);
+    }
+  };
 
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -635,6 +696,22 @@ export default function AdminSettingsPage() {
     return true;
   };
 
+  const handlePruneActivityLog = async () => {
+    const days = Math.max(7, parseInt(pruneDays, 10) || 90);
+    if (!window.confirm(`Delete editor activity log rows older than ${days} days? This cannot be undone.`)) {
+      return;
+    }
+    setPruning(true);
+    try {
+      const deleted = await pruneContentActivityLog(supabase, days);
+      toast.success(`Pruned ${deleted.toLocaleString()} activity log row${deleted === 1 ? '' : 's'}`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to prune activity log');
+    } finally {
+      setPruning(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -647,6 +724,107 @@ export default function AdminSettingsPage() {
       </div>
 
       <InstitutionThemeCard supabase={supabase} institutionId={institutionId} institutionSlug={institutionSlug} />
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Database className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <CardTitle>Editor Activity Log</CardTitle>
+              <CardDescription>
+                Prune old auto-save entries from the content activity log. Keeps recent editor history only.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row sm:items-end gap-3 max-w-md">
+          <div className="space-y-1.5 flex-1">
+            <Label htmlFor="prune-days">Keep last N days</Label>
+            <Input
+              id="prune-days"
+              type="number"
+              min={7}
+              max={365}
+              value={pruneDays}
+              onChange={(e) => setPruneDays(e.target.value)}
+            />
+          </div>
+          <Button variant="outline" onClick={handlePruneActivityLog} disabled={pruning}>
+            {pruning ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Pruning…
+              </>
+            ) : (
+              'Prune old rows'
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Mail className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <CardTitle>Automated Email</CardTitle>
+              <CardDescription>
+                Test certificate and course-assignment notifications for this institution.
+                Templates live in code ({`src/lib/email/templates.ts`}), not Supabase.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4 max-w-lg">
+          <div className="rounded-lg border bg-muted/40 px-3 py-2 text-sm space-y-1">
+            <p>
+              <span className="text-muted-foreground">SMTP:</span>{' '}
+              {emailStatus?.configured ? (
+                <Badge variant="success">Configured</Badge>
+              ) : (
+                <Badge variant="destructive">Not configured</Badge>
+              )}
+            </p>
+            {emailStatus?.from && (
+              <p className="text-muted-foreground text-xs break-all">
+                From ({emailStatus.institutionSlug}): {emailStatus.from}
+              </p>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email-test-type">Template</Label>
+            <select
+              id="email-test-type"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              value={emailTestType}
+              onChange={(e) => setEmailTestType(e.target.value as 'certificate' | 'assignment')}
+            >
+              <option value="certificate">Certificate issued</option>
+              <option value="assignment">Course assigned</option>
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email-test-to">Send to (optional)</Label>
+            <Input
+              id="email-test-to"
+              type="email"
+              placeholder="Your admin email — blank uses your account email"
+              value={emailTestTo}
+              onChange={(e) => setEmailTestTo(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleSendTestEmail} disabled={emailTesting || !emailStatus?.configured}>
+            {emailTesting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending…
+              </>
+            ) : (
+              'Send test email'
+            )}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">

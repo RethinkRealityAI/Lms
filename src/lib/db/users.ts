@@ -16,6 +16,7 @@ export interface ActiveUser {
   role: string;
   full_name: string | null;
   avatar_url: string | null;
+  is_active: boolean | null;
   created_at: string;
   updated_at: string;
   enrollment_count: number;
@@ -28,7 +29,7 @@ export async function getActiveUsers(
 ): Promise<ActiveUser[]> {
   const { data, error } = await supabase
     .from('users')
-    .select('id, email, role, full_name, avatar_url, created_at, updated_at')
+    .select('id, email, role, full_name, avatar_url, is_active, created_at, updated_at')
     .eq('institution_id', institutionId)
     .order('created_at', { ascending: false });
   if (error || !data) return [];
@@ -66,16 +67,143 @@ export async function getActiveUsers(
   }));
 }
 
+/** Self-service profile update (RLS: own row only). Admins editing other users must use adminUpdateUserProfile. */
 export async function updateUserDetails(
   supabase: SupabaseClient,
   userId: string,
-  changes: { full_name?: string; role?: string; bio?: string; occupation?: string; affiliation?: string; country?: string },
+  changes: { full_name?: string; bio?: string; occupation?: string; affiliation?: string; country?: string },
 ): Promise<void> {
   const { error } = await supabase
     .from('users')
     .update({ ...changes, updated_at: new Date().toISOString() })
     .eq('id', userId);
   if (error) throw error;
+}
+
+export interface UserCourseProgress {
+  course_id: string;
+  course_title: string;
+  completed_lessons: number;
+  total_lessons: number;
+  certificate_number: string | null;
+  certificate_issued_at: string | null;
+  certificate_revoked_at: string | null;
+}
+
+/**
+ * Per-course progress for a single user: enrolled courses (scoped to the
+ * institution), completed vs total lessons, and any issued certificate.
+ */
+export async function getUserCourseProgress(
+  supabase: SupabaseClient,
+  userId: string,
+  institutionId: string,
+): Promise<UserCourseProgress[]> {
+  const { data: enrollments, error } = await supabase
+    .from('course_enrollments')
+    .select('course_id, course:course_id(id, title, institution_id)')
+    .eq('user_id', userId);
+  if (error || !enrollments) return [];
+
+  const courses = enrollments
+    .map((e) => e.course as unknown as { id: string; title: string; institution_id: string } | null)
+    .filter(
+      (c): c is { id: string; title: string; institution_id: string } =>
+        !!c && c.institution_id === institutionId,
+    );
+  if (courses.length === 0) return [];
+  const courseIds = courses.map((c) => c.id);
+
+  const [{ data: lessons }, { data: certs }] = await Promise.all([
+    supabase
+      .from('lessons')
+      .select('id, course_id')
+      .in('course_id', courseIds)
+      .is('deleted_at', null),
+    supabase
+      .from('certificates')
+      .select('course_id, certificate_number, issued_at, revoked_at')
+      .eq('user_id', userId)
+      .in('course_id', courseIds)
+      .order('issued_at', { ascending: false }),
+  ]);
+
+  const lessonRows = (lessons ?? []) as { id: string; course_id: string }[];
+  const lessonIds = lessonRows.map((l) => l.id);
+
+  let completedLessonIds = new Set<string>();
+  if (lessonIds.length > 0) {
+    const { data: progress } = await supabase
+      .from('progress')
+      .select('lesson_id, completed_at')
+      .eq('user_id', userId)
+      .in('lesson_id', lessonIds);
+    completedLessonIds = new Set(
+      ((progress ?? []) as { lesson_id: string; completed_at: string | null }[])
+        .filter((p) => p.completed_at)
+        .map((p) => p.lesson_id),
+    );
+  }
+
+  const totalByCourse: Record<string, number> = {};
+  const completedByCourse: Record<string, number> = {};
+  for (const l of lessonRows) {
+    totalByCourse[l.course_id] = (totalByCourse[l.course_id] || 0) + 1;
+    if (completedLessonIds.has(l.id)) {
+      completedByCourse[l.course_id] = (completedByCourse[l.course_id] || 0) + 1;
+    }
+  }
+
+  type CertRow = {
+    course_id: string;
+    certificate_number: string | null;
+    issued_at: string | null;
+    revoked_at: string | null;
+  };
+  // Prefer an active certificate; fall back to the most recent (possibly revoked) one.
+  const certByCourse: Record<string, CertRow> = {};
+  for (const cert of (certs ?? []) as CertRow[]) {
+    const existing = certByCourse[cert.course_id];
+    if (!existing || (existing.revoked_at && !cert.revoked_at)) {
+      certByCourse[cert.course_id] = cert;
+    }
+  }
+
+  return courses.map((c) => {
+    const cert = certByCourse[c.id];
+    return {
+      course_id: c.id,
+      course_title: c.title,
+      completed_lessons: completedByCourse[c.id] || 0,
+      total_lessons: totalByCourse[c.id] || 0,
+      certificate_number: cert?.certificate_number ?? null,
+      certificate_issued_at: cert?.issued_at ?? null,
+      certificate_revoked_at: cert?.revoked_at ?? null,
+    };
+  });
+}
+
+export interface CourseOption {
+  id: string;
+  title: string;
+}
+
+/** Institution courses the user is NOT yet enrolled in (for admin enroll). */
+export async function getEnrollableCourses(
+  supabase: SupabaseClient,
+  userId: string,
+  institutionId: string,
+): Promise<CourseOption[]> {
+  const [{ data: courses }, { data: enrollments }] = await Promise.all([
+    supabase
+      .from('courses')
+      .select('id, title')
+      .eq('institution_id', institutionId)
+      .order('title', { ascending: true }),
+    supabase.from('course_enrollments').select('course_id').eq('user_id', userId),
+  ]);
+  const enrolled = new Set(((enrollments ?? []) as { course_id: string }[]).map((e) => e.course_id));
+  return ((courses ?? []) as CourseOption[]).filter((c) => !enrolled.has(c.id));
 }
 
 export async function removeUserFromCourse(
