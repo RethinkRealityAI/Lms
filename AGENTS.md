@@ -27,5 +27,5 @@
 - Slide navigation (Next/Previous/Complete) lives in the course-viewer footer; CTA blocks are external content links only.
 - Primary admin preview is the toolbar **Preview** portal (`LessonPreviewDialog`); tablet/mobile use embedded `CourseViewer` in a device-sized iframe for true media-query parity.
 - GANSID module content rebuild uses `scripts/import-gansid-modules/` (plan JSON + `load-plan.ts`); authoritative source is `../Course SCORM packages/Module N/`.
-- Certificate and assignment emails go through `/api/notify/*` (nodemailer); require `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` in production or emails no-op. Optional per-tenant From headers: `SMTP_FROM_GANSID`, `SMTP_FROM_SCAGO`, with `SMTP_FROM` as generic fallback.
+- Certificate and assignment emails go through `/api/notify/*` (nodemailer); require `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` in production or emails no-op. Optional per-tenant From headers: `SMTP_FROM_GANSID`, `SMTP_FROM_SCAGO`, with `SMTP_FROM` as generic fallback. Admins edit templates and bulk-send at `/admin/email` (stored in `email_templates` table).
 - Admin password reset and user ban use the Supabase service role via `SUPABASE_SERVICE_ROLE_KEY` (server-only).
