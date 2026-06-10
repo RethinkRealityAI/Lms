@@ -61,6 +61,16 @@ export default async function AdminLayout({
       icon: 'User',
     },
     {
+      href: '/admin/announcements',
+      label: 'Announce',
+      icon: 'Megaphone',
+    },
+    {
+      href: '/admin/email',
+      label: 'Email',
+      icon: 'Mail',
+    },
+    {
       href: '/admin/support',
       label: 'Support',
       icon: 'MessageSquare',
