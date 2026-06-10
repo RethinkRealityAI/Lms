@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { createProgram, updateProgram, deleteProgram, setProgramCourses } from '@/lib/db/programs';
+import {
+  createProgram, updateProgram, deleteProgram, setProgramCourses,
+  backfillProgramCertificates, getProgramCompletionCounts,
+} from '@/lib/db/programs';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, GraduationCap, BookOpen, Award, X, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, GraduationCap, BookOpen, Award, X, GripVertical, Users } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -77,6 +80,14 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
   const supabase = createClient();
   const [editing, setEditing] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
+  const [completionCounts, setCompletionCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    getProgramCompletionCounts(supabase, institutionId)
+      .then(setCompletionCounts)
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [institutionId, programs]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -109,7 +120,7 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
     try {
       let programId = editing.id;
       if (programId) {
-        await updateProgram(supabase, programId, {
+        await updateProgram(supabase, institutionId, programId, {
           title: editing.title.trim(), description: editing.description.trim() || null,
           certificate_template_id: editing.certificate_template_id,
         });
@@ -121,8 +132,18 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
         });
         programId = created.id;
       }
-      await setProgramCourses(supabase, programId!, editing.courseIds);
+      await setProgramCourses(supabase, institutionId, programId!, editing.courseIds);
       toast.success(editing.id ? 'Program updated' : 'Program created');
+      // Retroactively award the program certificate to anyone who already
+      // completed every course (e.g. before the program existed or changed)
+      try {
+        const awarded = await backfillProgramCertificates(supabase, programId!);
+        if (awarded > 0) {
+          toast.success(`Awarded ${awarded} program certificate${awarded === 1 ? '' : 's'} retroactively`);
+        }
+      } catch {
+        // backfill is best-effort; the trigger still covers future completions
+      }
       setEditing(null);
       onChange();
     } catch (e: any) {
@@ -135,7 +156,7 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
   async function remove(p: ProgramWithCourses) {
     if (!confirm(`Delete the program "${p.title}"? Issued program certificates are kept.`)) return;
     try {
-      await deleteProgram(supabase, p.id);
+      await deleteProgram(supabase, institutionId, p.id);
       toast.success('Program deleted');
       onChange();
     } catch (e: any) {
@@ -288,6 +309,9 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 text-amber-700 font-medium">
                       <Award className="w-3 h-3" /> {templateName(p.certificate_template_id) ?? 'Default template'}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-50 text-green-700 font-medium">
+                      <Users className="w-3 h-3" /> {completionCounts[p.id] ?? 0} completed
                     </span>
                   </div>
                   {p.courses.length > 0 && (

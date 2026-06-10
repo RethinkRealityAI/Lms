@@ -4,11 +4,12 @@ import { getVisibleCourseIds } from '@/lib/db/course-assignments';
 import { getTenantContext } from '@/lib/tenant/server';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { getMyCmeRequest, isEligibleForCme } from '@/lib/db';
+import { getProgramsWithProgress } from '@/lib/db/programs';
 import { CmeRequestBanner } from '@/components/student/cme-request-banner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { BookOpen, CheckCircle, TrendingUp, Target } from 'lucide-react';
+import { BookOpen, CheckCircle, TrendingUp, Target, GraduationCap, Award } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 // Canonical module order for the GANSID Capacity Building Curriculum
@@ -164,6 +165,11 @@ export default async function StudentPage() {
   const initialRequest = await getMyCmeRequest(supabase, user.id);
   const profileHref = `/${institutionSlug}/student/profile`;
 
+  // Program progress — "X of Y courses complete" toward each program certificate
+  const programProgress = institutionId
+    ? await getProgramsWithProgress(supabase, institutionId, user.id).catch(() => [])
+    : [];
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* Compact dark header — welcome + stats on one line */}
@@ -233,6 +239,55 @@ export default async function StudentPage() {
             initialRequest={initialRequest}
             profileHref={profileHref}
           />
+        </div>
+      )}
+
+      {/* Program progress */}
+      {programProgress.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-3">
+          {programProgress.map((program) => {
+            const done = program.completedCourseIds.length;
+            const total = program.totalCourses;
+            const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+            return (
+              <Card key={program.id} className="border-none shadow-sm bg-white overflow-hidden">
+                <CardContent className="p-4 sm:p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className={`rounded-full p-2 shrink-0 ${program.earnedCertificate ? 'bg-green-50' : 'bg-slate-100'}`}>
+                        <GraduationCap className={`h-5 w-5 ${program.earnedCertificate ? 'text-green-600' : 'text-[#1E3A5F]'}`} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-black text-slate-900 text-sm truncate">{program.title}</p>
+                        <p className="text-xs font-medium text-slate-500">
+                          {program.earnedCertificate
+                            ? 'Program complete — certificate earned'
+                            : `${done} of ${total} courses complete`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 sm:w-72 shrink-0">
+                      {program.earnedCertificate ? (
+                        <Link
+                          href={`/${institutionSlug}/student/certificates`}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-full transition-colors"
+                        >
+                          <Award className="h-3.5 w-3.5" /> View certificate
+                        </Link>
+                      ) : (
+                        <>
+                          <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                            <div className="h-full rounded-full bg-[#DC2626] transition-all" style={{ width: `${percent}%` }} />
+                          </div>
+                          <span className="text-xs font-black text-slate-700 w-9 text-right">{percent}%</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 

@@ -41,7 +41,8 @@ export function AwardCertificateModal({
 }: AwardCertificateModalProps) {
   const supabase = createClient();
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
-  const [courseId, setCourseId] = useState('');
+  // '' (manual), 'course:<id>' or 'program:<id>'
+  const [linkTarget, setLinkTarget] = useState('');
   const [reason, setReason] = useState('');
   const [mode, setMode] = useState<'users' | 'group'>('users');
   const [search, setSearch] = useState('');
@@ -50,6 +51,7 @@ export function AwardCertificateModal({
   const [groups, setGroups] = useState<GroupResult[]>([]);
   const [selectedGroupId, setSelectedGroupId] = useState('');
   const [courses, setCourses] = useState<Course[]>([]);
+  const [programs, setPrograms] = useState<{ id: string; title: string }[]>([]);
   const [awarding, setAwarding] = useState(false);
 
   useEffect(() => {
@@ -74,6 +76,13 @@ export function AwardCertificateModal({
       .eq('institution_id', institutionId)
       .order('title')
       .then(({ data }) => setCourses((data as Course[]) ?? []));
+
+    supabase
+      .from('programs')
+      .select('id, title')
+      .eq('institution_id', institutionId)
+      .order('title')
+      .then(({ data }) => setPrograms((data as { id: string; title: string }[]) ?? []));
   }, [open, institutionId]);
 
   useEffect(() => {
@@ -121,11 +130,13 @@ export function AwardCertificateModal({
         return;
       }
 
+      const [linkKind, linkId] = linkTarget ? linkTarget.split(':') : [null, null];
       const result = await awardCertificates(supabase, {
         user_ids: userIds,
         institution_id: institutionId,
         template_id: templateId,
-        course_id: courseId || undefined,
+        course_id: linkKind === 'course' ? linkId ?? undefined : undefined,
+        program_id: linkKind === 'program' ? linkId ?? undefined : undefined,
         awarded_by: user.id,
         award_reason: reason,
       });
@@ -178,16 +189,25 @@ export function AwardCertificateModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label>Course (optional)</Label>
+            <Label>Course or program (optional)</Label>
             <select
-              value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
+              value={linkTarget}
+              onChange={(e) => setLinkTarget(e.target.value)}
               className="w-full h-9 border rounded-md px-3 text-sm"
             >
-              <option value="">No course — manual award</option>
-              {courses.map((c) => (
-                <option key={c.id} value={c.id}>{c.title}</option>
-              ))}
+              <option value="">Not linked — manual award</option>
+              <optgroup label="Courses">
+                {courses.map((c) => (
+                  <option key={c.id} value={`course:${c.id}`}>{c.title}</option>
+                ))}
+              </optgroup>
+              {programs.length > 0 && (
+                <optgroup label="Programs">
+                  {programs.map((p) => (
+                    <option key={p.id} value={`program:${p.id}`}>{p.title}</option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </div>
 

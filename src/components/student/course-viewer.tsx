@@ -766,55 +766,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
         const allCompleted = lessons.every(l => updatedProgress[l.id]?.completed);
         if (allCompleted && lessons.length > 0) {
-          const { data: existingCert } = await supabase.from('certificates').select('id')
-            .eq('user_id', user.id).eq('course_id', courseId).single();
-          if (!existingCert) {
-            // Resolve certificate template
-            const { data: courseTemplate } = await supabase
-              .from('course_certificate_templates')
-              .select('template_id')
-              .eq('course_id', courseId)
-              .maybeSingle();
-
-            let templateId = courseTemplate?.template_id;
-            if (!templateId) {
-              // Fall back to institution default template
-              const { data: userData } = await supabase
-                .from('users')
-                .select('institution_id')
-                .eq('id', user.id)
-                .single();
-              if (userData?.institution_id) {
-                const { data: defaultTemplate } = await supabase
-                  .from('certificate_templates')
-                  .select('id')
-                  .eq('institution_id', userData.institution_id)
-                  .eq('is_default', true)
-                  .maybeSingle();
-                templateId = defaultTemplate?.id;
-              }
-            }
-
-            const { data: courseData } = await supabase
-              .from('courses')
-              .select('institution_id')
-              .eq('id', courseId)
-              .single();
-
-            const { data: newCert, error: certError } = await supabase.from('certificates').insert([{
-              user_id: user.id,
-              course_id: courseId,
-              institution_id: courseData?.institution_id ?? null,
-              template_id: templateId ?? null,
-              issued_at: new Date().toISOString(),
-            }]).select('id, certificate_number').single();
-
-            if (!certError && newCert) {
-              setEarnedCertificate({ id: newCert.id, number: newCert.certificate_number ?? '' });
-              setShowCertModal(true);
-              // Pre-generate PDF (fire-and-forget)
-              fetch(`/api/certificates/${newCert.id}/pdf`).catch(() => {});
-            }
+          // Server-verified issuance (migration 036): the RPC re-checks lesson
+          // completion and resolves the template (course → institution default).
+          const { data: certData, error: certError } = await supabase
+            .rpc('issue_course_certificate', { p_course_id: courseId });
+          if (certError) {
+            toast.error('Your certificate could not be issued', { description: certError.message });
+          } else if (certData?.certificate_id && !certData.already_issued) {
+            setEarnedCertificate({ id: certData.certificate_id, number: certData.certificate_number ?? '' });
+            setShowCertModal(true);
+            // Pre-generate PDF (fire-and-forget)
+            fetch(`/api/certificates/${certData.certificate_id}/pdf`).catch(() => {});
           }
         }
         // Re-fetch progress silently (no jarring page refresh — local state already updated above)

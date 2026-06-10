@@ -24,7 +24,11 @@ describe('BLOCK_PRESETS', () => {
   });
 
   it('all preset blockTypes are valid registered types', () => {
-    const validTypes = ['rich_text', 'image_gallery', 'video', 'cta', 'quiz_inline', 'callout', 'pdf', 'iframe'];
+    // Keep in sync with src/lib/content/blocks/register-all.ts
+    const validTypes = [
+      'rich_text', 'image_gallery', 'video', 'cta', 'quiz_inline', 'callout', 'pdf', 'iframe',
+      'slider', 'h5p', 'scratch_reveal', 'match_pairs', 'page_break', 'content_list', 'survey', 'image_compare',
+    ];
     for (const preset of BLOCK_PRESETS) {
       expect(validTypes).toContain(preset.blockType);
     }

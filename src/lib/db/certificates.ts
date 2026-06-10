@@ -69,6 +69,7 @@ export async function awardCertificates(
     institution_id: string;
     template_id: string;
     course_id?: string;
+    program_id?: string;
     awarded_by: string;
     award_reason: string;
   }
@@ -84,8 +85,10 @@ export async function awardCertificates(
 
     if (input.course_id) {
       query.eq('course_id', input.course_id);
+    } else if (input.program_id) {
+      query.eq('program_id', input.program_id);
     } else {
-      query.eq('template_id', input.template_id).is('course_id', null);
+      query.eq('template_id', input.template_id).is('course_id', null).is('program_id', null);
     }
 
     const { data: existing } = await query.maybeSingle();
@@ -98,6 +101,7 @@ export async function awardCertificates(
     const { error } = await supabase.from('certificates').insert({
       user_id: userId,
       course_id: input.course_id ?? null,
+      program_id: input.program_id ?? null,
       institution_id: input.institution_id,
       template_id: input.template_id,
       awarded_by: input.awarded_by,

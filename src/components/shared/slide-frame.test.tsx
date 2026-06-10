@@ -61,13 +61,13 @@ describe('SlideFrame', () => {
     expect(titleEl.style.color).toBe('rgb(220, 38, 38)');
   });
 
-  it('uses default slate color when no slideTitleColor is provided', () => {
+  it('uses the default headline color when no slideTitleColor is provided', () => {
     render(
       <SlideFrame lessonTitle="Lesson 1" slideTitle="Default Color" currentSlide={1} totalSlides={5}>
         <div>Content</div>
       </SlideFrame>
     );
     const titleEl = screen.getByText('Default Color');
-    expect(titleEl.style.color).toBe('rgb(100, 116, 139)'); // #64748b
+    expect(titleEl.style.color).toBe('rgb(15, 23, 42)'); // #0F172A
   });
 });
