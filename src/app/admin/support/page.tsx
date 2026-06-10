@@ -193,11 +193,20 @@ function CertificateRequestsTab({
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
+                  <div className="flex items-center gap-3 mb-1 flex-wrap">
                     <span className="font-bold text-slate-900 text-sm truncate">
                       {req.user?.full_name || 'Unnamed'}
                     </span>
                     {cmeStatusBadge(req.status)}
+                    {req.program_label === 'EdApp import' && (
+                      <Badge
+                        variant="outline"
+                        className="font-bold bg-amber-50 text-amber-700 border-amber-300 text-[10px] px-2 py-0 shrink-0 cursor-default"
+                        title="Completed the CME request module on the old platform — confirm delivery, then mark issued."
+                      >
+                        EdApp import
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-slate-500 font-medium truncate">
                     {req.user?.email || '—'}
@@ -205,8 +214,24 @@ function CertificateRequestsTab({
                   <p className="text-xs text-slate-400 font-medium mt-0.5 flex items-center gap-1">
                     <Clock className="h-2.5 w-2.5" />
                     Requested {timeAgo(req.requested_at)}
-                    {req.program_label ? ` · ${req.program_label}` : ''}
+                    {' · '}
+                    {new Date(req.requested_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                    {req.program_label && req.program_label !== 'EdApp import'
+                      ? ` · ${req.program_label}`
+                      : ''}
                   </p>
+                  {req.notes && (
+                    <p
+                      className="text-xs text-slate-500 font-medium mt-1 line-clamp-2 max-w-prose"
+                      title={req.notes}
+                    >
+                      {req.notes}
+                    </p>
+                  )}
                 </div>
 
                 {req.status === 'pending' && (

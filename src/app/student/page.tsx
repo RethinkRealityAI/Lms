@@ -6,6 +6,7 @@ import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { getMyCmeRequest, isEligibleForCme } from '@/lib/db';
 import { getProgramsWithProgress } from '@/lib/db/programs';
 import { CmeRequestBanner } from '@/components/student/cme-request-banner';
+import { WelcomeBackBanner } from '@/components/student/welcome-back-banner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -71,6 +72,21 @@ export default async function StudentPage() {
     .eq('id', user.id)
     .single();
   const firstName = userData?.full_name?.split(' ')[0] ?? '';
+
+  // Check for a linked legacy record — to show the welcome-back banner once.
+  // Students can read their own legacy row; defensive try/catch so a missing
+  // table or RLS error never breaks the dashboard.
+  let showWelcomeBanner = false;
+  try {
+    const { data: legacyRow } = await supabase
+      .from('legacy_users')
+      .select('id, welcome_acknowledged_at')
+      .eq('linked_user_id', user.id)
+      .maybeSingle();
+    showWelcomeBanner = !!legacyRow && legacyRow.welcome_acknowledged_at == null;
+  } catch {
+    showWelcomeBanner = false;
+  }
 
   // Get visible course IDs based on access_mode + assignments
   const visibleIds = await getVisibleCourseIds(supabase, user.id, institutionId);
@@ -300,6 +316,19 @@ export default async function StudentPage() {
           </div>
         </div>
       </div>
+
+      {/* Welcome-back banner for legacy users (shown once, dismissed via RPC) */}
+      {showWelcomeBanner && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <WelcomeBackBanner
+            institutionName={branding.name}
+            contactEmail={branding.contactEmail}
+            institutionId={tenantInstitutionId ?? institutionId}
+            userEmail={user.email ?? ''}
+            userName={firstName || userData?.full_name || ''}
+          />
+        </div>
+      )}
 
       {/* CME certificate banner */}
       {(eligible || initialRequest?.status === 'pending' || initialRequest?.status === 'issued') && (
