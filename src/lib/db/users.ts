@@ -182,6 +182,183 @@ export async function getUserCourseProgress(
   });
 }
 
+export interface LessonProgressDetail {
+  id: string;
+  title: string;
+  order_index: number;
+  completed: boolean;
+  completed_at: string | null;
+}
+
+export interface UserCourseProgressDetailed extends UserCourseProgress {
+  /** Earliest completed_at across lessons (or enrollment date if earlier / available). */
+  started_at: string | null;
+  /** Latest completed_at across lessons. */
+  last_activity_at: string | null;
+  /**
+   * certificate_issued_at when a cert exists, otherwise last_activity_at when
+   * the course is fully completed (completed_lessons === total_lessons > 0).
+   */
+  completed_at: string | null;
+  /** All live lessons in order, merged with the user's progress rows. */
+  lessons: LessonProgressDetail[];
+}
+
+/**
+ * Per-course progress with full lesson-level detail for a single user.
+ * Includes started_at / last_activity_at / completed_at derived timestamps
+ * and an ordered lesson checklist.
+ */
+export async function getUserCourseProgressDetailed(
+  supabase: SupabaseClient,
+  userId: string,
+  institutionId: string,
+): Promise<UserCourseProgressDetailed[]> {
+  // ── 1. Enrollments scoped to institution ───────────────────────────────────
+  const { data: enrollments, error: enrErr } = await supabase
+    .from('course_enrollments')
+    .select('course_id, enrolled_at, course:course_id(id, title, institution_id)')
+    .eq('user_id', userId);
+  if (enrErr || !enrollments) return [];
+
+  type EnrRow = {
+    course_id: string;
+    enrolled_at: string | null;
+    course: { id: string; title: string; institution_id: string } | null;
+  };
+
+  const enrolledAt: Record<string, string | null> = {};
+  const courses: { id: string; title: string }[] = [];
+  for (const e of enrollments as unknown as EnrRow[]) {
+    const c = e.course;
+    if (!c || c.institution_id !== institutionId) continue;
+    courses.push({ id: c.id, title: c.title });
+    enrolledAt[c.id] = e.enrolled_at ?? null;
+  }
+  if (courses.length === 0) return [];
+
+  const courseIds = courses.map((c) => c.id);
+
+  // ── 2. Lessons, progress (with completed_at), and certificates in parallel ─
+  const [{ data: lessonRows }, { data: progressRows }, { data: certRows }] = await Promise.all([
+    supabase
+      .from('lessons')
+      .select('id, course_id, title, order_index')
+      .in('course_id', courseIds)
+      .is('deleted_at', null)
+      .order('order_index', { ascending: true }),
+    supabase
+      .from('progress')
+      .select('lesson_id, completed, completed_at')
+      .eq('user_id', userId),
+    supabase
+      .from('certificates')
+      .select('course_id, certificate_number, issued_at, revoked_at')
+      .eq('user_id', userId)
+      .in('course_id', courseIds)
+      .order('issued_at', { ascending: false }),
+  ]);
+
+  type LessonRow = { id: string; course_id: string; title: string; order_index: number };
+  type ProgressRow = { lesson_id: string; completed: boolean; completed_at: string | null };
+  type CertRow = { course_id: string; certificate_number: string | null; issued_at: string | null; revoked_at: string | null };
+
+  const lessons = (lessonRows ?? []) as LessonRow[];
+  const progress = (progressRows ?? []) as ProgressRow[];
+  const certs = (certRows ?? []) as CertRow[];
+
+  // Build progress lookup by lesson_id
+  const progressByLesson = new Map<string, ProgressRow>();
+  for (const p of progress) progressByLesson.set(p.lesson_id, p);
+
+  // Build lesson lists per course
+  const lessonsByCourse = new Map<string, LessonRow[]>();
+  for (const l of lessons) {
+    const arr = lessonsByCourse.get(l.course_id) ?? [];
+    arr.push(l);
+    lessonsByCourse.set(l.course_id, arr);
+  }
+
+  // Certificate lookup: prefer active cert over revoked
+  const certByCourse = new Map<string, CertRow>();
+  for (const cert of certs) {
+    const existing = certByCourse.get(cert.course_id);
+    if (!existing || (existing.revoked_at && !cert.revoked_at)) {
+      certByCourse.set(cert.course_id, cert);
+    }
+  }
+
+  return courses.map((c) => {
+    const courseLessons = lessonsByCourse.get(c.id) ?? [];
+    const totalLessons = courseLessons.length;
+
+    // Build per-lesson detail + collect timestamps
+    const lessonDetails: LessonProgressDetail[] = [];
+    const completedTimes: number[] = [];
+
+    for (const l of courseLessons) {
+      const p = progressByLesson.get(l.id);
+      const completed = p?.completed === true;
+      const completedAt = p?.completed_at ?? null;
+      lessonDetails.push({
+        id: l.id,
+        title: l.title,
+        order_index: l.order_index,
+        completed,
+        completed_at: completedAt,
+      });
+      if (completed && completedAt) {
+        completedTimes.push(new Date(completedAt).getTime());
+      }
+    }
+
+    const completedLessons = lessonDetails.filter((l) => l.completed).length;
+    const cert = certByCourse.get(c.id);
+
+    // started_at: earliest completed_at, or enrollment date if earlier / no activity yet
+    let startedAt: string | null = null;
+    if (completedTimes.length > 0) {
+      const earliest = new Date(Math.min(...completedTimes)).toISOString();
+      const enr = enrolledAt[c.id];
+      if (enr && new Date(enr).getTime() < new Date(earliest).getTime()) {
+        startedAt = enr;
+      } else {
+        startedAt = earliest;
+      }
+    } else {
+      startedAt = enrolledAt[c.id] ?? null;
+    }
+
+    // last_activity_at: latest completed_at
+    const lastActivityAt =
+      completedTimes.length > 0
+        ? new Date(Math.max(...completedTimes)).toISOString()
+        : null;
+
+    // completed_at: cert issued_at, else last_activity_at when fully done
+    let completedAt: string | null = null;
+    if (cert?.issued_at && !cert.revoked_at) {
+      completedAt = cert.issued_at;
+    } else if (completedLessons === totalLessons && totalLessons > 0) {
+      completedAt = lastActivityAt;
+    }
+
+    return {
+      course_id: c.id,
+      course_title: c.title,
+      completed_lessons: completedLessons,
+      total_lessons: totalLessons,
+      certificate_number: cert?.certificate_number ?? null,
+      certificate_issued_at: cert?.issued_at ?? null,
+      certificate_revoked_at: cert?.revoked_at ?? null,
+      started_at: startedAt,
+      last_activity_at: lastActivityAt,
+      completed_at: completedAt,
+      lessons: lessonDetails,
+    };
+  });
+}
+
 export interface CourseOption {
   id: string;
   title: string;

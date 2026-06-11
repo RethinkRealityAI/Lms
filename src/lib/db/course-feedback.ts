@@ -79,7 +79,13 @@ export async function getMyCourseFeedback(
   return (data as CourseFeedbackResponse) ?? null;
 }
 
-/** Insert or update the current user's completion-feedback response (unique course_id+user_id). */
+/** Insert or update the current user's completion-feedback response.
+ *
+ * - Course path (no programId): upsert on `course_id,user_id` conflict — unchanged behaviour.
+ * - Program path (programId set): select-then-update-or-insert keyed by `user_id,program_id`,
+ *   because the partial unique index cannot be named for ON CONFLICT reliably across all
+ *   Postgres/Supabase versions. The course path is left untouched.
+ */
 export async function upsertCourseFeedbackResponse(
   supabase: SupabaseClient,
   input: {
@@ -88,8 +94,44 @@ export async function upsertCourseFeedbackResponse(
     userId: string;
     templateId: string | null;
     answers: Record<string, unknown>;
+    /** When set, stores a program-level feedback row instead of a course-level one. */
+    programId?: string | null;
   },
 ): Promise<{ error: string | null }> {
+  if (input.programId) {
+    // Program path: select existing by (user_id, program_id), then update or insert
+    const { data: existing, error: selErr } = await supabase
+      .from('course_feedback_responses')
+      .select('id')
+      .eq('user_id', input.userId)
+      .eq('program_id', input.programId)
+      .maybeSingle();
+    if (selErr) return { error: selErr.message };
+
+    if (existing) {
+      const { error } = await supabase
+        .from('course_feedback_responses')
+        .update({
+          template_id: input.templateId,
+          answers: input.answers,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id);
+      return { error: error?.message ?? null };
+    } else {
+      const { error } = await supabase.from('course_feedback_responses').insert({
+        institution_id: input.institutionId,
+        course_id: input.courseId,
+        user_id: input.userId,
+        program_id: input.programId,
+        template_id: input.templateId,
+        answers: input.answers,
+      });
+      return { error: error?.message ?? null };
+    }
+  }
+
+  // Course path — original behaviour
   const { error } = await supabase
     .from('course_feedback_responses')
     .upsert(
@@ -104,6 +146,21 @@ export async function upsertCourseFeedbackResponse(
       { onConflict: 'course_id,user_id' },
     );
   return { error: error?.message ?? null };
+}
+
+/** The current user's existing program-survey feedback response for a program, if any. */
+export async function getMyProgramFeedback(
+  supabase: SupabaseClient,
+  programId: string,
+  userId: string,
+): Promise<CourseFeedbackResponse | null> {
+  const { data } = await supabase
+    .from('course_feedback_responses')
+    .select('*')
+    .eq('program_id', programId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return (data as CourseFeedbackResponse) ?? null;
 }
 
 /** Admin: all completion-feedback responses for a course, with the responder's identity. */

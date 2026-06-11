@@ -51,6 +51,11 @@ export default async function AdminLayout({
       icon: 'BarChart3',
     },
     {
+      href: '/admin/surveys',
+      label: 'Surveys',
+      icon: 'ClipboardList',
+    },
+    {
       href: '/admin/certificates',
       label: 'Certificates',
       icon: 'Award',

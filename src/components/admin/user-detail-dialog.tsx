@@ -36,16 +36,20 @@ import {
   UserX,
   UserCheck,
   RefreshCw,
+  ChevronDown,
+  ChevronRight,
+  Circle,
   type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
 import { getUserCourseReviews, getSurveyResponsesByUser } from '@/lib/db/surveys';
-import { getUserCourseProgress, getEnrollableCourses } from '@/lib/db/users';
+import { getUserCourseProgressDetailed, getEnrollableCourses } from '@/lib/db/users';
+import { getUserQuizPerformance } from '@/lib/db/quizzes';
 import { resetCourseProgress, enrollUsers, unenrollUser } from '@/lib/db/admin-actions';
 import { getUserEvents } from '@/lib/db/events';
 import { formatAnswer } from '@/components/blocks/survey/viewer';
-import type { ActiveUser, UserCourseProgress, CourseOption } from '@/lib/db/users';
+import type { ActiveUser, UserCourseProgressDetailed, CourseOption } from '@/lib/db/users';
 import type { UserCourseReview, SurveyResponseWithMeta } from '@/lib/db/surveys';
 import type { AnalyticsEvent } from '@/lib/db/events';
 
@@ -78,25 +82,84 @@ function relativeTime(iso: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Progress tab helpers
+// ---------------------------------------------------------------------------
+
+function shortDate(iso: string | null): string {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function quizChipStyle(pct: number): string {
+  if (pct >= 80) return 'bg-green-50 text-green-700 border-green-200';
+  if (pct >= 50) return 'bg-amber-50 text-amber-700 border-amber-200';
+  return 'bg-red-50 text-red-700 border-red-200';
+}
+
+// ---------------------------------------------------------------------------
+// Summary stat chip
+// ---------------------------------------------------------------------------
+
+function StatChip({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
+  return (
+    <div className="flex-1 min-w-0 rounded-xl bg-slate-50 border border-slate-100 px-3 py-2.5 flex flex-col gap-0.5">
+      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 leading-none">{label}</span>
+      <span className="text-lg font-black text-[#1E3A5F] leading-tight">{value}</span>
+      {sub && <span className="text-[11px] text-slate-500 font-medium leading-none">{sub}</span>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Expandable lesson list
+// ---------------------------------------------------------------------------
+
+function LessonChecklist({ lessons }: { lessons: UserCourseProgressDetailed['lessons'] }) {
+  return (
+    <div className="mt-2 border-t border-slate-100 pt-2 space-y-0.5">
+      {lessons.map((l) => (
+        <div key={l.id} className="flex items-center gap-2 py-0.5">
+          {l.completed ? (
+            <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+          ) : (
+            <Circle className="h-3.5 w-3.5 text-slate-300 shrink-0" />
+          )}
+          <span className={`text-xs flex-1 min-w-0 truncate font-medium ${l.completed ? 'text-slate-700' : 'text-slate-400'}`}>
+            {l.title}
+          </span>
+          {l.completed && l.completed_at && (
+            <span className="text-[11px] text-slate-400 shrink-0 font-medium">{shortDate(l.completed_at)}</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Progress tab
 // ---------------------------------------------------------------------------
 
 function ProgressTab({ userId, institutionId }: { userId: string; institutionId: string }) {
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<UserCourseProgress[]>([]);
+  const [rows, setRows] = useState<UserCourseProgressDetailed[]>([]);
+  const [quizPerf, setQuizPerf] = useState<Record<string, { answered: number; correct: number; attempts: number }>>({});
   const [enrollable, setEnrollable] = useState<CourseOption[]>([]);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [busyCourseId, setBusyCourseId] = useState<string | null>(null);
   const [enrolling, setEnrolling] = useState(false);
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
     const supabase = createClient();
     try {
-      const [progressRows, courses] = await Promise.all([
-        getUserCourseProgress(supabase, userId, institutionId),
+      const [progressRows, quizData, courses] = await Promise.all([
+        getUserCourseProgressDetailed(supabase, userId, institutionId),
+        getUserQuizPerformance(supabase, userId),
         getEnrollableCourses(supabase, userId, institutionId),
       ]);
       setRows(progressRows);
+      setQuizPerf(quizData);
       setEnrollable(courses);
     } catch {
       toast.error('Failed to load course progress');
@@ -110,7 +173,7 @@ function ProgressTab({ userId, institutionId }: { userId: string; institutionId:
     load();
   }, [load]);
 
-  const handleReset = async (row: UserCourseProgress) => {
+  const handleReset = async (row: UserCourseProgressDetailed) => {
     if (
       !window.confirm(
         `Reset all progress for "${row.course_title}"? This clears completed lessons and revokes any certificate.`,
@@ -135,7 +198,7 @@ function ProgressTab({ userId, institutionId }: { userId: string; institutionId:
     }
   };
 
-  const handleUnenroll = async (row: UserCourseProgress) => {
+  const handleUnenroll = async (row: UserCourseProgressDetailed) => {
     if (!window.confirm(`Unenroll this user from "${row.course_title}"?`)) return;
     setBusyCourseId(row.course_id);
     try {
@@ -166,79 +229,211 @@ function ProgressTab({ userId, institutionId }: { userId: string; institutionId:
     }
   };
 
+  const toggleExpanded = (courseId: string) => {
+    setExpandedCourses((prev) => {
+      const next = new Set(prev);
+      if (next.has(courseId)) next.delete(courseId);
+      else next.add(courseId);
+      return next;
+    });
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-[#1A3C6E]" />
+      <div className="space-y-3">
+        {/* Summary skeleton */}
+        <div className="flex gap-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex-1 h-14 rounded-xl bg-slate-100 animate-pulse" />
+          ))}
+        </div>
+        {/* Card skeletons */}
+        {[1, 2].map((i) => (
+          <div key={i} className="rounded-xl border border-slate-100 p-4 space-y-2 animate-pulse">
+            <div className="h-4 bg-slate-100 rounded w-2/3" />
+            <div className="h-2 bg-slate-100 rounded w-full" />
+          </div>
+        ))}
       </div>
     );
   }
 
+  // ── Derived summary stats ──────────────────────────────────────────────────
+  const started = rows.filter((r) => r.completed_lessons > 0 || r.started_at).length;
+  const completed = rows.filter(
+    (r) => r.completed_lessons === r.total_lessons && r.total_lessons > 0,
+  ).length;
+  const totalLessonsDone = rows.reduce((sum, r) => sum + r.completed_lessons, 0);
+
+  // Aggregate quiz accuracy across all courses
+  const quizValues = Object.values(quizPerf);
+  const totalAnswered = quizValues.reduce((s, v) => s + v.answered, 0);
+  const totalCorrect = quizValues.reduce((s, v) => s + v.correct, 0);
+  const quizAccuracyPct = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : null;
+
+  // ── Sort: in-progress (any completed but not done) first by last_activity desc,
+  //         then fully completed, then untouched ───────────────────────────────
+  const sorted = [...rows].sort((a, b) => {
+    const statusA =
+      a.completed_lessons > 0 && a.completed_lessons < a.total_lessons
+        ? 0
+        : a.completed_lessons === a.total_lessons && a.total_lessons > 0
+          ? 1
+          : 2;
+    const statusB =
+      b.completed_lessons > 0 && b.completed_lessons < b.total_lessons
+        ? 0
+        : b.completed_lessons === b.total_lessons && b.total_lessons > 0
+          ? 1
+          : 2;
+    if (statusA !== statusB) return statusA - statusB;
+    // within in-progress: sort by last_activity descending
+    if (statusA === 0) {
+      const tA = a.last_activity_at ? new Date(a.last_activity_at).getTime() : 0;
+      const tB = b.last_activity_at ? new Date(b.last_activity_at).getTime() : 0;
+      return tB - tA;
+    }
+    return 0;
+  });
+
   return (
     <div className="space-y-3">
-      {rows.length === 0 ? (
-        <p className="text-center text-slate-400 font-medium py-8">Not enrolled in any courses yet.</p>
+      {/* ── Summary strip ───────────────────────────────────────────────────── */}
+      {rows.length > 0 && (
+        <div className="flex gap-2">
+          <StatChip label="Started" value={started} />
+          <StatChip label="Completed" value={completed} />
+          <StatChip label="Lessons done" value={totalLessonsDone} />
+          {quizAccuracyPct !== null && (
+            <StatChip
+              label="Quiz accuracy"
+              value={`${quizAccuracyPct}%`}
+              sub={`${totalCorrect}/${totalAnswered} correct`}
+            />
+          )}
+        </div>
+      )}
+
+      {/* ── Per-course cards ─────────────────────────────────────────────────── */}
+      {sorted.length === 0 ? (
+        <p className="text-center text-slate-400 font-medium py-8">No enrollments yet.</p>
       ) : (
-        rows.map((row) => {
-          const pct = row.total_lessons > 0 ? Math.round((row.completed_lessons / row.total_lessons) * 100) : 0;
+        sorted.map((row) => {
+          const pct =
+            row.total_lessons > 0
+              ? Math.round((row.completed_lessons / row.total_lessons) * 100)
+              : 0;
           const busy = busyCourseId === row.course_id;
+          const expanded = expandedCourses.has(row.course_id);
+          const quiz = quizPerf[row.course_id];
+          const quizPct = quiz && quiz.answered > 0 ? Math.round((quiz.correct / quiz.answered) * 100) : null;
+
+          // Build meta line parts
+          const metaParts: string[] = [];
+          if (row.started_at) metaParts.push(`Started ${shortDate(row.started_at)}`);
+          if (row.last_activity_at && row.last_activity_at !== row.started_at)
+            metaParts.push(`Last active ${shortDate(row.last_activity_at)}`);
+          if (row.completed_at) metaParts.push(`Completed ${shortDate(row.completed_at)}`);
+
           return (
             <div key={row.course_id} className="rounded-xl border border-slate-100 p-4 space-y-2">
+              {/* Header row */}
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="font-bold text-slate-900 text-sm truncate">{row.course_title}</p>
+                  {/* Certificate chip */}
                   {row.certificate_number && (
-                    <p className="text-xs mt-0.5 flex items-center gap-1.5">
+                    <div className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5">
                       <Award className="h-3 w-3 text-amber-500 shrink-0" />
                       <span
-                        className={
+                        className={`text-xs font-semibold ${
                           row.certificate_revoked_at
-                            ? 'line-through text-slate-400 font-medium'
-                            : 'text-slate-600 font-medium'
-                        }
+                            ? 'line-through text-slate-400'
+                            : 'text-amber-700'
+                        }`}
                       >
                         {row.certificate_number}
                       </span>
-                      {row.certificate_revoked_at && (
-                        <span className="text-red-600 font-bold">revoked</span>
+                      {row.certificate_issued_at && !row.certificate_revoked_at && (
+                        <span className="text-[11px] text-amber-600">
+                          · {shortDate(row.certificate_issued_at)}
+                        </span>
                       )}
-                    </p>
+                      {row.certificate_revoked_at && (
+                        <span className="text-[11px] font-bold text-red-600">revoked</span>
+                      )}
+                    </div>
                   )}
                 </div>
+                {/* Actions */}
                 <div className="flex items-center gap-1 shrink-0">
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={busy}
                     onClick={() => handleReset(row)}
-                    className="gap-1 text-xs"
+                    className="gap-1 text-xs h-7 px-2"
                   >
                     <RotateCcw className="h-3 w-3" />
-                    {busy ? 'Working…' : 'Reset progress'}
+                    {busy ? 'Working…' : 'Reset'}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={busy}
                     onClick={() => handleUnenroll(row)}
-                    className="gap-1 text-xs text-red-600 hover:text-red-700"
+                    className="gap-1 text-xs text-red-600 hover:text-red-700 h-7 px-2"
                   >
                     <UserMinus className="h-3 w-3" />
                     Unenroll
                   </Button>
                 </div>
               </div>
+
+              {/* Meta line */}
+              {metaParts.length > 0 && (
+                <p className="text-[11px] text-slate-400 font-medium">{metaParts.join(' · ')}</p>
+              )}
+
+              {/* Progress bar */}
               <div className="flex items-center gap-3">
-                <Progress value={pct} className="h-2 flex-1" />
+                <Progress value={pct} className="h-1.5 flex-1" />
                 <span className="text-xs font-bold text-slate-600 whitespace-nowrap">
-                  {row.completed_lessons}/{row.total_lessons} lessons
+                  {row.completed_lessons}/{row.total_lessons} lessons · {pct}%
                 </span>
               </div>
+
+              {/* Quiz chip */}
+              {quizPct !== null && quiz && (
+                <div
+                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${quizChipStyle(quizPct)}`}
+                >
+                  <CheckCircle2 className="h-3 w-3" />
+                  Quizzes: {quiz.correct}/{quiz.answered} correct ({quizPct}%)
+                </div>
+              )}
+
+              {/* Expandable lesson detail */}
+              {row.lessons.length > 0 && (
+                <button
+                  onClick={() => toggleExpanded(row.course_id)}
+                  className="flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors mt-1"
+                >
+                  {expanded ? (
+                    <ChevronDown className="h-3 w-3" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3" />
+                  )}
+                  {expanded ? 'Hide lessons' : `Show ${row.lessons.length} lessons`}
+                </button>
+              )}
+              {expanded && <LessonChecklist lessons={row.lessons} />}
             </div>
           );
         })
       )}
 
+      {/* ── Enroll in course ─────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-dashed border-slate-200 p-4">
         <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Enroll in course</p>
         {enrollable.length === 0 ? (

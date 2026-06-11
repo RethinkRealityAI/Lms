@@ -31,10 +31,12 @@ import { asInstitutionTheme, resolveEffectiveTheme, type InstitutionTheme } from
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
-import { getCompletionSurvey, getMyCourseFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
+import { getMyCourseFeedback, getMyProgramFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
+import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import type { SurveyData, SurveyAnswers, SurveyAnswerValue, SurveyQuestion } from '@/lib/content/blocks/survey/schema';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { ClipboardList, CheckCircle2 } from 'lucide-react';
 
 const CanvasSlideViewer = dynamic(
@@ -580,12 +582,20 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // Sequential program lock — set to the blocking (earlier, incomplete) course title
   const [lockedReason, setLockedReason] = useState<string | null>(null);
 
-  // Completion feedback survey
+  // Completion feedback survey (course-level)
   const [feedbackTemplateId, setFeedbackTemplateId] = useState<string | null>(null);
   const [feedbackTemplate, setFeedbackTemplate] = useState<SurveyTemplate | null>(null);
   const [feedbackAnswers, setFeedbackAnswers] = useState<SurveyAnswers>({});
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+  // Program-level completion survey (shown alongside course survey on final lesson of a program)
+  const [programSurvey, setProgramSurvey] = useState<{
+    programId: string; programTitle: string; templateId: string; template: SurveyTemplate;
+  } | null>(null);
+  const [programFeedbackAnswers, setProgramFeedbackAnswers] = useState<SurveyAnswers>({});
+  const [programFeedbackSubmitting, setProgramFeedbackSubmitting] = useState(false);
+  const [programFeedbackSubmitted, setProgramFeedbackSubmitted] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -791,13 +801,31 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
       // (Progress is fetched above, before initial lesson selection.)
 
-      // Completion feedback survey — load template + any existing response
-      const { templateId: fbTemplateId, template: fbTemplate } = await getCompletionSurvey(supabase, courseId);
-      setFeedbackTemplateId(fbTemplateId);
-      setFeedbackTemplate(fbTemplate);
-      if (fbTemplate && user) {
-        const existing = await getMyCourseFeedback(supabase, courseId, user.id);
-        if (existing) setFeedbackSubmitted(true);
+      // Completion feedback survey — resolve course + program surveys via centralized assignment logic
+      try {
+        const resolved = user
+          ? await resolveCompletionSurveys(supabase, courseId, user.id)
+          : { course: null, program: null };
+
+        // Course-level survey
+        const fbTemplateId = resolved.course?.templateId ?? null;
+        const fbTemplate = resolved.course?.template ?? null;
+        setFeedbackTemplateId(fbTemplateId);
+        setFeedbackTemplate(fbTemplate);
+        if (fbTemplate && user) {
+          const existing = await getMyCourseFeedback(supabase, courseId, user.id);
+          if (existing) setFeedbackSubmitted(true);
+        }
+
+        // Program-level survey
+        if (resolved.program && user) {
+          setProgramSurvey(resolved.program);
+          const existingProg = await getMyProgramFeedback(supabase, resolved.program.programId, user.id).catch(() => null);
+          if (existingProg) setProgramFeedbackSubmitted(true);
+        }
+      } catch (surveyErr) {
+        // Survey resolution failures must never break completion — log and continue
+        console.error('Survey resolution error (non-fatal):', surveyErr);
       }
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -945,6 +973,44 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     }
     setFeedbackSubmitted(true);
     toast.success('Thanks for your feedback!');
+  };
+
+  const handleSubmitProgramFeedback = async () => {
+    if (!programSurvey) return;
+
+    if (previewMode) {
+      setProgramFeedbackSubmitted(true);
+      toast.success('Program survey preview submitted (not saved)');
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !course?.institution_id) {
+      toast.error('You must be signed in to submit feedback');
+      return;
+    }
+
+    setProgramFeedbackSubmitting(true);
+    try {
+      const { error } = await upsertCourseFeedbackResponse(supabase, {
+        institutionId: course.institution_id,
+        courseId,
+        userId: user.id,
+        templateId: programSurvey.templateId,
+        answers: programFeedbackAnswers,
+        programId: programSurvey.programId,
+      });
+      if (error) {
+        toast.error('Failed to submit program survey', { description: error });
+        return;
+      }
+      setProgramFeedbackSubmitted(true);
+      toast.success('Program survey submitted. Thank you!');
+    } catch (err: any) {
+      toast.error('Failed to submit program survey', { description: err.message });
+    } finally {
+      setProgramFeedbackSubmitting(false);
+    }
   };
 
   // ---------------------------------------------------------------------------
@@ -1726,6 +1792,27 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           onSubmit={handleSubmitFeedback}
                           primaryColor={effectiveTheme.progressColor ?? '#1A3C6E'}
                         />
+                      )}
+
+                      {/* Program survey — shown when this lesson completes a full program */}
+                      {programSurvey && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
+                        <div className="w-full max-w-xl space-y-1">
+                          <div className="flex items-center gap-2 px-1">
+                            <Badge variant="outline" className="text-xs font-semibold text-purple-700 border-purple-200 bg-purple-50">
+                              Program survey
+                            </Badge>
+                            <span className="text-xs text-slate-500">{programSurvey.programTitle}</span>
+                          </div>
+                          <CompletionFeedbackForm
+                            template={programSurvey.template}
+                            answers={programFeedbackAnswers}
+                            onAnswerChange={(qId, val) => setProgramFeedbackAnswers(prev => ({ ...prev, [qId]: val }))}
+                            submitted={programFeedbackSubmitted}
+                            submitting={programFeedbackSubmitting}
+                            onSubmit={handleSubmitProgramFeedback}
+                            primaryColor="#7C3AED"
+                          />
+                        </div>
                       )}
                     </div>
                   )}
