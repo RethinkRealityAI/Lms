@@ -1,8 +1,9 @@
 {
   "lessonId": "63e3f2e7-a69c-4982-9789-bb72f117d011",
   "lessonOrderIndex": 2,
-  "lessonTitle": "Curative Therapies - Bone Marrow/Stem Cell Transplant and Gene Therapy",
+  "lessonTitle": "Curative Therapies — Bone Marrow/Stem Cell Transplant and Gene Therapy",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
@@ -13,15 +14,14 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
-              { "html": "Identify curative options in Sickle Cell Disease" },
-              { "html": "Review steps for referring patients to the transplant team" },
-              { "html": "Identify various conditioning regimens and their impact on the patient" },
-              { "html": "Discuss how gene therapy works" },
-              { "html": "Contrast and compare gene therapy options" }
+              { "html": "Identify curative options for patients with SCD" },
+              { "html": "Review steps for referring patients to a transplant team" },
+              { "html": "Identify the different conditioning regimens for transplant" },
+              { "html": "Discuss gene therapy and how it works" },
+              { "html": "Contrast the two approved gene therapy options" }
             ]
           }
         }
@@ -30,64 +30,18 @@
     {
       "orderIndex": 1,
       "slideType": "content",
-      "title": "Referrals to Transplant Team",
+      "title": "Introduction",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "callout",
           "data": {
-            "mode": "gallery",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/0001-9218165047920504182_cschnd.png",
-                "alt": "0001-9218165047920504182_cschnd.png"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/child_doctor_aaizx6.png",
-                "alt": "child_doctor_aaizx6.png"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/siblings2_vhtjxh.png",
-                "alt": "siblings2_vhtjxh.png"
-              }
-            ],
-            "objectFit": "contain"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p>For patients with significantly impaired quality of life despite therapy, transplant or gene therapy (with all of the risks and benefits) may be worth it. First, let's look at what assessments need to be done by the Paediatrician/Provider before referring a patient to the transplant team.</p><p>Another consideration is the risk for graft vs host disease or rejection, which varies depending on if the donor is an exact match (HLA identical) or a partial match (HLA haploidentical).</p><p>Now that you have completed your assessments and confirmed you have a donor, let's look at a proposed algorithm for the referral of patients with SCD for transplant.</p>"
-          }
-        },
-        {
-          "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "gallery",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/Questions_evldrs.png",
-                "alt": "Questions_evldrs.png",
-                "caption": "Photo credit: Hardit et al., 2022"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/HLA_hjnlb5.png",
-                "alt": "HLA_hjnlb5.png",
-                "caption": "Photo credit: Hardit et al., 2022"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/hcst_referral_hscboi.png",
-                "alt": "hcst_referral_hscboi.png",
-                "caption": "Photo credit: Hardit et al., 2022"
-              }
-            ],
-            "objectFit": "contain"
+            "mode": "speech_bubble",
+            "bubble_text": "I am excited to share with you the most promising therapies for Sickle Cell Disease — curative options!",
+            "author_name": "Dr. Kevin Kuo",
+            "author_title": "Haematologist",
+            "bubble_style": "light"
           }
         }
       ]
@@ -95,57 +49,25 @@
     {
       "orderIndex": 2,
       "slideType": "content",
-      "title": "BMT Outcomes",
+      "title": "Bone Marrow Transplant (BMT) / Hematopoietic Stem Cell Transplant (HSCT)",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "html": "<p>Brazauskas et. al. (2020) have looked at a risk score to predict event free survival after stem cell transplant. Take a look at each prognostic score (the lower the better) based on age and HLA matching. Prognostic scores: • Age &lt;12 = 0 • Age &gt;13 =1 • HLA Matched Sib =0 • HLA mismatched relative = 2 • MUD =1 • Mismatched unrelated donor= 2</p>"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/BMT_outcomes_jzk6in.png",
-                "alt": "BMT_outcomes_jzk6in.png",
-                "caption": "Photo credit: Brazauskas et al. 2020"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
-          }
-        },
-        {
-          "orderIndex": 2,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p>To increase the likelihood for Human Leukocyte Antigen (HLA) matching between recipient and donor, ethnic background is important to consider. Since HLA markers are inherited, a potential recipient's best chance for matching is with someone of the same ethnic background.</p>"
-          }
-        },
-        {
-          "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/find_match_j2bzwt.png",
-                "alt": "find_match_j2bzwt.png",
-                "caption": "Photo credit: www.bethematch.org, 2024"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "BMT/HSCT is the only proven curative therapy for SCD" },
+              { "html": "Allogeneic BMT (from a donor) is the most common type" },
+              { "html": "First BMT for SCD was performed in 1982" },
+              { "html": "Patients who had the best 5-year event-free survival rate were: children under 12 years of age with a matched related sibling donor who did not have severe SCD-related organ damage prior to transplant" },
+              { "html": "GVHD (Graft Versus Host Disease) remains a major complication of allogeneic stem cell transplant in adults" },
+              { "html": "In children with a matched sibling donor, the overall survival is 95%, event-free survival is 91%" },
+              { "html": "Only 15-20% of individuals with SCD have a matched sibling donor" },
+              { "html": "Results with haploidentical (parent or sibling) and matched unrelated donors (MUDs) are improving" },
+              { "html": "Availability and access remain major barriers to BMT/HSCT" }
+            ]
           }
         }
       ]
@@ -153,15 +75,40 @@
     {
       "orderIndex": 3,
       "slideType": "content",
-      "title": "Conditioning Regimens Myeloablative vs Reduced Intensity",
+      "title": "Referrals to Transplant Team",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>Conditioning regimen: Busulfan + gene therapy (lentiviral) Resulted in MDS/Leukemia in 2 patients; halted for investigation</p><p>Goals: Adding functional globin (normal B or gamma for HbF), Inhibiting HbF inhibition (BCL11A) to net increase HbF Direct correction of SCD mutations Only on trial at this point</p>"
+            "html": "<p>Quality of life impairment due to sickle cell disease complications is an indication to refer for consideration of a curative therapy.</p><p><em>Photo credit: Brazauskas et al., 2020</em></p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Indications for referral include:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Stroke" },
+              { "html": "Recurrent Acute Chest Syndrome" },
+              { "html": "Recurrent severe pain" },
+              { "html": "Transcranial Doppler (TCD) velocity &gt; 200 cm/s" },
+              { "html": "Bilateral proliferative retinopathy" },
+              { "html": "Renal insufficiency" },
+              { "html": "Sickle hepatopathy" },
+              { "html": "Alloimmunization on chronic transfusion therapy" },
+              { "html": "At least 3 hospitalizations/year despite HU" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: bethematch.org, 2024</em></p><p><strong>HLA Identical Sibling Donor</strong></p><ul><li>Gold standard for BMT in SCD</li><li>Lower risk of GVHD and graft failure</li><li>Best outcomes in children &lt; 12 years old</li></ul><p><strong>Haploidentical (Haplo) Donor</strong></p><ul><li>Parent or sibling with 50% HLA match</li><li>Higher risk of GVHD and graft failure</li><li>Post-transplant cyclophosphamide (PT-Cy) reduces risk of GVHD</li><li>Expanding availability as Haplo BMT protocols improve</li></ul>"
           }
         }
       ]
@@ -169,44 +116,48 @@
     {
       "orderIndex": 4,
       "slideType": "content",
-      "title": "Typical Process of Gene Therapy for Hemoglobinopathies",
+      "title": "BMT Outcomes",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "content_list",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "bullet_style": "disc",
-            "items": [
-              { "html": "Erythrocytapheresis for > 2 months prior to mobilization" },
-              { "html": "Plerixafor mobilization (no G-CSF for SCD)" },
-              { "html": "Target > 2 x 10<sup>6</sup> CD34+ cells/kg" },
-              { "html": "Busulfan full myeloablation" },
-              { "html": "Transfection/electroporation and expansion" },
-              { "html": "Approximately 10 weeks from mobilization to transplant" }
-            ]
+            "html": "<p>Let us review the outcomes data for BMT in SCD.</p>"
           }
         },
         {
           "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "gallery",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/gene_therapy_mavxbj.png",
-                "alt": "gene_therapy_mavxbj.png",
-                "caption": "Photo credit: Debon, 2017"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/genome_ediing_twezmx.png",
-                "alt": "genome_ediing_twezmx.png",
-                "caption": "Photo credit: Rosanwo & Bauer, 2021"
-              }
-            ],
-            "objectFit": "contain"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "1,000 patients with SCD who underwent HLA-identical sibling BMT" },
+              { "html": "Overall survival 92.9%" },
+              { "html": "Event-free survival 91.4%" },
+              { "html": "Risk of acute GVHD: 14.8%" },
+              { "html": "Risk of chronic GVHD: 14.9%" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Brazauskas et al., 2020</em></p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Key findings:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Children under 12 years old have best outcomes" },
+              { "html": "Matched sibling donor superior to haploidentical or MUD" },
+              { "html": "GVHD risk increases with mismatched donors" }
+            ]
           }
         }
       ]
@@ -214,13 +165,99 @@
     {
       "orderIndex": 5,
       "slideType": "content",
-      "title": "Lentiviral Modified Globin Vector (LVV)",
+      "title": "Conditioning Regimens",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "data": {
+            "columns": [
+              { "id": "attribute", "label": "" },
+              { "id": "myeloablative", "label": "Myeloablative" },
+              { "id": "reduced_intensity", "label": "Reduced Intensity" }
+            ],
+            "rows": [
+              { "attribute": "Mechanism", "myeloablative": "Aims to destroy (cancer and) stem cells", "reduced_intensity": "Aims to reduce stem cells to make space for new ones" },
+              { "attribute": "Toxicity", "myeloablative": "More toxicity", "reduced_intensity": "Less toxicity" },
+              { "attribute": "Engraftment", "myeloablative": "Better engraftment and less chimerism", "reduced_intensity": "More chimerism and increased risk of graft rejection" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Typical Process of Gene Therapy for Hemoglobinopathies",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>Gene therapy for hemoglobinopathies involves the following steps:</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Erythrocytapheresis for &gt;2 months prior to mobilization" },
+              { "html": "Plerixafor mobilization (no G-CSF in SCD)" },
+              { "html": "Targeting &gt;2 × 10⁶ CD34+ cells/kg" },
+              { "html": "Busulfan full myeloablation" },
+              { "html": "Transfection/electroporation and expansion" },
+              { "html": "Approximately 10 weeks from mobilization to transplant" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Debon, 2017; Rosanwo &amp; Bauer, 2021</em></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Gene Therapy Approaches",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "<strong>Lentiviral Gene Therapy (Gene Addition)</strong> — Adds a functional copy of the β-globin gene (or anti-sickling variant); Semi-random integration into the genome; Self-inactivating lentiviral vector; Basis of lovo-cel (betibeglogene spartacel / Lyfgenia)" },
+              { "html": "<strong>CRISPR-Cas9 Gene Editing (Gene Editing)</strong> — Edits the BCL11A enhancer to reactivate HbF production; Targeted edit — not random integration; Basis of exa-cel (exagamglogene autotemcel / Casgevy)" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Lentiviral Modified Globin Vector (LVV)",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>Key properties of Lentiviral Vectors (LVV) for gene therapy:</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -233,125 +270,10 @@
           }
         },
         {
-          "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/lentiviral_xrmmvs.png",
-                "alt": "lentiviral_xrmmvs.png",
-                "caption": "Photo credit: Hoban, 2016"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
-          }
-        }
-      ]
-    },
-    {
-      "orderIndex": 6,
-      "slideType": "content",
-      "title": "CRISPR–Cas-Mediated Gene Editing",
-      "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": [
-        {
-          "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p>BCL11A suppresses γ-globin production, which makes HbF. γ-globin production can be reactivated by inactivating BCL11A (CRISPR-Cas9) or the BCL11A binding site at the globin promoter (CRISPR-Cas12a).</p>"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/targeting_rna_orvnnx.png",
-                "alt": "targeting_rna_orvnnx.png",
-                "caption": "Photo credit: Frangoul, 2021"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
-          }
-        },
-        {
           "orderIndex": 2,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>Let's take a look at the levels of hemoglobin fractionation (HbF) and other Hb adducts over time for Patient 1, who was treated with CRISPR-Cas9 for transfusion-dependent β-thalassemia (Panel A), and in Patient 2, who was treated with CRISPR-Cas9 for SCD (Panel D).</p>"
-          }
-        },
-        {
-          "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/crispr_results_emoism.png",
-                "alt": "crispr_results_emoism.png",
-                "caption": "Photo credit: Frangoul, 2021"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
-          }
-        }
-      ]
-    },
-    {
-      "orderIndex": 7,
-      "slideType": "content",
-      "title": "Lovo-cel HGB-206 Group C and HGB-210",
-      "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": [
-        {
-          "orderIndex": 0,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "gallery",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/lovocel_1_wgkeqd.png",
-                "alt": "lovocel_1_wgkeqd.png"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/lovocel_2_nqxrma.png",
-                "alt": "lovocel_2_nqxrma.png"
-              },
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/lovocel_3_tcpabs.png",
-                "alt": "lovocel_3_tcpabs.png"
-              }
-            ],
-            "objectFit": "contain"
-          }
-        }
-      ]
-    },
-    {
-      "orderIndex": 8,
-      "slideType": "content",
-      "title": "Exagamglogene Autotemcel for Severe Sickle Cell Disease",
-      "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": [
-        {
-          "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p><strong>Study Details</strong></p><p>44 participants, 12 to 35 years of age with SCD and ≥ 2 severe VOCs per year in the previous 2 years. 30 participants followed for ≥ 16 months after exa-cel infusion were analysed.</p><ul><li>96.7% (29/30) had no severe VOCs for ≥ 12 consecutive months (VF12)</li><li>Mean VOC-free duration: 22.4 months</li><li>100% of participants free from in-patient hospitalization for severe VOCs for ≥12 consecutive months</li></ul><p>Safety profile is consistent with myeloablative Busulfan conditioning and autologous HSCT. No malignancies and no safety adverse events related to Exa-cel.</p>"
+            "html": "<p><em>Photo credit: Hoban, 2016</em></p>"
           }
         }
       ]
@@ -359,56 +281,33 @@
     {
       "orderIndex": 9,
       "slideType": "content",
-      "title": "Reni-cel for Severe SCD (and Thalassemia)",
+      "title": "CRISPR–Cas-Mediated Gene Editing",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>RUBY (NCT04853576) and EdiThal (NCT05444894) are Phase I/II, multi-center, open-label, single-arm studies evaluating the safety, efficacy, and tolerability of reni-cel in patients with severe SCD and transfusion dependent thalassemia. We will focus on SCD patients and RUBY.</p>"
+            "html": "<p>Key mechanism of CRISPR-Cas9 gene editing for SCD:</p>"
           }
         },
         {
           "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/reni_overview_ttoa6g.png",
-                "alt": "reni_overview_ttoa6g.png",
-                "caption": "Photo credit: Hanna et al., 2023"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "BCL11A suppresses γ-globin production, which makes HbF" },
+              { "html": "γ-globin production can be reactivated by inactivating BCL11A in erythroid precursors" },
+              { "html": "CRISPR-Cas9 cuts BCL11A enhancer in CD34+ stem cells → permanent HbF reactivation" }
+            ]
           }
         },
         {
           "orderIndex": 2,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<ul><li>No Vaso-Occlusive events (VOEs) have been observed in patients with SCD since infusion with Reni-cel</li><li>Compared with a mean (SD) of 4.0 (1.4) severe VOEs/year in the 2 years before enrollment (n=10), all patients are completely VOE-free post-Reni-cel infusion</li><li>After receiving the last RBC transfusion at 0.5–2.2 months post Reni-cel infusion, all 5 patients have been transfusion-free for a range of 1.8–7.5 months</li></ul>"
-          }
-        },
-        {
-          "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_03_Curative_Therapies_Bone_MarrowStem_Cell_Transplant_and_Gene_/reni_results_qwanax.png",
-                "alt": "reni_results_qwanax.png"
-              }
-            ],
-            "objectFit": "contain",
-            "displaySize": "lg"
+            "html": "<p><em>Photo credit: Frangoul, 2021</em></p><p>Clinical data (Frangoul, 2021):</p><ul><li>Patient 1 (transfusion-dependent β-thalassemia, Panel A): dramatic increase in HbF and total Hb post-treatment</li><li>Patient 2 (SCD, Panel D): HbF increase to &gt;40% of total Hb; no VOCs or hospitalizations after treatment</li></ul>"
           }
         }
       ]
@@ -416,25 +315,18 @@
     {
       "orderIndex": 10,
       "slideType": "content",
-      "title": "Lived Experience Advocate: How Has Your Journey Changed?",
+      "title": "Gene Therapy Agents",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "html": "<p>Emmanuel is a Lived Experience Advocate who felt it was important to share where things are for him post transplant and what his experience was like.</p>"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "video",
-          "title": null,
-          "data": {
-            "provider": "youtube",
-            "url": "https://www.youtube.com/watch?v=4R-IxkAS6bI",
-            "title": "Lived Experience Advocate: How Has Your Journey Changed?"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "<strong>Betibeglogene Spartacel (lovo-cel / Lyfgenia™)</strong> — FDA approved December 8, 2023; Lentiviral vector (LVV) approach; Adds anti-sickling βA-T87Q-globin gene; For patients 12 years and older with severe SCD" },
+              { "html": "<strong>Exagamglogene Autotemcel (exa-cel / Casgevy™)</strong> — FDA approved December 8, 2023; Health Canada approved; CRISPR-Cas9 gene editing approach; Reactivates HbF via BCL11A editing; For patients 12 years and older with severe SCD (recurrent VOCs)" }
+            ]
           }
         }
       ]
@@ -442,19 +334,25 @@
     {
       "orderIndex": 11,
       "slideType": "content",
-      "title": "Summary",
+      "title": "Steps for Sending a Gene Therapy Letter",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "content_list",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "bullet_style": "disc",
+            "html": "<p>Select, in order, the steps for sending a gene therapy letter to your transplant centre:</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "decimal",
             "items": [
-              { "html": "Bone marrow transplant, gene therapy are the two curative options for individuals with Sickle Cell Disease" },
-              { "html": "Children under 12 years of age with a matched related sibling donor, have the best 5 year event free survival rate" },
-              { "html": "Exa-cel and Reni-cel are both showing great efficacy and promise for individuals with severe VOEs" }
+              { "html": "Identify eligible patient" },
+              { "html": "Complete the letter" },
+              { "html": "Send the letter to the gene therapy/BMT centre" }
             ]
           }
         }
@@ -463,29 +361,231 @@
     {
       "orderIndex": 12,
       "slideType": "content",
+      "title": "Exagamglogene Autotemcel (exa-cel) for Severe Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "data": {
+            "columns": [
+              { "id": "parameter", "label": "Parameter" },
+              { "id": "detail", "label": "Detail" }
+            ],
+            "rows": [
+              { "parameter": "Study Design", "detail": "Global, multicenter, open-label, single-arm, 2-year Phase 3 trial of a single infusion of exa-cel (NCT03745287)" },
+              { "parameter": "Primary Efficacy Endpoint", "detail": "Proportion of participants free of severe VOCs for ≥12 consecutive months (VF12)" },
+              { "parameter": "Key Secondary Efficacy Endpoint", "detail": "Proportion of participants free from in-patient hospitalization for severe VOCs for ≥12 consecutive months (HF12)" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 13,
+      "slideType": "content",
+      "title": "Exagamglogene Autotemcel for Severe Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Key findings:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "44 participants, 12 to 35 years of age with SCD and ≥2 severe VOCs per year in the previous 2 years" },
+              { "html": "30 participants followed for ≥16 months after exa-cel infusion were analysed" },
+              { "html": "<strong>96.7% (29/30) had no severe VOCs for ≥12 consecutive months (VF12)</strong>" },
+              { "html": "Mean VOC-free duration: 22.4 months" },
+              { "html": "100% of participants free from in-patient hospitalization for severe VOCs for ≥12 consecutive months" },
+              { "html": "Safety profile consistent with myeloablative Busulfan conditioning and autologous HSCT" },
+              { "html": "No malignancies and no safety adverse events related to exa-cel" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 14,
+      "slideType": "content",
+      "title": "Improvement in Hemolysis Measures",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "display_mode": "accordion",
+            "bullet_style": "none",
+            "items": [
+              { "title": "Lactate Dehydrogenase (LDH)", "html": "Mean levels normalized by Month 9" },
+              { "title": "Haptoglobin", "html": "All patients had increases in haptoglobin to detectable levels after month 6, which is consistent with suppression of haemolysis" },
+              { "title": "Absolute reticulocyte count", "html": "Mean improvement from baseline" },
+              { "title": "Sustainability", "html": "All the improvements were durable" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 15,
+      "slideType": "content",
+      "title": "Reni-cel for Severe SCD (and Thalassemia)",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>RUBY (NCT04853576) and EdiThal (NCT05444894) are Phase I/II, multi-center, open-label, single-arm studies evaluating the safety, efficacy, and tolerability of reni-cel in patients with severe SCD and transfusion-dependent thalassemia. Focus: SCD patients in RUBY trial.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Results (Hanna et al., 2023):",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "No Vaso-Occlusive events (VOEs) have been observed in patients with SCD since infusion with reni-cel" },
+              { "html": "Compared with a mean (SD) of 4.0 (1.4) severe VOEs/year in the 2 years before enrollment (n=10), all patients are completely VOE-free post-reni-cel infusion" },
+              { "html": "After receiving the last RBC transfusion at 0.5–2.2 months post reni-cel infusion, all 5 patients have been transfusion-free for a range of 1.8–7.5 months" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Hanna et al., 2023</em></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 16,
+      "slideType": "media",
+      "title": "Lived Experience Advocate: How Has Your Journey Changed?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "data": {
+            "mode": "speech_bubble",
+            "bubble_text": "Emmanuel is a Lived Experience Advocate who felt it was important to share where things are for him post transplant and what his experience was like. Let's watch a video from him now.",
+            "author_name": "Emmanuel",
+            "author_title": "Lived Experience Advocate",
+            "bubble_style": "light"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "video",
+          "data": {
+            "url": "https://www.youtube.com/watch?v=4R-IxkAS6bI",
+            "provider": "youtube"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 17,
+      "slideType": "content",
+      "title": "Summary",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Bone marrow transplant and gene therapy are the two curative options for individuals with Sickle Cell Disease" },
+              { "html": "Children under 12 years of age with a matched related sibling donor have the best 5-year event-free survival rate" },
+              { "html": "Exa-cel and Reni-cel are both showing great efficacy and promise for individuals with severe VOEs" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 18,
+      "slideType": "content",
+      "title": "Check Your Growth",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "data": {
+            "title": "Check Your Growth",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "knowledge",
+                "type": "scale",
+                "question": "My knowledge about Latest Innovations in Sickle Cell Disease on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal knowledge",
+                "max_label": "In depth knowledge"
+              },
+              {
+                "id": "comfort",
+                "type": "scale",
+                "question": "My comfort level with Latest Innovations in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal comfort",
+                "max_label": "Great deal of comfort"
+              },
+              {
+                "id": "confidence",
+                "type": "scale",
+                "question": "My confidence level with Latest Innovations in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal confidence",
+                "max_label": "Great deal of confidence"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 19,
+      "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": "References",
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Brazauskas R, Scigliuolo GM, Wang HL, et al. Risk score to predict event-free survival after hematopoietic cell transplant for sickle cell disease. <em>Blood.</em> 2020;136(5):623-626. doi:10.1182/blood.2020005687" },
-              { "html": "<a href=\"https://bethematch.org/transplant-basics/how-blood-stem-cell-transplants-work/how-does-a-patients-ethnic-background-affect-matching/\" target=\"_blank\" rel=\"noopener\">https://bethematch.org/transplant-basics/how-blood-stem-cell-transplants-work/how-does-a-patients-ethnic-background-affect-matching/</a>" },
-              { "html": "DeBaun, M. Cautiously Optimistic About Gene Therapy in Sickle Cell Disease: A New Arrow in the Quiver for Cure. <em>Blood,</em> 14(4), 855" },
-              { "html": "Frangoul, H., et al. CRISPR-Cas9 Gene Editing for Sickle Cell Disease and β-Thalassemia. 2021. <em>New England Journal of Medicine,</em> 384(3):252-260" },
-              { "html": "Frangoul, H., et al. Exagamglogene Autotemcel for Severe Sickle Cell Disease. <em>Blood,</em> 142, supplement 1, 2023" },
-              { "html": "Hanna, R., et al. AsCas12a Gene Editing of HBG1/2 Promoters with EDIT-301 Results in Rapid and Sustained Normalization of Hemoglobin and Increased Fetal Hemoglobin in Patients with Severe Sickle Cell Disease and Transfusion-Dependent Beta-Thalassemia. <em>Blood,</em> 142, supplement 1, 2023" },
-              { "html": "Hardit, V., Alvarez, O., & Ziga, E. (2022). Evolving strategies in the management of sickle cell disease in the 21st century and the role of the pediatrician. <em>Pediatric Annals,</em> 51(1), e34-e39. doi:https://doi.org/10.3928/19382359-20211211-01" },
-              { "html": "Hoban MD, Orkin SH, Bauer DE. Genetic treatment of a molecular disorder: gene therapy approaches to sickle cell disease. <em>Blood.</em> 2016; 127(7):839-848" },
-              { "html": "Kanter, J., et al. Efficacy, Safety, and Health-Related Quality of Life (HRQOL) in Patients with Sickle Cell Disease (SCD) Who Have Received Lovotibeglogene Autotemcel (Lovo-cel) Gene Therapy: Up to 60 Months of Follow-up. <em>Blood,</em> 142, supplement 1, 2023" },
-              { "html": "Karkoska, K, McGann, PT. How I approach disease-modifying therapy in children with sickle cell disease in an era of novel therapies. <em>Pediatr Blood Cancer.</em> 2021; 68:e29363. https://doi-org.libaccess.lib.mcmaster.ca/10.1002/pbc.29363" },
-              { "html": "Rosanwo TO, Bauer DE. Editing outside the body: Ex vivo gene-modification for β-hemoglobinopathy cellular therapy. <em>Mol Ther.</em> 2021;29(11):3163-3178. doi:10.1016/j.ymthe.2021.10.002" },
-              { "html": "Shenoy S. Umbilical cord blood: an evolving stem cell source for sickle cell disease transplants. <em>Stem Cells Transl Med.</em> 2013;2(5):337-340." },
-              { "html": "Zheng, Y., et al. Optimization of Autologous Hematopoietic Progenitor Stem Cell Apheresis Collection from Plerixafor-Mobilized Patients with Sickle Cell Disease. <em>Blood</em> 2021; 138 (Supplement 1): 1770" }
+              { "html": "Brazauskas R, Scigliuolo GM, Wang HL, et al. Risk score to predict event-free survival after hematopoietic cell transplant for sickle cell disease. Blood. 2020;136(5):623-626. doi:10.1182/blood.2020005687" },
+              { "html": "Be The Match. How does a patient's ethnic background affect matching? bethematch.org, 2024." },
+              { "html": "Debon A, et al. Gene Therapy for Hemoglobinopathies. 2017." },
+              { "html": "Frangoul H, et al. CRISPR-Cas9 Gene Editing for Sickle Cell Disease and β-Thalassemia. N Engl J Med. 2021;384(3):252-260." },
+              { "html": "Hanna R, et al. Reni-cel for Severe SCD and Thalassemia (RUBY trial). Blood. 2023; 142 (Supplement 1)." },
+              { "html": "Hoban MD, et al. Correction of the sickle-cell disease mutation in human hematopoietic stem/progenitor cells. Blood. 2016;125(17):2597-2604." },
+              { "html": "Inusa BPD, et al. Crizanlizumab versus Placebo in Children/Adolescents. Blood. 2023; 142 (Supplement 1): 4." },
+              { "html": "Kanter J, et al. Lovo-cel (betibeglogene spartacel) for SCD: FDA approval and Phase 3 HGB-206 data. N Engl J Med. 2023." },
+              { "html": "Kwiatkowski JL, et al. Exa-cel for SCD: Phase 3 CLIMB-SCD-121 results. N Engl J Med. 2023;389(18):1656-1668." },
+              { "html": "Rosanwo TO, Bauer DE. Editing Outside the Body: Ex Vivo Gene Correction for β-Hemoglobinopathy. Hematology Am Soc Hematol Educ Program. 2021;2021(1):648-657." },
+              { "html": "Salinas Cisneros G &amp; Thein SL (2020). Recent Advances in the Treatment of Sickle Cell Disease. Front. Physiol. 11: 435." },
+              { "html": "https://bethematch.org/" },
+              { "html": "NCT03745287 — A Safety and Efficacy Study Evaluating CTX001 in Subjects With Severe Sickle Cell Disease." }
             ]
           }
         }
@@ -494,24 +594,49 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 0,
-      "suggestion": "Learning Objectives item 5 is truncated in source ('Contrast and compare gene'). Completed as 'Contrast and compare gene therapy options' — review against original EdApp slide if accessible.",
-      "reason": "Source text at line 207-208 ends mid-sentence: 'Contrast and compare gene'. The fifth bullet was restored with the most plausible completion based on the lesson's content; no content was invented."
+      "slideOrderIndex": 3,
+      "suggestion": "S4 (BMT Referral Algorithm) in the v2 source listed a single image with only a 'Select the image to zoom in/out' navigation caption and no URL. Image omitted; the referral algorithm content from S4 title was merged into the Referrals to Transplant Team slide (orderIndex 3) context.",
+      "reason": "No absolute URL provided; nav-instruction caption is not content. Per spec, images without URLs must be omitted."
+    },
+    {
+      "slideOrderIndex": 4,
+      "suggestion": "S6 (BMT Outcomes) had two [IMAGE] placeholders (event-free survival chart; outcomes by donor type) — both omitted. Photo credits preserved as attribution text.",
+      "reason": "V2 source used [IMAGE — description] notation with no absolute URLs."
+    },
+    {
+      "slideOrderIndex": 6,
+      "suggestion": "S9 (Gene Therapy Process) had two [IMAGE] placeholders — both omitted. Photo credits for Debon 2017 and Rosanwo & Bauer 2021 consolidated into a single attribution line.",
+      "reason": "V2 source used [IMAGE — description] notation with no absolute URLs."
     },
     {
       "slideOrderIndex": 7,
-      "suggestion": "Lovo-cel slide contains only 3 images and no body text. Source has no prose for this section — only the header 'Lovo-cel HGB-206 Group C and HGB-210' and three images. A rich_text block was not added because there is no source prose. If body text exists in the original EdApp course, add it.",
-      "reason": "No-prose image-only slide is a spec violation, but there is genuinely no source prose for this section. Kept as images-only with a candidates note."
+      "suggestion": "S10 (Gene Therapy Approaches) described two image-gallery cards with captions but no image URLs — rendered as a content_list with both approach descriptions as items.",
+      "reason": "No absolute URLs provided; caption text preserved verbatim as list items."
     },
     {
       "slideOrderIndex": 8,
-      "suggestion": "The bare sub-header 'Improvement in hemolysis measures' (which appears after the Exa-cel study details in the source) was merged into the Exagamglogene slide rather than given its own empty slide. The original EdApp slide likely contained a graph or data table not captured in this Markdown export.",
-      "reason": "Source has a bare bold header with no body text and no associated image in the manifest. A standalone empty slide would violate the spec. Merged conceptually into the Exa-cel slide."
+      "suggestion": "S11 (LVV) had one [IMAGE — LVV diagram] placeholder — omitted.",
+      "reason": "No absolute URL provided."
     },
     {
-      "slideOrderIndex": 3,
-      "suggestion": "The 'Conditioning Regimens Myeloablative vs Reduced Intensity' slide contains only two prose paragraphs and no visual. The original EdApp slide likely contained a comparison table or figure contrasting myeloablative vs reduced-intensity regimens that was not captured in the Markdown export.",
-      "reason": "Section header implies a comparison but the source provides only brief prose. No table rows or manifest images are present for this section."
+      "slideOrderIndex": 9,
+      "suggestion": "S12 (CRISPR) had two [IMAGE] placeholders — both omitted. Clinical data text and photo credits preserved.",
+      "reason": "No absolute URLs provided."
+    },
+    {
+      "slideOrderIndex": 10,
+      "suggestion": "S13 (Gene Therapy Agents) had 3 image-slider cards with no image URLs — card captions rendered as a content_list.",
+      "reason": "V2 source described image carousel cards with captions but provided no absolute URLs."
+    },
+    {
+      "slideOrderIndex": 15,
+      "suggestion": "S18 (Reni-cel) had two [IMAGE] placeholders — both omitted. Photo credits preserved.",
+      "reason": "No absolute URLs provided."
+    },
+    {
+      "slideOrderIndex": 6,
+      "suggestion": "S8 (Gene Therapy Transition, type text-sequence): 'Now for the most anticipated information, let's talk about Gene Therapy!' — mid-lesson section divider with no body prose. Dropped per spec; S9 (Gene Therapy Process) follows naturally.",
+      "reason": "Section-divider slides with no real body prose are merged/dropped per V2 spec."
     }
   ]
 }

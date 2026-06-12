@@ -3,6 +3,7 @@
   "lessonOrderIndex": 0,
   "lessonTitle": "What is Mental Health?",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
@@ -13,16 +14,14 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
-              { "html": "Identify features of positive mental health and well-being" },
-              { "html": "Identify intersections between Sickle Cell Disease (SCD) between and challenges to mental health and well-being across the lifespan" },
-              { "html": "Distinguish positive and negative coping factors known to help to improve mental health and well-being for individuals with SCD" },
-              { "html": "Identify opportunities for healthcare providers to support positive mental health and reduce stress for patients with SCD" }
-            ],
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+              { "html": "Define mental health and emotional functioning" },
+              { "html": "Identify indicators of positive mental health and wellbeing" },
+              { "html": "Recognize mental health challenges faced by children, adolescents, and adults with SCD" },
+              { "html": "Identify the impact of mental health challenges on those with SCD and effective strategies for prevention and management" }
+            ]
           }
         }
       ]
@@ -30,94 +29,50 @@
     {
       "orderIndex": 1,
       "slideType": "content",
-      "title": "What Does Positive Mental Health Look Like?",
+      "title": "Before We Begin",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "survey",
           "data": {
-            "html": "<p>Positive mental health or emotional functioning is an essential contributor to the health and well-being of individuals with SCD. With the benefit of research and observations from clinical settings, we understand better than ever the close relationship between mind, mood, cognitive functioning and physical well-being/pain experience.</p>",
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "content_list",
-          "title": null,
-          "data": {
-            "heading": "Good mental health and well-being individuals with SCD may be associated with:",
-            "bullet_style": "disc",
-            "items": [
-              { "html": "Happiness or life satisfaction levels" },
-              { "html": "Spirituality" },
-              { "html": "Positive outlook" },
-              { "html": "Hope" },
-              { "html": "Thinking and problem-solving" },
-              { "html": "Coping" },
-              { "html": "Adjustment" },
-              { "html": "Degree of social support" },
-              { "html": "Sense of agency or control over life circumstances" },
-              { "html": "Freedom from feelings of stigma regarding their health status" }
-            ],
-            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 4
-          }
-        },
-        {
-          "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/wellness_ruoq3z.png", "alt": "wellness_ruoq3z.png" }
-            ],
-            "gridX": 0, "gridY": 7, "gridW": 12, "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 3,
-          "blockType": "content_list",
-          "title": null,
-          "data": {
-            "heading": "Patients may experience or report the above as:",
-            "bullet_style": "disc",
-            "items": [
-              { "html": "Having a clear mind and the ability to process information and set goals" },
-              { "html": "Ability to pursue meaningful work and to function on the job" },
-              { "html": "Having language to communicate wants and needs with ease" },
-              { "html": "Experiencing restorative sleep" },
-              { "html": "Access to timely and effective pain relief and preventative care" },
-              { "html": "Having regular contact with a supportive friend community" },
-              { "html": "Having access to reliable resources to comfortably meet financial commitments, secure housing, access to appropriate accommodations in the workplace, and food security" }
-            ],
-            "gridX": 0, "gridY": 10, "gridW": 12, "gridH": 4
-          }
-        },
-        {
-          "orderIndex": 4,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/good_MH_xbndpy.png", "alt": "good_MH_xbndpy.png" }
-            ],
-            "gridX": 0, "gridY": 14, "gridW": 12, "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 5,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p>These are factors to consider when supporting good mental health and well-being for people with SCD.</p>",
-            "gridX": 0, "gridY": 17, "gridW": 12, "gridH": 2
+            "title": "Rate your current level before this lesson",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "knowledge",
+                "type": "scale",
+                "question": "My knowledge about Mental Health and Wellness in Sickle Cell Disease on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal knowledge",
+                "max_label": "In depth knowledge"
+              },
+              {
+                "id": "comfort",
+                "type": "scale",
+                "question": "My comfort level with Mental Health and Wellness in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal comfort",
+                "max_label": "Great deal of comfort"
+              },
+              {
+                "id": "confidence",
+                "type": "scale",
+                "question": "My confidence level with Mental Health and Wellness for people with SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal confidence",
+                "max_label": "Great deal of confidence"
+              }
+            ]
           }
         }
       ]
@@ -125,16 +80,74 @@
     {
       "orderIndex": 2,
       "slideType": "content",
-      "title": "Mental Health: Risks and Resiliencies in Children and Adolescents with SCD",
+      "title": "What is Mental Health?",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>There is a growing body of research focusing on mental health in individuals with SCD across the lifespan. So let&#39;s look at some of the general trends by age group, starting with Children and Adolescents.</p><p>Increased risk of mood, anxiety, attention, and behaviour regulation challenges compared to peers without SCD.</p><p>Stress and depression may be worsened by pain severity and frequency of pain episodes.</p><p>High risk of overt and &#39;silent&#39; stroke in the early childhood period may have linkages to behavioural, learning and social emotional sequelae for many youth.</p><p>Isolation and disruption in peer relationships is a contributor to mood, anxiety, and social skill difficulties.</p><p>Development of independent and self-help skills or &#39;developmental tasks of adolescence&#39; may be slowed or delayed by interruption of home, school, family, and social routines due to a challenging illness course, including the unpredictable nature of pain episodes.</p><p>Body image disturbance and self-esteem challenges may be exacerbated by differences in physical maturation, physical appearance, endurance and stamina levels, and attainment of related milestones compared to peers without SCD.</p>",
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 8
+            "html": "<p>Positive mental health or emotional functioning is an essential contributor to the health and well-being of individuals with SCD. With the benefit of research and observations from clinical settings, we understand better than ever the close relationship between mind, mood, cognitive functioning and physical health.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "video",
+          "data": {
+            "url": "https://media.edapp.com/video/upload/v1711357835/applications/620474488a388be8f86470f7/documents/opening_vid_roqsqy.mp4",
+            "caption": "J. Berthier/NYTimes, 2023"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>Good mental health and well-being in individuals with SCD may be associated with: Happiness or life satisfaction levels • Spirituality • Positive outlook • Hope • Thinking and problem-solving • Coping • Adjustment • Degree of social support • Sense of agency or control over life circumstances • Freedom from unnecessary suffering</p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "image_gallery",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://media.edapp.com/image/upload/v1711358842/applications/620474488a388be8f86470f7/documents/wellness_ruoq3z.png",
+                "alt": "Wellness",
+                "caption": "www.blogs.psychcentral.com, 2024"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>Patients may experience or report the above as: Having a clear mind and the ability to process information and set goals • Ability to pursue meaningful work and to function on the job • Having language to communicate wants and needs with ease • Experiencing restorative sleep • Access to timely and effective healthcare</p>"
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "image_gallery",
+          "data": {
+            "mode": "single",
+            "objectFit": "contain",
+            "displaySize": "lg",
+            "images": [
+              {
+                "url": "https://media.edapp.com/image/upload/v1711444846/applications/620474488a388be8f86470f7/documents/good_MH_xbndpy.png",
+                "alt": "Good MH"
+              }
+            ]
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>These are factors to consider when supporting good mental health and well-being for people with SCD.</p>"
           }
         }
       ]
@@ -142,90 +155,65 @@
     {
       "orderIndex": 3,
       "slideType": "content",
-      "title": "Mental Health Risks for Adults with SCD",
-      "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": []
-    },
-    {
-      "orderIndex": 4,
-      "slideType": "content",
-      "title": "Protective Factors for Positive Mental Health in Individuals with SCD",
+      "title": "Positive Mental Health & Wellbeing in SCD",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p><em>Individuals living with SCD posses a wealth of resources and resiliencies that can support good mental health and well-being despite risks and challenges faced. Healthcare providers can be intentional about centring and highlighting these assets and protective factors during the care encounter.</em></p>",
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "gallery",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/good_MH_ippoiz.png", "alt": "good_MH_ippoiz.png" },
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/reading_pdtx7b.png", "alt": "reading_pdtx7b.png" },
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/MH_screen_fwr6c1.png", "alt": "MH_screen_fwr6c1.png" }
-            ],
-            "gridX": 0, "gridY": 3, "gridW": 12, "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 2,
           "blockType": "content_list",
-          "title": null,
           "data": {
-            "heading": "Providing access to effective, culturally-appropriate psychotherapeutic interventions that teach positive coping skills, including:",
-            "bullet_style": "disc",
+            "bullet_style": "decimal",
             "items": [
-              { "html": "use of proactive pain coping strategies" },
-              { "html": "use of mindfulness and cognitive strategies (realistic thinking; thought restructuring)" },
-              { "html": "employing emotion regulation strategies" },
-              { "html": "support for adaptive activity and physical functioning" },
-              { "html": "engagement in relaxation practice" },
-              { "html": "connection to social support" },
-              { "html": "problem-solving support" }
-            ],
-            "gridX": 0, "gridY": 6, "gridW": 12, "gridH": 4
+              { "html": "There is a growing body of research focusing on mental health in individuals with SCD across the lifespan. So let's look at some of the general trends by age group, starting with Children and Adolescents." },
+              { "html": "Increased risk of mood, anxiety, attention, and behaviour regulation challenges compared to peers without SCD." },
+              { "html": "Stress and depression may be worsened by pain severity and frequency of pain episodes." },
+              { "html": "High risk of overt and 'silent' stroke in the early childhood period may have linkages to behavioural, learning and social emotional sequelae for many youth." },
+              { "html": "Isolation and disruption in peer relationships is a contributor to mood, anxiety, and social skill difficulties." },
+              { "html": "Development of independent and self-help skills or 'developmental tasks of adolescence' may be slowed or delayed by interruption of home, school, family, and social routines due to a challenging illness course, including the unpredictable nature of pain episodes." },
+              { "html": "Body image disturbance and self-esteem challenges may be exacerbated by differences in physical maturation, physical appearance, endurance and stamina levels, and attainment of related milestones compared to peers without SCD." }
+            ]
           }
-        },
+        }
+      ]
+    },
+    {
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Mental Health Challenges in Adults with SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
         {
-          "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
+          "orderIndex": 0,
+          "blockType": "content_list",
           "data": {
-            "mode": "gallery",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/strength_ie0vkv.png", "alt": "strength_ie0vkv.png" },
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/hand_ldvb15.png", "alt": "hand_ldvb15.png" },
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/culture_dzkfpq.png", "alt": "culture_dzkfpq.png" }
-            ],
-            "gridX": 0, "gridY": 10, "gridW": 12, "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 4,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "gallery",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/pt_and_fam_hue21k.png", "alt": "pt_and_fam_hue21k.png" },
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/pt_voice_tzmndp.png", "alt": "pt_voice_tzmndp.png" },
-              { "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_01_What_is_Mental_Health/insecurity_zbr2my.png", "alt": "insecurity_zbr2my.png" }
-            ],
-            "gridX": 0, "gridY": 13, "gridW": 12, "gridH": 3
+            "bullet_style": "disc",
+            "display_mode": "accordion",
+            "items": [
+              {
+                "title": "Mood and Anxiety Difficulties",
+                "html": "Adults with SCD are at significant risk for mental health difficulties, especially mood (depression) and anxiety disorders."
+              },
+              {
+                "title": "Prevalence",
+                "html": "Prevalence rates of greater than 40% for depression and approximately 25% for anxiety have been reported in research samples of adult sickle cell patients."
+              },
+              {
+                "title": "Disability",
+                "html": "Interference of SCD symptoms on daily functioning increases risk of low mood (depression), anxiety, and social isolation due to difficulties engaging with school and work."
+              },
+              {
+                "title": "Stroke",
+                "html": "Stroke and risk of stroke recurrence continues to be of concern during the adult years and is correlated with decreased physical, cognitive and emotional functioning."
+              },
+              {
+                "title": "Chronic Pain",
+                "html": "Chronic pain may co-occur with acute pain episodes at this life stage, and severity of disease-related complications tends to be greater with increasing age."
+              },
+              {
+                "title": "Pain Management Challenges",
+                "html": "Adults with SCD continue to report significant undertreatment of pain in emergency or inpatient settings. Importantly, problematic addiction, substance misuse or 'drug seeking' patterns have not been substantiated in patients with SCD, who benefit from well-developed acute and chronic pain management support to reduce suffering."
+              }
+            ]
           }
         }
       ]
@@ -233,16 +221,46 @@
     {
       "orderIndex": 5,
       "slideType": "content",
-      "title": "Knowledge Check",
+      "title": "Factors Supporting Positive Mental Health",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "image_gallery",
           "data": {
-            "html": "<p><strong>What is the approximate prevalence rate, in percent, for depression and anxiety for adults with SCD?</strong></p>",
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+            "mode": "gallery",
+            "images": [
+              {
+                "url": "https://media.edapp.com/image/upload/v1711446400/applications/620474488a388be8f86470f7/documents/0001-8388377177548545017_dnmfex.png",
+                "alt": "Assertiveness",
+                "caption": "Assertiveness and self-advocacy skills"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1711446482/applications/620474488a388be8f86470f7/documents/new_skill_xubtbz.png",
+                "alt": "New skill",
+                "caption": "Adaptive coping skills"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1711446722/applications/620474488a388be8f86470f7/documents/scd_know_ox9opt.png",
+                "alt": "SCD Knowledge",
+                "caption": "Disease knowledge and expertise about the treatments that work best for them"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1711447061/applications/620474488a388be8f86470f7/documents/fam_fmkc6e.png",
+                "alt": "Family",
+                "caption": "Supportive family and peer network"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1711447107/applications/620474488a388be8f86470f7/documents/0001-2492039364821281538_eoiulo.png",
+                "alt": "Spirituality",
+                "caption": "Spirituality or faith traditions that foster hope, a sense of meaning and enduring purpose beyond their health status"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1711447227/applications/620474488a388be8f86470f7/documents/0001-1430315759656041651_ejoyes.png",
+                "alt": "Advocacy",
+                "caption": "Linkage to advocacy and support groups"
+              }
+            ]
           }
         }
       ]
@@ -250,18 +268,25 @@
     {
       "orderIndex": 6,
       "slideType": "content",
-      "title": "Resources",
+      "title": "Good Mental Health Contexts",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "callout",
-          "title": null,
+          "blockType": "image_gallery",
           "data": {
-            "style": "info",
-            "heading": "Resources",
-            "body": "The RBCD Hub's article, Sickle Cell Disease and Mental Health, provides an overview of the links between physical and mental health. https://www.rbcd.ca/blog/sickle-cell-disease-and-mental-health\n\nAnother great resource: How can sickle cell disease affect mental health? https://www.medicalnewstoday.com/articles/mental-health-and-sickle-cell-disease",
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 3
+            "mode": "slider",
+            "images": [
+              { "url": "https://media.edapp.com/image/upload/v1711447476/applications/620474488a388be8f86470f7/documents/good_MH_ippoiz.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711447681/applications/620474488a388be8f86470f7/documents/reading_pdtx7b.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711499758/applications/620474488a388be8f86470f7/documents/MH_screen_fwr6c1.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711500573/applications/620474488a388be8f86470f7/documents/strength_ie0vkv.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711501739/applications/620474488a388be8f86470f7/documents/hand_ldvb15.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711526564/applications/620474488a388be8f86470f7/documents/culture_dzkfpq.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711526840/applications/620474488a388be8f86470f7/documents/pt_voice_tzmndp.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711527632/applications/620474488a388be8f86470f7/documents/insecurity_zbr2my.png" },
+              { "url": "https://media.edapp.com/image/upload/v1711528149/applications/620474488a388be8f86470f7/documents/pt_and_fam_hue21k.png" }
+            ]
           }
         }
       ]
@@ -269,13 +294,84 @@
     {
       "orderIndex": 7,
       "slideType": "content",
+      "title": "Psychotherapeutic Interventions",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "data": {
+            "mode": "speech_bubble",
+            "bubble_text": "Providing access to effective, culturally-appropriate psychotherapeutic interventions that teach positive coping skills, including:<ul><li>Use of proactive pain coping strategies</li><li>Use of mindfulness and cognitive strategies (realistic thinking; thought restructuring)</li><li>Employing emotion regulation strategies</li><li>Support for adaptive activity and physical functioning</li><li>Engagement in relaxation practice</li><li>Connection to social support</li><li>Problem-solving support</li></ul>",
+            "bubble_style": "light"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Depression & Anxiety Prevalence",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "data": {
+            "columns": [
+              { "label": "Condition" },
+              { "label": "Prevalence" }
+            ],
+            "rows": [
+              ["Depression Rates in Adults with SCD", "40%"],
+              ["Anxiety Rates in Adults with SCD", "25%"]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "Resources",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "data": {
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>The RBCD Hub's article, <em>Sickle Cell Disease and Mental Health</em>, provides an overview of the links between physical and mental health: <a href=\"https://www.rbcd.ca/blog/sickle-cell-disease-and-mental-health\" target=\"_blank\" rel=\"noopener\">https://www.rbcd.ca/blog/sickle-cell-disease-and-mental-health</a></p><p>How can sickle cell disease affect mental health? <a href=\"https://www.medicalnewstoday.com/articles/mental-health-and-sickle-cell-disease\" target=\"_blank\" rel=\"noopener\">https://www.medicalnewstoday.com/articles/mental-health-and-sickle-cell-disease</a></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "media",
+      "title": "When Do You Reach Out For Mental Health Support?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "video",
+          "data": {
+            "url": "https://media.edapp.com/video/upload/v1714309228/applications/620474488a388be8f86470f7/documents/freecompress-HCP_Module_10-Thea_-_Made_with_Clipchamp_1714241101851_rrckxq.mp4",
+            "title": "When Do You Reach Out For Mental Health Support?"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
       "title": "Summary",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -284,14 +380,13 @@
               { "html": "Living with complications of sickle cell disease can negatively affect mental health and wellbeing, as can encounters with healthcare practitioners and systems that are not well-informed about this condition, the need for timely treatment, and maintains barriers to support and needed resources" },
               { "html": "There are a number of indicators of positive mental health and well-being that individuals with SCD and their caregivers may identify, including hope, connection to spirituality and social support and positive coping" },
               { "html": "Conducting timely mental health screening and providing appropriate mental and physical treatment interventions can significantly improve mental health and well-being outcomes for individuals with SCD" }
-            ],
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 5
+            ]
           }
         }
       ]
     },
     {
-      "orderIndex": 8,
+      "orderIndex": 12,
       "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -299,22 +394,20 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Al-Marzouki, A.F., Alrefaie, N.L., Aljohani, N.A., Alandanusi, R.A., et al. (2021).The Prevalence of Depression and Anxiety Among Sickle Cell Disease Patients in King Abdulaziz University Hospital. Cureus, 13," },
-              { "html": "Centre for Addiction and Mental Health (accessed January 5, 2024). Mental illness and addiction: facts and statistics. https://www.camh.ca/en/driving-change/the-crisis-is-real/mental-health-statistics" },
-              { "html": "Conference Board of Canada, The. Nurturing Minds for Secure Futures: Timely Access to Mental Healthcare for Children and Youth in Canada. Ottawa: The Conference Board of Canada, 2023" },
-              { "html": "Ekinci, Celik, Unal, &amp; Ozer. (2012). Psychiatric problems in children and adolescents with sickle cell disease, based on parent and teacher reports. Turkish Journal of Hematology, 29, 259-264." },
-              { "html": "https://www.nytimes.com/2023/04/21/well/mind/negative-emotions-mental-health.html" },
-              { "html": "Obsborne, H. (June 30, 2022), How can sickle cell disease affect mental health? Medical News Today, https://www.medicalnewstoday.com/articles/mental-health-and-sickle-cell-disease" },
-              { "html": "Pearson, Janz &amp; Ali (2013). Health at a glance: Mental and substance use disorders in Canada. Statistics Canada Catalogue no. 82-624-X." },
-              { "html": "Smetanin, P., Stiff, D., Briante, C., Adair, C.E., Ahmad,. S. &amp; Khan, M. (2011). The life and economic impact of major mental illnesses in Canada: 2011-2041. Prepared for the Mental Health Commission of Canada. Toronto: RiskAnalytica." },
-              { "html": "Wilson, S.R. (2023). Mental Health Disorders Are Prevalent and Influence Outcomes in Patients With Sickle Cell Disease. The Hematologist, 20 (6)." },
-              { "html": "Wilson Schaeffer, JJ, Gil, KM, Burhcinal, M, et al. Depression, disease severity, and sickle cell disease. Journal of Behavioral Medicine, 22, 115-126" }
-            ],
-            "gridX": 0, "gridY": 0, "gridW": 12, "gridH": 8
+              { "html": "Al-Marzouki, A.F., Alrefaie, N.L., Aljohani, N.A., Alandanusi, R.A., et al. (2021). The Prevalence of Depression and Anxiety Among Sickle Cell Disease Patients in King Abdulaziz University Hospital. <em>Cureus</em>, 13." },
+              { "html": "Centre for Addiction and Mental Health (accessed January 5, 2024). Mental illness and addiction: facts and statistics. <a href=\"https://www.camh.ca/en/driving-change/the-crisis-is-real/mental-health-statistics\" target=\"_blank\" rel=\"noopener\">https://www.camh.ca/en/driving-change/the-crisis-is-real/mental-health-statistics</a>" },
+              { "html": "Conference Board of Canada, The. Nurturing Minds for Secure Futures: Timely Access to Mental Healthcare for Children and Youth in Canada. Ottawa: The Conference Board of Canada, 2023." },
+              { "html": "Ekinci, Celik, Unal, &amp; Ozer. (2012). Psychiatric problems in children and adolescents with sickle cell disease, based on parent and teacher reports. <em>Turkish Journal of Hematology</em>, 29, 259–264." },
+              { "html": "<a href=\"https://www.nytimes.com/2023/04/21/well/mind/negative-emotions-mental-health.html\" target=\"_blank\" rel=\"noopener\">https://www.nytimes.com/2023/04/21/well/mind/negative-emotions-mental-health.html</a>" },
+              { "html": "Obsborne, H. (June 30, 2022). How can sickle cell disease affect mental health? <em>Medical News Today</em>. <a href=\"https://www.medicalnewstoday.com/articles/mental-health-and-sickle-cell-disease\" target=\"_blank\" rel=\"noopener\">https://www.medicalnewstoday.com/articles/mental-health-and-sickle-cell-disease</a>" },
+              { "html": "Pearson, Janz &amp; Ali (2013). Health at a glance: Mental and substance use disorders in Canada. <em>Statistics Canada Catalogue no. 82-624-X.</em>" },
+              { "html": "Smetanin, P., Stiff, D., Briante, C., Adair, C.E., Ahmad, S. &amp; Khan, M. (2011). The life and economic impact of major mental illnesses in Canada: 2011–2041. Prepared for the Mental Health Commission of Canada. Toronto: RiskAnalytica." },
+              { "html": "Wilson, S.R. (2023). Mental Health Disorders Are Prevalent and Influence Outcomes in Patients With Sickle Cell Disease. <em>The Hematologist</em>, 20(6)." },
+              { "html": "Wilson Schaeffer, JJ, Gil, KM, Burhcinal, M, et al. Depression, disease severity, and sickle cell disease. <em>Journal of Behavioral Medicine</em>, 22, 115–126." }
+            ]
           }
         }
       ]
@@ -322,19 +415,19 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 3,
-      "suggestion": "Slide 'Mental Health Risks for Adults with SCD' has no body content in the source Markdown — it appears as a bare section header immediately followed by the next section header. Author should supply adult-specific risk content or merge this heading into the adjacent slides.",
-      "reason": "Source line is a standalone bold header with no body paragraphs, bullet lists, or images beneath it before the next section begins. Cannot author content per spec; slide has 0 blocks."
+      "slideOrderIndex": 6,
+      "suggestion": "image-slider (source Slide 13) has 9 images with no per-card caption text in the source — slider entries have no captions",
+      "reason": "The source for Slide 13 lists only image URLs with no per-card text. No captions were invented. If captions are desired they must be sourced from the original EdApp content."
     },
     {
-      "slideOrderIndex": 5,
-      "suggestion": "The prevalence-rate question ('What is the approximate prevalence rate, in percent, for depression and anxiety for adults with SCD?') has no answer options in the source — only a meta-note ('Ratio can be used to ask a basic number question.'). Rendered as rich_text. Author could add a proper multiple-choice quiz_inline here with the correct percentage and distractors if that data is available.",
-      "reason": "No ✓/○ options present in source; 'Explanation' text is an authoring note, not feedback. Per spec, a question without options is rendered as rich_text, not quiz_inline."
+      "slideOrderIndex": 8,
+      "suggestion": "Source Slide 15 is marked type `ratio` (a bar-chart visualization) but contains a real Markdown table with condition/prevalence data — rendered as a `table` block per 'Tables stay tables' rule",
+      "reason": "The ratio/dial spec says render as rich_text, but the table rows are explicit | … | Markdown so the table rule takes precedence. Flag if the reviewer prefers rich_text instead."
     },
     {
-      "slideOrderIndex": 4,
-      "suggestion": "Source Lesson 1, Slide 18 references a hosted video (not on YouTube). It was dropped because no YouTube URL exists and the platform's video block only supports YouTube. If the video is uploaded to YouTube or another supported provider, add a video block to the Protective Factors slide (or a new slide) before the Resources slide.",
-      "reason": "Source: '> Lesson 1, Slide 18 / 🎬 Video: Watch the video to continue (hosted video — not on YouTube)' — no embeddable URL available."
+      "slideOrderIndex": -1,
+      "suggestion": "Source Slide 11 ('Let's check them out' button transition) was dropped as pure navigation fluff with no educational body",
+      "reason": "Source marks it type `title` (button transition) with only a button label and a 'Purpose: Transition to positive mental health factors' note — no prose, no educational content."
     }
   ]
 }

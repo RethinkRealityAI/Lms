@@ -15,6 +15,44 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
+function sanitizeHtml(html: string): string {
+  let result = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  result = result.replace(/<img\s+[^>]*src=["'](?!https?:\/\/|data:)[^"']*["'][^>]*\/?>/gi, '');
+  result = result.replace(
+    /(<a\b[^>]*\bhref=)(["'])\s*(?:javascript|vbscript|data):[^"']*\2/gi,
+    '$1$2#$2'
+  );
+  return result;
+}
+
+function CompareTextLayer({
+  side,
+  clipStyle,
+}: {
+  side: { text?: string; heading?: string; bg_color?: string; text_color?: string };
+  clipStyle?: React.CSSProperties;
+}) {
+  const bg = side.bg_color || '#1A3C6E';
+  const color = side.text_color || '#FFFFFF';
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden flex flex-col items-center justify-center px-6 py-5 text-center"
+      style={{ backgroundColor: bg, color, ...clipStyle }}
+    >
+      <div className="max-w-[90%]">
+        {side.heading && <h4 className="text-lg @md:text-2xl font-extrabold mb-2 leading-tight">{side.heading}</h4>}
+        {side.text && (
+          <div
+            className="text-sm @md:text-lg leading-relaxed [&_a]:underline"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(side.text) }}
+          />
+        )}
+        {!side.heading && !side.text && <span className="text-xs font-medium opacity-60">No text</span>}
+      </div>
+    </div>
+  );
+}
+
 function CompareImageLayer({
   url,
   alt,
@@ -234,13 +272,22 @@ export function CompareSlider({ data, interactive, onFirstInteract }: CompareSli
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
       onKeyDown={onKeyDown}
     >
-      <CompareImageLayer url={data.after?.url ?? ''} alt={data.after?.alt ?? afterLabel} fit={fit} />
-      <CompareImageLayer
-        url={data.before?.url ?? ''}
-        alt={data.before?.alt ?? beforeLabel}
-        fit={fit}
-        clipStyle={beforeClip}
-      />
+      {data.mode === 'text' ? (
+        <>
+          <CompareTextLayer side={data.after ?? {}} />
+          <CompareTextLayer side={data.before ?? {}} clipStyle={beforeClip} />
+        </>
+      ) : (
+        <>
+          <CompareImageLayer url={data.after?.url ?? ''} alt={data.after?.alt ?? afterLabel} fit={fit} />
+          <CompareImageLayer
+            url={data.before?.url ?? ''}
+            alt={data.before?.alt ?? beforeLabel}
+            fit={fit}
+            clipStyle={beforeClip}
+          />
+        </>
+      )}
 
       {data.show_labels !== 'never' && (
         <>

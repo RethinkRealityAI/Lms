@@ -3,6 +3,7 @@
   "lessonOrderIndex": 1,
   "lessonTitle": "Anti-Racism and Anti-Oppression for Healthcare",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
@@ -17,8 +18,8 @@
           "data": {
             "bullet_style": "disc",
             "items": [
-              { "html": "Identify anti-oppressive, anti-racist, strengths-based, and trauma-informed practices." },
-              { "html": "Discuss need for safer health care spaces for racialized patients and families." }
+              { "html": "Identify anti-oppressive, anti-racist, strengths-based, and trauma-informed practices" },
+              { "html": "Discuss need for safer health care spaces for racialized patients and families" }
             ]
           }
         }
@@ -32,10 +33,15 @@
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
+          "blockType": "content_list",
           "title": null,
           "data": {
-            "html": "<p>As healthcare workers, we operate in a society that is characterized by power imbalances within systems, including healthcare, education, housing, employment, immigration, and justice.</p><p>Power is dispersed within society based on social identities related to race, age, immigration status, gender, sexual orientation, ability, geographical location, income, and more.</p><p>An Anti-Oppressive framework recognizes how a person's personal experiences are linked to and shaped by oppressive systems.</p>"
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "As healthcare workers, we operate in a society that is characterized by power imbalances within systems, including healthcare, education, housing, employment, immigration, and justice." },
+              { "html": "Power is dispersed within society based on social identities related to race, age, immigration status, gender, sexual orientation, ability, geographical location, income, and more." },
+              { "html": "An Anti-Oppressive framework recognizes how a person's personal experiences are linked to and shaped by oppressive systems." }
+            ]
           }
         }
       ]
@@ -51,7 +57,7 @@
           "blockType": "rich_text",
           "title": null,
           "data": {
-            "html": "<p>According to Ontario Health's Sickle Cell Disease Quality Standard, SCD disproportionately impacts Black communities. Anti-Black Racism profoundly shapes the health and wellbeing of people with SCD.</p><p><strong>Anti-Black Racism:</strong> The Black Health Alliance defines Anti-Black Racism as \"policies and practices rooted in Canadian institutions such as, education, health care, and justice that mirror and reinforce beliefs, attitudes, prejudice, stereotyping and/or discrimination towards people of Black-African Descent.\"</p><p>'Anti-Black Racism' was first developed by Dr. Akua Benjamin, a professor emeritus from Toronto Metropolitan University's Social Work program. The concept speaks to the systemic racism faced by Black-Canadians as well as the impacts of enslavement and colonization for Black and African descent peoples in Canada. <a href=\"https://blackhealthalliance.ca/home/antiblack-racism/\" target=\"_blank\" rel=\"noopener\">https://blackhealthalliance.ca/home/antiblack-racism/</a></p>"
+            "html": "<p>According to Ontario Health's Sickle Cell Disease Quality Standard, SCD disproportionately impacts Black communities. Anti-Black Racism profoundly shapes the health and wellbeing of people with SCD.</p>"
           }
         },
         {
@@ -64,14 +70,22 @@
             "displaySize": "lg",
             "images": [
               {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_02_AntiRacism_and_AntiOppression_for_Healthcare/abr2_qnj46u.png",
-                "alt": "abr2_qnj46u.png"
+                "url": "https://media.edapp.com/image/upload/v1711620108/applications/620474488a388be8f86470f7/documents/abr2_qnj46u.png",
+                "alt": "Anti-Black Racism"
               }
             ]
           }
         },
         {
           "orderIndex": 2,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>Anti-Black Racism:</strong> The Black Health Alliance defines Anti-Black Racism as “policies and practices rooted in Canadian institutions such as, education, health care, and justice that mirror and reinforce beliefs, attitudes, prejudice, stereotyping and/or discrimination towards people of Black-African Descent.”</p>"
+          }
+        },
+        {
+          "orderIndex": 3,
           "blockType": "image_gallery",
           "title": null,
           "data": {
@@ -80,10 +94,18 @@
             "displaySize": "lg",
             "images": [
               {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_10_Mental_Health_and_Wellness_in_Sickle_Cell_Disease_/Lesson_02_AntiRacism_and_AntiOppression_for_Healthcare/ABR_xf1y93.png",
-                "alt": "ABR_xf1y93.png"
+                "url": "https://media.edapp.com/image/upload/v1711620041/applications/620474488a388be8f86470f7/documents/ABR_xf1y93.png",
+                "alt": "Anti-Black Racism definition"
               }
             ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>'Anti-Black Racism' was first developed by Dr. Akua Benjamin, a professor emeritus from Toronto Metropolitan University's Social Work program. The concept speaks to the systemic racism faced by Black-Canadians as well as the impacts of enslavement and colonization for Black and African descent peoples.</p>"
           }
         }
       ]
@@ -91,23 +113,26 @@
     {
       "orderIndex": 3,
       "slideType": "content",
-      "title": "Disability In Sickle Cell Disease",
+      "title": "Poverty and Sickle Cell Disease",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
+          "blockType": "image_gallery",
           "title": null,
           "data": {
-            "html": "<h3>Disability Invisibility</h3><p><strong>Before:</strong> Non-accommodation and disability-related insults can lead to stress and anxiety. It can also create barriers to accessing much needed resources.</p><p><strong>After:</strong> Sickle cell disease can be an invisible disability. People have their own definitions of disability. Identifying with disability is up to the person.</p><p><strong>Non-accommodation and disability-related insults can lead to stress and anxiety. It can also create barriers to accessing much needed resources. Remember: Doc tors doc ument and ad judi cators judi cate!</strong></p>"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p><strong>What percent of individuals with SCD live in the lowest income neighbourhoods? (Round answer)</strong></p><p>41% of all peoples with SCD in Ontario live in neighbourhoods with the lowest incomes.</p>"
+            "mode": "slider",
+            "images": [
+              {
+                "caption": "Poverty and Sickle Cell Disease — Poverty refers to a lack of access to meet the basic needs of life, including shelter, food, and clothing. Poverty is a result of systemic inequities in the economy and society. These are due to a lack of work, low wages, and discrimination — factors beyond the control of individuals. 41% of all peoples with SCD in Ontario live in neighbourhoods with the lowest incomes."
+              },
+              {
+                "caption": "For people with Sickle Cell Disease, who are already dealing with uncertainty about their health, poverty creates additional stress that exacerbates overall mental health and wellbeing. Resource: The RBCD Hub’s article, Down with Capitalism, explores how people with sickle cell disease are particularly vulnerable in direct and indirect ways under our capitalist economy."
+              },
+              {
+                "caption": "Resources — Poverty: https://www.homelesshub.ca/about-homelessness/education-training-employment/poverty / Down with Capitalism! https://www.rbcd.ca/blog/down-with-capitalism-how-to-take-better-care-of-yourself-while-living-with-sickle-cell-disease"
+              }
+            ]
           }
         }
       ]
@@ -115,6 +140,99 @@
     {
       "orderIndex": 4,
       "slideType": "content",
+      "title": "Disability In Sickle Cell Disease",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "display_mode": "accordion",
+            "bullet_style": "none",
+            "items": [
+              {
+                "title": "Non-accommodation and disability",
+                "html": "Non-accommodation and disability-related insults can lead to stress and anxiety. It can also create barriers to accessing much needed resources."
+              },
+              {
+                "title": "Sickle cell as invisible disability",
+                "html": "Sickle cell disease can be an invisible disability. People have their own definitions of disability. Identifying with disability is up to the person."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Disability Invisibility",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_compare",
+          "title": null,
+          "data": {
+            "mode": "text",
+            "before": {
+              "heading": "Non-accommodation",
+              "text": "Non-accommodation and disability-related insults can lead to stress and anxiety. It can also create barriers to accessing much needed resources.",
+              "bg_color": "#1A3C6E",
+              "text_color": "#FFFFFF"
+            },
+            "after": {
+              "heading": "Invisible Disability",
+              "text": "Sickle cell disease can be an invisible disability. People have their own definitions of disability. Identifying with disability is up to the person.",
+              "bg_color": "#0F172A",
+              "text_color": "#FFFFFF"
+            },
+            "before_label": "Before",
+            "after_label": "After",
+            "aspect": "4/3",
+            "prompt": "Drag to compare"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Disability Accommodation",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "speech_bubble",
+            "bubble_text": "Non-accommodation and disability-related insults can lead to stress and anxiety. It can also create barriers to accessing much needed resources.\n\nRemember: Doctors document and adjudicators judicate!",
+            "bubble_style": "light"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Poverty in SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p><strong>What percent of individuals with SCD live in the lowest income neighbourhoods? (Round answer)</strong></p><p>Answer: 41%</p><p>41% of all peoples with SCD in Ontario live in neighbourhoods with the lowest incomes. Poverty is a result of systemic inequities in the economy and society. These are due to a lack of work, low wages, and discrimination — factors beyond the control of individuals.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "media",
       "title": "In Their Own Words: Black woman living with sickle cell disease faces discrimination",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
@@ -130,21 +248,34 @@
       ]
     },
     {
-      "orderIndex": 5,
+      "orderIndex": 9,
       "slideType": "content",
       "title": "Intersectionality",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
+          "blockType": "content_list",
           "title": null,
           "data": {
-            "html": "<p>Dr. Kimberlé Crenshaw developed the concept of intersectionality to understand how social identities related to race, gender, disability, class, and so forth interact with one another.</p><p>Intersectionality directs attention to how different systems of oppression, including racism, sexism, ableism, classism, and others, interlock with one another to shape people's experiences.</p><p>People with SCD are not a monolithic group - they have diverse identities and are navigating multiple worlds. For healthcare workers, understanding and responding to intersectionality is imperative for supporting mental health and wellbeing.</p>"
+            "bullet_style": "decimal",
+            "items": [
+              { "html": "Dr. Kimberlé Crenshaw developed the concept of intersectionality to understand how social identities related to race, gender, disability, class, and so forth interact with one another." },
+              { "html": "Intersectionality directs attention to how different systems of oppression, including racism, sexism, ableism, classism, and others, interlock with one another to shape people's experiences." },
+              { "html": "People with SCD are not a monolithic group — they have diverse identities and are navigating multiple worlds. For healthcare workers, understanding and responding to intersectionality is imperative for supporting mental health and wellbeing." }
+            ]
           }
-        },
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "media",
+      "title": "Kimberlé Crenshaw: What is Intersectionality?",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
         {
-          "orderIndex": 1,
+          "orderIndex": 0,
           "blockType": "video",
           "title": null,
           "data": {
@@ -153,17 +284,62 @@
           }
         },
         {
-          "orderIndex": 2,
+          "orderIndex": 1,
           "blockType": "callout",
           "title": null,
           "data": {
-            "text": "The RBCD Clinic's session on Intersectionality and Mental Health explores how racism and anti-Black racism, disability, and other social identities intersect and shape mental health and wellbeing for people with sickle cell disease and other red blood cell disorders: https://rbcd.ca/blog/intersectionality-and-mental-health"
+            "mode": "callout",
+            "variant": "info",
+            "html": "<p>Resource: The RBCD Clinic’s session on Intersectionality and Mental Health explores how racism and anti-Black racism, disability, and other social identities intersect and shape mental health and wellbeing for people with sickle cell disease and other red blood cell disorders: <a href=\"https://rbcd.ca/blog/intersectionality-and-mental-health\" target=\"_blank\" rel=\"noopener\">https://rbcd.ca/blog/intersectionality-and-mental-health</a></p>"
           }
         }
       ]
     },
     {
-      "orderIndex": 6,
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "Key Terms For Health Equity for Individuals with SCD",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Drag the letters to spell words related to Anti-Racism and Anti-Oppressive Healthcare for individuals with SCD.</p><p>Key terms: Intersectionality, Disability invisibility, Trauma informed care, Anti Black Racism</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "image_gallery",
+          "title": null,
+          "data": {
+            "mode": "gallery",
+            "objectFit": "contain",
+            "images": [
+              {
+                "url": "https://media.edapp.com/image/upload/v1715522010/applications/620474488a388be8f86470f7/documents/intersection_co5b5x.png",
+                "alt": "Intersectionality"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1715522134/applications/620474488a388be8f86470f7/documents/disability_invisible_nzxjuw.png",
+                "alt": "Disability invisibility"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1711444846/applications/620474488a388be8f86470f7/documents/good_MH_xbndpy.png",
+                "alt": "Trauma informed care"
+              },
+              {
+                "url": "https://media.edapp.com/image/upload/v1714869945/applications/620474488a388be8f86470f7/documents/stop_racism_rcnwr5.png",
+                "alt": "Anti Black Racism"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 12,
       "slideType": "content",
       "title": "Summary",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -177,14 +353,14 @@
             "items": [
               { "html": "Anti-oppressive, anti-racist, strengths-based, and trauma-informed approaches can help provide safer care" },
               { "html": "Informed and patient-centered clinicians have a role to play to support mental health and connections to resources for patients with sickle cell disease" },
-              { "html": "Systems, including that of healthcare, education, housing, employment, immigration, and justice, have been harmful to people with sickle cell disease." }
+              { "html": "Systems, including that of healthcare, education, housing, employment, immigration, and justice, have been harmful to people with sickle cell disease" }
             ]
           }
         }
       ]
     },
     {
-      "orderIndex": 7,
+      "orderIndex": 13,
       "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -196,21 +372,20 @@
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Anucha, U., Srikanthan, S., Siad Togane, R., &amp; Galabuzi, G. E. (2017). Doing right together for black youth: What we learned from the community engagement sessions for the Ontario black youth action plan. Youth Research and Evaluation eXchange" },
-              { "html": "Burnes, D. P., Antle, B. J., Williams, C. C., &amp; Cook, L. (2008). Mothers raising children with sickle cell disease at the intersection of race, gender, and illness stigma. Health &amp; Social Work, 33(3), 211–220. <a href=\"https://doi.org/10.1093/hsw/33.3.211\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1093/hsw/33.3.211</a>" },
-              { "html": "Disability Justice Network of Ontario <a href=\"https://www.djno.ca/glossary#:~:text=Ableism%3A%20Ableism%20is%20a%20set,%27fixed%27%20or%20%27protected\" target=\"_blank\" rel=\"noopener\">https://www.djno.ca/glossary</a>" },
+              { "html": "Anucha, U., Srikanthan, S., Siad Togane, R., &amp; Galabuzi, G. E. (2017). Doing right together for black youth: What we learned from the community engagement sessions for the Ontario black youth action plan. <em>Youth Research and Evaluation eXchange.</em>" },
+              { "html": "Burnes, D. P., Antle, B. J., Williams, C. C., &amp; Cook, L. (2008). Mothers raising children with sickle cell disease at the intersection of race, gender, and illness stigma. <em>Health &amp; Social Work</em>, 33(3), 211–220. <a href=\"https://doi.org/10.1093/hsw/33.3.211\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1093/hsw/33.3.211</a>" },
+              { "html": "Disability Justice Network of Ontario <a href=\"https://www.djno.ca/glossary\" target=\"_blank\" rel=\"noopener\">https://www.djno.ca/glossary</a>" },
               { "html": "Dyson S. (2019). Sickle cell and the social sciences: Health, racism and disablement. Routledge." },
-              { "html": "Dyson, S. M., Atkin, K. M., Berghs, M. J., &amp; Greene, A. M. (2021). On the possibility of a disabled life in capitalist ruins: Black workers with sickle cell disorder in England. Social Science &amp; Medicine, 272, 113713." },
+              { "html": "Dyson, S. M., Atkin, K. M., Berghs, M. J., &amp; Greene, A. M. (2021). On the possibility of a disabled life in capitalist ruins: Black workers with sickle cell disorder in England. <em>Social Science &amp; Medicine</em>, 272, 113713." },
               { "html": "<a href=\"https://blackhealthalliance.ca/home/antiblack-racism/\" target=\"_blank\" rel=\"noopener\">https://blackhealthalliance.ca/home/antiblack-racism/</a>" },
               { "html": "<a href=\"https://www.homelesshub.ca/about-homelessness/education-training-employment/poverty\" target=\"_blank\" rel=\"noopener\">https://www.homelesshub.ca/about-homelessness/education-training-employment/poverty</a>" },
               { "html": "<a href=\"https://www.rbcd.ca/blog/down-with-capitalism-how-to-take-better-care-of-yourself-while-living-with-sickle-cell-disease\" target=\"_blank\" rel=\"noopener\">https://www.rbcd.ca/blog/down-with-capitalism-how-to-take-better-care-of-yourself-while-living-with-sickle-cell-disease</a>" },
-              { "html": "In their Own Words: <a href=\"https://www.youtube.com/watch?v=H3LjSVGwlnY&amp;t=638s\" target=\"_blank\" rel=\"noopener\">https://www.youtube.com/watch?v=H3LjSVGwlnY&amp;t=638s</a>" },
-              { "html": "Intersectionality and Mental Health <a href=\"https://rbcd.ca/blog/intersectionality-and-mental-health\" target=\"_blank\" rel=\"noopener\">https://rbcd.ca/blog/intersectionality-and-mental-health</a>" },
-              { "html": "Ontario Health. (2023). Sickle cell disease: Care for people of all ages. King's Printer for Ontario. <a href=\"https://hqontario.ca/Portals/0/documents/evidence/quality-standards/qs-sickle-cell-disease-quality-standard-en.pdf\" target=\"_blank\" rel=\"noopener\">https://hqontario.ca/Portals/0/documents/evidence/quality-standards/qs-sickle-cell-disease-quality-standard-en.pdf</a>" },
-              { "html": "Pendergrast, J., Ajayi, L. T., Kim, E., Campitelli, M. A., &amp; Graves, E. (2023). Sickle cell disease in Ontario, Canada: an epidemiologic profile based on health administrative data. Canadian Medical Association Open Access Journal, 11(4), E725-E733." },
-              { "html": "Srikanthan, S. (2023). Contested disability: sickle cell disease. Health &amp; Social Work, 48(3), 209-216. Srikanthan, S. &amp; Ngo, J. (In Press). A Narrative Therapy Approach to Living with Chronic Illness. Health &amp; Social Work." },
-              { "html": "Srikanthan, S. (2021). Values not our own: Interrogating psychosocial suitability in the transplant social work assessment. Health &amp; Social Work, 46(4), 308-311." },
-              { "html": "Srikanthan, S. (2024). Whiteout: a social history of sickle cell disease in Ontario, Canada. Critical Public Health, 34 (1). 1-11." }
+              { "html": "Intersectionality and Mental Health: <a href=\"https://rbcd.ca/blog/intersectionality-and-mental-health\" target=\"_blank\" rel=\"noopener\">https://rbcd.ca/blog/intersectionality-and-mental-health</a>" },
+              { "html": "Ontario Health. (2023). Sickle cell disease: Care for people of all ages. King's Printer for Ontario." },
+              { "html": "Pendergrast, J., Ajayi, L. T., Kim, E., Campitelli, M. A., &amp; Graves, E. (2023). Sickle cell disease in Ontario, Canada: an epidemiologic profile based on health administrative data. <em>CMAJ Open</em>, 11(4), E725–E733." },
+              { "html": "Srikanthan, S. (2023). Contested disability: sickle cell disease. <em>Health &amp; Social Work</em>, 48(3), 209–216." },
+              { "html": "Srikanthan, S. (2021). Values not our own: Interrogating psychosocial suitability in the transplant social work assessment. <em>Health &amp; Social Work</em>, 46(4), 308–311." },
+              { "html": "Srikanthan, S. (2024). Whiteout: a social history of sickle cell disease in Ontario, Canada. <em>Critical Public Health</em>, 34(1), 1–11." }
             ]
           }
         }
@@ -220,13 +395,18 @@
   "candidates": [
     {
       "slideOrderIndex": 3,
-      "suggestion": "The 'What percent of individuals with SCD live in the lowest income neighbourhoods?' item has no answer options — only an Explanation ('41% of all peoples with SCD in Ontario live in neighbourhoods with the lowest incomes.'). Rendered as rich_text per spec (single-option reveal). Could be converted to a true multiple_choice quiz_inline if distractors are authored in a future content pass.",
-      "reason": "No options provided in source; only an Explanation line. Single-option reveals must not be gamified per spec."
+      "suggestion": "Slide 5 (Poverty and SCD) is an image-gallery/image-slider with text-only captions and no image URLs in the source. Rendered as image_gallery mode:slider with captions only (no url fields). If images are sourced later, urls should be added.",
+      "reason": "Source provides no image URLs for the 3 Poverty panels — only text captions. Per spec, do not fabricate URLs."
     },
     {
-      "slideOrderIndex": 6,
-      "suggestion": "The source contains a bare section header 'Key Terms For Health Equity for Individuals with SCD' with no body text or images. Merged into the Summary slide title context rather than creating an empty-content slide. If glossary terms are added in a future content pass, a dedicated 'Key Terms' slide should be split out.",
-      "reason": "Bare header with no body content — creating a zero-block slide would be invalid. Omitting it or merging is the only spec-compliant option."
+      "slideOrderIndex": 7,
+      "suggestion": "Slide 9 (dial: Poverty Dial) has no multiple-choice options — only a correct answer (41%) and Takeaway text. Rendered as rich_text per the dial→rich_text mapping rule. Could become a true quiz_inline if distractors are authored.",
+      "reason": "Dial type maps to rich_text per SCAGO_V2_SOURCE_SPEC. No options provided; cannot build a valid quiz_inline."
+    },
+    {
+      "slideOrderIndex": 11,
+      "suggestion": "Slide 14 (game-jumble: Key Terms) is an interactive letter-drag game with no LMS equivalent. Rendered as rich_text describing the key terms plus an image_gallery of the 4 associated images (verbatim edapp.com URLs). The interactive game mechanic is lost.",
+      "reason": "game-jumble has no LMS block equivalent per spec. Images preserved verbatim from source."
     }
   ]
 }

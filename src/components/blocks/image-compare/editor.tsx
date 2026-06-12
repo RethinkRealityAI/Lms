@@ -35,13 +35,61 @@ function ColorRow({ label, value, onChange }: { label: string; value: string; on
 
 function ImageSideEditor({
   side,
+  mode,
   image,
   onChange,
 }: {
   side: 'before' | 'after';
+  mode: 'image' | 'text';
   image: CompareImage;
   onChange: (img: CompareImage) => void;
 }) {
+  if (mode === 'text') {
+    return (
+      <div className="space-y-3">
+        <div>
+          <label className={labelClass}>Heading (optional)</label>
+          <input
+            type="text"
+            value={image.heading ?? ''}
+            placeholder={side === 'before' ? 'Before panel heading' : 'After panel heading'}
+            onChange={(e) => onChange({ ...image, heading: e.target.value || undefined })}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Panel text (supports HTML)</label>
+          <textarea
+            value={image.text ?? ''}
+            placeholder={side === 'before' ? 'Text shown on the before panel' : 'Text shown on the after panel'}
+            rows={4}
+            onChange={(e) => onChange({ ...image, text: e.target.value || undefined })}
+            className={`${inputClass} resize-y`}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className={labelClass}>Background</label>
+            <input
+              type="color"
+              value={image.bg_color || (side === 'before' ? '#1A3C6E' : '#0F172A')}
+              onChange={(e) => onChange({ ...image, bg_color: e.target.value })}
+              className="w-full h-9 rounded-md border border-gray-200 cursor-pointer bg-white"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Text color</label>
+            <input
+              type="color"
+              value={image.text_color || '#FFFFFF'}
+              onChange={(e) => onChange({ ...image, text_color: e.target.value })}
+              className="w-full h-9 rounded-md border border-gray-200 cursor-pointer bg-white"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-3">
       <DropZoneUploader
@@ -83,6 +131,7 @@ export function ImageCompareEditor({ data, onChange }: BlockEditorProps<ImageCom
   const [tab, setTab] = useState<'before' | 'after'>('before');
   const before = data.before ?? { url: '' };
   const after = data.after ?? { url: '' };
+  const mode = data.mode ?? 'image';
 
   return (
     <div className="space-y-4">
@@ -90,6 +139,30 @@ export function ImageCompareEditor({ data, onChange }: BlockEditorProps<ImageCom
       <div className="rounded-xl border border-gray-200 overflow-hidden bg-slate-50 p-2">
         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">Preview</p>
         <CompareSlider data={data} interactive={false} />
+      </div>
+
+      {/* Compare mode: images vs text panels */}
+      <div>
+        <label className={labelClass}>Compare</label>
+        <div className="flex gap-1.5">
+          {([
+            { value: 'image' as const, label: 'Two images' },
+            { value: 'text' as const, label: 'Two text panels' },
+          ]).map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange({ ...data, mode: opt.value })}
+              className={`flex-1 px-2.5 py-1.5 text-xs rounded-lg border transition-all font-medium ${
+                mode === opt.value
+                  ? 'bg-[#1A3C6E] text-white border-[#1A3C6E]'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Before / After tabs */}
@@ -115,12 +188,14 @@ export function ImageCompareEditor({ data, onChange }: BlockEditorProps<ImageCom
       {tab === 'before' ? (
         <ImageSideEditor
           side="before"
+          mode={mode}
           image={before}
           onChange={(img) => onChange({ ...data, before: img })}
         />
       ) : (
         <ImageSideEditor
           side="after"
+          mode={mode}
           image={after}
           onChange={(img) => onChange({ ...data, after: img })}
         />

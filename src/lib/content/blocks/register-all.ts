@@ -17,6 +17,8 @@ import { tableDataSchema } from './table/schema';
 import { surveyDataSchema } from './survey/schema';
 import { contentListDataSchema } from './content-list/schema';
 import { imageCompareDataSchema } from './image-compare/schema';
+import { iconListDataSchema } from './icon-list/schema';
+import { audioDataSchema } from './audio/schema';
 
 registerBlockType({
   type: 'rich_text',
@@ -229,6 +231,7 @@ registerBlockType({
   category: 'interactive',
   dataSchema: imageCompareDataSchema,
   defaultData: {
+    mode: 'image' as const,
     before: { url: '' },
     after: { url: '' },
     initial_position: 50,
@@ -361,6 +364,44 @@ registerBlockType({
   ViewerComponent: React.lazy(() => import('@/components/blocks/content-list/viewer')),
   EditorComponent: React.lazy(() =>
     import('@/components/blocks/content-list/editor').then((m) => ({ default: m.ContentListEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'audio',
+  label: 'Audio',
+  description: 'An audio clip player with optional title, caption, and credit.',
+  icon: 'volume-2',
+  category: 'media',
+  dataSchema: audioDataSchema,
+  defaultData: { url: '', autoplay: false },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/audio/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/audio/editor').then((m) => ({ default: m.AudioEditor }))
+  ),
+  completionCriteria: () => true,
+  version: 1,
+});
+
+registerBlockType({
+  type: 'icon_list',
+  label: 'Icon List',
+  description: 'A grid of icon tiles — each with an icon/image, a title, and a short body. Great for "supports", "steps", or feature highlights.',
+  icon: 'layout-grid',
+  category: 'content',
+  dataSchema: iconListDataSchema,
+  defaultData: {
+    items: [],
+    columns: 'auto' as const,
+    icon_size: 64,
+    layout: 'stacked' as const,
+    card: true,
+  },
+  ViewerComponent: React.lazy(() => import('@/components/blocks/icon-list/viewer')),
+  EditorComponent: React.lazy(() =>
+    import('@/components/blocks/icon-list/editor').then((m) => ({ default: m.IconListEditor }))
   ),
   completionCriteria: () => true,
   version: 1,

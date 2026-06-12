@@ -57,7 +57,7 @@ function validate(plan: Plan): string[] {
       if (!b.data || typeof b.data !== 'object') errs.push(`slide ${s.orderIndex} block ${b.orderIndex}: missing data`);
       // Image URLs must be absolute (and, for SCAGO, served from the scago-assets bucket)
       const json = JSON.stringify(b.data);
-      const relImg = json.match(/"(url|image_url|background_image)":\s*"(?!https?:\/\/|data:)[^"]+"/);
+      const relImg = json.match(/"(url|image_url|background_image|icon_url|avatar_url)":\s*"(?!https?:\/\/|data:)[^"]+"/);
       if (relImg) errs.push(`slide ${s.orderIndex} block ${b.orderIndex}: non-absolute media url -> ${relImg[0]}`);
       // quiz multiple_choice/true_false answer must be in options
       if (b.blockType === 'quiz_inline') {

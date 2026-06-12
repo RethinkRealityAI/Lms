@@ -3,9 +3,19 @@ import { z } from 'zod';
 const compareImageSchema = z.object({
   url: z.string().default(''),
   alt: z.string().optional(),
+  /** Text-panel mode only: rich-text/HTML body shown instead of an image. */
+  text: z.string().optional(),
+  /** Text-panel mode only: optional bold heading above the body. */
+  heading: z.string().optional(),
+  /** Text-panel mode only: panel background color. */
+  bg_color: z.string().optional(),
+  /** Text-panel mode only: panel text color. */
+  text_color: z.string().optional(),
 });
 
 export const imageCompareDataSchema = z.object({
+  /** `image` (default) compares two images; `text` compares two text panels. */
+  mode: z.enum(['image', 'text']).default('image'),
   before: compareImageSchema.default({ url: '' }),
   after: compareImageSchema.default({ url: '' }),
   /** Handle position 0–100 (%). 0 = all before, 100 = all after. */

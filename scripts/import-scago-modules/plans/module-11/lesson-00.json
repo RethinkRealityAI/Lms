@@ -1,11 +1,64 @@
 {
   "lessonId": "d8184daa-5c48-4eeb-b9d7-695770372599",
   "lessonOrderIndex": 0,
-  "lessonTitle": "Treating Pain at Home and Targeting Pathobiology of Vaso-Occlusive Episodes in Sickle Cell Disease (SCD)",
+  "lessonTitle": "New and Emerging SCD Therapies — An Overview",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
+      "slideType": "content",
+      "title": "Before We Begin",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "title": null,
+          "data": {
+            "title": "Before We Begin",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "knowledge",
+                "type": "scale",
+                "question": "My knowledge about Latest Innovations in Sickle Cell Disease on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal knowledge",
+                "max_label": "In depth knowledge"
+              },
+              {
+                "id": "comfort",
+                "type": "scale",
+                "question": "My comfort level with Latest Innovations in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal comfort",
+                "max_label": "Great deal of comfort"
+              },
+              {
+                "id": "confidence",
+                "type": "scale",
+                "question": "My confidence level with Latest Innovations in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal confidence",
+                "max_label": "Great deal of confidence"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 1,
       "slideType": "content",
       "title": "Learning Objectives",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -17,41 +70,32 @@
           "data": {
             "bullet_style": "disc",
             "items": [
-              { "html": "Review current gold standard of therapy of vaso-occlusive episodes" },
-              { "html": "Identify research studies focused on targeting the pathobiology of Sickle Cell Disease" },
-              { "html": "Discuss how to treat vaso-occlusive episodes at home" }
-            ],
-            "gridX": 0,
-            "gridY": 0,
-            "gridW": 12,
-            "gridH": 3
+              { "html": "Review Crizanlizumab and its role in SCD management" },
+              { "html": "Summarize new and emerging therapies for SCD" },
+              { "html": "Identify how these therapies work and current evidence" }
+            ]
           }
         }
       ]
     },
     {
-      "orderIndex": 1,
-      "slideType": "content",
-      "title": "Current Gold Standard Therapy for Adults",
-      "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": []
-    },
-    {
       "orderIndex": 2,
       "slideType": "content",
-      "title": "Treating Vaso-occlusive Episodes At Home",
+      "title": "Disclosures",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
+          "blockType": "content_list",
           "title": null,
           "data": {
-            "html": "<p>To start our innovations in Sickle Cell journey, let's start with work that is being done around treating VOEs at home.</p><p><strong>Drepadom - a Homecare Protocol for Vaso-Occlusive Crisis for Sickle Cell Disease Patients (Pelinski et al.)</strong></p><p>DREPADOM is a home-care protocol for VOC management for low-risk patients.</p><p>Risk is determined by the validated PRESEV score (Bartolucci – eBioMed 2016) that evaluates the risk of developing Acute Chest Syndrome (ACS).</p><p>Eligibility for DREPADOM: • Patients arriving at the ER for VOC with a PRESEV score ≤ 6 and not presenting any exclusion criteria • Patients discharged from at least 3 days of hospitalization for VOC and/or ACS</p><p>Coordinator coordinates delivery of PO/parenteral treatments (including opioids), and home oxygen, to the patients' home within four hours.</p><p>Homecare nurse performs house calls twice a day.</p><p>Daily review of decision-making algorithm supervised by SCD experts to determine stopping/continuing outpatient follow-up vs. rehospitalization.</p><p>Of 209 patients (105 from ED and 104 from Early Release), 22 (11%) were re-admitted to hospital for uncontrolled/chest pain, ACS, and infections. Study conclusion: Drepadom is a successful and safe tool to reduce hospital stay for SCD patients.</p>",
-            "gridX": 0,
-            "gridY": 0,
-            "gridW": 12,
-            "gridH": 6
+            "bullet_style": "disc",
+            "items": [
+              { "html": "<strong>Dr. Sarah Patterson:</strong> Advisory boards — Novartis Canada, Pfizer Canada, Global Blood Therapeutics Canada, Forma Therapeutics (now Novo Nordisk); Speaker's Bureau — Novartis Canada, Pfizer Canada; Research Grant — Novartis Canada" },
+              { "html": "<strong>Dr. Seethal Jacob:</strong> No disclosures" },
+              { "html": "<strong>Karen Fleming:</strong> No disclosures" },
+              { "html": "<strong>Dr. Kevin Kuo:</strong> Advisory boards — Novartis Canada, Pfizer Canada, Global Blood Therapeutics Canada, bluebird bio; Research Grant — Novartis Canada, Pfizer Canada, Global Blood Therapeutics Canada, Forma Therapeutics" }
+            ]
           }
         }
       ]
@@ -59,19 +103,46 @@
     {
       "orderIndex": 3,
       "slideType": "content",
-      "title": "Targeting the Pathobiology of Sickle Cell Disease Current Innovations",
+      "title": "Crizanlizumab Review",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
+          "blockType": "callout",
           "title": null,
           "data": {
-            "html": "<p>Instead of focusing on treating the pain, let's look at innovations that are focused on targeting the pathobiology of SCD to prevent pain/complications.</p>",
-            "gridX": 0,
-            "gridY": 0,
-            "gridW": 12,
-            "gridH": 2
+            "mode": "speech_bubble",
+            "bubble_text": "Instead of focusing on treating the pain, let's look at innovations that are focused on targeting the pathobiology of SCD to prevent pain/complications.",
+            "author_name": "Dr. Sarah Patterson",
+            "author_title": "Haematologist",
+            "bubble_style": "light"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "none",
+            "display_mode": "accordion",
+            "items": [
+              {
+                "title": "Mechanism",
+                "html": "<ul><li>Humanized monoclonal antibody</li><li>Targets P-Selectin on activated endothelium</li><li>Blocks the binding of P-selectin to its ligands (PSGL-1)</li><li>Reduces cell-cell interactions between sickle red blood cells, platelets, endothelial cells and white blood cells</li><li>These interactions are thought to lead to vascular occlusion</li></ul>"
+              },
+              {
+                "title": "Evidence: SUSTAIN Trial (Phase II)",
+                "html": "<ul><li>198 patients with SCD aged 16 and older</li><li>&gt;2 VOCs in previous 12 months, unless transfused &gt;10 times in the past year</li><li>HU allowed</li><li>Compared 5mg/kg and 2.5 mg/kg Crizanlizumab vs Placebo for 52 weeks</li></ul>"
+              },
+              {
+                "title": "Results",
+                "html": "<ul><li>5mg/kg demonstrated a 45.3% lower median annual rate of VOC vs placebo (p=0.01)</li><li>5mg/kg significantly prolonged time to first VOC (p=0.001)</li><li>5mg/kg significantly prolonged time to second VOC (p=0.02)</li><li>5mg/kg: 35.8% of patients had no VOC vs 17% placebo (p=0.02)</li></ul>"
+              },
+              {
+                "title": "Health Canada Approval",
+                "html": "<ul><li>Crizanlizumab is approved by Health Canada for SCD patients 16 years and older with VOCs</li><li>Dosing: 5 mg/kg IV Infusion at Week 0, 2 and every 4 weeks thereafter</li></ul>"
+              }
+            ]
           }
         }
       ]
@@ -79,59 +150,54 @@
     {
       "orderIndex": 4,
       "slideType": "content",
-      "title": "Targeting Vaso-Occlusive Episodes",
+      "title": "Overview of Emerging Therapies",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
+          "blockType": "content_list",
           "title": null,
           "data": {
-            "html": "<p>To get us started, let's jump right to the innovations focused on targeting VOCs.</p><p><strong>Crizanlizumab</strong></p><ul><li>Approved by FDA in 2019</li></ul><p><strong>Mechanism:</strong></p><ul><li>Monoclonal antibody for P-selectin, which is expressed on the surface of endothelial cells and platelets and promotes adhesion</li></ul><p><strong>Evidence:</strong></p><ul><li>SUSTAIN trial (Phase II)</li><li>High dose vs placebo had reduction in VOCs but no change in hospitalization rates</li></ul><p><strong>Cost:</strong></p><ul><li>Estimated $96,000/year</li></ul><p><em>Photo credit: (Salinas Cisneros G, &amp; Thein SL., 2020); Karki, N &amp; Kutlar, A. (2021)</em></p>",
-            "gridX": 0,
-            "gridY": 0,
-            "gridW": 12,
-            "gridH": 4
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
+            "bullet_style": "none",
+            "display_mode": "accordion",
+            "items": [
               {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_01_Treating_Pain_at_Home_and_Targeting_Pathobiology_of_VasoOccl/Pathobio_voc_v3o8lm.png",
-                "alt": "Pathobio_voc_v3o8lm.png"
-              }
-            ],
-            "gridX": 0,
-            "gridY": 4,
-            "gridW": 12,
-            "gridH": 3
-          }
-        },
-        {
-          "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
+                "title": "L-Glutamine",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>Reduces oxidative stress by synthesizing NADPH and glutathione</li></ul><p><strong>Evidence:</strong></p><ul><li>2 RCTs - Phase II and Phase III, placebo controlled</li><li>Phase III: Lower cumulative pain crises at 48 weeks</li></ul>"
+              },
               {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_01_Treating_Pain_at_Home_and_Targeting_Pathobiology_of_VasoOccl/crizanlizuman_hsew23.png",
-                "alt": "crizanlizuman_hsew23.png"
+                "title": "Canakinumab",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>Selective blockade of IL-1b to reduce inflammation</li></ul><p><strong>Evidence:</strong></p><ul><li>Phase II placebo controlled randomized control trial of 49 participants</li><li>Reduced hemolysis, number and duration of hospitalizations</li></ul>"
+              },
+              {
+                "title": "Crovalimab",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>Complement blockade (C5) which reduces ongoing inflammation in the setting of VOC/endothelial activation/hemolysis</li></ul><p><strong>Evidence:</strong></p><ul><li>Phase Ib Crosswalk-A trial in progress</li><li>Subcutaneous injection</li></ul>"
+              },
+              {
+                "title": "Voxelotor",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>Hemoglobin S polymerization inhibitor, increased oxygen affinity resulting in increased red cell survival and reduced hemolysis</li></ul><p><strong>Evidence:</strong></p><ul><li>HOPE trial (Phase III)</li><li>Hb increased by at least 10 points in the high dose (89%) vs placebo (25%) at 72 weeks</li></ul>"
+              },
+              {
+                "title": "Decitabine and Tetrahydrouridine",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>DNMT1 is the enzyme that silences HbF from infancy onwards</li><li>Decitabine interferes with the function of DNMT1</li><li>Tetrahydrouridine inhibits enzyme that rapidly deactivates Decitabine</li></ul><p><strong>Evidence:</strong></p><ul><li>Phase 1 trial</li><li>Increased Hb 12-19 g/L</li><li>HbF increased by 4-9%</li></ul>"
+              },
+              {
+                "title": "GBT021601",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>GBT021601 stabilizes hemoglobin (Hb) in the oxygenated state to inhibit HbS polymerization</li><li>Longer half-life than voxelotor and potential to achieve higher Hb occupancies</li></ul><p><strong>Evidence:</strong></p><ul><li>Phase 2 Part A dose-finding study</li><li>Mean increase in Hb from baseline was 2.67g/dL for the 100-mg group and 3.17g/dL for the 150-mg group</li></ul>"
+              },
+              {
+                "title": "Mitapivat",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>Activator of pyruvate kinase (involved in RBC metabolism)</li><li>Increases adenosine triphosphate (ATP) which improves RBC survival</li><li>Decreases 2,3 diphosphoglycerate (2, 3-DPG) which increases oxygen affinity of Hb</li></ul><p><strong>Evidence:</strong></p><ul><li>Phase 2 double-blind trial</li><li>Hb response in 46.2% of 50mg arm and 50% of 100mg arm</li></ul>"
+              },
+              {
+                "title": "dWIZ-2",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>Targeted Degradation of the Wiz Transcription Factor for Gamma Globin De-Repression</li><li>Cereblon (CRBN) is a naturally existing protein degradation machinery in cells</li><li>dWIZ-2 degrades WIZ and induces HbF in CD34+ derived erythroblasts</li></ul><p><strong>Evidence:</strong></p><ul><li>CD34+ derived erythroblasts from sickle cell disease donors and mouse xenotransplantation model</li></ul>"
+              },
+              {
+                "title": "AB1",
+                "html": "<p><strong>Mechanism:</strong></p><ul><li>AB1 is a potent non-cytotoxic agent which depletes DNMT1 to induce HbF in sickle erythroid progenitors (Li et al., unpublished data)</li></ul><p><strong>Evidence:</strong></p><ul><li>In SCD Townes mice model, AB1 increases γ-globin mRNA and F-cells, decreases sickle cell phenotype in blood, improves splenic hematopoiesis</li></ul>"
               }
-            ],
-            "gridX": 0,
-            "gridY": 7,
-            "gridW": 12,
-            "gridH": 3
+            ]
           }
         }
       ]
@@ -139,19 +205,92 @@
     {
       "orderIndex": 5,
       "slideType": "content",
-      "title": "Crizanlizumab (Adakveo) Trial #1",
+      "title": "Crizanlizumab Update",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": []
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "title": null,
+          "data": {
+            "mode": "speech_bubble",
+            "bubble_text": "I want to share some new updates with you regarding the SUSTAIN trial for Crizanlizumab.",
+            "author_name": "Dr. Seethal Jacob",
+            "author_title": "Paediatric Haematologist",
+            "bubble_style": "light"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "title": null,
+          "data": {
+            "bullet_style": "none",
+            "display_mode": "accordion",
+            "items": [
+              {
+                "title": "STAND Trial",
+                "html": "<ul><li>Pivotal Phase III study</li><li>5 mg/kg Crizanlizumab vs placebo (2:1 ratio)</li><li>6 to &lt;18 years of age (pediatric population only)</li><li>Primary endpoint: Annual rate of Sickle Cell-related Pain Crises (SCPCs) over 12 months</li></ul>"
+              },
+              {
+                "title": "STAND Results (Inusa et al., 2023)",
+                "html": "<ul><li>Primary endpoint not met</li><li>Mean annual SCPC rate, 2.00 in Crizanlizumab arm vs 1.99 in Placebo arm (p=0.7)</li><li>Adverse events and Serious Adverse Events were similar in both groups</li></ul>"
+              },
+              {
+                "title": "Update",
+                "html": "<ul><li>Novartis voluntarily withdrew Crizanlizumab from global markets in June 2024, following these results in pediatric patients and results of the Phase III NIAID-sponsored REDS-IV-P SCD-SAINT trial in adult patients</li></ul>"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "orderIndex": 6,
       "slideType": "content",
-      "title": "Crizanlizumab (Adakveo) Trial #2",
+      "title": "Curative vs Non-Curative Therapies",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
-      "blocks": []
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Let's split the options into curative and non-curative therapies. We will cover curative therapies in detail in Lesson 3.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "title": null,
+          "data": {
+            "html": "<p>Starting with non-curative options, recall the pathobiology of SCD: With the Hb S mutation, the hemoglobin becomes deoxygenated. There is increased hydrophobicity and the hemoglobin polymerizes (becomes sticky), causing the red blood cells to become sickled. Options to interfere with the sickle process include: a) improving oxygen affinity of Hb b) Increasing Fetal Hemoglobin (HbF)</p><p>HbS Polymerization can be affected by: 1. Hemoglobin oxygen affinity, 2. Hemoglobin concentration, 3. Delay time, 4. Other (hyperviscosity, temperature)</p><p>Increasing HbF is the target of gene therapies because HbF does not polymerize and can actually prevent polymerization of HbS. In general, &gt;20-30% HbF levels are required to prevent sickling.</p><p><em>Photo credit: Salinas Cisneros G &amp; Thein SL (2020)</em></p>"
+          }
+        }
+      ]
     },
     {
       "orderIndex": 7,
+      "slideType": "quiz",
+      "title": "Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "title": null,
+          "data": {
+            "question": "True or False: Hydroxyurea is the most proven and effective therapy for SCD.",
+            "question_type": "multiple_choice",
+            "options": ["True", "False"],
+            "correct_answer": "True",
+            "feedback_correct": "True! Hydroxyurea remains the most widely used therapy for SCD. Hydroxyurea increases HbF, decreases VOC, acute chest syndrome, transfusion requirements, and pain. However, it requires tailored dosing and hematologic monitoring."
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
       "slideType": "content",
       "title": "Summary",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -163,20 +302,16 @@
           "data": {
             "bullet_style": "disc",
             "items": [
-              { "html": "Research is being done to find ways to treat vaso-occlusive episodes at home, to improve quality of life for those living with SCD" },
-              { "html": "The pathobiology of SCD can be targeted towards vaso-occlusion, inflammation, Hb S polymerization, and changing the genotype" },
-              { "html": "There are promising treatments on the horizon that are not looking at ways of treating the pain, but instead are looking for ways to prevent the pain from happening in the 1st place" }
-            ],
-            "gridX": 0,
-            "gridY": 0,
-            "gridW": 12,
-            "gridH": 3
+              { "html": "Crizanlizumab has been voluntarily withdrawn from markets due to failure of STAND trial and NIAID-sponsored REDS-IV-P SCD-SAINT trial" },
+              { "html": "Many promising new therapies are targeting the pathobiology of SCD" },
+              { "html": "Hydroxyurea remains the most proven and effective therapy for SCD" }
+            ]
           }
         }
       ]
     },
     {
-      "orderIndex": 8,
+      "orderIndex": 9,
       "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -188,19 +323,72 @@
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Abboud, M. Cançado, R., De Montalembert, M., Smith, W., Rimawi, H., Voskaridou, E., Guvenc, B., Keefe, D., Grosch, K., Nassin, M., Watson, J., Yssel, J., Reshetnyak, E., &amp; Dei Adomakoh, Y. (2023). Efficacy, Safety, and Biomarker Analysis of 5 Mg and 7.5 Mg Doses of Crizanlizumab in Patients with Sickle Cell Disease: Primary Analyses from the Phase III STAND Study. <em>Blood</em>, 142 (Supplement 1)." },
-              { "html": "Agrawal RK, Patel RK, Shah V, Nainiwal L, Trivedi B. Hydroxyurea in sickle cell disease: drug review. <em>Indian J Hematol Blood Transfus</em>. 2014;30(2):91-96. doi:10.1007/s12288-013-0261-4" },
-              { "html": "Ataga, K., Kutlar, A., Kanter, J., Liles, D., Cancado, R., Friedrisch, J., Guthrie, T., Knight-Madden, J., Alvarez, O., Gordeuk, V., Gualandro, S., Colella, M., Smith, W., Rollins,S., Stocker, J., &amp; Rother, R. (2017). Crizanlizumab for the Prevention of Pain Crises in Sickle Cell Disease. <em>New England Journal of Medicine</em> 376. 429-439." },
-              { "html": "Ataga, K., Kutlar, A., Kanter, J., Liles, D., Cancado, R., Friedrisch, J., Guthrie, T., Knight-Madden, J., Alvarez, O., Gordeuk, MD, Sandra Gualandro, V., Pereira Collela, M., Smith, W., Rollins, S., Stocker, J., &amp; Rother, R. (2016). SUSTAIN: A Multicenter, Randomized, Placebo-Controlled, Double-Blind, 12-Month Study to Assess Safety and Efficacy of SelG1 with or without Hydroxyurea Therapy in Sickle Cell Disease Patients with Sickle Cell-Related Pain Crises. <em>Blood</em> 128 (22)." },
-              { "html": "Karki, N. &amp; Kutlar, A. (2021). P-Selectin Blockade in the Treatment of Painful Vaso-Occlusive Crises in Sickle Cell Disease: A Spotlight on Crizanlizumab. <em>Journal of Pain Research</em>:14 849–856." },
-              { "html": "Patient Information Handout: <a href=\"https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf\" target=\"_blank\" rel=\"noopener\">https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf</a>" },
-              { "html": "Paul S. Swerdlow; Red Cell Exchange in Sickle Cell Disease. <em>Hematology Am Soc Hematol Educ Program</em> 2006; 2006 (1): 48–53. doi: <a href=\"https://doi.org/10.1182/asheducation-2006.1.48\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1182/asheducation-2006.1.48</a>" },
-              { "html": "Pelinski, Y., De Luna, G., Kassasseya, C., Morabito, A., Ngwem, E., Arlet, J., Genty, I., Honsel, V., Habibi, A., Le Jeune, S., and Bartolucci, P. (2023). Drepadom - a Homecare Protocol for Vaso-Occlusive Crisis for Sickle Cell Disease Patients. <em>Blood</em>, 142 (Supplement 1), 793." }
-            ],
-            "gridX": 0,
-            "gridY": 0,
-            "gridW": 12,
-            "gridH": 6
+              { "html": "Ataga KI, et al. Crizanlizumab for the Prevention of Pain Crises in SCD. N Engl J Med. 2017;376(5):429-439." },
+              { "html": "Inusa BPD, et al. Crizanlizumab versus Placebo in Children/Adolescents. Blood. 2023; 142 (Supplement 1): 4." },
+              { "html": "Idowu M, et al. Mitapivat in SCD: RISE UP Phase 2. Blood (2023) 142 (Supplement 1): 271." },
+              { "html": "Kato GJ, et al. Sickle cell disease. Nat Rev Dis Primers. 2018;4:18010." },
+              { "html": "Kato GJ, Piel FB, Reid CD, et al. Sickle cell disease. Nat Rev Dis Primers. 2018;4:18010." },
+              { "html": "Niihara, Y., et al. (2018). Phase 3 Trial of l-Glutamine in SCD. NEJM, 379:226-235." },
+              { "html": "Rees, D., et al. (2022). Canakinumab trial in children/young adults. Blood. 139(17): 2642-2652." },
+              { "html": "Saraf SL et al. GBT021601 Phase 2/3. Blood (2023) 142 (Supplement 1): 274." },
+              { "html": "Salinas Cisneros G &amp; Thein SL (2020). Recent Advances in the Treatment of Sickle Cell Disease. Front. Physiol. 11: 435." },
+              { "html": "Ting PY et al. Targeted Degradation of Wiz Transcription Factor. Blood (2023) 142 (Supplement 1): 2." },
+              { "html": "Vichinsky, E., Hoppe, C., Ataga, K., Ware, R., Nduba, V., El-Beshlawy, A., Hassab, H., Achebe, M., Alkindi, S., Brown, R.C., Diuguid, D., Telfer, P., Tsitsikas. D., Elghandour, A., Gordeuk, V., Kanter, J., Abboud, M., Lehrer-Graiwer, J., Tonda, M., Intondi, A., Tong, B., Howard, J., and HOPE Trial Investigators (2019). A Phase 3 Randomized Trial of Voxelotor in Sickle Cell Disease. New England Journal of Medicine 8;381(6):509-519." },
+              { "html": "<a href=\"https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf\">https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf</a>" },
+              { "html": "<a href=\"https://www.bio-connect.nl/news/fda-new-approvals-mitapivat-pyrukynd/\">https://www.bio-connect.nl/news/fda-new-approvals-mitapivat-pyrukynd/</a>" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "Check Your Growth",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "title": null,
+          "data": {
+            "title": "Check Your Growth",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "knowledge",
+                "type": "scale",
+                "question": "My knowledge about Latest Innovations in Sickle Cell Disease on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal knowledge",
+                "max_label": "In depth knowledge"
+              },
+              {
+                "id": "comfort",
+                "type": "scale",
+                "question": "My comfort level with Latest Innovations in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal comfort",
+                "max_label": "Great deal of comfort"
+              },
+              {
+                "id": "confidence",
+                "type": "scale",
+                "question": "My confidence level with Latest Innovations in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal confidence",
+                "max_label": "Great deal of confidence"
+              }
+            ]
           }
         }
       ]
@@ -208,24 +396,24 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 1,
-      "suggestion": "Merge into slide 2 or remove — this bare header ('Current Gold Standard Therapy for Adults') has no body text and no images in Lesson 1. Consider adding a brief introductory sentence or merging with the Treating VOEs At Home slide as a sub-heading if the course editor has content to add.",
-      "reason": "Source has only the bold header with no supporting body prose or images under it in this lesson's section."
-    },
-    {
       "slideOrderIndex": 3,
-      "suggestion": "The transitional sentence ('Instead of focusing on treating the pain...') was placed here as the body of the 'Targeting the Pathobiology...' slide. Consider whether it should instead be the closing sentence of slide 2 (Treating VOEs at Home).",
-      "reason": "In the source MD this sentence appears as a standalone bold line between the DREPADOM content and the Pathobiology header — it functions as a transition and could belong to either adjacent slide."
+      "suggestion": "S7 Crizanlizumab Review was an image-slider with 5 cards. Cards had NO image URLs in the source — only caption text. Rendered captions verbatim as an accordion content_list. If images are later sourced, upgrade to image_gallery mode:\"slider\" with captions.",
+      "reason": "No image URLs provided for image-slider cards"
     },
     {
       "slideOrderIndex": 5,
-      "suggestion": "Slides 5 and 6 ('Crizanlizumab (Adakveo) Trial #1' and 'Trial #2') are bare headers with no body text and no Lesson-01 images. They were likely intended to display trial data images/charts that are absent from this lesson's image manifest. Consider populating with trial detail prose from the SUSTAIN/STAND studies referenced in the References slide, or merging into slide 4.",
-      "reason": "EdApp slide structure referenced two trial slides but no body or images for them exist in Lesson 1 source."
+      "suggestion": "S11 Crizanlizumab Update was an image-slider with 4 cards. Cards had NO image URLs — only caption text. Rendered as accordion content_list. If images are sourced, upgrade to image_gallery mode:\"slider\".",
+      "reason": "No image URLs provided for image-slider cards"
     },
     {
       "slideOrderIndex": 6,
-      "suggestion": "Same as slide 5 — bare header with no body or images.",
-      "reason": "No supporting content in source for this slide beyond the header text."
+      "suggestion": "S8 Treatment Overview (image-gallery) and S12 Curative vs Non-Curative both reference [IMAGE] placeholders with no URLs in the source. S8 dropped entirely (image-only, no text content given). S12 images dropped; prose retained as rich_text with photo credit. If image URLs are sourced, add image_gallery blocks.",
+      "reason": "No image URLs provided in source — [IMAGE] placeholders only"
+    },
+    {
+      "slideOrderIndex": 3,
+      "suggestion": "S6 Dr. Sarah Patterson speech-bubble quote merged onto the Crizanlizumab Review slide as a speech_bubble callout (mode:speech_bubble, author_name/author_title preserved). Could be its own slide if preferred.",
+      "reason": "Speech-bubble merged with related content slide for cohesion"
     }
   ]
 }

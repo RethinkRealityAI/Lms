@@ -3,6 +3,7 @@
   "lessonOrderIndex": 3,
   "lessonTitle": "Improving Health Equity for Pregnant People with SCD",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
@@ -13,7 +14,6 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -32,10 +32,13 @@
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "html": "<p>We have learned throughout the modules that people with SCD experience barriers to care that include racism, discrimination, and stigma.</p><p>In this lesson we will highlight some of the ongoing barriers faced by pregnant people with SCD, but also identify ways clinicians can mitigate obstetric racism and promote health equity strategies for improved patient care and outcomes.</p>"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "We have learned throughout the modules that people with SCD experience barriers to care that include racism, discrimination, and stigma." },
+              { "html": "In this lesson we will highlight some of the ongoing barriers faced by pregnant people with SCD, but also identify ways clinicians can mitigate obstetric racism and promote health equity strategies for improved patient care and outcomes." }
+            ]
           }
         }
       ]
@@ -43,15 +46,19 @@
     {
       "orderIndex": 2,
       "slideType": "content",
-      "title": "Why Are We Talking about Racism in Obstetrical Care?",
+      "title": "What is Obstetric Racism?",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "html": "<p>According to Early et al. (2023) there were 3 categories for pregnant people with SCD that demonstrated statically significant differences from the control group: &bull; Hypertensive disorders of pregnancy &bull; Labor and delivery complications &bull; Hematologic and immunologic complications</p><p>The maternal mortality rate in deliveries among people with SCD was 26 times greater than in the non-Black control group and more than 10 times greater than among Black pregnant people without SCD</p><p><strong>Racism as a determinant of health, along with the intersection of class, gender, and access to health services, adversely affects Black women&rsquo;s health outcomes</strong></p>"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "<strong>Definition:</strong> When Black women are trying to access maternal health services and they are subjected to beliefs and practices that lend to the reproducing Black body being harmed and manifests as forms of violence and abuse." },
+              { "html": "<strong>History:</strong> Historically, Black women became victims of gynaecological surgeries without anaesthesia that were experimental, due to the racist belief that Black people have a high pain tolerance." },
+              { "html": "<strong>Perpetuation:</strong> This has set the precedence for how Black childbearing women are expected to be treated within the healthcare system and by healthcare providers." }
+            ]
           }
         }
       ]
@@ -59,15 +66,14 @@
     {
       "orderIndex": 3,
       "slideType": "content",
-      "title": "Reduction of Peripartum Racial and Ethnic Disparities",
+      "title": "Why Are We Talking about Racism in Obstetrical Care?",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>In an effort to reduce peripartum racial and ethnic disparites, a workgroup made up of representatives from Obstetrics, Maternal Fetal Medicine, Midwives, Maternal/Child, Family Physicians, and a School of Public Health was developed</p><p>This workgroup focused on the development of an evidence-based patient safety bundle.</p><p>The proposed bundle was to be feasible and actionable, and have the potential to improve the quality of maternal health care, while reducing racial and ethnic disparities in maternal morbidity and mortality.</p><p>Their work culminated in the development of a bundle that can be used by those who find them of benefit.</p><p>Resource: Reduction of Peripartum Racial and Ethnic Disparities Bundle: <a href=\"https://saferbirth.org/wp-content/uploads/Reduction-of-Peripartum-Racial-and-Ethnic-Disparities_FINAL-11.7.16.pdf\" target=\"_blank\" rel=\"noopener\">https://saferbirth.org/wp-content/uploads/Reduction-of-Peripartum-Racial-and-Ethnic-Disparities_FINAL-11.7.16.pdf</a></p>"
+            "html": "<p>According to Early et al. (2023) there were 3 categories for pregnant people with SCD that demonstrated statically significant differences from the control group:</p><ul><li>Hypertensive disorders of pregnancy</li><li>Labor and delivery complications</li><li>Hematologic and immunologic complications</li></ul><p>The maternal mortality rate in deliveries among people with SCD was 26 times greater than in the non-Black control group and more than 10 times greater than among Black pregnant people without SCD</p>"
           }
         }
       ]
@@ -75,15 +81,18 @@
     {
       "orderIndex": 4,
       "slideType": "content",
-      "title": "Addressing Racial Disparities",
+      "title": "Quote on Racism as Determinant of Health",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "callout",
           "data": {
-            "html": "<p>To provide the highest quality care to patients, we must deliver care that is free of bias and includes: &bull; Speaking openly with patients about Black maternal health outcomes &bull; Professional development courses in anti-oppressive framework &bull; Engaging with your institution&rsquo;s anti-racism frameworks and policies</p>"
+            "mode": "speech_bubble",
+            "bubble_text": "Racism as a determinant of health, along with the intersection of class, gender, and access to health services, adversely affects Black women's health outcomes",
+            "author_name": "Karen Fleming",
+            "author_title": "Clinical Nurse Specialist",
+            "bubble_style": "light"
           }
         }
       ]
@@ -91,13 +100,139 @@
     {
       "orderIndex": 5,
       "slideType": "content",
+      "title": "Manifestations of Obstetric Racism",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "table",
+          "data": {
+            "columns": [
+              { "label": "Feeling" },
+              { "label": "Manifestation" }
+            ],
+            "rows": [
+              ["Invisibility", "Standing in proximity to healthcare providers, their presence were unacknowledged"],
+              ["Ignored/ Neglected", "Prejudice about Black women's capacities to endure pain led to healthcare providers refusing to provide pain relief during labour"],
+              ["Dehumanized", "Women reported lack of compassion and loss of humanness in care"],
+              ["Disempowered", "Decisions made for them and not with them. Lack of control and ability to influence their own care"],
+              ["Stigma", "Participants felt an impending sense of failure and feelings of guilt from the internalization of stigma experienced from healthcare providers"]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
+      "title": "Addressing Racial Disparities For Pregnant Patients",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Engage with your institution's anti-racism frameworks and policies" },
+              { "html": "Consider professional development courses in anti-oppressive frameworks" },
+              { "html": "Engage multidisciplinary allies in maternity care, such as social workers with trauma-informed care expertise" },
+              { "html": "Speak openly with patients about Black maternal health outcomes. Encourage participation in shared care and benefits of participating in maternal research, where available" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "content",
+      "title": "Reduction of Peripartum Racial and Ethnic Disparities",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<ul><li>In an effort to reduce peripartum racial and ethnic disparities, a workgroup made up of representatives from Obstetrics, Maternal Fetal Medicine, Midwives, Maternal/Child, Family Physicians, and a School of Public Health was developed</li><li>This workgroup focused on the development of an evidence-based patient safety bundle.</li><li>The proposed bundle was to be feasible and actionable, and have the potential to improve the quality of maternal health care, while reducing racial and ethnic disparities in maternal morbidity and mortality.</li><li>Their work culminated in the development of a bundle that can be used by those who find them of benefit.</li><li>Resource: Reduction of Peripartum Racial and Ethnic Disparities Bundle: <a href=\"https://saferbirth.org/wp-content/uploads/Reduction-of-Peripartum-Racial-and-Ethnic-Disparities_FINAL-11.7.16.pdf\" target=\"_blank\">https://saferbirth.org/wp-content/uploads/Reduction-of-Peripartum-Racial-and-Ethnic-Disparities_FINAL-11.7.16.pdf</a></li></ul>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Addressing Racial Disparities — Knowledge Check",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><strong>Addressing Racial Disparities</strong></p><p>To provide the highest quality care to patients, we must deliver care that is free of bias and includes:</p><ul><li>Speaking openly with patients about Black maternal health outcomes</li><li>Professional development courses in anti-oppressive framework</li><li>Engaging with your institution's anti-racism frameworks and policies</li></ul>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "Check Your Growth",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "data": {
+            "title": "Check Your Growth",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "knowledge",
+                "type": "scale",
+                "question": "My knowledge about Fertility, Contraception, and Pregnancy in Sickle Cell Disease on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal knowledge",
+                "max_label": "In depth knowledge"
+              },
+              {
+                "id": "comfort",
+                "type": "scale",
+                "question": "My comfort level with Fertility, Contraception, and Pregnancy in SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal comfort",
+                "max_label": "Great deal of comfort"
+              },
+              {
+                "id": "confidence",
+                "type": "scale",
+                "question": "My confidence level with Fertility, Contraception, and Pregnancy for people with SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal confidence",
+                "max_label": "Great deal of confidence"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
       "title": "Summary",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -109,7 +244,7 @@
       ]
     },
     {
-      "orderIndex": 6,
+      "orderIndex": 11,
       "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -117,13 +252,12 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Boakye, P., Prendergast, N., Bandari, B., Brown, E., Odutayo, A., and Salami, S. (2023). Obstetric racism and perceived quality of maternity care in Canada: Voices of Black women. <em>Women's Health</em>, 19. 1-13." },
-              { "html": "Early, M. BA; Ahizechukwu C. Eke, MBChB, PhD; Alison Gemmill, PhD; Sophie Lanzkron, MD, MHS; Lydia H. Pecker, MD, MHS. (2023). Severe Maternal Morbidity and Mortality in Sickle Cell Disease in the National Inpatient Sample, 2012-2018. <em>Jama Network Open</em>, 6 (2)" },
-              { "html": "<a href=\"https://saferbirth.org/wp-content/uploads/Reduction_of_Peripartum_Racial_and_Ethnic.4.pdf\" target=\"_blank\" rel=\"noopener\">https://saferbirth.org/wp-content/uploads/Reduction_of_Peripartum_Racial_and_Ethnic.4.pdf</a>" }
+              { "html": "Boakye, P., Prendergast, N., Bandari, B., Brown, E., Odutayo, A., and Salami, S. (2023). Obstetric racism and perceived quality of maternity care in Canada: Voices of Black women. Women's Health, 19. 1-13." },
+              { "html": "Early, M. BA; Ahizechukwu C. Eke, MBChB, PhD; Alison Gemmill, PhD; Sophie Lanzkron, MD, MHS; Lydia H. Pecker, MD, MHS. (2023). Severe Maternal Morbidity and Mortality in Sickle Cell Disease in the National Inpatient Sample, 2012-2018. Jama Network Open, 6(2)" },
+              { "html": "<a href=\"https://saferbirth.org/wp-content/uploads/Reduction_of_Peripartum_Racial_and_Ethnic.4.pdf\" target=\"_blank\">https://saferbirth.org/wp-content/uploads/Reduction_of_Peripartum_Racial_and_Ethnic.4.pdf</a>" }
             ]
           }
         }
@@ -132,19 +266,14 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 1,
-      "suggestion": "The source has a bare section header 'What is Obstetric Racism?' with no body text and no images. It was omitted as a standalone slide (spec forbids slides with zero text blocks and no images). Consider adding a definition or visual for this concept if source material becomes available.",
-      "reason": "Bare header — no body text, no images in manifest for Lesson 4."
+      "slideOrderIndex": 6,
+      "suggestion": "Source Slide 8 (image_gallery, click_for_more_info) lists 4 caption strings but provides NO image URLs. Content rendered as a content_list of the caption texts. If images are later located (e.g. in EdApp media assets), add an image_gallery block with mode:\"gallery\" interspersed with or above the list.",
+      "reason": "Source contains no absolute image URLs for this gallery slide; spec forbids fabricating URLs."
     },
     {
-      "slideOrderIndex": 3,
-      "suggestion": "The source has two consecutive bare headers ('Manifestations of Obstetric Racism' and 'Addressing Racial Disparities For Pregnant Patients') with no body text or images. Both were merged into slide 3 as <h3> sub-headings preceding the Reduction of Peripartum content, which immediately follows them in the source. If artwork or copy is later identified for these sections, they should be split into separate slides.",
-      "reason": "Bare headers merged to avoid empty-block slides per spec rule."
-    },
-    {
-      "slideOrderIndex": 4,
-      "suggestion": "The 'Addressing Racial Disparities' section in the source contains only an **Explanation:** paragraph (no question, no answer options). It was rendered as a rich_text block per spec (reveal/reflection prompts with no options → rich_text). No quiz_inline was created.",
-      "reason": "No question or options present — cannot form a valid quiz_inline."
+      "slideOrderIndex": 8,
+      "suggestion": "Source Slide 10 specifies match_pairs type with 'Move images from left to phrase' but provides no image URLs for the left-hand items and only a single combined answer paragraph — not a true per-pair matching activity. Rendered as rich_text (prompt + answer). If image assets and per-pair feedback are available, this could be converted to a match_pairs block.",
+      "reason": "No image URLs for left-side match targets; single combined answer text; per spec, single-reveal prompts with no real distractors render as rich_text, not a quiz or match_pairs block."
     }
   ]
 }

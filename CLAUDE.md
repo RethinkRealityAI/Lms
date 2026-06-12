@@ -317,9 +317,11 @@ SCAGO admin URL: `http://localhost:3001/scago/admin`
 
 ### Registered Block Types
 
-`rich_text`, `image_gallery`, `cta`, `callout`, `quiz_inline`, `slider`, `video`, `pdf`, `iframe`, `h5p`, `scratch_reveal`, `match_pairs`, `page_break`, `content_list`, `survey`, `image_compare`
+`rich_text`, `image_gallery`, `cta`, `callout`, `quiz_inline`, `slider`, `video`, `audio`, `pdf`, `iframe`, `h5p`, `scratch_reveal`, `match_pairs`, `page_break`, `content_list`, `icon_list`, `survey`, `image_compare`, `table`
 
-- **`image_compare`** — Before/after image comparison with draggable divider (horizontal or vertical). Upload or URL for each side; configurable handle, labels, aspect ratio, fit, prompt/caption, optional require-interaction for completion. `src/lib/content/blocks/image-compare/`, `src/components/blocks/image-compare/`.
+- **`image_compare`** — Before/after comparison with draggable divider (horizontal or vertical). Two **modes**: `image` (default — upload/URL per side) or `text` (two text panels with heading/body/bg/text colors, for "myth vs reality" style comparisons). Configurable handle, labels, aspect ratio, fit, prompt/caption, optional require-interaction. `src/lib/content/blocks/image-compare/`, `src/components/blocks/image-compare/`.
+- **`audio`** — HTML5 audio-clip player with optional title, caption, and credit. Used for SCAGO patient-reflection MP3 clips. `src/lib/content/blocks/audio/`, `src/components/blocks/audio/`.
+- **`icon_list`** — A grid of icon tiles (icon image + bold title + rich-text body per item); responsive columns, stacked/inline layout, optional card surface. Used for "supports"/"steps"/feature-highlight slides (e.g. SCAGO image-collection slides). `src/lib/content/blocks/icon-list/`, `src/components/blocks/icon-list/`.
 
 - **`scratch_reveal`** — canvas scratch-off cover → reveals an image/text underneath, with confetti/sparkles. Before & after can each be image or text. `src/components/blocks/scratch-reveal/`.
 - **`match_pairs`** ("Drag to Match") — @dnd-kit drag (pointer+touch) matching of prompt↔answer pairs; image or text on either side; left/right prompt placement. `src/components/blocks/match-pairs/`.

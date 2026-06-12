@@ -3,20 +3,17 @@
   "lessonOrderIndex": 3,
   "lessonTitle": "Patient Perspective on Advocacy",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
       "slideType": "content",
       "title": "Learning Objectives",
-      "settings": {
-        "background": "#FFFFFF",
-        "block_style": "glass"
-      },
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -29,29 +26,16 @@
     },
     {
       "orderIndex": 1,
-      "slideType": "content",
+      "slideType": "media",
       "title": "How Advocacy Has Helped Me",
-      "settings": {
-        "background": "#FFFFFF",
-        "block_style": "glass"
-      },
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "video",
-          "title": null,
           "data": {
-            "provider": "youtube",
             "url": "https://www.youtube.com/watch?v=LzyPjwJpk_E",
-            "title": "How Advocacy Has Helped Me"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "rich_text",
-          "title": null,
-          "data": {
-            "html": "<p><strong>What is one thing you would have done differently as the healthcare provider caring for this patient in the ED, to improve her experience?</strong></p>"
+            "provider": "youtube"
           }
         }
       ]
@@ -59,16 +43,36 @@
     {
       "orderIndex": 2,
       "slideType": "content",
+      "title": "Reflection",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "data": {
+            "title": "Reflection",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "reflection",
+                "type": "textarea",
+                "question": "What is one thing you would have done differently as the healthcare provider caring for this patient in the ED, to improve her experience?",
+                "required": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
       "title": "Summary",
-      "settings": {
-        "background": "#FFFFFF",
-        "block_style": "glass"
-      },
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -81,23 +85,70 @@
       ]
     },
     {
-      "orderIndex": 3,
+      "orderIndex": 4,
+      "slideType": "content",
+      "title": "Check Your Growth",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "survey",
+          "data": {
+            "title": "Check Your Growth",
+            "submit_label": "Submit",
+            "questions": [
+              {
+                "id": "knowledge",
+                "type": "scale",
+                "question": "My knowledge about Sustainable Advocacy in Sickle Cell Disease on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal knowledge",
+                "max_label": "In depth knowledge"
+              },
+              {
+                "id": "comfort",
+                "type": "scale",
+                "question": "My comfort level doing Sustainable Advocacy for individuals with SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal comfort",
+                "max_label": "Great deal of comfort"
+              },
+              {
+                "id": "confidence",
+                "type": "scale",
+                "question": "My confidence level with maintaining Sustainable Advocacy for people with SCD on a scale of 1 to 10 is ___ .",
+                "required": false,
+                "min_value": 1,
+                "max_value": 10,
+                "increment": 1,
+                "min_label": "None/Minimal confidence",
+                "max_label": "Great deal of confidence"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 5,
       "slideType": "content",
       "title": "References",
-      "settings": {
-        "background": "#FFFFFF",
-        "block_style": "glass"
-      },
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Amutah, C., Greenidge, K., Mante, A., Munyikwa, M., Surya, S., Higginbotham, E., Jones, D., Lavizzo-Mourey, R., Roberts, D., Tsai, J., &amp; Aysola, J. (2021). Misrepresenting Race — The Role of Medical Schools in Propagating Physician Bias. <em>New England Journal of Medicine</em>, 384 (9), 872-828." },
-              { "html": "<a href=\"http://www.surgeryredesign.com\" target=\"_blank\" rel=\"noopener\">www.surgeryredesign.com</a>" }
+              { "html": "Amutah, C., Greenidge, K., Mante, A., Munyikwa, M., Surya, S., Higginbotham, E., Jones, D., Lavizzo-Mourey, R., Roberts, D., Tsai, J., &amp; Aysola, J. (2021). Misrepresenting Race — The Role of Medical Schools in Propagating Physician Bias. New England Journal of Medicine, 384(9), 872-828." },
+              { "html": "www.surgeryredesign.com" }
             ]
           }
         }
@@ -106,9 +157,14 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 1,
-      "suggestion": "The reflection prompt 'What is one thing you would have done differently as the healthcare provider caring for this patient in the ED, to improve her experience?' is an open reflection with no options. Rendered as rich_text per spec. Consider using a survey block if the platform captures free-text responses.",
-      "reason": "Open/reflection prompt — no answer options in source; spec forbids inventing distractors and mandates rich_text for single-option or no-option reveals."
+      "slideOrderIndex": 2,
+      "suggestion": "Reflection free-text survey (Source Slide 4) kept as survey textarea block",
+      "reason": "The source prompt asks HCPs what they would have done differently caring for the patient in the ED — this is genuine reflective content (not module-completion feedback). Kept as a survey block with a textarea question per the v2 spec guidance on reflective free-text-survey items."
+    },
+    {
+      "slideOrderIndex": null,
+      "suggestion": "Source Slides 9–13 dropped (module-completion feedback)",
+      "reason": "Slides 9 (learning needs met), 10 (satisfaction), 11 (recommend), 12 (improve module), 13 (bias) are all platform completion-survey items — dropped per spec."
     }
   ]
 }

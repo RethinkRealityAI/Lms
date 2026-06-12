@@ -5,9 +5,16 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, MessageSquare, ClipboardList, Loader2 } from 'lucide-react';
-import { getCourseFeedbackResponses, getCompletionSurvey, getCourseReviews } from '@/lib/db/course-feedback';
+import { getCourseFeedbackResponses, getCourseReviews } from '@/lib/db/course-feedback';
+import { getEffectiveCourseCompletionSurvey, type CourseSurveySource } from '@/lib/db/survey-assignments';
 import type { CourseFeedbackResponseWithUser, CourseReview } from '@/lib/db/course-feedback';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
+
+const SURVEY_SOURCE_LABEL: Record<CourseSurveySource, string> = {
+  course_override: 'course-specific',
+  course_assignment: 'course assignment',
+  institution_default: 'institution default',
+};
 
 interface Props {
   courseId: string;
@@ -37,18 +44,20 @@ export function CourseFeedbackTab({ courseId }: Props) {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [template, setTemplate] = useState<SurveyTemplate | null>(null);
+  const [surveySource, setSurveySource] = useState<CourseSurveySource | null>(null);
   const [feedbackResponses, setFeedbackResponses] = useState<CourseFeedbackResponseWithUser[]>([]);
   const [reviews, setReviews] = useState<CourseReview[]>([]);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [{ template: tmpl }, responses, reviewList] = await Promise.all([
-        getCompletionSurvey(supabase, courseId),
+      const [effective, responses, reviewList] = await Promise.all([
+        getEffectiveCourseCompletionSurvey(supabase, courseId),
         getCourseFeedbackResponses(supabase, courseId),
         getCourseReviews(supabase, courseId),
       ]);
-      setTemplate(tmpl);
+      setTemplate(effective?.template ?? null);
+      setSurveySource(effective?.source ?? null);
       setFeedbackResponses(responses);
       setReviews(reviewList);
       setLoading(false);
@@ -93,12 +102,14 @@ export function CourseFeedbackTab({ courseId }: Props) {
           </CardTitle>
           <CardDescription className="font-medium text-slate-500">
             {template
-              ? `Template: ${template.name} · ${feedbackResponses.length} response${feedbackResponses.length !== 1 ? 's' : ''}`
-              : 'No completion survey configured for this course.'}
+              ? `Template: ${template.name}${surveySource ? ` (${SURVEY_SOURCE_LABEL[surveySource]})` : ''} · ${feedbackResponses.length} response${feedbackResponses.length !== 1 ? 's' : ''}`
+              : feedbackResponses.length > 0
+                ? `${feedbackResponses.length} response${feedbackResponses.length !== 1 ? 's' : ''} captured (no survey currently assigned)`
+                : 'No completion survey configured for this course.'}
           </CardDescription>
         </CardHeader>
 
-        {template ? (
+        {template || feedbackResponses.length > 0 ? (
           <CardContent className="p-0">
             {feedbackResponses.length === 0 ? (
               <div className="px-6 pb-8 text-center text-slate-400 font-medium">

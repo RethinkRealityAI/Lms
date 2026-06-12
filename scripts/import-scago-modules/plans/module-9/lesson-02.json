@@ -3,6 +3,7 @@
   "lessonOrderIndex": 2,
   "lessonTitle": "Labour and Delivery and Post Partum in Sickle Cell Disease",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
@@ -13,7 +14,6 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": "",
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -32,10 +32,16 @@
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": "",
+          "blockType": "content_list",
           "data": {
-            "html": "<h3>Inducing Labour</h3><p>Based on the American Society of Hematology (ASH) 2020 guidelines, it is recommended that labour be induced between 38 and 40 weeks.</p><p>Rationale: to decrease perinatal mortality, particularly for patients with SCD, related to placental abnormalities</p>"
+            "bullet_style": "disc",
+            "items": [
+              { "html": "<strong>Monitoring:</strong> • Fetal - continuous electronic fetal monitoring • Maternal - vitals including SpO2 (> 95%), maintain fluid balance, analgesia, warmth" },
+              { "html": "<strong>Medications:</strong> • Early neuraxial anesthesia to minimize pain and anxiety" },
+              { "html": "<strong>Consultations:</strong> • OB/MFM • Haematology • Anaesthesia • Neonatology" },
+              { "html": "<strong>Best Option for Delivery:</strong> • Delivery should take place in an expert centre, with availability of relevant maternal and fetal monitoring • Aiming for spontaneous vaginal delivery • Cesarian section, reserved for obstetrical indication" },
+              { "html": "<strong>The Little Things:</strong> • Maternal hydration should be emphasized, either via the oral or intravenous route • Maintenance of maternal warmth and comfort • Adequate pain relief • Supplemental oxygen, as required • Spinal anaesthesia is recommended to reduce post partum VOE" }
+            ]
           }
         }
       ]
@@ -43,13 +49,43 @@
     {
       "orderIndex": 2,
       "slideType": "content",
-      "title": "Optimal Intrapartum Care ASH (2020) Guidelines",
+      "title": "Inducing Labour",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "image_compare",
+          "data": {
+            "mode": "text",
+            "before": {
+              "heading": "Recommendation",
+              "text": "Based on the American Society of Hematology (ASH) 2020 guidelines, it is recommended that labour be induced between 38 and 40 weeks.",
+              "bg_color": "#1A3C6E",
+              "text_color": "#FFFFFF"
+            },
+            "after": {
+              "heading": "Rationale",
+              "text": "Rationale: to decrease perinatal mortality, particularly for patients with SCD, related to placental abnormalities",
+              "bg_color": "#0F172A",
+              "text_color": "#FFFFFF"
+            },
+            "before_label": "Recommendation",
+            "after_label": "Rationale",
+            "aspect": "4/3",
+            "prompt": "Drag to compare"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 3,
+      "slideType": "content",
+      "title": "Optimal Intrapartum Care — ASH (2020) Guidelines",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": "",
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -65,31 +101,87 @@
       ]
     },
     {
-      "orderIndex": 3,
+      "orderIndex": 4,
       "slideType": "content",
       "title": "Anaesthesia for C-sections",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": "",
+          "blockType": "image_compare",
           "data": {
-            "html": "<p>Regional anesthesia is preferred for Cesarean section. General anesthesia is associated with higher risks of sickling complications.</p><p><strong>Vigilance around pain management is essential in the immediate post partum period. An acute pain crisis after delivery happens in approximately 25% of women. Hydration, oxygenation and early mobilization reduce pain crisis risk.</strong></p>"
+            "mode": "text",
+            "before": {
+              "heading": "Preferred",
+              "text": "Regional anesthesia is preferred for Cesarean section",
+              "bg_color": "#1A3C6E",
+              "text_color": "#FFFFFF"
+            },
+            "after": {
+              "heading": "Higher Risk",
+              "text": "General anesthesia is associated with higher risks of sickling complications",
+              "bg_color": "#0F172A",
+              "text_color": "#FFFFFF"
+            },
+            "before_label": "Regional",
+            "after_label": "General",
+            "aspect": "4/3",
+            "prompt": "Drag to compare"
           }
         }
       ]
     },
     {
-      "orderIndex": 4,
-      "slideType": "quiz",
+      "orderIndex": 5,
+      "slideType": "content",
+      "title": "Post Partum Reminder",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "callout",
+          "data": {
+            "mode": "speech_bubble",
+            "bubble_text": "Vigilance around pain management is essential in the immediate post partum period. An acute pain crisis after delivery happens in approximately 25% of women. Hydration, oxygenation and early mobilization reduce pain crisis risk.",
+            "author_name": "Friendly reminder",
+            "bubble_style": "light"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 6,
+      "slideType": "content",
       "title": "Post Partum Considerations",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "display_mode": "accordion",
+            "bullet_style": "none",
+            "items": [
+              { "title": "Breastfeeding", "html": "Encourage, except in mothers who require medications that are transferred through breast milk." },
+              { "title": "VTE Prophylaxis", "html": "Venous thromboembolism is increased in pregnant patients with sickle cell disease. Offer VTE prophylaxis with Low Molecular Weight Heparin (LMWH) for 3 - 6 weeks." },
+              { "title": "Infection Risk", "html": "Monitor for infections such as urinary tract infection, wound infection, or endometritis." },
+              { "title": "Post Partum Visit", "html": "• To discuss contraception • Preparation for next pregnancy" },
+              { "title": "Medications/Contraception", "html": "• Progestin-only methods preferred (estrogen containing contraceptives not completely contraindicated) • Depot medroxyprogesterone acetate may reduce the frequency of acute pain crises • Copper or Progesterone IUD • Progestin implant - thin plastic tube inserted under the skin of upper arm; works for 5 years" },
+              { "title": "Hydroxyurea use Post Partum", "html": "• 3% (1000 mg or 15-20 mg/kg/day) excreted in breast milk • Less than 5-10% safety threshold • Avoiding breastfeeding for 3 hours can reduce infant dose by about 50% • Discussion of risk vs benefit about initiating hydroxyurea during breastfeeding" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "quiz",
+      "title": "Quiz: True or False",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
           "blockType": "quiz_inline",
-          "title": "",
           "data": {
             "question_type": "true_false",
             "question": "Spinal anaesthesia is recommended to reduce post partum VOE.",
@@ -101,7 +193,7 @@
       ]
     },
     {
-      "orderIndex": 5,
+      "orderIndex": 8,
       "slideType": "content",
       "title": "Summary",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -109,7 +201,6 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": "",
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -121,7 +212,7 @@
       ]
     },
     {
-      "orderIndex": 6,
+      "orderIndex": 9,
       "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -129,13 +220,12 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": "",
           "data": {
             "bullet_style": "decimal",
             "items": [
               { "html": "Camous J, N'da A, Etienne-Julan M, Stéphan F. Anesthetic management of pregnant women with sickle cell disease--effect on postnatal sickling complications. Can J Anaesth. 2008 May;55(5):276-83" },
-              { "html": "https://www.canhaem.org/wp-content/uploads/2018/09/Contraception-Pre-Conception-Counseling-and-Pregnancy.pdf" },
-              { "html": "https://onlinelibrary-wiley-com.uhn.idm.oclc.org/doi/pdf/10.1111/bjh.13270" },
+              { "html": "<a href=\"https://www.canhaem.org/wp-content/uploads/2018/09/Contraception-Pre-Conception-Counseling-and-Pregnancy.pdf\" target=\"_blank\" rel=\"noopener\">https://www.canhaem.org/wp-content/uploads/2018/09/Contraception-Pre-Conception-Counseling-and-Pregnancy.pdf</a>" },
+              { "html": "<a href=\"https://onlinelibrary-wiley-com.uhn.idm.oclc.org/doi/pdf/10.1111/bjh.13270\" target=\"_blank\" rel=\"noopener\">https://onlinelibrary-wiley-com.uhn.idm.oclc.org/doi/pdf/10.1111/bjh.13270</a>" },
               { "html": "Berghella, V. (Ed.). (2017). Maternal-Fetal Evidence Based Guidelines (3rd ed.). CRC Press" }
             ]
           }
@@ -145,14 +235,9 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 1,
-      "suggestion": "The 'Inducing Labour' content uses a before/after flip-card format in the source. It has been rendered as a single rich_text with both parts joined. If the platform later supports a reveal/flip interaction, this could be revisited.",
-      "reason": "Source uses **Before:** / **After:** pattern (EdApp flip card). Spec does not define a flip-card block type, so content is rendered as unified prose."
-    },
-    {
-      "slideOrderIndex": 3,
-      "suggestion": "The 'Anaesthesia for C-sections' before/after content and the post-delivery pain crisis paragraph are combined on one slide. If desired, the pain crisis paragraph could be moved to a standalone 'Post Partum Pain Management' slide.",
-      "reason": "The bold pain-crisis paragraph (line 244 in source MD) has no section header of its own and is immediately followed by the bare 'Post Partum Considerations' header, so it was grouped with the preceding anaesthesia content."
+      "slideOrderIndex": 6,
+      "suggestion": "Slide 8 source type is `image_gallery` with `click_for_more_info: true` and 6 captioned items, but NO image URLs are provided in the source markdown. Rendered as `content_list` accordion so all 6 topic bodies are fully accessible. If the original EdApp images are located, replace with `image_gallery` mode gallery using `clickForMore: true` and supply the image URLs.",
+      "reason": "Source specifies image_gallery click-for-more but provides captions only with no image URLs — accordion content_list preserves all body text without dead image slots."
     }
   ]
 }

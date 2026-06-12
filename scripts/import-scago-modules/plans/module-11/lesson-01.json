@@ -3,6 +3,7 @@
   "lessonOrderIndex": 1,
   "lessonTitle": "Targeting Pathobiology of Inflammation and Hb S Polymerization in Sickle Cell Disease",
   "lessonDescription": null,
+  "titleSlideSettings": null,
   "slides": [
     {
       "orderIndex": 0,
@@ -13,7 +14,6 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -34,73 +34,97 @@
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>We are off to a good start! We have looked at how VOEs could be treated at home and the role of Crizanlizumab in attacking the pathobiology of VOEs in SCD. Now we're ready to move into trials of medications targeting inflammation in SCD.</p><p><strong>L-glutamine</strong></p><p>One of the contributing factors to the pathophysiology of sickle cell pain is oxidative stress. L-glutamine, as an oral therapy, contributes to increased proportions of the reduced nicotinamide adenine dinucleotides phosphates (NADPH) in sickle cell erythrocytes, which in turn reduces oxidative stress. FDA Approved in 2017</p><p><strong>Phase 3 Trial of L-Glutamine in Sickle Cell Disease</strong><br>Mechanism:<br>• Reduces oxidative stress by synthesizing NADPH and glutathione<br>Evidence:<br>• 2 RCTs - Phase II and Phase III, placebo controlled<br>Phase II: non-significant reduction in VOC<br>Phase III: painful crises event composite was non-significant at 24 weeks but was significantly reduced at 48 weeks<br>Cost:<br>• ~$30,000 USD/year for BID powder</p><p>Sample:<br>• 230 patients aged 5+, mostly HbSS<br>• Mostly 2-5 crises in previous year (more 6-9 crises in placebo group)<br>• ~66% in both groups received HU<br>• 36% did not complete in L glutamine arm and 24% in the placebo arm<br>Results:<br>• Lower cumulative pain crises at 48 weeks<br>• Longer time to first crisis</p><p>Photo credit: Niihara, Y., et al., (2018)</p>"
+            "html": "<p>We are off to a good start! We have looked at how VOEs could be treated at home and the role of Crizanlizumab in attacking the pathobiology of VOEs in SCD. Now we're ready to move into trials of medications targeting inflammation in SCD.</p>"
           }
         },
         {
           "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/pathobiology_inflamm_liex9w.png",
-                "caption": "Photo credit: Salinas Cisneros G & Thein SL (2000)"
-              }
-            ]
+            "html": "<p><em>Photo credit: Salinas Cisneros G &amp; Thein SL (2000)</em></p>"
           }
         },
         {
           "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/trial_L-glutamine_stcpdz.png",
-                "caption": "Phase 3 Trial of L-Glutamine in Sickle Cell Disease"
-              }
-            ]
+            "html": "<p><strong>L-glutamine</strong></p><p>One of the contributing factors to the pathophysiology of sickle cell pain is oxidative stress. L-glutamine, as an oral therapy, contributes to increased proportions of the reduced nicotinamide adenine dinucleotides phosphates (NADPH) in sickle cell erythrocytes, which in turn reduces oxidative stress.</p><p><strong>FDA Approved in 2017</strong></p>"
           }
         },
         {
           "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/pain_graph_ydgviw.png",
-                "caption": "Pain outcomes graph"
-              }
-            ]
+            "html": "<p><strong>Phase 3 Trial of L-Glutamine in Sickle Cell Disease</strong></p>"
           }
         },
         {
           "orderIndex": 4,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/voc_s3n0qk.png",
-                "caption": "VOC outcomes"
-              }
+            "heading": "Mechanism:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Reduces oxidative stress by synthesizing NADPH and glutathione" }
             ]
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Evidence:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "2 RCTs - Phase II and Phase III, placebo controlled" },
+              { "html": "Phase II: non-significant reduction in VOC" },
+              { "html": "Phase III: painful crises event composite was non-significant at 24 weeks but was significantly reduced at 48 weeks" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Cost:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "~$30,000 USD/year for BID powder" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Sample:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "230 patients aged 5+, mostly HbSS" },
+              { "html": "Mostly 2-5 crises in previous year (more 6-9 crises in placebo group)" },
+              { "html": "~66% in both groups received HU" },
+              { "html": "36% did not complete in L glutamine arm and 24% in the placebo arm" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 8,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Results:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Lower cumulative pain crises at 48 weeks" },
+              { "html": "Longer time to first crisis" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 9,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Niihara, Y., et al., (2018)</em></p>"
           }
         }
       ]
@@ -108,79 +132,18 @@
     {
       "orderIndex": 2,
       "slideType": "content",
-      "title": "Targeting the Inflammasome and Complement Pathway",
+      "title": "Targeting the Inflammasome",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "rich_text",
-          "title": null,
+          "blockType": "callout",
           "data": {
-            "html": "<p>Now let's look at medications that target the multiprotein, inflammasone.</p>"
-          }
-        },
-        {
-          "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/article_title_crovalimab_dctr5s.png",
-                "caption": "Crovalimab article title"
-              }
-            ]
-          }
-        },
-        {
-          "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/black_man_pain_c5aibt.png",
-                "caption": ""
-              }
-            ]
-          }
-        },
-        {
-          "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/complement_sys_jmdinn.png",
-                "caption": "Complement system"
-              }
-            ]
-          }
-        },
-        {
-          "orderIndex": 4,
-          "blockType": "image_gallery",
-          "title": null,
-          "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/future_rk7xrn.png",
-                "caption": "Future directions"
-              }
-            ]
+            "mode": "speech_bubble",
+            "bubble_text": "Now let's look at medications that target the multiprotein, inflammasone.",
+            "author_name": "Dr. Seethal Jacob",
+            "author_title": "Paediatric Haematologist",
+            "bubble_style": "light"
           }
         }
       ]
@@ -188,62 +151,61 @@
     {
       "orderIndex": 3,
       "slideType": "content",
-      "title": "Targeting Pathobiology of HbS Polymerization in SCD",
+      "title": "Canakinumab",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p>We have learnt about innovations in targeting inflammation in the pathobiology of VOEs with Canakinumab and Crovalimab. Now we will move into an area where more research has been done. Considering the pathobiology of HbS polymerization in SCD, we will review approaches that aim to improve HbF production and/or improve oxygen affinity in red cells, thereby disrupting HbS polymerization.</p><p>Photo credit: (Salinas Cisneros G, &amp; Thein SL., 2020)</p><p>Let's look at ways of improving oxygen affinity of hemoglobin to start.</p><p><strong>Voxelotor</strong><br>• FDA approved in 2019<br>Mechanism:<br>• Hemoglobin S polymerization inhibitor, increased oxygen affinity resulting in increased red cell survival and reduced hemolysis<br>Evidence: HOPE trial (Phase III) looking for hemoglobin increase (VOC was a secondary outcome)<br>• Hb increased by at least 10 points in the high dose (89%), low dose (72%) compared to placebo (25%) at 72 weeks</p><p>• 274 patients randomized, aged 12+, mostly HbSS<br>• Patients with recent pain crises or transfusions within 60 days<br>• Increase in hematologic parameters occurred by 2 weeks and persisted<br>• No significant difference in VOC<br>• Similar rate of adverse events</p>"
+            "html": "<p><strong>Canakinumab (Ilaris)</strong><br>A randomized, placebo-controlled, double-blind trial of Canakinumab in children and young adults with sickle cell anemia (Rees et al., 2022)</p>"
           }
         },
         {
           "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/polymerization_title_slide_x6ampd.png",
-                "caption": "Targeting HbS Polymerization"
-              }
-            ]
+            "html": "<p>Inflammasome, a multiprotein oligmer, is activated when red blood cells lyse and release their intravascular contents, leading to the maturation and secretion of proinflammatory cytokines, such as interleukin-1b (IL-1β).</p>"
           }
         },
         {
           "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/voxelotor_study_title_rdpfec.png",
-                "caption": "Voxelotor (HOPE trial) study"
-              }
-            ]
+            "html": "<p><strong>Study Hypothesis:</strong><br>Reduction in inflammatory and clinical disease activity by blocking IL-1β by Canakinumab in patients with SCD.</p><p><strong>Mechanism:</strong><br>Selective blockade of IL-1b to reduce inflammation.</p><p><strong>Evidence:</strong><br>Phase II placebo controlled randomized control trial of 49 participants.</p>"
           }
         },
         {
           "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/voxelotor_graph_dlvsq3.png",
-                "caption": "Voxelotor hemoglobin results graph"
-              }
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Patients randomized to Canakinumab or placebo" },
+              { "html": "Study visits every 4 weeks up to the final blinded assessment at Week 24" },
+              { "html": "Option to receive open label Canakinumab every 4 weeks until Week 48" },
+              { "html": "Final study outcome assessments made in Week 52" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>Number of patients at risk for being rehospitalized is noted in the red and blue numbers, for Canakinumab and placebo, respectively.</p>"
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Results:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Pre-specified reduction in pain was not met" },
+              { "html": "Reductions in markers of inflammation, occurrence of SCD-related adverse events (AEs) and serious adverse events (SAEs)" },
+              { "html": "Reduced hemolysis (less reticulocytes, bilirubin)" },
+              { "html": "Reduced number and duration of hospitalizations" }
             ]
           }
         }
@@ -251,104 +213,62 @@
     },
     {
       "orderIndex": 4,
-      "slideType": "quiz",
-      "title": "Knowledge Check",
+      "slideType": "content",
+      "title": "Crovalimab",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
-          "blockType": "quiz_inline",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "question": "Which of the following best describes Canakinumab (Ilaris)?",
-            "question_type": "multiple_choice",
-            "options": [
-              "For adults only",
-              "Reduces pain",
-              "Inflammasome, multi-protein complex"
-            ],
-            "correct_answer": "Inflammasome, multi-protein complex",
-            "feedback_correct": "Canakinumab • Inflammasome, multi-protein complex • Studied in children and young adults with SCD • No change in pain"
+            "html": "<p>Now let's dive into the next trial: The Randomized, Doubleblind, Placebo-Controlled Phase 1b Crosswalk-A Trial Evaluating The Safety Of Crovalimab For The Management Of Acute Uncomplicated Vasoocclusive Episodes (VOEs) In Patients With Sickle Cell Disease (Bartolucci et. al., 2022)</p>"
           }
         },
         {
           "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/title_gbt_study_dvrufd.png",
-                "caption": "GBT021601 study title"
-              }
-            ]
+            "html": "<p>Although most patients stay home to manage their VOEs, &gt;70% of emergency department visits and &gt; 90% of hospitalizations are VOE-related.</p>"
           }
         },
         {
           "orderIndex": 2,
-          "blockType": "quiz_inline",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "question": "Which of the following best describes Crovalimab?",
-            "question_type": "multiple_choice",
-            "options": [
-              "Intravenous medication",
-              "Complement 10 blockade",
-              "Inhibits complement pathway"
-            ],
-            "correct_answer": "Inhibits complement pathway",
-            "feedback_correct": "Crovalimab • Inhibits complement pathway • Subcutaneous injection administered by patient • Complement 5 blockade"
+            "html": "<p>When sickle cell patients are in acute pain, there is activation of the complement pathway, which contributes to the debilitating impact of VOEs. Crovalimab has shown rapid and sustained inhibition of the complement pathway with promising safety and efficacy. It is a self-administered subcutaneous injection.</p>"
           }
         },
         {
           "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/gbt_result_1_ibzz7r.png",
-                "caption": "GBT021601 results"
-              }
-            ]
+            "html": "<p>Lets take a brief look at an image of the complex complement system. SCD triggers the Alternative Pathway, which leads to inflammation, cell lysis, and cell activation through 2 enzymes, c3 and c5 convertase.</p>"
           }
         },
         {
           "orderIndex": 4,
-          "blockType": "quiz_inline",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "question": "Which of the following best describes Voxelotor?",
-            "question_type": "multiple_choice",
-            "options": [
-              "Hemoglobin decreases",
-              "Increase in VOEs",
-              "Hemoglobin S polymerization inhibitor"
-            ],
-            "correct_answer": "Hemoglobin S polymerization inhibitor",
-            "feedback_correct": "Voxelotor • Hemoglobin S polymerization inhibitor • Hemoglobin increases • No significant difference in VOEs"
+            "html": "<p><strong>The complement pathway can be targeted with Crovalimab:</strong><br>Novel, engineered, anti-complement C5 monoclonal antibody</p><p><strong>Mechanism:</strong><br>Complement blockade (C5) which reduces ongoing inflammation in the setting of VOC/endothelial activation/hemolysis</p>"
           }
         },
         {
           "orderIndex": 5,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/gbt_result_3_c7h2is.png",
-                "caption": "GBT021601 additional results"
-              }
+            "heading": "Outcomes:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Number of VOEs" },
+              { "html": "Patient-Reported Outcomes Measurement Information System (PROMIS) - Fatigue score from baseline to Week 49" }
             ]
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><strong>Expected:</strong> Summer 2024</p>"
           }
         }
       ]
@@ -356,95 +276,59 @@
     {
       "orderIndex": 5,
       "slideType": "content",
-      "title": "Upregulation of HbF by a DNMT1 Depleter - AB1",
+      "title": "Targeting Pathobiology of HbS Polymerization in SCD",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "rich_text",
-          "title": null,
           "data": {
-            "html": "<p><strong>CDK Inhibitor p27(Kip1)</strong> (Photo credits: Ting et al., 2023)</p><p>• γ-globin gene transcription is silenced after birth via a repressor complex including DNA methyltransferase 1 (DNMT1)<br>• AB1 is a potent non-cytotoxic agent which depletes DNMT1 to induce HbF in sickle erythroid progenitors (Li et al., unpublished data)</p><p>The figure below depicts the β-like globin genes' chromosomal order, along with the cis-acting sites that consists of binding sites for the trans acting elements.</p><p>The following table gives you a bit more detail about each element and their function. Take note that BCL11A is a major repressor of γ-globin gene (HBG2, HBG1) transcription.</p><p>Photo credit: Habara et. al., 2017</p><p>In SCD Townes mice model, AB1:<br>• Increases γ-globin mRNA and F-cells<br>• Decreases sickle cell phenotype in blood<br>• Improves splenic hematopoiesis</p>"
+            "html": "<p>We have learnt about innovations in targeting inflammation in the pathobiology of VOEs with Canakinumab and Crovalimab. Now we will move into an area where more research has been done. Considering the pathobiology of HbS polymerization in SCD, we will review approaches that aim to improve HbF production and/or improve oxygen affinity in red cells, thereby disrupting HbS polymerization.</p>"
           }
         },
         {
           "orderIndex": 1,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/ab1_pic_1_bt1lih.png",
-                "caption": "AB1 figure 1"
-              }
-            ]
+            "html": "<p><em>Photo credit: (Salinas Cisneros G, &amp; Thein SL., 2020)</em></p>"
           }
         },
         {
           "orderIndex": 2,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/transcription_factors_hasvmw.png",
-                "caption": "Transcription factors and β-like globin genes"
-              }
-            ]
+            "html": "<p>Let's look at ways of improving oxygen affinity of hemoglobin to start.</p><p><strong>Voxelotor</strong><br>FDA approved in 2019</p><p><strong>Mechanism:</strong><br>Hemoglobin S polymerization inhibitor, increased oxygen affinity resulting in increased red cell survival and reduced hemolysis</p><p><strong>Evidence:</strong><br>HOPE trial (Phase III) looking for hemoglobin increase (VOC was a secondary outcome)</p>"
           }
         },
         {
           "orderIndex": 3,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/ab1_pic_2_gifib5.png",
-                "caption": "AB1 figure 2"
-              }
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Hb increased by at least 10 points in the high dose (89%), low dose (72%) compared to placebo (25%) at 72 weeks" }
             ]
           }
         },
         {
           "orderIndex": 4,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "content_list",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/ab1_pic_3_xg6uqq.png",
-                "caption": "AB1 figure 3"
-              }
+            "bullet_style": "disc",
+            "items": [
+              { "html": "274 patients randomized, aged 12+, mostly HbSS" },
+              { "html": "Patients with recent pain crises or transfusions within 60 days" },
+              { "html": "Increase in hematologic parameters occurred by 2 weeks and persisted" },
+              { "html": "No significant difference in VOC" },
+              { "html": "Similar rate of adverse events" }
             ]
           }
         },
         {
           "orderIndex": 5,
-          "blockType": "image_gallery",
-          "title": null,
+          "blockType": "rich_text",
           "data": {
-            "mode": "single",
-            "objectFit": "contain",
-            "displaySize": "lg",
-            "images": [
-              {
-                "url": "https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/images/Module_11_Latest_Innovations_in_Sickle_Cell_Disease/Lesson_02_Targeting_Pathobiology_of_Inflammation_and_Hb_S_Polymerizati/ab1_pic_4_thbmx9.png",
-                "caption": "AB1 figure 4"
-              }
-            ]
+            "html": "<p>Let's move on now to a Phase 1 trial.</p>"
           }
         }
       ]
@@ -452,13 +336,406 @@
     {
       "orderIndex": 6,
       "slideType": "content",
+      "title": "Decitabine and Tetrahydrouridine",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "display_mode": "accordion",
+            "bullet_style": "none",
+            "items": [
+              {
+                "title": "Phase 1 Trial",
+                "html": "<ul><li>Focused on minimal doses for depletion of DNA Methyl Transferase 1 (DNMT1), without cytotoxicity</li></ul><p><strong>Mechanism</strong></p><ul><li>DNMT1 is the enzyme that silences HbF from infancy onwards</li><li>Decitabine interferes with the function of DNMT1</li><li>Tetrahydrouridine inhibits enzyme that rapidly deactivates Decitabine</li></ul>"
+              },
+              {
+                "title": "Sample",
+                "html": "<ul><li>5 groups of 5 patients randomized 3:2 decitabine to placebo</li><li>Treated 2x/week x 8 weeks with 4 weeks of follow up</li></ul>"
+              },
+              {
+                "title": "Results",
+                "html": "<ul><li>Increased Hb 12-19 g/L (P=0.01)</li><li>HbF increased by 4-9%, less hemolysis</li><li>No significant difference in treatment vs placebo adverse events</li></ul>"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 7,
+      "slideType": "quiz",
+      "title": "Knowledge Check: Match the Word",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "quiz_inline",
+          "data": {
+            "question": "Match the word at the top with the matching word or phrase below: Canakinumab (Ilaris)",
+            "question_type": "multiple_choice",
+            "options": [
+              "Inflammasome, multi-protein complex",
+              "Inhibits complement pathway",
+              "Hemoglobin S polymerization inhibitor"
+            ],
+            "correct_answer": "Inflammasome, multi-protein complex",
+            "feedback_correct": "Canakinumab • Inflammasome, multi-protein complex • Studied in children and young adults with SCD • No change in pain"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "quiz_inline",
+          "data": {
+            "question": "Match the word at the top with the matching word or phrase below: Crovalimab",
+            "question_type": "multiple_choice",
+            "options": [
+              "Inflammasome, multi-protein complex",
+              "Inhibits complement pathway",
+              "Hemoglobin S polymerization inhibitor"
+            ],
+            "correct_answer": "Inhibits complement pathway",
+            "feedback_correct": "Crovalimab • Inhibits complement pathway • Subcutaneous injection administered by patient • Complement 5 blockade"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "quiz_inline",
+          "data": {
+            "question": "Match the word at the top with the matching word or phrase below: Voxelotor",
+            "question_type": "multiple_choice",
+            "options": [
+              "Inflammasome, multi-protein complex",
+              "Inhibits complement pathway",
+              "Hemoglobin S polymerization inhibitor"
+            ],
+            "correct_answer": "Hemoglobin S polymerization inhibitor",
+            "feedback_correct": "Voxelotor • Hemoglobin S polymerization inhibitor • Hemoglobin increases • No significant difference in VOEs"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 8,
+      "slideType": "content",
+      "title": "Mitapivat",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>Let's switch gears and look at a drug showing great potential in increasing oxygen affinity of hemoglobin. Let's find out more about this drug, Mitapivat.</p><p><em>Photo credit: <a href=\"https://www.bio-connect.nl/news/fda-new-approvals-mitapivat-pyrukynd/\" target=\"_blank\" rel=\"noopener\">https://www.bio-connect.nl/news/fda-new-approvals-mitapivat-pyrukynd/</a></em></p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Mitapivat — Mechanism:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Activator of pyruvate kinase (involved in RBC metabolism)" },
+              { "html": "Increases adenosine triphosphate (ATP) which improves RBC survival" },
+              { "html": "Decreases 2,3 diphosphoglycerate (2, 3-DPG) which increases oxygen affinity of Hb" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><strong>Phase 2 double-blind period</strong></p><p><strong>Sample:</strong><br>2 dose levels of Mitapivat, 50mg and 100mg, were evaluated against placebo — 12 week period</p><p><strong>Primary endpoints:</strong><br>Hb response, defined as a ≥1.0 g/dL increase in average Hb concentration over weeks 10–12 compared with baseline; Adverse events</p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Idowu M, et. al., 2023</em></p>"
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Results:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Significant increase in Hb response" },
+              { "html": "46.2% (12/26) of pts in the 50 mg BID arm" },
+              { "html": "50.0% (13/26) in the 100 mg BID arm" },
+              { "html": "3.7% (1/27) of pts in the PBO arm" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Idowu M, et. al., 2023</em></p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 9,
+      "slideType": "content",
+      "title": "GBT021601",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>We have one more study that is focused on improving hemoglobin oxygen affinity. Get ready to learn about GBT021601.</p>"
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "GBT021601 stabilizes hemoglobin (Hb) in the oxygenated state to inhibit HbS polymerization" },
+              { "html": "Compared to voxelotor, GBT021601 has a longer half-life and potential to achieve higher Hb occupancies at lower doses" },
+              { "html": "Part A, dose-finding study of GBT021601 in adult participants, of the Phase 2 study are presented" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Eligibility:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Age 18–65 years" },
+              { "html": "Documented SCD (HbSS or HbSβ0)" },
+              { "html": "Hb 5.5–10.5 g/dL during screening" },
+              { "html": "HU or L-glutamine permitted" },
+              { "html": "≤10 VOCs within 12 months of screening" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Study Design:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Participants randomly assigned 1:1 to GBT021601 100 mg or 150 mg" },
+              { "html": "Both groups received a loading dose twice daily for 4 days" },
+              { "html": "Once-daily maintenance doses through to Week 12" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 4,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Primary endpoint:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Change in hemoglobin from baseline at Week 12" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 5,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Secondary endpoints:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Hb response (increase from baseline >1 g/dL)" },
+              { "html": "Change from baseline in hemolysis markers at Week 12, PK, PD" },
+              { "html": "Safety" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 6,
+          "blockType": "content_list",
+          "data": {
+            "heading": "Results:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Mean increase in Hb from baseline was 2.67g/dL for the 100-mg group (n=12) and 3.17g/dL for the 150-mg group" },
+              { "html": "1/35 patients (2.9%) had an AE leading to treatment discontinuation due to sepsis" },
+              { "html": "8/35 patients (22.9%) reported ≥1 treatment-related AE, all were grade 1 or 2" },
+              { "html": "One death, considered unrelated to GBT021601, occurred on study" },
+              { "html": "Also of interest, there was a reduction in adherent cells, which could correlate with a lower probability of a VOC event." }
+            ]
+          }
+        },
+        {
+          "orderIndex": 7,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><strong>Conclusion:</strong><br>GBT021601 taken as a loading dose followed by daily doses for 12 weeks was well tolerated. Pain episodes did not increase, even though there were large increases in mean Hb levels. Data from Part A support GBT021601 as a potential treatment for individuals with SCD, still requiring ongoing clinical development.</p>"
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 10,
+      "slideType": "content",
+      "title": "Fetal Hemoglobin Induction In the Treatment of β-Hemoglobinopathies",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Hydroxyurea has the most evidence and remains the backbone of treatment for SCD" },
+              { "html": "Hydroxyurea requires tailored dosing and haematologic monitoring" },
+              { "html": "Fetal globin induction is the basis of most gene therapy options (lovo-cel, exa-cel, reni-cel, etc.)" },
+              { "html": "Most known HbF regulators, being transcription factors, are historically 'undruggable'" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><strong>Targeted Degradation of the Wiz Transcription Factor for Gamma Globin De-Repression</strong><br>Cereblon (CRBN) is a naturally existing protein degradation machinery in cells. Phenotypic screen of CRBN-biased library identified dWIZ-1, a small molecule HbF inducer.</p>"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "WIZ (transcription factor) dependent HbF induction by CRISPR-Cas9 validated by CRISPR knockout (Figure B)" },
+              { "html": "WIZ degradation leads to ↓ WIZ binding in β-globin locus which leads to ↓ H3K9me2, ↑ γ-globin mRNA, and ↑ HbF" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "dWIZ-2 degrades WIZ and induces HbF in CD34+ derived erythroblasts from sickle cell disease donors and mouse xenotransplantation model" },
+              { "html": "Success of dWIZ-2 opens up a new paradigm in therapeutic targeting of transcription factors" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 11,
+      "slideType": "content",
+      "title": "CDK Inhibitor p27(Kip1)",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Objective: to elucidate the mechanism of how cell cycle speed impacts γ-globin expression in erythroid cells" },
+              { "html": "In HUDEP-2 cells and primary erythroid cells, slower cell cycle speed produce higher γ-globin expression" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><strong>CDKN1b (p27Kip1) overexpression resulted in:</strong></p>"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Increased F-cells, from ~6% up to ~20% (p= 0.024)" },
+              { "html": "Approximately 14-fold increase in γ-globin mRNA levels (p= 0.026)" },
+              { "html": "Reduction in beta-globin mRNA level" },
+              { "html": "Reduction in BCL11A mRNA level to approximately 65% of normal" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Increased expression of 8 Cyclin Dependent Kinase Inhibitors with CRISPR activation (CRISPRa) in HUDEP-2 cells" },
+              { "html": "Same was observed in erythroid cells differentiated from CD34+ HSPCs" },
+              { "html": "Modulating cell cycle speed may become a HbF induction target in the future" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 12,
+      "slideType": "content",
+      "title": "Upregulation of HbF by a DNMT1 Depleter - AB1",
+      "settings": { "background": "#FFFFFF", "block_style": "glass" },
+      "blocks": [
+        {
+          "orderIndex": 0,
+          "blockType": "content_list",
+          "data": {
+            "bullet_style": "disc",
+            "items": [
+              { "html": "γ-globin gene transcription is silenced after birth via a repressor complex including DNA methyltransferase 1 (DNMT1)" },
+              { "html": "AB1 is a potent non-cytotoxic agent which depletes DNMT1 to induce HbF in sickle erythroid progenitors (Li et al., unpublished data)" }
+            ]
+          }
+        },
+        {
+          "orderIndex": 1,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p>The figure below depicts the β-like globin genes' chromosomal order, along with the cis-acting sites that consists of binding sites for the trans acting elements.</p><p>The following table gives you a bit more detail about each element and their function. Take note that BCL11A is a major repressor of γ-globin gene (HBG2, HBG1) transcription.</p>"
+          }
+        },
+        {
+          "orderIndex": 2,
+          "blockType": "rich_text",
+          "data": {
+            "html": "<p><em>Photo credit: Habara et. al., 2017</em></p>"
+          }
+        },
+        {
+          "orderIndex": 3,
+          "blockType": "content_list",
+          "data": {
+            "heading": "In SCD Townes mice model, AB1:",
+            "bullet_style": "disc",
+            "items": [
+              { "html": "Increases γ-globin mRNA and F-cells" },
+              { "html": "Decreases sickle cell phenotype in blood" },
+              { "html": "Improves splenic hematopoiesis" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "orderIndex": 13,
+      "slideType": "content",
       "title": "Summary",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
       "blocks": [
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "disc",
             "items": [
@@ -472,7 +749,7 @@
       ]
     },
     {
-      "orderIndex": 7,
+      "orderIndex": 14,
       "slideType": "content",
       "title": "References",
       "settings": { "background": "#FFFFFF", "block_style": "glass" },
@@ -480,29 +757,29 @@
         {
           "orderIndex": 0,
           "blockType": "content_list",
-          "title": null,
           "data": {
             "bullet_style": "decimal",
             "items": [
-              { "html": "Agrawal RK, Patel RK, Shah V, Nainiwal L, Trivedi B. Hydroxyurea in sickle cell disease: drug review. <em>Indian J Hematol Blood Transfus.</em> 2014;30(2):91-96. doi:10.1007/s12288-013-0261-4" },
-              { "html": "Balbin-Cuesta G, et al. The CDK-Inhibitor p27 Kip1 Regulates Fetal Hemoglobin Expression. <em>Blood</em> (2023) 142 (Supplement 1): 556." },
-              { "html": "Bartolucci, P., Habibi, A., Khellaf, M., Roudot-Thoraval, F., Melica, G., Lascaux, A., Moutereau, S., Loric, S., Wagner-Ballon, O., Berkenou, J., Santin, A., Michel, M., Renaud, B., Lévy, Y., Galactéros, F and Godeauc, B. (2016). Score Predicting Acute Chest Syndrome During Vaso-occlusive Crises in Adult Sickle-cell Disease Patients. <em>EBioMedicine</em> 10, 305–311." },
-              { "html": "Cairns, R., Harris, I., McCracken, S &amp; Mak, T. (2011). Cancer Cell Metabolism. Cold Spring Harbor symposia on quantitative biology. <em>Nature Reviews. Cancer.</em> 76. 299-311." },
-              { "html": "Callaghan, M; Ataga, K; De Franceschi, L; Minniti, C; Balachandran, N; Imbs, D; Perretti, T; Ramos, J; Sostelly, A., &amp; Bartolucci, P. (2022). P120: TRIAL IN PROGRESS: THE RANDOMIZED, DOUBLE-BLIND, PLACEBO-CONTROLLED PHASE 2A CROSSWALK-C TRIAL EVALUATING THE EFFICACY OF CROVALIMAB AS ADJUNCT TREATMENT IN THE PREVENTION OF VASO-OCCLUSIVE EPISODES (VOES) IN PATIENTS (PTS) WITH SICKLE CELL DISEASE (SCD). <em>HemaSphere:</em> 6 (27-28). 10.1097/01.HS9.0000821572.78026.e" },
-              { "html": "Dela-Pena JC, King MA, Brown J, Nachar VR. (2022). Incorporation of novel therapies for the management of sickle cell disease: A pharmacist's perspective. <em>Journal of Oncology Pharmacy Practice.</em> 28(3):646-663." },
-              { "html": "Guillermina, G., Lingo, J., Fleming, S., &amp; Regal, J. (2020). Essential Role of Complement in Pregnancy: From Implantation to Parturition and Beyond. <em>Frontiers in Immunology,</em> 11." },
-              { "html": "Habara AH, Shaikho EM, Steinberg MH. Fetal hemoglobin in sickle cell anemia: The Arab-Indian haplotype and new therapeutic agents. <em>Am J Hematol.</em> 2017; 92: 1233–1242" },
-              { "html": "Idowu M, et al. A Phase 2/3, Double-Blind, Randomized, Placebo-Controlled, Multicenter Study of Mitapivat in Patients with Sickle Cell Disease: RISE UP Phase 2 Results. <em>Blood</em> (2023) 142 (Supplement 1): 271." },
-              { "html": "Molokie R, Lavelle D, Gowhari M, et al. Oral tetrahydrouridine and decitabine for non-cytotoxic epigenetic gene regulation in sickle cell disease: A randomized phase 1 study. <em>PLoS Med.</em> 2017;14(9):e1002382. doi:10.1371/journal.pmed.1002382" },
-              { "html": "Niihara, Y., Miller, S., Kanter, J., Lanzkron, S., Smith, W., Hsu, L., Gordeuk, V., Viswanathan, K., Sarnaik, S., Osunkwo, I., Guillaume, E., Sadanandan, S., et al. (2018). A Phase 3 Trial of l-Glutamine in Sickle Cell Disease. <em>New England Journal of Medicine,</em> 379:226-235." },
+              { "html": "Agrawal RK et al. Hydroxyurea in sickle cell disease. Indian J Hematol Blood Transfus. 2014;30(2):91-96." },
+              { "html": "Balbin-Cuesta G, et al. CDK-Inhibitor p27 Kip1. Blood (2023) 142 (Supplement 1): 556." },
+              { "html": "Bartolucci, P., et al. (2016). Score Predicting Acute Chest Syndrome. EBioMedicine 10, 305-311." },
+              { "html": "Cairns, R., Harris, I., McCracken, S &amp; Mak, T. (2011). Cancer Cell Metabolism. Nature Reviews. Cancer. 76. 299-311." },
+              { "html": "Callaghan, M; et al. &amp; Bartolucci, P. (2022). P120: TRIAL IN PROGRESS...CROSSWALK-C TRIAL...CROVALIMAB...SCD, HemaSphere: 6 (27-28). 10.1097/01.HS9.0000821572.78026.e" },
+              { "html": "Dela-Pena JC et al. (2022). Novel therapies for SCD: pharmacist's perspective. Journal of Oncology Pharmacy Practice. 28(3):646-663." },
+              { "html": "Guillermina, G., Lingo, J., Fleming, S., &amp; Regal, J. (2020). Essential Role of Complement in Pregnancy. Frontiers in Immunology, 11." },
+              { "html": "Habara AH, Shaikho EM, Steinberg MH. Fetal hemoglobin in sickle cell anemia. Am J Hematol. 2017; 92: 1233–1242" },
+              { "html": "Idowu M, et al. Mitapivat in SCD: RISE UP Phase 2. Blood (2023) 142 (Supplement 1): 271." },
+              { "html": "Molokie R, et al. Oral tetrahydrouridine and decitabine. PLoS Med. 2017;14(9):e1002382. doi:10.1371/journal.pmed.1002382" },
+              { "html": "Niihara, Y., et al. (2018). Phase 3 Trial of l-Glutamine in SCD. NEJM, 379:226-235." },
               { "html": "Patient Information Handout: <a href=\"https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf\" target=\"_blank\" rel=\"noopener\">https://www.hematology.org/-/media/Hematology/Files/Education/Hydroxyurea-Booklet.pdf</a>" },
-              { "html": "Paul S. Swerdlow; Red Cell Exchange in Sickle Cell Disease. <em>Hematology Am Soc Hematol Educ Program</em> 2006; 2006 (1): 48–53. doi: https://doi.org/10.1182/asheducation-2006.1.48" },
-              { "html": "Pelinski, Y., De Luna, G., Kassasseya, C., Morabito, A., Ngwem, E., Arlet, J., Genty, I., Honsel, V., Habibi, A., Le Jeune, S., and Bartolucci, P. (2023). Drepadom - a Homecare Protocol for Vaso-Occlusive Crisis for Sickle Cell Disease Patients. <em>Blood,</em> 142 (Supplement 1), 793." },
-              { "html": "Rees, D., Kilinc, Y., Unal, S., Dampier, C., Pace, B., Kaya, B., Trompeter, S., Odame, I., Mahlangu, J., Unal, S., Brent, J., Grosse, R., Fuh, B., Inusa, B., Koren, A., Leblebisatan, G., Levin, C., McNamara, E., Meiser, K., Hom, D., Oliver, S. (2022). A randomized, placebo-controlled, double-blind trial of canakinumab in children and young adults with sickle cell anemia. <em>Blood.</em> 139(17): 2642-2652." },
-              { "html": "Nirmish Shah, Girindra Raval, Abdullah Kutlar, Niren Patel, Mayuko Takezaki, Biaoru Li, Manickam Alagar, Hongyan Xu, Kelly Blackburn, Santhosh Vadivelu, Robert Schaub, David Santos, Betty Pace. 2023. Preclinical and Clinical Use of AB1, a DNMT1 Protein Depleter, to Upregulate Fetal Hemoglobin in Townes Sickle Cell Disease (SCD) Mice and Patients with SCD. <em>Blood,</em> 142, 1" },
-              { "html": "Santosh L. Saraf, et al. Preliminary Results from a Multicenter Phase 2/3 Study of Next-Generation HbS Polymerization Inhibitor GBT021601 for the Treatment of Patients with Sickle Cell Disease. <em>Blood</em> (2023) 142 (Supplement 1): 274." },
-              { "html": "Pamela Y Ting, et al. Targeted Degradation of the Wiz Transcription Factor for Gamma Globin De-Repression. <em>Blood</em> (2023) 142 (Supplement 1): 2." },
-              { "html": "Vichinsky, E., Hoppe, C., Ataga, K., Ware, R., Nduba, V., El-Beshlawy, A., Hassab, H., Achebe, M., Alkindi, S., Brown, R.C., Diuguid, D., Telfer, P., Tsitsikas. D., Elghandour, A., Gordeuk, V., Kanter, J., Abboud, M., Lehrer-Graiwer, J., Tonda, M., Intondi, A., Tong, B., Howard, J., and HOPE Trial Investigators (2019). A Phase 3 Randomized Trial of Voxelotor in Sickle Cell Disease. <em>New England Journal of Medicine</em> 8;381(6):509-519." },
+              { "html": "Paul S. Swerdlow; Red Cell Exchange in SCD. Hematology 2006; 2006 (1): 48–53. doi: <a href=\"https://doi.org/10.1182/asheducation-2006.1.48\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1182/asheducation-2006.1.48</a>" },
+              { "html": "Pelinski, Y., et al. (2023). Drepadom. Blood, 142 (Supplement 1), 793." },
+              { "html": "Rees, D., et al. (2022). Canakinumab trial in children/young adults. Blood. 139(17): 2642-2652." },
+              { "html": "Shah N et al. 2023. AB1/DNMT1 Depleter, Upregulate Fetal Hemoglobin in Townes SCD Mice. Bllod, 142, 1" },
+              { "html": "Saraf SL et al. GBT021601 Phase 2/3. Blood (2023) 142 (Supplement 1): 274." },
+              { "html": "Ting PY et al. Targeted Degradation of Wiz Transcription Factor. Blood (2023) 142 (Supplement 1): 2." },
+              { "html": "Ting PY et al. (2023). Targeted Degradation of Wiz Transcription Factor. Blood, 142 (Supplement 1): 2." },
+              { "html": "Vichinsky, E., Hoppe, C., Ataga, K., Ware, R., Nduba, V., El-Beshlawy, A., Hassab, H., Achebe, M., Alkindi, S., Brown, R.C., Diuguid, D., Telfer, P., Tsitsikas. D., Elghandour, A., Gordeuk, V., Kanter, J., Abboud, M., Lehrer-Graiwer, J., Tonda, M., Intondi, A., Tong, B., Howard, J., and HOPE Trial Investigators (2019). A Phase 3 Randomized Trial of Voxelotor in Sickle Cell Disease. New England Journal of Medicine 8;381(6):509-519." },
               { "html": "<a href=\"https://www.bio-connect.nl/news/fda-new-approvals-mitapivat-pyrukynd/\" target=\"_blank\" rel=\"noopener\">https://www.bio-connect.nl/news/fda-new-approvals-mitapivat-pyrukynd/</a>" }
             ]
           }
@@ -512,19 +789,44 @@
   ],
   "candidates": [
     {
-      "slideOrderIndex": 2,
-      "suggestion": "Slide 2 (Targeting the Inflammasome and Complement Pathway) has only a one-sentence transition and four images. If the loader has access to the full Canakinumab and Crovalimab study detail text that was only partially represented via the EdApp match-quiz Explanation, consider expanding the rich_text with those details.",
-      "reason": "The source MD provides no prose body for Canakinumab or Crovalimab beyond the Explanation field of the matching activity. If additional study-detail prose exists in a condensed source or separate slide text, it should be incorporated here."
+      "slideOrderIndex": 3,
+      "suggestion": "S4 Canakinumab: source lists 8 image cards (image-gallery type) but provides no image URLs — all content is in caption text only. All educational caption content preserved verbatim as rich_text/content_list blocks. Image 8 caption was empty and dropped. If image URLs become available, replace with image_gallery mode:slider.",
+      "reason": "image-gallery slide with captions but no image URLs in source — rendered as text blocks per spec rule 'if no url, omit the media'"
     },
     {
       "slideOrderIndex": 4,
-      "suggestion": "The 'Decitabine and Tetrahydrouridine' section header has no body prose in the source MD — only the EdApp match-quiz and GBT study images. If the Molokie et al. (2017) study details or GBT021601 study text are available in a supplementary source, add them as rich_text before the knowledge-check quizzes.",
-      "reason": "The section header appears bare in the MD; the referenced Molokie et al. 2017 phase 1 RCT appears only in references. The GBT images (title_gbt_study, gbt_result_1, gbt_result_3) are included but lack associated prose from the source."
+      "suggestion": "S5 Crovalimab (CROSSWALK-A): source lists 7 image-slider cards but provides no image URLs. Cards 5 (empty caption) omitted. All non-empty educational content preserved verbatim as text blocks. If image URLs become available, replace with image_gallery mode:slider.",
+      "reason": "image-slider slide with captions but no image URLs in source — rendered as text blocks per spec"
     },
     {
-      "slideOrderIndex": 5,
-      "suggestion": "CDK Inhibitor p27(Kip1) appears as a bare section header with only a photo credit. If Balbin-Cuesta et al. (2023) study details are available, consider giving it its own slide with that content rather than merging the header note into the AB1 slide.",
-      "reason": "The source MD has no body text under this header and no manifest images for it — merged as a note on the AB1 slide per spec. A future content pass could expand it."
+      "slideOrderIndex": 7,
+      "suggestion": "S8 Knowledge Check (Match the Word): source is a matrix/Match-the-Word with 3 drug→mechanism pairs. Rendered as 3 separate multiple_choice quiz_inline blocks (one question per drug), each with the same 3 options. Feedback verbatim from the combined Explanation. Consider using categorize type if the viewer supports it cleanly.",
+      "reason": "matrix type rendered as 3 multiple_choice quizzes — closest available equivalent per spec 'matrix → one quiz_inline per row'"
+    },
+    {
+      "slideOrderIndex": 8,
+      "suggestion": "S9 Mitapivat: source lists 6 image-gallery cards but provides no image URLs. Photo credit lines preserved as rich_text. If image URLs become available, replace with image_gallery.",
+      "reason": "image-gallery slide with captions but no image URLs in source — rendered as text blocks"
+    },
+    {
+      "slideOrderIndex": 9,
+      "suggestion": "S10 GBT021601: source lists 9 image-slider cards but provides no image URLs. All caption content preserved verbatim as content_list/rich_text blocks.",
+      "reason": "image-slider slide with captions but no image URLs in source — rendered as text blocks"
+    },
+    {
+      "slideOrderIndex": 10,
+      "suggestion": "S11 Fetal Hemoglobin Induction: source lists 5 image-gallery cards but provides no image URLs. Caption 1 is a bare title repetition of the slide title — dropped as duplicate. All substantive captions 2–5 preserved verbatim.",
+      "reason": "image-gallery slide with captions but no image URLs — rendered as text blocks; title-repetition caption dropped per spec"
+    },
+    {
+      "slideOrderIndex": 11,
+      "suggestion": "S12 CDK Inhibitor p27(Kip1): source is an image-collection with 3 icon+content tiles but provides no icon URLs. Rendered as content_list blocks rather than icon_list (icon_list requires icon_url per spec). If icon URLs become available, convert to icon_list.",
+      "reason": "image-collection tiles have no icon URLs — icon_list omitted, content_list used instead per spec 'if no url, omit icon_url'"
+    },
+    {
+      "slideOrderIndex": 12,
+      "suggestion": "S13 AB1/DNMT1: source has 5 [IMAGE] inline markers but provides no image URLs. All [IMAGE] placeholders omitted. Surrounding prose and photo credit preserved verbatim. AB1 mouse-model results preserved as content_list.",
+      "reason": "scrolling-media slide with [IMAGE] placeholders but no actual URLs — images omitted, text content preserved verbatim"
     }
   ]
 }

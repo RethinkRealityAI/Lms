@@ -133,6 +133,63 @@ export interface ResolvedCompletionSurveys {
   program: { programId: string; programTitle: string; templateId: string; template: SurveyTemplate } | null;
 }
 
+/**
+ * Resolve the EFFECTIVE course-level completion survey for a course, using the same
+ * precedence as the student viewer (per-course override → scope='course' assignment →
+ * institution default) but WITHOUT a user (no program / already-answered logic).
+ *
+ * Use this for admin/reporting surfaces that need to know which survey a course shows —
+ * `getCompletionSurvey()` only reads the per-course override and would report "none" for
+ * surveys configured via a course or institution-default assignment.
+ */
+export async function getEffectiveCourseCompletionSurvey(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<{ templateId: string; template: SurveyTemplate; source: CourseSurveySource } | null> {
+  try {
+    const { data: course } = await supabase
+      .from('courses')
+      .select('institution_id, completion_survey_template_id')
+      .eq('id', courseId)
+      .maybeSingle();
+    if (!course) return null;
+
+    let templateId: string | null = course.completion_survey_template_id ?? null;
+    let source: CourseSurveySource = 'course_override';
+
+    if (!templateId) {
+      const { data: courseAssignment } = await supabase
+        .from('survey_assignments')
+        .select('survey_template_id')
+        .eq('scope', 'course')
+        .eq('course_id', courseId)
+        .maybeSingle();
+      if (courseAssignment) {
+        templateId = courseAssignment.survey_template_id;
+        source = 'course_assignment';
+      }
+    }
+    if (!templateId && course.institution_id) {
+      const { data: defaultAssignment } = await supabase
+        .from('survey_assignments')
+        .select('survey_template_id')
+        .eq('scope', 'all_courses')
+        .eq('institution_id', course.institution_id)
+        .maybeSingle();
+      if (defaultAssignment) {
+        templateId = defaultAssignment.survey_template_id;
+        source = 'institution_default';
+      }
+    }
+    if (!templateId) return null;
+    const template = await fetchTemplate(supabase, templateId);
+    return template ? { templateId, template, source } : null;
+  } catch (err) {
+    console.error('getEffectiveCourseCompletionSurvey failed:', err);
+    return null;
+  }
+}
+
 async function fetchTemplate(
   supabase: SupabaseClient,
   templateId: string,

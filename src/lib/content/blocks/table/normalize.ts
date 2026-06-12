@@ -13,7 +13,9 @@ type LegacyColumn = TableColumn & { key?: string };
 /** Loose/legacy table payload: columns may use `key`, rows may omit `id`, schema defaults may be absent. */
 export type RawTableData = Partial<Omit<TableData, 'columns' | 'rows'>> & {
   columns?: Array<Partial<TableColumn> & { key?: string }>;
-  rows?: Array<{ id?: string; cells?: Record<string, string> }>;
+  // Rows may be the normal object form, OR a positional array of cell values
+  // (e.g. ["Invisibility", "..."]) emitted by some importers — handled below.
+  rows?: Array<{ id?: string; cells?: Record<string, string> } | string[]>;
 };
 
 /**
@@ -53,18 +55,27 @@ export function normalizeTableData(data: RawTableData): TableData {
   });
 
   const columnIds = new Set(columns.map((c) => c.id));
-  const rows: TableRow[] = (data.rows ?? []).map((row, i) => {
+  const rows: TableRow[] = (data.rows ?? []).map((row) => {
     const cells: Record<string, string> = {};
-    for (const [cellKey, value] of Object.entries(row.cells ?? {})) {
-      const target = keyRemap.get(cellKey) ?? (columnIds.has(cellKey) ? cellKey : cellKey);
-      cells[target] = value;
+    if (Array.isArray(row)) {
+      // Positional array form: map each value to the column at the same index.
+      row.forEach((value, idx) => {
+        const col = columns[idx];
+        if (col) cells[col.id] = typeof value === 'string' ? value : String(value ?? '');
+      });
+    } else {
+      for (const [cellKey, value] of Object.entries(row.cells ?? {})) {
+        const target = keyRemap.get(cellKey) ?? (columnIds.has(cellKey) ? cellKey : cellKey);
+        cells[target] = value;
+      }
     }
     // Backfill empty cells for each column
     for (const col of columns) {
       if (!(col.id in cells)) cells[col.id] = '';
     }
+    const rowId = Array.isArray(row) ? undefined : row.id?.trim();
     return {
-      id: row.id?.trim() || newId('row'),
+      id: rowId || newId('row'),
       cells,
     };
   });
