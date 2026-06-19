@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         // Look up profile to route to the right dashboard
         const { data: userData } = await supabase
           .from('users')
-          .select('role, institution_id, is_active')
+          .select('role, institution_id, is_active, institutions(slug)')
           .eq('id', data.user.id)
           .single();
 
@@ -77,9 +77,19 @@ export async function GET(request: NextRequest) {
         }
 
         const role = userData?.role || 'student';
+        // Route to the user's OWN institution (from their profile), not the
+        // referrer cookie — a GANSID user verifying via a /scago/ link must land
+        // on /gansid/. platform_admin keeps the cookie-selected tenant so it can
+        // operate cross-tenant.
+        const inst = (userData as { institutions?: { slug?: string } | { slug?: string }[] })?.institutions;
+        const ownSlug = Array.isArray(inst) ? inst[0]?.slug : inst?.slug;
+        const targetSlug =
+          role !== 'platform_admin' && typeof ownSlug === 'string' && ownSlug
+            ? ownSlug
+            : institutionSlug;
         const destination = ADMIN_ROLES.has(role)
-          ? `/${institutionSlug}/admin`
-          : `/${institutionSlug}/student`;
+          ? `/${targetSlug}/admin`
+          : `/${targetSlug}/student`;
 
         return NextResponse.redirect(new URL(destination, requestUrl.origin));
       }

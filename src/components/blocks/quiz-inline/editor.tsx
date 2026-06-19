@@ -1,9 +1,10 @@
 'use client';
 
 import { useRef } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
+import { getQuizConfigError, isGatedQuizType } from '@/lib/content/blocks/quiz-inline/validation';
 import {
   assignItemToCategory,
   getCategorizeOptionPool,
@@ -257,8 +258,24 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
     (opt) => opt && !categorizePlayItems.includes(opt),
   );
 
+  const configError = getQuizConfigError(data);
+
   return (
     <div className="space-y-4">
+      {/* Misconfiguration warning — a gated quiz whose correct answer matches no
+          option can never be passed and would block lesson completion if it gated.
+          The student viewer now skips such quizzes in the completion gate, but the
+          author still needs to fix it so learners are graded correctly. */}
+      {configError && isGatedQuizType(data.question_type) && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>
+            <strong className="font-semibold">This question can&apos;t be answered correctly:</strong>{' '}
+            {configError} Learners won&apos;t be graded on it and it won&apos;t block lesson completion until fixed.
+          </span>
+        </div>
+      )}
+
       {/* Question type selector */}
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-2">Question Type</label>
