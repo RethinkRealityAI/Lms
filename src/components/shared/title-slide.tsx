@@ -38,8 +38,10 @@ export function TitleSlide({
   const titleSize = titleSlideSettings?.title_size ?? 'md';
   const titleColor = titleSlideSettings?.title_color ?? '#FFFFFF';
   const footerText = titleSlideSettings?.footer_text ?? branding.acronym;
-  // Per-lesson logo → course/institution default → initial avatar.
-  const footerLogoUrl = titleSlideSettings?.footer_logo_url ?? titleLogoUrl ?? undefined;
+  // Per-lesson logo → course/theme default → institution branding logo → initial avatar.
+  // The institution logo is the default so every lesson/course shows a footer logo
+  // out of the box; per-lesson (footer_logo_url) or per-course (titleLogoUrl) override it.
+  const footerLogoUrl = titleSlideSettings?.footer_logo_url ?? titleLogoUrl ?? branding.logoUrl ?? undefined;
 
   // Background priority: per-lesson image → theme default image → gradient
   const bgImage = titleImageUrl || defaultBackgroundImageUrl || null;

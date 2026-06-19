@@ -503,16 +503,20 @@ function LoginContent() {
           <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(135deg,white,transparent)] opacity-20" />
 
           <div className="relative">
-            {/* Institution Logo */}
+            {/* Institution Logo — on a white chip so logos with their own
+                (white/opaque) background render correctly on the gradient
+                instead of becoming a white block (e.g. the SCAGO logo). */}
             <div className="mb-5">
-              <Image
-                src={branding.logoUrl}
-                alt={`${branding.name} logo`}
-                width={branding.logoDimensions.width}
-                height={branding.logoDimensions.height}
-                className="h-12 w-auto object-contain brightness-0 invert"
-                priority
-              />
+              <div className="inline-flex items-center justify-center bg-white rounded-2xl p-3 shadow-sm">
+                <Image
+                  src={branding.logoUrl}
+                  alt={`${branding.name} logo`}
+                  width={branding.logoDimensions.width}
+                  height={branding.logoDimensions.height}
+                  className="h-10 w-auto object-contain"
+                  priority
+                />
+              </div>
             </div>
             <h1 className="text-2xl font-black tracking-tight mb-3 leading-tight">
               {branding.programTitle}
