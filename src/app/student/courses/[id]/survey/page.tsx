@@ -76,9 +76,35 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
       toast.error('Failed to submit survey', { description: error });
       return;
     }
-    // Survey may have been gating the certificate — attempt server-verified issuance.
-    // The RPC re-checks lesson completion, so it's a no-op if lessons aren't all done.
+    // The survey may have been gating course completion. If every lesson except
+    // the final one is already complete, finalize the course now: mark the final
+    // lesson complete, then issue the certificate (server-verified). The RPC is a
+    // no-op if lessons still aren't all done, so this can't bypass content gating.
     try {
+      const { data: lessonRows } = await supabase
+        .from('lessons')
+        .select('id, order_index')
+        .eq('course_id', courseId)
+        .is('deleted_at', null)
+        .order('order_index', { ascending: true });
+      if (lessonRows && lessonRows.length > 0) {
+        const ids = lessonRows.map((l) => l.id);
+        const { data: progressRows } = await supabase
+          .from('progress')
+          .select('lesson_id, completed')
+          .eq('user_id', user.id)
+          .in('lesson_id', ids);
+        const completed = new Set((progressRows ?? []).filter((p) => p.completed).map((p) => p.lesson_id));
+        const finalLesson = lessonRows[lessonRows.length - 1];
+        const othersComplete = lessonRows.slice(0, -1).every((l) => completed.has(l.id));
+        if (othersComplete && !completed.has(finalLesson.id)) {
+          await supabase.from('progress').upsert(
+            [{ user_id: user.id, lesson_id: finalLesson.id, completed: true, completed_at: new Date().toISOString() }],
+            { onConflict: 'user_id,lesson_id' },
+          );
+        }
+      }
+
       const { data: certData } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
       if (certData?.certificate_id) {
         setCertNumber(certData.certificate_number ?? null);

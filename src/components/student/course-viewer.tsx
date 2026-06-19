@@ -843,6 +843,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     if (!selectedLesson) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+    // Course-completion gate: when this is the final lesson and a completion
+    // survey is required but not yet submitted, withhold completion AND the
+    // certificate. The completion slide shows the survey CTA; the dedicated
+    // survey page finalizes completion (marks the final lesson + issues the cert)
+    // on submit. Already-completed learners pass (feedbackSubmitted or an existing
+    // cert make the gate inert), so they are grandfathered.
+    const isFinalLesson = lessons.length > 0 && lessons[lessons.length - 1]?.id === selectedLesson.id;
+    const surveyGatePending = Boolean(
+      course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted,
+    );
+    if (!previewMode && isFinalLesson && surveyGatePending) return;
     try {
       // Always update local state so sidebar checkmarks appear even in preview mode
       const updatedProgress = { ...progress, [selectedLesson.id]: {
@@ -861,13 +872,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         toast.success('Progress saved', { duration: 2000 });
 
         const allCompleted = lessons.every(l => updatedProgress[l.id]?.completed);
-        // When a completion survey is required for this course and not yet
-        // submitted, withhold the certificate — it is issued from the dedicated
-        // survey page on submit. Already-issued certs are unaffected (grandfathered).
-        const surveyGatePending = Boolean(
-          course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted,
-        );
-        if (allCompleted && lessons.length > 0 && !surveyGatePending) {
+        if (allCompleted && lessons.length > 0) {
           // Server-verified issuance (migration 036): the RPC re-checks lesson
           // completion and resolves the template (course → institution default).
           const { data: certData, error: certError } = await supabase
