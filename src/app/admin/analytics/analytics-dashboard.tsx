@@ -25,6 +25,7 @@ import {
   ChevronRight,
   LogIn,
   Loader2,
+  ShieldAlert,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -44,6 +45,8 @@ import type {
 } from '@/lib/db/surveys';
 import { SurveysAnalyticsTab } from '@/components/admin/surveys-analytics-tab';
 import { FeedbackAnalyticsTab, buildFeedbackSummaries } from '@/components/admin/feedback-analytics-tab';
+import { ContentHealthTab } from '@/components/admin/content-health-tab';
+import type { ProblematicQuiz } from '@/lib/db/quiz-health';
 
 interface Props {
   trendDays: number;
@@ -60,6 +63,7 @@ interface Props {
   feedbackCounts: Record<string, number>;
   eventCounts: EventCounts | null;
   recentEvents: AnalyticsEvent[];
+  problematicQuizzes: ProblematicQuiz[];
 }
 
 // ── CSV export (client-side, no deps) ────────────────────────────────────────
@@ -547,7 +551,7 @@ function EngagementTab({
   );
 }
 
-export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts, eventCounts, recentEvents }: Props) {
+export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts, eventCounts, recentEvents, problematicQuizzes }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -700,6 +704,15 @@ export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTre
             <Star className="h-4 w-4 mr-2" />
             Feedback
           </TabsTrigger>
+          <TabsTrigger value="content-health" className="rounded-lg font-bold text-sm px-4">
+            <ShieldAlert className="h-4 w-4 mr-2" />
+            Content Health
+            {problematicQuizzes.length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-black bg-red-500 text-white">
+                {problematicQuizzes.length}
+              </span>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses">
@@ -760,6 +773,10 @@ export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTre
 
         <TabsContent value="feedback">
           <FeedbackAnalyticsTab summaries={buildFeedbackSummaries(courses, feedbackCounts)} />
+        </TabsContent>
+
+        <TabsContent value="content-health">
+          <ContentHealthTab quizzes={problematicQuizzes} />
         </TabsContent>
       </Tabs>
     </div>

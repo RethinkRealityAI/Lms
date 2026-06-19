@@ -61,8 +61,14 @@ export function getQuizConfigError(data: Partial<QuizInlineData> | undefined | n
     return null;
   }
 
-  // swipe / unknown types do not gate completion
-  return null;
+  if (type === 'swipe') {
+    // Swipe decks don't gate completion; a card-less deck just shows an empty state.
+    return null;
+  }
+
+  // A quiz_inline block with no recognized question type renders a broken
+  // placeholder for students — flag it so an admin can fix it.
+  return 'No question type is set, so this block renders as a broken placeholder.';
 }
 
 /**
