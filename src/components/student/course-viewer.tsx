@@ -25,6 +25,8 @@ import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { viewedImagesStorageKey } from '@/lib/content/blocks/image-gallery/display-utils';
+import { isGatedQuizType, isQuizSatisfiable } from '@/lib/content/blocks/quiz-inline/validation';
+import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout, blockSurfaceFillCell } from '@/lib/content/gridConstants';
 import { asCourseTheme } from '@/lib/content/course-theme';
 import { asInstitutionTheme, resolveEffectiveTheme, type InstitutionTheme } from '@/lib/tenant/institution-theme';
@@ -1204,12 +1206,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // Only gate on quiz blocks with an interactive question type.
   // Blocks with null/unknown types render a non-interactive placeholder and can never
   // fire onComplete, so including them would permanently block lesson completion.
-  const INTERACTIVE_QUIZ_TYPES = new Set(['multiple_choice', 'true_false', 'categorize', 'select_all']);
+  // We ALSO exclude misconfigured quizzes (correct answer matches no option, empty, etc.):
+  // such a quiz can never fire onCorrect, so gating on it would brick the lesson. The
+  // editor surfaces these to admins so the content can be fixed (see quiz-inline/validation).
   const currentLessonQuizBlockIds = React.useMemo(() => {
     if (!selectedLesson) return [];
     const blocks = lessonBlocks[selectedLesson.id] ?? [];
     return blocks
-      .filter(b => b.block_type === 'quiz_inline' && INTERACTIVE_QUIZ_TYPES.has(b.data?.question_type as string))
+      .filter(b =>
+        b.block_type === 'quiz_inline' &&
+        isGatedQuizType(b.data?.question_type as string) &&
+        isQuizSatisfiable(b.data as Partial<QuizInlineData>),
+      )
       .map(b => b.id);
   }, [selectedLesson, lessonBlocks]);
 

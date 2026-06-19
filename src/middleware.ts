@@ -19,26 +19,34 @@ function getRoleFromToken(user: any): string | null {
   return null;
 }
 
-async function getRoleWithDbFallback(
+async function getUserAuthInfo(
   supabase: any,
   user: any
-): Promise<string> {
-  // Prioritize DB lookup: prevents stale JWT metadata from locking updated admins out
+): Promise<{ role: string; slug: string | null }> {
+  // Single DB lookup for both role and the user's own institution slug.
+  // Prioritizing the DB prevents stale JWT metadata from locking updated admins
+  // out, and gives us the authoritative tenant for tenant-enforcement below.
   const { data, error } = await supabase
     .from("users")
-    .select("role")
+    .select("role, institutions(slug)")
     .eq("id", user.id)
     .maybeSingle();
 
+  let role: string | null = null;
   if (!error && data?.role && typeof data.role === "string") {
-    return data.role.trim().toLowerCase();
+    role = data.role.trim().toLowerCase();
+  }
+  if (!role) {
+    // Fallback to JWT metadata if no DB record exists
+    role = getRoleFromToken(user) ?? "student";
   }
 
-  // Fallback to JWT metadata if no DB record exists
-  const tokenRole = getRoleFromToken(user);
-  if (tokenRole) return tokenRole;
+  // The institutions embed is an object for a to-one FK; tolerate an array shape too.
+  const inst = data?.institutions;
+  const slugRaw = Array.isArray(inst) ? inst[0]?.slug : inst?.slug;
+  const slug = typeof slugRaw === "string" ? slugRaw.toLowerCase() : null;
 
-  return "student";
+  return { role, slug };
 }
 
 function getInstitutionSlug(pathname: string): string | null {
@@ -131,10 +139,35 @@ export async function middleware(request: NextRequest) {
     normalizedPath.startsWith("/student") ||
     normalizedPath === "/login";
 
-  // Resolve role once per request (fast: reads JWT, DB only as rare fallback)
+  // Resolve role + own institution slug once per request (single DB query)
   let role: string | null = null;
+  let ownSlug: string | null = null;
   if (user && needsRoleCheck) {
-    role = await getRoleWithDbFallback(supabase, user);
+    const info = await getUserAuthInfo(supabase, user);
+    role = info.role;
+    ownSlug = info.slug;
+  }
+
+  // --- Tenant enforcement ---
+  // A logged-in user may only use their OWN institution's URL prefix. If they
+  // land on another tenant's prefix (e.g. a GANSID user opening /scago/student),
+  // redirect to their own slug with a real HTTP redirect BEFORE any layout renders.
+  // This is what keeps the navbar/branding from getting stuck on the wrong tenant
+  // (both prefixes rewrite to the same internal route, so a client-side guard would
+  // not re-render the layout). platform_admin is exempt so it can switch tenants.
+  if (
+    user &&
+    role &&
+    role !== "platform_admin" &&
+    institutionSlugInPath &&
+    ownSlug &&
+    SUPPORTED_INSTITUTION_SLUGS.has(ownSlug) &&
+    ownSlug !== institutionSlugInPath &&
+    (normalizedPath.startsWith("/admin") || normalizedPath.startsWith("/student"))
+  ) {
+    return NextResponse.redirect(
+      new URL(withInstitution(normalizedPath, ownSlug), request.url)
+    );
   }
 
   // Handle admin login page
@@ -186,13 +219,15 @@ export async function middleware(request: NextRequest) {
     return applyInstitutionContext(response, selectedInstitution);
   }
 
-  // Redirect authenticated users away from login page
-  if (normalizedPath === "/login" && user) {
-    if (role && ADMIN_ROLES.has(role)) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    } else if (role) {
-      return NextResponse.redirect(new URL(withInstitution("/student", selectedInstitution), request.url));
-    }
+  // Redirect authenticated users away from login page — to their OWN tenant
+  // (platform_admin keeps whatever tenant prefix the URL/cookie selected).
+  if (normalizedPath === "/login" && user && role) {
+    const targetSlug =
+      role !== "platform_admin" && ownSlug ? ownSlug : selectedInstitution;
+    const dest = ADMIN_ROLES.has(role) ? "/admin" : "/student";
+    return NextResponse.redirect(
+      new URL(withInstitution(dest, targetSlug), request.url)
+    );
   }
 
   if (institutionSlugInPath) {
