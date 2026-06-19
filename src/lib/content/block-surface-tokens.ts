@@ -93,5 +93,14 @@ export function surfacePrimaryButtonClass(): string {
 }
 
 export function surfaceOutlineButtonClass(): string {
-  return 'w-full min-h-11 sm:min-h-10 sm:w-auto font-semibold border-[color:var(--surface-selected-border)] text-[color:var(--surface-selected-text)] hover:bg-[color:var(--surface-selected-bg)]';
+  // NB: this is applied to a shadcn <Button variant="outline">, whose variant sets a
+  // solid white `bg-background`. On a dark surface (glass-dark) the surface text token is
+  // near-white, so without overriding the background we get white-on-white. Force a
+  // transparent background so the glass surface shows through, and pin the hover text
+  // color (the variant's `hover:text-accent-foreground` would otherwise flip it).
+  return cn(
+    'w-full min-h-11 sm:min-h-10 sm:w-auto font-semibold bg-transparent',
+    'border-[color:var(--surface-selected-border)] text-[color:var(--surface-selected-text)]',
+    'hover:bg-[color:var(--surface-selected-bg)] hover:text-[color:var(--surface-selected-text)]',
+  );
 }

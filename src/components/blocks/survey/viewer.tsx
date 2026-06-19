@@ -15,8 +15,23 @@ import type {
   SurveyAnswers,
   SurveyAnswerValue,
 } from '@/lib/content/blocks/survey/schema';
+import { usePathname } from 'next/navigation';
 import { getSurveyResponse, submitSurveyResponse } from '@/lib/db/surveys';
 import { BLOCK_CONTENT_SHELL, surfaceMutedClass } from '@/lib/content/block-surface-tokens';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
+
+/** Append an 8-digit alpha to a 6-digit hex (e.g. '1A' ≈ 10%); pass through otherwise. */
+function withAlpha(hex: string, alpha: string): string {
+  return /^#[0-9a-fA-F]{6}$/.test(hex) ? `${hex}${alpha}` : hex;
+}
+
+/** Resolved accent + header gradient for the current institution (prop-overridable). */
+interface SurveyTheme {
+  accent: string;
+  gradientStart: string;
+  gradientEnd: string;
+}
 
 function formatAnswer(value: SurveyAnswerValue | undefined): string {
   if (value === undefined || value === null) return '—';
@@ -32,18 +47,30 @@ function isAnswerEmpty(value: SurveyAnswerValue | undefined): boolean {
   return false;
 }
 
+// Surface-aware option styling — adapts to glass / glass-dark / classic / none.
+// Unselected uses surface chip tokens; selected uses the institution accent.
+const OPTION_BASE =
+  'w-full text-left px-4 py-3 rounded-lg border text-sm transition-all text-[color:var(--surface-text)]';
+const OPTION_UNSELECTED =
+  'bg-[color:var(--surface-chip-bg)] border-[color:var(--surface-chip-border)] hover:bg-[color:var(--surface-chip-hover)]';
+
 function QuestionField({
   question,
   value,
   onChange,
   disabled,
+  accent,
 }: {
   question: SurveyQuestion;
   value: SurveyAnswerValue | undefined;
   onChange: (value: SurveyAnswerValue) => void;
   disabled?: boolean;
+  accent: string;
 }) {
   const options = question.options ?? [];
+  const selectedStyle = { borderColor: accent, backgroundColor: withAlpha(accent, '24'), color: accent };
+  // Inputs sit on a white field, so force dark text regardless of surface.
+  const inputClass = 'bg-white text-slate-900 placeholder:text-slate-400';
 
   switch (question.type) {
     case 'true_false':
@@ -58,16 +85,17 @@ function QuestionField({
                 type="button"
                 disabled={disabled}
                 onClick={() => onChange(option)}
+                style={selected ? selectedStyle : undefined}
                 className={cn(
-                  'w-full text-left px-4 py-3 rounded-lg border text-sm transition-all',
-                  selected
-                    ? 'border-[#1A3C6E] bg-[#1A3C6E]/10 font-medium text-[#1A3C6E]'
-                    : 'border-slate-200 hover:bg-slate-50 text-slate-800',
+                  OPTION_BASE,
+                  selected ? 'font-semibold' : OPTION_UNSELECTED,
                   disabled && 'opacity-60 cursor-not-allowed',
                 )}
               >
                 {question.type === 'multiple_choice' && (
-                  <span className="text-slate-400 mr-2">{String.fromCharCode(65 + i)}.</span>
+                  <span className={cn('mr-2', !selected && 'text-[color:var(--surface-text-subtle)]')}>
+                    {String.fromCharCode(65 + i)}.
+                  </span>
                 )}
                 {option}
               </button>
@@ -92,11 +120,10 @@ function QuestionField({
             return (
               <label
                 key={i}
+                style={checked ? { borderColor: accent, backgroundColor: withAlpha(accent, '24') } : undefined}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-all',
-                  checked
-                    ? 'border-[#1A3C6E] bg-[#1A3C6E]/10'
-                    : 'border-slate-200 hover:bg-slate-50',
+                  'flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-all text-[color:var(--surface-text)]',
+                  !checked && OPTION_UNSELECTED,
                   disabled && 'opacity-60 cursor-not-allowed',
                 )}
               >
@@ -105,9 +132,10 @@ function QuestionField({
                   checked={checked}
                   disabled={disabled}
                   onChange={() => !disabled && toggle(option)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#1A3C6E] focus:ring-[#1A3C6E]"
+                  style={{ accentColor: accent }}
+                  className="h-4 w-4 rounded"
                 />
-                <span className="text-sm text-slate-800">{option}</span>
+                <span className="text-sm">{option}</span>
               </label>
             );
           })}
@@ -122,7 +150,7 @@ function QuestionField({
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
           placeholder="Your answer"
-          className="bg-white"
+          className={inputClass}
         />
       );
 
@@ -134,7 +162,7 @@ function QuestionField({
           disabled={disabled}
           placeholder="Share your thoughts..."
           rows={4}
-          className="bg-white resize-y min-h-[100px]"
+          className={cn(inputClass, 'resize-y min-h-[100px]')}
         />
       );
 
@@ -154,7 +182,9 @@ function QuestionField({
               <Star
                 className={cn(
                   'h-8 w-8',
-                  star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300',
+                  star <= rating
+                    ? 'fill-amber-400 text-amber-400'
+                    : 'text-[color:var(--surface-text-subtle)]',
                 )}
               />
             </button>
@@ -173,7 +203,10 @@ function QuestionField({
       return (
         <div className="space-y-3 px-1">
           <div className="text-center">
-            <span className="inline-flex items-center justify-center min-w-[3rem] px-3 py-1 rounded-lg bg-[#1A3C6E] text-white text-sm font-bold">
+            <span
+              className="inline-flex items-center justify-center min-w-[3rem] px-3 py-1 rounded-lg text-white text-sm font-bold"
+              style={{ backgroundColor: accent }}
+            >
               {num}
             </span>
           </div>
@@ -187,11 +220,11 @@ function QuestionField({
             onChange={(e) => onChange(Number(e.target.value))}
             className="w-full h-2 rounded-full appearance-none cursor-pointer disabled:opacity-60"
             style={{
-              background: `linear-gradient(to right, #1A3C6E 0%, #1A3C6E ${pct}%, #e2e8f0 ${pct}%, #e2e8f0 100%)`,
+              background: `linear-gradient(to right, ${accent} 0%, ${accent} ${pct}%, var(--surface-inset-bg) ${pct}%, var(--surface-inset-bg) 100%)`,
             }}
           />
           {(question.min_label || question.max_label) && (
-            <div className="flex justify-between text-xs text-slate-500">
+            <div className="flex justify-between text-xs text-[color:var(--surface-text-muted)]">
               <span>{question.min_label ?? min}</span>
               <span>{question.max_label ?? max}</span>
             </div>
@@ -222,6 +255,23 @@ export default function SurveyViewer({
   const canPersist = Boolean(
     context?.courseId && context?.lessonId && context?.institutionId && !previewMode,
   );
+
+  // Per-institution accent + header gradient (SCAGO red/black, GANSID navy/teal),
+  // overridable per block via data.accent_color.
+  const pathname = usePathname();
+  const theme = useMemo<SurveyTheme>(() => {
+    const branding = getInstitutionBranding(resolveInstitutionSlug(pathname));
+    const override =
+      typeof data.accent_color === 'string' && /^#[0-9a-fA-F]{6}$/.test(data.accent_color)
+        ? data.accent_color
+        : undefined;
+    return {
+      accent: override ?? branding.accentColor,
+      gradientStart: branding.primaryColor,
+      gradientEnd:
+        branding.accentColor !== branding.primaryColor ? branding.accentColor : branding.secondaryColor,
+    };
+  }, [pathname, data.accent_color]);
 
   const [answers, setAnswers] = useState<SurveyAnswers>({});
   const [loading, setLoading] = useState(canPersist);
@@ -326,7 +376,7 @@ export default function SurveyViewer({
   if (loading) {
     return (
       <div className={cn(BLOCK_CONTENT_SHELL, 'items-center justify-center py-8')}>
-        <Loader2 className="h-6 w-6 animate-spin text-[#1A3C6E]" />
+        <Loader2 className="h-6 w-6 animate-spin" style={{ color: theme.accent }} />
       </div>
     );
   }
@@ -341,8 +391,11 @@ export default function SurveyViewer({
 
   return (
     <div className={cn(BLOCK_CONTENT_SHELL, '-m-4 @md:-m-5')}>
-      <div className="bg-gradient-to-r from-[#1A3C6E] to-[#0099CA] px-6 py-5 text-white shrink-0 rounded-t-2xl">
-        <div className="flex items-center gap-2 mb-1">
+      <div
+        className="px-6 py-5 text-white shrink-0 rounded-t-2xl text-center"
+        style={{ backgroundImage: `linear-gradient(to right, ${theme.gradientStart}, ${theme.gradientEnd})` }}
+      >
+        <div className="flex items-center justify-center gap-2 mb-1">
           <ClipboardList className="h-5 w-5 opacity-90" />
           <h3 className="text-lg font-bold">{title}</h3>
         </div>
@@ -357,7 +410,7 @@ export default function SurveyViewer({
                 {index + 1}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold leading-snug">
+                <p className="text-sm font-semibold leading-snug text-[color:var(--surface-text)]">
                   {question.question || 'Untitled question'}
                   {question.required && <span className="text-red-500 ml-1">*</span>}
                 </p>
@@ -369,6 +422,7 @@ export default function SurveyViewer({
                 value={answers[question.id]}
                 onChange={(v) => setAnswer(question.id, v)}
                 disabled={submitted && !previewMode}
+                accent={theme.accent}
               />
               {errors[question.id] && (
                 <p className="text-xs text-red-500 mt-1.5 font-medium">{errors[question.id]}</p>
@@ -400,7 +454,8 @@ export default function SurveyViewer({
             <Button
               onClick={handleSubmit}
               disabled={submitting}
-              className="w-full sm:w-auto bg-[#1A3C6E] hover:bg-[#152d52] font-bold"
+              style={{ backgroundColor: theme.accent }}
+              className="w-full sm:w-auto font-bold text-white hover:opacity-90"
             >
               {submitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

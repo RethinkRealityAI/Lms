@@ -70,3 +70,14 @@ describe('isQuizSatisfiable', () => {
     expect(isQuizSatisfiable({ question_type: 'swipe' })).toBe(true);
   });
 });
+
+describe('getQuizConfigError — missing/unknown question type', () => {
+  it('flags a quiz_inline with no question type (broken placeholder)', () => {
+    expect(getQuizConfigError({})).toMatch(/no question type/i);
+    expect(getQuizConfigError({ question_type: 'bogus' as never })).toMatch(/no question type/i);
+  });
+  it('does not gate an unknown type', () => {
+    expect(isGatedQuizType(undefined)).toBe(false);
+    expect(isGatedQuizType('bogus')).toBe(false);
+  });
+});

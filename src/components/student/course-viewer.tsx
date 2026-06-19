@@ -843,6 +843,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     if (!selectedLesson) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+    // Course-completion gate: when this is the final lesson and a completion
+    // survey is required but not yet submitted, withhold completion AND the
+    // certificate. The completion slide shows the survey CTA; the dedicated
+    // survey page finalizes completion (marks the final lesson + issues the cert)
+    // on submit. Already-completed learners pass (feedbackSubmitted or an existing
+    // cert make the gate inert), so they are grandfathered.
+    const isFinalLesson = lessons.length > 0 && lessons[lessons.length - 1]?.id === selectedLesson.id;
+    const surveyGatePending = Boolean(
+      course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted,
+    );
+    if (!previewMode && isFinalLesson && surveyGatePending) return;
     try {
       // Always update local state so sidebar checkmarks appear even in preview mode
       const updatedProgress = { ...progress, [selectedLesson.id]: {
@@ -896,7 +907,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     } catch (err: any) {
       toast.error('Failed to mark lesson as complete', { description: err.message });
     }
-  }, [selectedLesson, progress, lessons, courseId, previewMode]);
+  }, [selectedLesson, progress, lessons, courseId, previewMode, course, feedbackTemplate, feedbackSubmitted]);
 
 
   const openReviewModal = async () => {
@@ -1789,17 +1800,34 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         )}
                       </div>
 
-                      {/* Optional completion feedback survey — only on the final lesson (course completion) */}
+                      {/* Course completion survey — opens on a dedicated, scrollable page */}
                       {feedbackTemplate && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
-                        <CompletionFeedbackForm
-                          template={feedbackTemplate}
-                          answers={feedbackAnswers}
-                          onAnswerChange={(qId, val) => setFeedbackAnswers(prev => ({ ...prev, [qId]: val }))}
-                          submitted={feedbackSubmitted}
-                          submitting={feedbackSubmitting}
-                          onSubmit={handleSubmitFeedback}
-                          primaryColor={effectiveTheme.progressColor ?? '#1A3C6E'}
-                        />
+                        <div className="w-full max-w-xl">
+                          {feedbackSubmitted ? (
+                            <div className="flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm font-semibold text-green-800">
+                              <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                              Course survey complete — thank you!
+                            </div>
+                          ) : (
+                            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
+                              <ClipboardList className="h-7 w-7 mx-auto mb-2" style={{ color: effectiveTheme.progressColor ?? '#1A3C6E' }} />
+                              <p className="font-bold text-slate-900">Please complete this course survey</p>
+                              <p className="text-sm text-slate-500 mt-1 mb-4">
+                                {course?.completion_survey_required
+                                  ? 'Your feedback is required to finish the course and receive your certificate.'
+                                  : 'Your feedback helps us improve this course.'}
+                              </p>
+                              <Button
+                                disabled={previewMode}
+                                onClick={() => router.push(withInstitutionPath(`/student/courses/${courseId}/survey`, pathname))}
+                                style={{ backgroundColor: effectiveTheme.progressColor ?? '#1A3C6E' }}
+                                className="font-bold text-white hover:opacity-90"
+                              >
+                                {previewMode ? 'Complete Course Survey (disabled in preview)' : 'Complete Course Survey'}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       {/* Program survey — shown when this lesson completes a full program */}

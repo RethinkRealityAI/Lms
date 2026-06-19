@@ -64,6 +64,32 @@ export async function setCourseCompletionSurveyTemplate(
   return { error: error?.message ?? null };
 }
 
+/** Read whether the completion survey is required to finish a course. */
+export async function getCourseCompletionSurveyRequired(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('courses')
+    .select('completion_survey_required')
+    .eq('id', courseId)
+    .maybeSingle();
+  return data?.completion_survey_required ?? true;
+}
+
+/** Toggle whether the completion survey must be submitted to finish a course. */
+export async function setCourseCompletionSurveyRequired(
+  supabase: SupabaseClient,
+  courseId: string,
+  required: boolean,
+): Promise<{ error: string | null }> {
+  const { error } = await supabase
+    .from('courses')
+    .update({ completion_survey_required: required })
+    .eq('id', courseId);
+  return { error: error?.message ?? null };
+}
+
 /** The current user's existing completion-feedback response for a course, if any. */
 export async function getMyCourseFeedback(
   supabase: SupabaseClient,
