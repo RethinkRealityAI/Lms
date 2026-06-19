@@ -22,6 +22,10 @@ vi.mock('sonner', () => ({
   },
 }));
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/scago/student',
+}));
+
 const DEFAULT_BLOCK = { id: 'block-1', title: 'Feedback Survey', is_visible: true };
 
 const SURVEY_DATA = {
@@ -161,6 +165,10 @@ describe('SurveyViewer', () => {
     );
 
     fireEvent.click(screen.getByText('Yes'));
-    expect(screen.getByText('Yes').closest('button')).toHaveClass('border-[#1A3C6E]');
+    // Selected state is indicated by the font-semibold class + an inline accent
+    // border/background (institution-branded), not a hardcoded color class.
+    const selectedBtn = screen.getByText('Yes').closest('button')!;
+    expect(selectedBtn).toHaveClass('font-semibold');
+    expect(selectedBtn.style.borderColor).not.toBe('');
   });
 });
