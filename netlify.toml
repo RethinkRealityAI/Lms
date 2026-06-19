@@ -10,6 +10,13 @@
   NODE_VERSION = "22.22.0"
   NPM_FLAGS = "--legacy-peer-deps"
   NEXT_TELEMETRY_DISABLED = "1"
+  # Exclude email-identifier env vars from secrets scanning. Their values are
+  # sender/login email addresses (the public support + from addresses) that
+  # legitimately appear in application source (e.g. src/app/api/contact/route.ts,
+  # src/lib/tenant/branding.ts, email templates, migration 024) and docs — they
+  # are not credentials. Real secrets (SMTP_PASS, SUPABASE_SERVICE_ROLE_KEY,
+  # etc.) are intentionally NOT listed here, so they remain scanned.
+  SECRETS_SCAN_OMIT_KEYS = "SMTP_USER,SMTP_FROM,SMTP_FROM_GANSID,SMTP_FROM_SCAGO"
 
 # Build plugins
 [[plugins]]
