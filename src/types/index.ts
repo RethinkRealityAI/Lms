@@ -51,6 +51,8 @@ export interface Course {
   created_by: string;
   is_published: boolean;
   access_mode?: 'all' | 'restricted';
+  completion_survey_template_id?: string | null;
+  completion_survey_required?: boolean;
   created_at: string;
   updated_at: string;
   category?: Category;

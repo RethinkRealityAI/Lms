@@ -11,7 +11,7 @@ import { useEditorStore } from './editor-store-context';
 import { DEFAULT_COURSE_THEME, type CourseThemeSettings, type BlockStyle } from '@/lib/content/course-theme';
 import { createClient } from '@/lib/supabase/client';
 import { getSurveyTemplates, type SurveyTemplate } from '@/lib/db/survey-templates';
-import { getCompletionSurvey, setCourseCompletionSurveyTemplate } from '@/lib/db/course-feedback';
+import { getCompletionSurvey, setCourseCompletionSurveyTemplate, getCourseCompletionSurveyRequired, setCourseCompletionSurveyRequired } from '@/lib/db/course-feedback';
 
 const BLOCK_STYLES: { value: BlockStyle; label: string; description: string; preview: string }[] = [
   { value: 'glass', label: 'Light Glass', description: 'Frosted glass · transparent on light slides (default)', preview: 'bg-white/25 border border-slate-200/60 shadow-md backdrop-blur-sm' },
@@ -58,6 +58,8 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
   const [selectedSurveyTemplateId, setSelectedSurveyTemplateId] = useState<string | null>(null);
   const [surveyLoading, setSurveyLoading] = useState(false);
   const [surveySaving, setSurveySaving] = useState(false);
+  const [surveyRequired, setSurveyRequired] = useState(true);
+  const [requiredSaving, setRequiredSaving] = useState(false);
 
   useEffect(() => {
     if (!open || !courseId || !institutionId) return;
@@ -67,14 +69,31 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
     Promise.all([
       getSurveyTemplates(supabase, institutionId),
       getCompletionSurvey(supabase, courseId),
-    ]).then(([templates, current]) => {
+      getCourseCompletionSurveyRequired(supabase, courseId),
+    ]).then(([templates, current, required]) => {
       if (cancelled) return;
       setSurveyTemplates(templates);
       setSelectedSurveyTemplateId(current.templateId);
+      setSurveyRequired(required);
       setSurveyLoading(false);
     });
     return () => { cancelled = true; };
   }, [open, courseId, institutionId]);
+
+  const handleRequiredChange = async (required: boolean) => {
+    if (!courseId) return;
+    setSurveyRequired(required); // optimistic
+    setRequiredSaving(true);
+    const supabase = createClient();
+    const { error } = await setCourseCompletionSurveyRequired(supabase, courseId, required);
+    setRequiredSaving(false);
+    if (error) {
+      setSurveyRequired(!required); // revert
+      toast.error('Failed to update setting', { description: error });
+    } else {
+      toast.success(required ? 'Survey now required to complete the course' : 'Survey is now optional');
+    }
+  };
 
   const handleSurveyChange = async (value: string) => {
     const newId = value === '__none__' ? null : value;
@@ -376,10 +395,30 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
                 </SelectContent>
               </Select>
               <p className="text-[10px] text-gray-400">
-                Saves immediately on change. Learners see this survey after completing the course.
+                Saves immediately on change. Learners open this survey from a dedicated page after completing the course.
               </p>
             </div>
           )}
+
+          {/* Required toggle — applies to whichever survey resolves (course or institution default) */}
+          <div className="mt-3 pt-3 border-t border-gray-200/70 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-gray-700">Required to complete the course</p>
+              <p className="text-[10px] text-gray-400 leading-tight">
+                When on, learners must submit the survey before the course is marked complete and the certificate is issued.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={surveyRequired}
+              disabled={requiredSaving}
+              onClick={() => handleRequiredChange(!surveyRequired)}
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-60 ${surveyRequired ? 'bg-[#1E3A5F]' : 'bg-gray-300'}`}
+            >
+              <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${surveyRequired ? 'translate-x-5' : 'translate-x-0.5'}`} />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center justify-between pt-1">

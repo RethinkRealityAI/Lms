@@ -29,6 +29,8 @@ export const surveyDataSchema = z.object({
   title: z.string().default('Survey'),
   description: z.string().optional(),
   submit_label: z.string().default('Submit Survey'),
+  /** Optional per-block accent override (hex). Falls back to institution branding. */
+  accent_color: z.string().optional(),
   questions: z.array(surveyQuestionSchema).default([]),
 });
 
