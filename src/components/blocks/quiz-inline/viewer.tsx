@@ -22,6 +22,7 @@ import {
   surfaceOutlineButtonClass,
 } from '@/lib/content/block-surface-tokens';
 import { formatQuizText } from '@/lib/content/format-quiz-text';
+import { isGatedQuizType, isQuizSatisfiable } from '@/lib/content/blocks/quiz-inline/validation';
 
 /** Called by each sub-viewer at the moment correctness is determined. */
 type OnAnswered = (answer: unknown, isCorrect: boolean) => void;
@@ -63,6 +64,21 @@ export default function QuizInlineViewer({ data, block, context, onComplete }: B
       if (error) throw error;
     })().catch(console.error);
   }, [context, blockId, questionType]);
+
+  // A misconfigured gated quiz (e.g. categorize with no items, or a correct
+  // answer that matches no option) can never be answered correctly. It already
+  // does NOT gate completion (see the viewer's completion gate), so don't render
+  // a broken placeholder for learners either. Admins see a hint in preview/editor.
+  if (isGatedQuizType(data.question_type) && !isQuizSatisfiable(data)) {
+    if (context?.previewMode || context?.editing) {
+      return (
+        <div className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-3 text-xs font-medium text-amber-700">
+          This quiz isn&apos;t fully configured, so it&apos;s hidden from learners. Edit it to add the question and answers.
+        </div>
+      );
+    }
+    return null;
+  }
 
   if (data.question_type === 'swipe') {
     return <SwipeQuizViewer data={data} onCorrect={() => onComplete?.()} onAnswered={persistAnswer} />;
