@@ -844,17 +844,15 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     if (!selectedLesson) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    // Course-completion gate: when this is the final lesson and a completion
-    // survey is required but not yet submitted, withhold completion AND the
-    // certificate. The completion slide shows the survey CTA; the dedicated
-    // survey page finalizes completion (marks the final lesson + issues the cert)
-    // on submit. Already-completed learners pass (feedbackSubmitted or an existing
-    // cert make the gate inert), so they are grandfathered.
-    const isFinalLesson = lessons.length > 0 && lessons[lessons.length - 1]?.id === selectedLesson.id;
-    const surveyGatePending = Boolean(
+    // Completion is NEVER gated on the survey — lessons/progress always complete
+    // so the progress bar and admin analytics stay accurate. Only the CERTIFICATE
+    // is withheld until a required completion survey is submitted (see the
+    // issuance block below). The completion slide shows the survey CTA and the
+    // survey page issues the cert on submit. An existing feedback response or an
+    // already-issued cert makes this inert (grandfathered).
+    const certSurveyGatePending = Boolean(
       course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted,
     );
-    if (!previewMode && isFinalLesson && surveyGatePending) return;
     try {
       // Always update local state so sidebar checkmarks appear even in preview mode
       const updatedProgress = { ...progress, [selectedLesson.id]: {
@@ -873,7 +871,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         toast.success('Progress saved', { duration: 2000 });
 
         const allCompleted = lessons.every(l => updatedProgress[l.id]?.completed);
-        if (allCompleted && lessons.length > 0) {
+        if (allCompleted && lessons.length > 0 && !certSurveyGatePending) {
           // Server-verified issuance (migration 036): the RPC re-checks lesson
           // completion and resolves the template (course → institution default).
           const { data: certData, error: certError } = await supabase
@@ -1261,6 +1259,24 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const allQuizzesComplete = currentLessonQuizBlockIds.length === 0 ||
     currentLessonQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
 
+  // Quizzes on the CURRENT slide only — used to gate advancing PAST this slide,
+  // so a learner answers a quiz where it appears (not just at the lesson end).
+  // This makes the gate visible early so there are no surprises at the completion slide.
+  const currentSlideQuizBlockIds = React.useMemo(() => {
+    const slide = currentSlides[currentSlide];
+    if (!slide || slide.kind !== 'page') return [];
+    return slide.blocks
+      .filter(b =>
+        b.block_type === 'quiz_inline' &&
+        isGatedQuizType(b.data?.question_type as string) &&
+        isQuizSatisfiable(b.data as Partial<QuizInlineData>),
+      )
+      .map(b => b.id);
+  }, [currentSlides, currentSlide]);
+
+  const currentSlideQuizzesComplete = currentSlideQuizBlockIds.length === 0 ||
+    currentSlideQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
+
   const currentSlideRequiredBlockIds = React.useMemo(() => {
     const slide = currentSlides[currentSlide];
     if (!slide || slide.kind !== 'page') return [];
@@ -1272,9 +1288,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const allInteractiveBlocksComplete = currentSlideRequiredBlockIds.length === 0 ||
     currentSlideRequiredBlockIds.every(id => completedInteractiveBlocks[selectedLesson?.id ?? '']?.has(id));
 
-  // Gate: is the next slide the completion slide and quizzes aren't done?
+  // Gate advancing when: this slide has unanswered required quizzes, this slide
+  // has unopened required images, OR the next slide is the completion slide and
+  // any of the lesson's quizzes are still unanswered (backstop).
   const nextSlideIsCompletion = currentSlides[currentSlide + 1]?.kind === 'completion';
-  const nextBlocked = (nextSlideIsCompletion && !allQuizzesComplete) || !allInteractiveBlocksComplete;
+  // Once a lesson is already complete, allow free review navigation (the in-memory
+  // quiz-correct set resets between sessions, so we must not re-gate a finished lesson).
+  const lessonAlreadyComplete = !!(selectedLesson && progress[selectedLesson.id]?.completed);
+  const nextBlocked = !lessonAlreadyComplete && (
+    !currentSlideQuizzesComplete ||
+    !allInteractiveBlocksComplete ||
+    (nextSlideIsCompletion && !allQuizzesComplete)
+  );
 
   const nextBlockedHint = React.useMemo(() => {
     if (!nextBlocked) return null;
@@ -1287,6 +1312,11 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       }
       return 'Open every required image on this slide before continuing.';
     }
+    if (!currentSlideQuizzesComplete) {
+      return currentSlideQuizBlockIds.length > 1
+        ? 'Answer all quiz questions on this slide correctly to continue.'
+        : 'Answer the quiz on this slide correctly to continue.';
+    }
     if (nextSlideIsCompletion && !allQuizzesComplete) {
       return 'Answer all quiz questions correctly before completing this lesson.';
     }
@@ -1294,6 +1324,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   }, [
     nextBlocked,
     allInteractiveBlocksComplete,
+    currentSlideQuizzesComplete,
+    currentSlideQuizBlockIds,
     nextSlideIsCompletion,
     allQuizzesComplete,
     selectedLesson,
@@ -1784,7 +1816,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                               <p className="font-bold text-slate-900">Please complete this course survey</p>
                               <p className="text-sm text-slate-500 mt-1 mb-4">
                                 {course?.completion_survey_required
-                                  ? 'Your feedback is required to finish the course and receive your certificate.'
+                                  ? 'Your feedback is required to receive your certificate.'
                                   : 'Your feedback helps us improve this course.'}
                               </p>
                               <Button
@@ -1823,6 +1855,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                     </div>
                   )}
                 </div>
+
+                {/* Gate notice — always visible when the primary Next/Complete button is disabled */}
+                {nextBlocked && nextBlockedHint && (
+                  <div className="relative shrink-0 flex items-center justify-center gap-2 px-4 py-2 border-t border-amber-200 bg-amber-50 text-amber-800 text-xs font-semibold text-center">
+                    <Lock className="h-3.5 w-3.5 shrink-0" />
+                    <span>{nextBlockedHint}</span>
+                  </div>
+                )}
 
                 {/* Navigation Footer — always visible */}
                 <div className="relative shrink-0 flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
