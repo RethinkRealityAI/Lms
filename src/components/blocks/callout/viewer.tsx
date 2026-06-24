@@ -1,14 +1,17 @@
 'use client';
 
-import { Info, AlertTriangle, Lightbulb, CheckCircle, UserRound } from 'lucide-react';
+import type { CSSProperties } from 'react';
+import { UserRound } from 'lucide-react';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { CalloutData } from '@/lib/content/blocks/callout/schema';
+import { resolveCalloutIcon } from './icons';
+import { MediaWithContent } from '@/components/blocks/shared/media-view';
 
 const VARIANT_CONFIG = {
-  info:    { icon: Info,          className: 'bg-blue-50 border-blue-200 text-blue-900' },
-  warning: { icon: AlertTriangle, className: 'bg-yellow-50 border-yellow-200 text-yellow-900' },
-  tip:     { icon: Lightbulb,     className: 'bg-green-50 border-green-200 text-green-900' },
-  success: { icon: CheckCircle,   className: 'bg-emerald-50 border-emerald-200 text-emerald-900' },
+  info:    { className: 'bg-blue-50 border-blue-200 text-blue-900' },
+  warning: { className: 'bg-yellow-50 border-yellow-200 text-yellow-900' },
+  tip:     { className: 'bg-green-50 border-green-200 text-green-900' },
+  success: { className: 'bg-emerald-50 border-emerald-200 text-emerald-900' },
 };
 
 const BUBBLE_CONFIGS = {
@@ -129,19 +132,37 @@ export default function CalloutViewer({ data }: BlockViewerProps<CalloutData>) {
     return <SpeechBubbleViewer data={data} />;
   }
 
-  // Default: callout mode
-  const { icon: Icon, className } = VARIANT_CONFIG[data.variant ?? 'info'];
+  // Default: callout mode. Icon + colours honor per-block overrides, else the variant preset.
+  const { className } = VARIANT_CONFIG[data.variant ?? 'info'];
+  const Icon = resolveCalloutIcon(data);
+  const overrideStyle: CSSProperties = {
+    ...(data.bg_color ? { backgroundColor: data.bg_color } : {}),
+    ...(data.border_color ? { borderColor: data.border_color } : {}),
+    ...(data.text_color ? { color: data.text_color } : {}),
+  };
+  const textContent = (
+    <div className="min-w-0">
+      {data.title && (
+        <p className="mb-1.5 font-bold text-base leading-snug">{data.title}</p>
+      )}
+      <div
+        className="prose prose-sm max-w-none [&>p:last-child]:mb-0"
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.html) }}
+      />
+    </div>
+  );
   return (
-    <div className={`flex gap-4 rounded-xl border p-5 ${className}`}>
-      <Icon className="mt-0.5 h-5 w-5 shrink-0" />
-      <div className="min-w-0">
-        {data.title && (
-          <p className="mb-1.5 font-bold text-base leading-snug">{data.title}</p>
-        )}
-        <div
-          className="prose prose-sm max-w-none [&>p:last-child]:mb-0"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.html) }}
+    <div className={`flex gap-4 rounded-xl border p-5 ${className}`} style={overrideStyle}>
+      {Icon && (
+        <Icon
+          className="mt-0.5 h-5 w-5 shrink-0"
+          style={data.icon_color ? { color: data.icon_color } : undefined}
         />
+      )}
+      <div className="min-w-0 flex-1">
+        <MediaWithContent media={data.media} position={data.media_position ?? 'top'}>
+          {textContent}
+        </MediaWithContent>
       </div>
     </div>
   );

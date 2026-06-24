@@ -14,6 +14,7 @@ import type {
   ContentListItemAnimation,
 } from '@/lib/content/blocks/content-list/schema';
 import { ItemRichEditor } from './item-rich-editor';
+import { MediaFieldEditor } from '@/components/blocks/shared/media-field-editor';
 
 const inputClass =
   'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent';
@@ -263,7 +264,7 @@ function ItemEditor({
   );
 }
 
-export function ContentListEditor({ data, onChange }: BlockEditorProps<ContentListData>) {
+export function ContentListEditor({ data, onChange, block }: BlockEditorProps<ContentListData>) {
   const items = data.items ?? [];
   const enableAnimations = data.enable_animations ?? false;
   const displayMode: ContentListDisplayMode = data.display_mode ?? 'list';
@@ -306,6 +307,18 @@ export function ContentListEditor({ data, onChange }: BlockEditorProps<ContentLi
           onChange={(e) => update({ heading: e.target.value || undefined })}
           placeholder="Leave blank if the slide title is enough"
           className={inputClass}
+        />
+      </div>
+
+      <div className="space-y-3">
+        <p className={sectionHeaderClass}>Image / video (optional)</p>
+        <MediaFieldEditor
+          media={data.media}
+          onChange={(media) => update({ media })}
+          pathPrefix={`blocks/content-list/${block.id}/`}
+          position={data.media_position ?? 'left'}
+          onPositionChange={(media_position) => update({ media_position })}
+          label="List media"
         />
       </div>
 

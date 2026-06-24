@@ -9,12 +9,21 @@ import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { ImageGalleryData } from '@/lib/content/blocks/image-gallery/schema';
 import { loadViewedImageIndices, resolveCaptionColor, saveViewedImageIndices } from '@/lib/content/blocks/image-gallery/display-utils';
 import { buildImageResponsiveCss } from '@/lib/content/blocks/image-gallery/responsive';
+import { HotspotView } from './hotspot-view';
 
 type ImageItem = ImageGalleryData['images'][number];
 
 function isLoadableUrl(url: string): boolean {
   if (!url) return false;
   return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:');
+}
+
+function sanitizeBodyHtml(html: string): string {
+  let r = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  r = r.replace(/<img\s+[^>]*src=["'](?!https?:\/\/|data:)[^"']*["'][^>]*\/?>/gi, '');
+  r = r.replace(/(<a\b[^>]*\bhref=)(["'])\s*(?:javascript|vbscript|data):[^"']*\2/gi, '$1$2#$2');
+  r = r.replace(/<a\b(?![^>]*\btarget=)/gi, '<a target="_blank" rel="noopener noreferrer nofollow"');
+  return r;
 }
 
 function ImageWithFallback({
@@ -593,6 +602,11 @@ export default function ImageGalleryViewer({ data, block, context, onComplete }:
 
   const mode = data.mode ?? (images.length > 1 ? 'gallery' : 'single');
 
+  // Hotspot mode is self-contained (its own image + markers + description overlay).
+  if (mode === 'hotspot') {
+    return <HotspotView data={data} editing={context?.editing} />;
+  }
+
   if (images.length === 0) {
     return (
       <div className="w-full min-h-[8rem] bg-gray-50 rounded-xl flex items-center justify-center border border-dashed border-gray-200">
@@ -637,12 +651,36 @@ export default function ImageGalleryViewer({ data, block, context, onComplete }:
 
   const imageBody = containerClass ? <div className={containerClass}>{body}</div> : body;
 
+  // Optional rich-text companion shown beside/around the image.
+  const bodyHtml = data.body?.trim();
+  const richBody = bodyHtml ? (
+    <div
+      className="rich-text-viewer prose max-w-none min-w-0 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 text-[color:var(--surface-text,#0f172a)]"
+      dangerouslySetInnerHTML={{ __html: sanitizeBodyHtml(bodyHtml) }}
+    />
+  ) : null;
+  const bodyPos = data.bodyPosition ?? 'right';
+  let composed: React.ReactNode = imageBody;
+  if (richBody) {
+    if (bodyPos === 'top') composed = <div className="flex flex-col gap-4">{richBody}{imageBody}</div>;
+    else if (bodyPos === 'bottom') composed = <div className="flex flex-col gap-4">{imageBody}{richBody}</div>;
+    else {
+      const imgCol = <div className="@md:flex-1 min-w-0 self-center @md:self-start">{imageBody}</div>;
+      const txtCol = <div className="@md:flex-1 min-w-0">{richBody}</div>;
+      composed = (
+        <div className="flex flex-col @md:flex-row gap-4 @md:items-start">
+          {bodyPos === 'left' ? <>{txtCol}{imgCol}</> : <>{imgCol}{txtCol}</>}
+        </div>
+      );
+    }
+  }
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: respCss }} />
       <div className={cn('lms-img-resp', respClass)}>
         {showPrompt && promptPosition === 'top' && <div className="mb-3">{promptEl}</div>}
-        {imageBody}
+        {composed}
         {showPrompt && promptPosition === 'bottom' && <div className="mt-3">{promptEl}</div>}
         {showProgress && (
           <p

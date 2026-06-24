@@ -11,6 +11,7 @@ import { CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { MatchPairsData, MatchSide } from '@/lib/content/blocks/match-pairs/schema';
+import { normalizeMatchPairsData } from '@/lib/content/blocks/match-pairs/schema';
 import { BLOCK_CONTENT_SHELL } from '@/lib/content/block-surface-tokens';
 
 // Cards grow to fit their content but never collapse below this — keeps the two
@@ -119,8 +120,9 @@ function MatchCard({ answerId, answer, dockedSide, dockedId, state, theme }: {
   );
 }
 
-export default function MatchPairsViewer({ data, onComplete }: BlockViewerProps<MatchPairsData>) {
-  const pairs = useMemo(() => (data.pairs ?? []).filter(p => p?.id), [data.pairs]);
+export default function MatchPairsViewer({ data: rawData, onComplete }: BlockViewerProps<MatchPairsData>) {
+  const data = useMemo(() => normalizeMatchPairsData(rawData), [rawData]);
+  const pairs = useMemo(() => data.pairs.filter(p => p?.id), [data.pairs]);
   const promptSide = data.prompt_side ?? 'left';
   const showFeedback = data.show_feedback ?? true;
 

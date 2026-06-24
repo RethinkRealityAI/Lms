@@ -92,6 +92,7 @@ registerBlockType({
     direction: 'right' as const,
     bubble_style: 'light' as const,
     avatar_style: 'circle' as const,
+    media_position: 'top' as const,
   },
   ViewerComponent: React.lazy(() => import('@/components/blocks/callout/viewer')),
   EditorComponent: React.lazy(() =>
@@ -274,12 +275,13 @@ registerBlockType({
 
 registerBlockType({
   type: 'fill_blank',
-  label: 'Fill in the Blank',
-  description: 'A passage with blanks — learners drag (or tap) words from a bank into the gaps.',
+  label: 'Fill in the Blank / Strike Out',
+  description: 'Word-bank fill-in-the-blank, OR strikeout mode where learners tap the wrong word to reveal the correction. Tap words to mark them — no brackets needed.',
   icon: 'text-cursor-input',
   category: 'assessment',
   dataSchema: fillBlankDataSchema,
   defaultData: {
+    mode: 'word_bank' as const,
     instructions: 'Drag each word into the correct blank.',
     text: 'Water is made of [hydrogen] and [oxygen].',
     distractors: ['carbon'],
@@ -360,6 +362,7 @@ registerBlockType({
     accordion_default_open: 'none' as const,
     enable_animations: false,
     animation_stagger_ms: 120,
+    media_position: 'left' as const,
   },
   ViewerComponent: React.lazy(() => import('@/components/blocks/content-list/viewer')),
   EditorComponent: React.lazy(() =>

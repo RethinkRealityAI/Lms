@@ -7,6 +7,8 @@ import { TITLE_SIZE_CLASSES } from '@/lib/content/title-slide-settings';
 interface TitleSlideProps {
   lessonTitle: string;
   lessonDescription?: string | null;
+  /** Module / course name shown as the small eyebrow above the lesson title. */
+  moduleName?: string | null;
   /** Per-lesson background image — highest priority background source. */
   titleImageUrl?: string | null;
   courseDate?: string | null;
@@ -25,6 +27,7 @@ interface TitleSlideProps {
 export function TitleSlide({
   lessonTitle,
   lessonDescription,
+  moduleName,
   titleImageUrl,
   courseDate,
   institutionSlug,
@@ -37,6 +40,8 @@ export function TitleSlide({
   const branding = getInstitutionBranding(institutionSlug ?? 'gansid');
   const titleSize = titleSlideSettings?.title_size ?? 'md';
   const titleColor = titleSlideSettings?.title_color ?? '#FFFFFF';
+  // Eyebrow above the lesson title: explicit override → module/course name → program title.
+  const eyebrowText = titleSlideSettings?.eyebrow_text?.trim() || moduleName?.trim() || branding.programTitle;
   const footerText = titleSlideSettings?.footer_text ?? branding.acronym;
   // Per-lesson logo → course/theme default → institution branding logo → initial avatar.
   // The institution logo is the default so every lesson/course shows a footer logo
@@ -68,7 +73,7 @@ export function TitleSlide({
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8 sm:px-12">
-        <p className="text-white/60 text-xs sm:text-sm uppercase tracking-[0.2em] font-bold mb-4">{branding.programTitle}</p>
+        <p className="text-white/60 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold mb-3 max-w-2xl text-balance">{eyebrowText}</p>
         <h2
           className={`${TITLE_SIZE_CLASSES[titleSize]} font-black leading-tight max-w-3xl`}
           style={{ color: titleColor }}

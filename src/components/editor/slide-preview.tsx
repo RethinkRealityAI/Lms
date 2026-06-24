@@ -51,6 +51,8 @@ interface SlidePreviewProps {
   selectedBlockId?: string;
   /** Lesson title for the header */
   lessonTitle?: string;
+  /** Module / course name shown as the title-slide eyebrow */
+  moduleName?: string | null;
   /** Lesson description for title slide */
   lessonDescription?: string | null;
   /** Title image URL for title slide background */
@@ -74,6 +76,7 @@ export function SlidePreview({
   onMoveBlockDown,
   selectedBlockId,
   lessonTitle = 'Untitled Lesson',
+  moduleName,
   lessonDescription,
   titleImageUrl,
   slideNumber = 1,
@@ -299,6 +302,7 @@ export function SlidePreview({
             <TitleSlide
               lessonTitle={lessonTitle}
               lessonDescription={lessonDescription}
+              moduleName={moduleName}
               titleImageUrl={titleImageUrl}
               institutionSlug={institutionSlug}
               gradientFrom={effectiveTheme.titleGradientFrom}

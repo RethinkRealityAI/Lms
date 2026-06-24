@@ -45,6 +45,8 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
   const lessons = useEditorStore((s) => s.lessons);
+  const modules = useEditorStore((s) => s.modules);
+  const courseTitle = useEditorStore((s) => s.courseTitle);
   const selectEntity = useEditorStore((s) => s.selectEntity);
   const updateSlide = useEditorStore((s) => s.updateSlide);
   const addBlock = useEditorStore((s) => s.addBlock);
@@ -97,6 +99,18 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
 
   const isLessonSelected = selectedEntity?.type === 'lesson';
   const slideIndex = selectedSlide ? siblingSlides.indexOf(selectedSlide) : -1;
+
+  // Title-slide eyebrow: the course (module) title — matches the learner view exactly.
+  // Falls back to the owning module's title if the course title isn't loaded yet.
+  let moduleName: string | null = courseTitle;
+  if (!moduleName && owningLessonId) {
+    for (const [moduleId, lessonList] of lessons) {
+      if (lessonList.some((l) => l.id === owningLessonId)) {
+        moduleName = modules.find((m) => m.id === moduleId)?.title ?? null;
+        break;
+      }
+    }
+  }
 
   // Resolve lesson context for WYSIWYG header (and for the title slide preview)
   let lessonTitle = 'Untitled Lesson';
@@ -282,6 +296,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                 onMoveBlockDown={handleMoveBlockDown}
                 lessonTitle={lessonTitle}
                 lessonDescription={lessonDescription}
+                moduleName={moduleName}
                 titleImageUrl={titleImageUrl}
                 slideNumber={slideIndex + 1}
                 totalSlides={siblingSlides.length}
@@ -301,6 +316,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                   <TitleSlide
                     lessonTitle={lessonTitle}
                     lessonDescription={lessonDescription ?? undefined}
+                    moduleName={moduleName}
                     titleImageUrl={titleImageUrl ?? undefined}
                     institutionSlug={institutionSlug}
                     titleSlideSettings={titleSlideSettings}

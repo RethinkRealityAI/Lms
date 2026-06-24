@@ -9,7 +9,6 @@ import { useEditorStore } from './editor-store-context';
 import { BlockEditorPanel } from './block-editor-panel';
 import { DraggableBlockItem } from './dnd/draggable-block-item';
 import { DropZoneUploader } from './drop-zone-uploader';
-import { CourseThemeEditor } from './theme-editor/course-theme-editor';
 import { SlideStyleEditor } from './theme-editor/slide-style-editor';
 import { BLOCK_PRESETS } from '@/lib/content/block-presets';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
@@ -27,6 +26,8 @@ interface PropertiesPanelProps {
   onToggleCollapse?: () => void;
   onAddBlock?: (slideId: string, blockType: string, dropPos?: DropPos, presetData?: Record<string, unknown>) => void;
   onDeleteBlock?: () => void;
+  /** Opens the Course Settings modal (background, block style, header colours, etc.). */
+  onOpenCourseSettings?: () => void;
 }
 
 const AVAILABLE_BLOCKS = [
@@ -42,7 +43,7 @@ const AVAILABLE_BLOCKS = [
   { type: 'scratch_reveal', label: 'Scratch Reveal', icon: Sparkles, color: 'text-fuchsia-600 bg-fuchsia-50' },
   { type: 'image_compare', label: 'Before / After', icon: Columns2, color: 'text-indigo-600 bg-indigo-50' },
   { type: 'match_pairs', label: 'Drag to Match', icon: Shuffle, color: 'text-teal-600 bg-teal-50' },
-  { type: 'fill_blank', label: 'Fill in the Blank', icon: TextCursorInput, color: 'text-green-600 bg-green-50' },
+  { type: 'fill_blank', label: 'Fill in the Blank / Strike Out', icon: TextCursorInput, color: 'text-green-600 bg-green-50' },
   { type: 'callout', label: 'Callout', icon: HelpCircle, color: 'text-yellow-600 bg-yellow-50' },
   { type: 'pdf', label: 'PDF Viewer', icon: FileIcon, color: 'text-rose-500 bg-rose-50' },
   { type: 'iframe', label: 'Embed (iframe)', icon: Code, color: 'text-purple-500 bg-purple-50' },
@@ -220,6 +221,16 @@ function LessonEditor({ lessonId }: { lessonId: string }) {
       <div className="border-t border-gray-100 pt-4 space-y-3">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Title Slide Style</p>
         <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-gray-600">Eyebrow Label</Label>
+          <Input
+            value={titleSettings.eyebrow_text ?? ''}
+            onChange={(e) => patchTitleSettings({ eyebrow_text: e.target.value || undefined })}
+            placeholder="Module name (default)"
+            className="h-9 text-sm"
+          />
+          <p className="text-[10px] text-gray-400">Small label above the lesson title (default: the module name)</p>
+        </div>
+        <div className="space-y-1.5">
           <Label className="text-xs font-medium text-gray-600">Title Size</Label>
           <select
             value={titleSettings.title_size ?? 'md'}
@@ -332,7 +343,7 @@ function SlideEditor({ slideId }: { slideId: string }) {
   );
 }
 
-export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDeleteBlock }: PropertiesPanelProps) {
+export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDeleteBlock, onOpenCourseSettings }: PropertiesPanelProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
@@ -447,7 +458,18 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
       return (
         <div className="space-y-3">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Course Theme</p>
-          <CourseThemeEditor />
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Background, default block style, header colours, title-slide gradient and the completion
+            survey are managed in <span className="font-semibold text-gray-700">Course Settings</span>.
+            These apply to every slide unless a slide overrides them.
+          </p>
+          <button
+            type="button"
+            onClick={onOpenCourseSettings}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-[#1A3C6E] text-white hover:bg-[#162d4a] transition-colors"
+          >
+            <SlidersHorizontal className="w-4 h-4" /> Open Course Settings
+          </button>
         </div>
       );
     }

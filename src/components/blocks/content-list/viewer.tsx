@@ -10,6 +10,7 @@ import type {
   ContentListItem,
   ContentListItemAnimation,
 } from '@/lib/content/blocks/content-list/schema';
+import { MediaWithContent } from '@/components/blocks/shared/media-view';
 
 const DEFAULT_ACCENT = '#1A3C6E';
 
@@ -288,8 +289,8 @@ export default function ContentListViewer({ data }: BlockViewerProps<ContentList
     ? { color: data.text_color }
     : undefined;
 
-  return (
-    <div className={`content-list-viewer space-y-3 ${sizeClass}`.trim()} style={rootColorStyle}>
+  const listContent = (
+    <div className="space-y-3">
       {data.heading ? (
         <h3
           className="font-semibold tracking-tight m-0"
@@ -316,6 +317,14 @@ export default function ContentListViewer({ data }: BlockViewerProps<ContentList
           staggerMs={staggerMs}
         />
       )}
+    </div>
+  );
+
+  return (
+    <div className={`content-list-viewer ${sizeClass}`.trim()} style={rootColorStyle}>
+      <MediaWithContent media={data.media} position={data.media_position ?? 'left'}>
+        {listContent}
+      </MediaWithContent>
     </div>
   );
 }

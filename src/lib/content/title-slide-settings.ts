@@ -3,6 +3,8 @@ export interface TitleSlideSettings {
   title_color?: string;
   footer_text?: string;
   footer_logo_url?: string | null;
+  /** Small eyebrow label above the lesson title. Defaults to the module/course name. */
+  eyebrow_text?: string;
 }
 
 export const TITLE_SIZE_CLASSES: Record<NonNullable<TitleSlideSettings['title_size']>, string> = {

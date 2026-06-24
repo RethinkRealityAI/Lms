@@ -3,6 +3,7 @@
 import { Plus, Trash2, Image as ImageIcon, Type, ArrowLeftRight, GripVertical } from 'lucide-react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { MatchPairsData, MatchSide } from '@/lib/content/blocks/match-pairs/schema';
+import { normalizeMatchPairsData } from '@/lib/content/blocks/match-pairs/schema';
 import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
 
 const inputClass =
@@ -12,9 +13,10 @@ function newId() {
   try { return crypto.randomUUID(); } catch { return `p-${Date.now()}-${Math.round(Math.random() * 1e6)}`; }
 }
 
-function SideEditor({ side, onChange, label, slot }: {
-  side: MatchSide; onChange: (s: MatchSide) => void; label: string; slot: string;
+function SideEditor({ side: rawSide, onChange, label, slot }: {
+  side: MatchSide | undefined; onChange: (s: MatchSide) => void; label: string; slot: string;
 }) {
+  const side: MatchSide = rawSide ?? { type: 'text' };
   return (
     <div className="space-y-2 rounded-lg bg-gray-50/70 p-2.5 border border-gray-100">
       {/* Label and type toggle stack vertically so neither gets squished in the
@@ -54,7 +56,9 @@ function SideEditor({ side, onChange, label, slot }: {
   );
 }
 
-export function MatchPairsEditor({ data, onChange }: BlockEditorProps<MatchPairsData>) {
+export function MatchPairsEditor({ data: rawData, onChange }: BlockEditorProps<MatchPairsData>) {
+  // Normalize legacy/malformed data so the editor never crashes; saving persists the fix.
+  const data = normalizeMatchPairsData(rawData);
   const pairs = data.pairs ?? [];
   const promptSide = data.prompt_side ?? 'left';
 
@@ -104,7 +108,7 @@ export function MatchPairsEditor({ data, onChange }: BlockEditorProps<MatchPairs
       <div className="space-y-2.5">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pairs ({pairs.length})</p>
         {pairs.map((pair, i) => (
-          <div key={pair.id} className="rounded-xl border border-gray-200 p-2.5 space-y-2 bg-white">
+          <div key={pair.id ?? i} className="rounded-xl border border-gray-200 p-2.5 space-y-2 bg-white">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
                 <GripVertical className="w-3.5 h-3.5" /> Pair {i + 1}

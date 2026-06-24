@@ -9,6 +9,8 @@ import { upsertCourseFeedbackResponse, getMyCourseFeedback } from '@/lib/db/cour
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { CompletionSurveyForm } from '@/components/student/completion-survey-form';
+import { CertificateCelebration } from '@/components/certificates/certificate-celebration';
+import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
 import type { SurveyAnswers } from '@/lib/content/blocks/survey/schema';
 import { Loader2, ClipboardList, CheckCircle2, ChevronLeft, Award } from 'lucide-react';
@@ -34,6 +36,8 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   const [done, setDone] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
   const [certNumber, setCertNumber] = useState<string | null>(null);
+  const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
+  const institutionSlug = useMemo(() => resolveInstitutionSlug(pathname), [pathname]);
 
   const backToCourse = withInstitutionPath(`/student/courses/${courseId}`, pathname);
 
@@ -116,6 +120,9 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
             body: JSON.stringify({ certificateId: certData.certificate_id }),
           }).catch(() => {});
         }
+        // Reveal the actual certificate in the celebration overlay
+        const display = await fetchCertificateDisplay(supabase, certData.certificate_id);
+        if (display) setCelebration(display);
       }
     } catch {
       /* issuance is best-effort here; the course viewer also issues on completion */
@@ -127,6 +134,16 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
 
   return (
     <div className="min-h-[calc(100vh-6rem)] bg-slate-50 py-8 px-4">
+      <CertificateCelebration
+        open={!!celebration}
+        display={celebration}
+        onClose={() => setCelebration(null)}
+        institutionSlug={institutionSlug}
+        onViewCertificates={() => {
+          setCelebration(null);
+          router.push(withInstitutionPath('/student/certificates', pathname));
+        }}
+      />
       <div className="mx-auto w-full max-w-2xl">
         <Link
           href={backToCourse}

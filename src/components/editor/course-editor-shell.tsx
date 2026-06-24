@@ -802,6 +802,7 @@ function EditorContent({ courseId }: { courseId: string }) {
             onToggleCollapse={() => setPropertiesCollapsed((c) => !c)}
             onAddBlock={handleAddBlock}
             onDeleteBlock={handleDeleteKey}
+            onOpenCourseSettings={() => setSettingsOpen(true)}
           />
         </div>
       </EditorDndContext>
@@ -940,6 +941,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
 
         store.getState().loadCourse({
           courseId,
+          courseTitle: data.course.title,
           institutionId,
           courseStatus: data.course.status as import('@/types').CourseStatus,
           courseTheme: data.course.theme_settings ?? {},
@@ -983,6 +985,29 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
     }
     load();
   }, [courseId, store]);
+
+  // Re-fetch the institution (global) theme when the editor tab regains focus, so a
+  // global theme change saved in another tab applies in the preview without reloading.
+  useEffect(() => {
+    const refetch = () => {
+      const instId = store.getState().institutionId;
+      if (!instId) return;
+      const supabase = createClient();
+      supabase.from('institutions').select('theme').eq('id', instId).maybeSingle()
+        .then(({ data }) => {
+          if (data?.theme && typeof data.theme === 'object') {
+            store.getState().setInstitutionTheme(data.theme as import('@/lib/tenant/institution-theme').InstitutionTheme);
+          }
+        });
+    };
+    const onVisible = () => { if (document.visibilityState === 'visible') refetch(); };
+    window.addEventListener('focus', refetch);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('focus', refetch);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [store]);
 
   if (isLoading) {
     return (

@@ -1,11 +1,13 @@
 'use client';
 
-import { MessageCircle, Info } from 'lucide-react';
+import { MessageCircle, Info, Ban } from 'lucide-react';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { CalloutData } from '@/lib/content/blocks/callout/schema';
 import { RichTextEditor } from '../rich-text/editor';
 import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
 import type { RichTextData } from '@/lib/content/blocks/rich-text/schema';
+import { CALLOUT_ICONS, resolveCalloutIcon } from './icons';
+import { MediaFieldEditor } from '@/components/blocks/shared/media-field-editor';
 
 const inputClass =
   'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent';
@@ -70,8 +72,27 @@ function PillGroup<T extends string>({
 
 // ── Callout tab ──────────────────────────────────────────────────────────────
 
+function CalloutColorRow({ label, value, fallback, onChange }: { label: string; value?: string; fallback: string; onChange: (v: string | undefined) => void }) {
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        value={value || fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 w-9 shrink-0 rounded border border-gray-200 cursor-pointer bg-white p-0.5"
+        aria-label={label}
+      />
+      <span className="text-xs text-gray-700 flex-1">{label}</span>
+      {value
+        ? <button type="button" onClick={() => onChange(undefined)} className="text-[10px] font-medium text-gray-400 hover:text-red-500">Reset</button>
+        : <span className="text-[10px] text-gray-300">preset</span>}
+    </div>
+  );
+}
+
 function CalloutTab({ data, onChange, blockId }: { data: CalloutData; onChange: (d: CalloutData) => void; blockId: string }) {
   const htmlRichData: RichTextData = { html: data.html ?? '', mode: 'standard' as const };
+  const ActiveIcon = resolveCalloutIcon(data);
   return (
     <div className="space-y-4">
       <div>
@@ -92,6 +113,72 @@ function CalloutTab({ data, onChange, blockId }: { data: CalloutData; onChange: 
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Icon — overridable regardless of variant */}
+      <div>
+        <p className="text-xs font-medium text-gray-700 mb-2">Icon</p>
+        <div className="flex flex-wrap gap-1.5">
+          {/* Auto = variant default */}
+          <button
+            type="button"
+            onClick={() => onChange({ ...data, icon: undefined })}
+            title="Use the variant's default icon"
+            className={`flex items-center gap-1 px-2 h-8 rounded-lg border text-xs font-medium transition-all ${
+              !data.icon ? 'bg-[#1A3C6E] text-white border-[#1A3C6E]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+            }`}
+          >
+            {ActiveIcon ? <ActiveIcon className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />} Auto
+          </button>
+          {/* None = hide */}
+          <button
+            type="button"
+            onClick={() => onChange({ ...data, icon: 'none' })}
+            title="No icon"
+            className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all ${
+              data.icon === 'none' ? 'bg-[#1A3C6E] text-white border-[#1A3C6E]' : 'bg-white text-gray-400 border-gray-200 hover:border-gray-400'
+            }`}
+          >
+            <Ban className="w-4 h-4" />
+          </button>
+          {CALLOUT_ICONS.map(({ name, Icon }) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => onChange({ ...data, icon: name })}
+              title={name}
+              className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all ${
+                data.icon === name ? 'bg-[#1A3C6E] text-white border-[#1A3C6E]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Colours — override the variant preset */}
+      <div>
+        <p className="text-xs font-medium text-gray-700 mb-2">Colours <span className="text-[10px] font-normal text-gray-400">(blank = variant preset)</span></p>
+        <div className="space-y-2">
+          <CalloutColorRow label="Background" value={data.bg_color} fallback="#EFF6FF" onChange={(v) => onChange({ ...data, bg_color: v })} />
+          <CalloutColorRow label="Border" value={data.border_color} fallback="#BFDBFE" onChange={(v) => onChange({ ...data, border_color: v })} />
+          <CalloutColorRow label="Text" value={data.text_color} fallback="#1E3A8A" onChange={(v) => onChange({ ...data, text_color: v })} />
+          <CalloutColorRow label="Icon" value={data.icon_color} fallback="#2563EB" onChange={(v) => onChange({ ...data, icon_color: v })} />
+        </div>
+      </div>
+
+      {/* Media — image/video placed anywhere */}
+      <div>
+        <p className="text-xs font-medium text-gray-700 mb-2">Image / video (optional)</p>
+        <MediaFieldEditor
+          media={data.media}
+          onChange={(media) => onChange({ ...data, media })}
+          pathPrefix={`blocks/callout/${blockId}/media/`}
+          position={data.media_position ?? 'top'}
+          onPositionChange={(media_position) => onChange({ ...data, media_position })}
+          label="Callout media"
+        />
       </div>
 
       <div>

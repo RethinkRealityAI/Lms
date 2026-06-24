@@ -11,7 +11,7 @@ import { CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BlockViewerProps } from '@/lib/content/block-registry';
 import type { FillBlankData } from '@/lib/content/blocks/fill-blank/schema';
-import { parseFillBlank, getFillBlankAnswers } from '@/lib/content/blocks/fill-blank/schema';
+import { parseFillBlank, getFillBlankAnswers, tokenizeFillBlank } from '@/lib/content/blocks/fill-blank/schema';
 import { BLOCK_CONTENT_SHELL, SURFACE_ACTIONS } from '@/lib/content/block-surface-tokens';
 
 interface Chip { id: string; value: string }
@@ -115,7 +115,7 @@ function Blank({ index, filled, theme, state, isTargeting, hasSelection, disable
   );
 }
 
-export default function FillBlankViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) {
+function WordBankViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) {
   const text = data.text ?? '';
   const segments = useMemo(() => parseFillBlank(text), [text]);
   const answers = useMemo(() => getFillBlankAnswers(text), [text]);
@@ -335,4 +335,138 @@ export default function FillBlankViewer({ data, onComplete }: BlockViewerProps<F
       </div>
     </div>
   );
+}
+
+// ── Strikeout mode ───────────────────────────────────────────────────────────
+// Find-and-fix: every word is tappable. Tapping the WRONG word strikes it through
+// and reveals the correct word inline; tapping a correct word gives a gentle nudge.
+
+const STRIKE_WORD =
+  'rounded px-0.5 -mx-0.5 cursor-pointer transition-colors hover:bg-[color:var(--surface-chip-bg)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1';
+
+function StrikeoutViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) {
+  const text = data.text ?? '';
+  const tokens = useMemo(() => tokenizeFillBlank(text), [text]);
+  const showFeedback = data.show_feedback ?? true;
+  const accent = (data.accent_color || '').trim() || '#1E3A5F';
+  const textColor = (data.text_color || '').trim();
+
+  // Valid targets: strikeout blanks that have both a wrong word and a correction.
+  const targetIndices = useMemo(
+    () => tokens.filter((t) => t.kind === 'blank' && t.wrong && t.correct).map((t) => t.blankIndex!),
+    [tokens],
+  );
+  const total = targetIndices.length;
+
+  const [revealed, setRevealed] = useState<Set<number>>(new Set());
+  const [nudge, setNudge] = useState<number | null>(null); // token start offset
+  const nudgeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firedRef = useRef(false);
+
+  const done = total > 0 && revealed.size >= total;
+  useEffect(() => { if (done && !firedRef.current) { firedRef.current = true; onComplete?.(); } }, [done, onComplete]);
+  useEffect(() => () => { if (nudgeTimer.current) clearTimeout(nudgeTimer.current); }, []);
+
+  function revealBlank(blankIndex: number) {
+    setRevealed((prev) => (prev.has(blankIndex) ? prev : new Set(prev).add(blankIndex)));
+  }
+  function nudgeWord(start: number) {
+    setNudge(start);
+    if (nudgeTimer.current) clearTimeout(nudgeTimer.current);
+    nudgeTimer.current = setTimeout(() => setNudge((s) => (s === start ? null : s)), 1100);
+  }
+  function reset() { setRevealed(new Set()); setNudge(null); firedRef.current = false; }
+
+  if (total === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-400">
+        Mark at least one wrong word (with its correction) in the editor.
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn(BLOCK_CONTENT_SHELL, 'gap-4')}>
+      <p className="text-sm font-semibold text-[color:var(--surface-text)]">
+        {data.instructions || 'Tap the incorrect word in each sentence to correct it.'}
+      </p>
+
+      <p
+        className="text-base sm:text-lg leading-loose whitespace-pre-wrap text-[color:var(--surface-text)]"
+        style={textColor ? { color: textColor } : undefined}
+      >
+        {tokens.map((t, i) => {
+          if (t.kind === 'sep') return <span key={i} className="whitespace-pre-wrap">{t.text}</span>;
+
+          if (t.kind === 'word') {
+            const isNudged = nudge === t.start;
+            return (
+              <span
+                key={i}
+                role="button"
+                tabIndex={0}
+                onClick={() => nudgeWord(t.start)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nudgeWord(t.start); } }}
+                className={cn(STRIKE_WORD, isNudged && 'bg-emerald-50')}
+                style={{ ['--tw-ring-color' as string]: accent }}
+              >
+                {t.text}
+                {isNudged && <span className="ml-0.5 text-[0.8em] font-bold text-emerald-600">✓</span>}
+              </span>
+            );
+          }
+
+          // blank = the wrong word target
+          const bi = t.blankIndex!;
+          if (!(t.wrong && t.correct)) return <span key={i}>{t.text}</span>; // incomplete authoring
+          if (revealed.has(bi)) {
+            return (
+              <span key={i} className="whitespace-nowrap">
+                <span className="line-through opacity-45">{t.wrong}</span>{' '}
+                <span className="font-bold" style={{ color: accent }}>{t.correct}</span>
+              </span>
+            );
+          }
+          return (
+            <span
+              key={i}
+              role="button"
+              tabIndex={0}
+              onClick={() => revealBlank(bi)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); revealBlank(bi); } }}
+              className={STRIKE_WORD}
+              style={{ ['--tw-ring-color' as string]: accent }}
+            >
+              {t.wrong}
+            </span>
+          );
+        })}
+      </p>
+
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-wide text-[color:var(--surface-text-subtle)]">
+          {revealed.size} of {total} corrected
+        </span>
+        {revealed.size > 0 && (
+          <button
+            onClick={reset}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border-2 border-[color:var(--surface-inset-border)] bg-[color:var(--surface-chip-bg)] text-[color:var(--surface-text)] hover:brightness-110 active:scale-95 transition-all"
+          >
+            <RotateCcw className="w-3.5 h-3.5" /> Reset
+          </button>
+        )}
+      </div>
+
+      {done && showFeedback && (
+        <div className="flex items-start gap-2 text-sm font-medium rounded-lg px-3 py-2.5 bg-green-100 text-green-800">
+          <CheckCircle className="h-4 w-4 mt-0.5 shrink-0" />
+          <span>{data.feedback_correct || 'Nice — every correction found!'}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function FillBlankViewer(props: BlockViewerProps<FillBlankData>) {
+  return props.data.mode === 'strikeout' ? <StrikeoutViewer {...props} /> : <WordBankViewer {...props} />;
 }

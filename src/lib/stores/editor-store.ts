@@ -46,6 +46,8 @@ interface Snapshot {
 
 export interface EditorState {
   courseId: string | null;
+  /** Course (a.k.a. module) display title — shown as the title-slide eyebrow in the editor preview. */
+  courseTitle: string | null;
   institutionId: string | null;
   courseStatus: CourseStatus;
   isPublishing: boolean;
@@ -112,6 +114,7 @@ export interface EditorState {
   redo: () => void;
   loadCourse: (data: {
     courseId: string;
+    courseTitle?: string | null;
     institutionId?: string;
     courseStatus?: CourseStatus;
     courseTheme?: Record<string, unknown>;
@@ -223,6 +226,7 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
 export function createEditorStore() {
   return createStore<EditorState>((set, get) => ({
     courseId: null,
+    courseTitle: null,
     institutionId: null,
     courseStatus: 'draft',
     isPublishing: false,
@@ -773,6 +777,7 @@ export function createEditorStore() {
     loadCourse: (data) =>
       set({
         courseId: data.courseId,
+        courseTitle: data.courseTitle ?? null,
         institutionId: data.institutionId ?? null,
         courseStatus: data.courseStatus ?? 'draft',
         modules: data.modules,

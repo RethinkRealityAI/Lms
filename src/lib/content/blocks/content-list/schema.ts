@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { mediaFieldSchema, mediaPositionSchema } from '@/lib/content/blocks/shared/media';
 
 export const contentListItemAnimationSchema = z.enum(['none', 'left', 'right', 'up', 'down']);
 export const contentListBulletStyleSchema = z.enum([
@@ -55,6 +56,11 @@ export const contentListDataSchema = z.object({
   // ── Animation (both modes share entrance animation; accordion always animates expand) ──
   enable_animations: z.boolean().default(false),
   animation_stagger_ms: z.number().int().min(0).default(120),
+
+  // ── Optional companion media (image/video) placed around the list ──
+  media: mediaFieldSchema.optional(),
+  /** Where the media sits relative to the list (default 'left'). */
+  media_position: mediaPositionSchema.optional(),
 });
 
 export type ContentListItemAnimation = z.infer<typeof contentListItemAnimationSchema>;

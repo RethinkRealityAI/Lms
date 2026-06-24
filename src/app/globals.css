@@ -346,10 +346,9 @@
   text-align: inherit;
 }
 
-/* Honor inline style attributes (color, font-family, font-size) */
-.rich-text-viewer span[style*="color"] {
-  color: inherit;
-}
+/* Honor inline color from the rich-text editor (Tiptap Color extension). The inline
+   `style="color:…"` on the span applies natively — do NOT force `color: inherit` here,
+   or every author-picked colour gets discarded and the text "standardizes". */
 
 .rich-text-viewer span[style*="font-family"] {
   font-family: inherit;

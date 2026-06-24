@@ -23,8 +23,9 @@ export const imageGalleryDataSchema = z.object({
   /**
    * Display mode. `single` is the default — one image, full width. The gallery /
    * slider / carousel modes only kick in when the author explicitly chooses them.
+   * `hotspot` shows one image with clickable markers that open a description panel.
    */
-  mode: z.enum(['single', 'gallery', 'slider', 'carousel']).default('single'),
+  mode: z.enum(['single', 'gallery', 'slider', 'carousel', 'hotspot']).default('single'),
   /** Grid mode only: stack vertically vs. lay out side-by-side in columns. */
   gridLayout: z.enum(['stacked', 'sideBySide']).default('sideBySide').optional(),
   /** Grid mode only: number of columns when side-by-side (1–4). */
@@ -70,6 +71,35 @@ export const imageGalleryDataSchema = z.object({
     tablet: imageResponsiveOverrideSchema.optional(),
     mobile: imageResponsiveOverrideSchema.optional(),
   }).optional(),
+
+  /**
+   * Optional rich-text companion shown beside/around the image (richer than a caption).
+   * Lets a single image + a block of text live in one component instead of two.
+   */
+  body: z.string().optional(),
+  /** Where the companion text sits relative to the image. */
+  bodyPosition: z.enum(['top', 'bottom', 'left', 'right']).default('right').optional(),
+
+  // ── Hotspot mode ──────────────────────────────────────────────────────────
+  /** Clickable markers placed on the image (`mode: 'hotspot'`). */
+  hotspots: z.array(z.object({
+    id: z.string(),
+    /** Position as a percentage of the image (0–100). */
+    x: z.number().min(0).max(100).default(50),
+    y: z.number().min(0).max(100).default(50),
+    /** Short chip label shown next to the marker when labels are visible. */
+    label: z.string().optional(),
+    /** Heading shown at the top of the description panel. */
+    title: z.string().optional(),
+    /** Rich-text description (HTML) shown in the panel. */
+    body: z.string().optional(),
+  })).optional(),
+  /** Show the short label chips next to each marker (vs. just the numbered pin). */
+  showHotspotLabels: z.boolean().default(false).optional(),
+  /** Marker / accent colour. Hex; blank = brand navy. */
+  hotspotColor: z.string().optional(),
+  /** Prompt shown above a hotspot image (e.g. "Tap each marker to learn more"). */
+  hotspotPrompt: z.string().optional(),
 });
 
 export type ImageGalleryData = z.infer<typeof imageGalleryDataSchema>;

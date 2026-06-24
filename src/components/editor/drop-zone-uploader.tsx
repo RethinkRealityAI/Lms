@@ -89,16 +89,31 @@ export function DropZoneUploader({
     setIsDragOver(false);
   }, []);
 
-  // If we have a file already, show preview with replace/remove
+  // If we have a file already, show preview. The whole preview is still a drop
+  // target — drag a new file over it to replace (in addition to the Replace button).
   if (currentUrl && !error) {
     return (
-      <div className={`relative rounded-lg overflow-hidden border border-gray-200 ${className}`}>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={`relative rounded-lg overflow-hidden border transition-colors ${
+          isDragOver ? 'border-[#1E3A5F] ring-2 ring-[#1E3A5F]/30' : 'border-gray-200'
+        } ${className}`}
+      >
         {previewMode === 'image' ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={currentUrl} alt="" className="w-full h-24 object-cover" />
         ) : (
           <div className="px-3 py-2.5 bg-gray-50">
             <p className="text-xs text-green-700 truncate">{currentUrl}</p>
+          </div>
+        )}
+        {/* Drag-over / uploading overlay */}
+        {(isDragOver || uploading) && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-[#1E3A5F]/70 text-white pointer-events-none">
+            {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
+            <span className="text-xs font-semibold">{uploading ? 'Uploading…' : 'Drop to replace'}</span>
           </div>
         )}
         <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 hover:bg-black/40 transition-colors group">

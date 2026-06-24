@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import {
   Link, Upload, LayoutGrid, SlidersHorizontal, GalleryHorizontal,
-  Image as ImageIcon, Rows3, Columns3, AlignLeft, AlignRight, AlignCenter,
+  Image as ImageIcon, Rows3, Columns3, AlignLeft, AlignRight, AlignCenter, MapPin,
 } from 'lucide-react';
 import { DropZoneUploader } from '@/components/editor/drop-zone-uploader';
 import { ColorSwatch } from '@/components/editor/theme-editor/color-swatch';
+import { RichTextEditor } from '@/components/blocks/rich-text/editor';
+import { HotspotEditor } from './hotspot-editor';
 import type { BlockEditorProps } from '@/lib/content/block-registry';
 import type { ImageGalleryData } from '@/lib/content/blocks/image-gallery/schema';
 import {
@@ -36,6 +38,7 @@ const DISPLAY_MODES: {
   { value: 'gallery',  label: 'Grid',     icon: LayoutGrid,          description: 'Multiple images in a column grid (2–4 across, or stacked).' },
   { value: 'slider',   label: 'Slider',   icon: SlidersHorizontal,   description: 'One image at a time with Previous / Next. Good for steps.' },
   { value: 'carousel', label: 'Carousel', icon: GalleryHorizontal,   description: 'Several images visible, auto-advancing. Pauses on hover.' },
+  { value: 'hotspot',  label: 'Hotspots', icon: MapPin,              description: 'One image with clickable markers that open a description panel.' },
 ];
 
 // ─── Device field note ────────────────────────────────────────────────────────
@@ -189,21 +192,27 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint
       {/* ── 1. Display mode ── */}
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-1.5">Display Mode</label>
-        <div className="grid grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-5 gap-1.5">
           {DISPLAY_MODES.map(({ value, label, icon: Icon }) => (
             <button key={value} type="button"
               onClick={() => onChange({ ...data, mode: value })}
               onMouseEnter={() => setHoveredMode(value)} onMouseLeave={() => setHoveredMode(null)}
-              className={`flex flex-col items-center gap-1 px-1 py-2 rounded-lg border transition-colors ${
+              className={`flex flex-col items-center gap-1 px-0.5 py-2 rounded-lg border transition-colors ${
                 mode === value ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F] hover:text-[#1E3A5F]'
               }`}>
               <Icon className="w-4 h-4" />
-              <span className="text-[10px] font-medium">{label}</span>
+              <span className="text-[9px] font-medium leading-tight text-center">{label}</span>
             </button>
           ))}
         </div>
         {previewDescription && <p className="mt-1.5 text-[11px] text-gray-500 leading-relaxed">{previewDescription}</p>}
       </div>
+
+      {/* Hotspot mode has its own self-contained editor (image + markers + descriptions). */}
+      {mode === 'hotspot' ? (
+        <HotspotEditor data={data} onChange={onChange} />
+      ) : (
+        <>
 
       {/* ── 2. Appearance ── */}
       <div className={sectionClass}>
@@ -460,6 +469,35 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint
         )}
       </div>
 
+      {/* ── Companion text (single image) ── */}
+      {isSingle && (
+        <div className={sectionClass}>
+          <p className={sectionLabelClass}>Text beside image (optional)</p>
+          <p className="text-[11px] text-gray-400 mb-2">A rich-text block combined with the image — choose where it sits.</p>
+          <div className="mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Text position</label>
+            <div className="flex gap-1.5">
+              {([
+                { value: 'top' as const, label: 'Above' },
+                { value: 'bottom' as const, label: 'Below' },
+                { value: 'left' as const, label: 'Left' },
+                { value: 'right' as const, label: 'Right' },
+              ]).map(({ value, label }) => (
+                <button key={value} type="button" onClick={() => onChange({ ...data, bodyPosition: value })}
+                  className={`flex-1 px-2 py-1.5 text-xs rounded-lg border transition-colors ${
+                    (data.bodyPosition ?? 'right') === value ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]'
+                  }`}>{label}</button>
+              ))}
+            </div>
+          </div>
+          <RichTextEditor
+            data={{ html: data.body ?? '', mode: 'standard' }}
+            block={{ id: 'image-gallery-body' }}
+            onChange={(rich) => onChange({ ...data, body: (rich.html && rich.html !== '<p></p>') ? rich.html : undefined })}
+          />
+        </div>
+      )}
+
       {/* ── 6. Images (always last) ── */}
       <div className={sectionClass}>
         <p className={sectionLabelClass}>Images</p>
@@ -482,6 +520,8 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

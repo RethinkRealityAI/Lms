@@ -33,3 +33,54 @@ export const matchPairsDataSchema = z.object({
 
 export type MatchPairsData = z.infer<typeof matchPairsDataSchema>;
 export type MatchSide = z.infer<typeof sideSchema>;
+
+// ── Normalization ─────────────────────────────────────────────────────────────
+// Older imports (and the SCAGO markdown pipeline) stored pairs as a shorthand
+// `{ left, right }` with plain strings, no `id`, and the instruction text under a
+// top-level `prompt` key. The viewer/editor expect `{ id, prompt: Side, match: Side }`
+// with a top-level `instructions`. Normalizing on read makes those blocks render and
+// edit without crashing, and lets them self-heal the next time they're saved.
+
+/** Coerce any value into a valid MatchSide (string → text side; object → typed side). */
+export function normalizeMatchSide(raw: unknown): MatchSide {
+  if (raw == null) return { type: 'text' };
+  if (typeof raw === 'string') return { type: 'text', text: raw };
+  if (typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    const imageUrl = typeof o.image_url === 'string' && o.image_url ? o.image_url
+      : typeof o.url === 'string' && o.url ? (o.url as string) : undefined;
+    const type: MatchSide['type'] = o.type === 'image' || (o.type == null && imageUrl) ? 'image' : 'text';
+    const text = typeof o.text === 'string' ? o.text
+      : typeof o.value === 'string' ? (o.value as string)
+      : typeof o.label === 'string' ? (o.label as string) : undefined;
+    return { type, ...(imageUrl ? { image_url: imageUrl } : {}), ...(text != null ? { text } : {}) };
+  }
+  return { type: 'text' };
+}
+
+/** Coerce any stored match-pairs data into the canonical shape (preserves layout/extra keys). */
+export function normalizeMatchPairsData(input: unknown): MatchPairsData {
+  const d = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
+  const rawPairs = Array.isArray(d.pairs) ? d.pairs : [];
+  const pairs = rawPairs.map((p, i) => {
+    const po = (p && typeof p === 'object' ? p : {}) as Record<string, unknown>;
+    const promptRaw = po.prompt !== undefined ? po.prompt : po.left;
+    const matchRaw = po.match !== undefined ? po.match : po.right;
+    const id = typeof po.id === 'string' && po.id ? (po.id as string) : `mp-${i}`;
+    return { id, prompt: normalizeMatchSide(promptRaw), match: normalizeMatchSide(matchRaw) };
+  });
+  const instructions = typeof d.instructions === 'string' && d.instructions
+    ? (d.instructions as string)
+    : typeof d.prompt === 'string' && d.prompt ? (d.prompt as string) : undefined;
+  // Drop the legacy top-level `prompt` (now `instructions`); keep everything else
+  // (grid position, colours, etc.) so the block doesn't lose its layout.
+  const { prompt: _legacyPrompt, pairs: _p, instructions: _i, ...rest } = d;
+  return {
+    ...rest,
+    pairs,
+    prompt_side: d.prompt_side === 'right' ? 'right' : 'left',
+    shuffle: d.shuffle === undefined ? true : Boolean(d.shuffle),
+    show_feedback: d.show_feedback === undefined ? true : Boolean(d.show_feedback),
+    ...(instructions ? { instructions } : {}),
+  } as MatchPairsData;
+}

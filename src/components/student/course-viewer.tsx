@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
   ChevronLeft, ChevronRight, Award, BookOpen,
-  Minimize2, Maximize2, Download, Share2, ExternalLink, Menu, X, Lock,
+  Minimize2, Maximize2, Menu, X, Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/types';
@@ -35,6 +35,8 @@ import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/cont
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getMyCourseFeedback, getMyProgramFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
+import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
+import { CertificateCelebration } from '@/components/certificates/certificate-celebration';
 import type { SurveyData, SurveyAnswers, SurveyAnswerValue, SurveyQuestion } from '@/lib/content/blocks/survey/schema';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
 import { Input } from '@/components/ui/input';
@@ -458,9 +460,9 @@ function CompletionFeedbackForm({
   if (!questions.length) return null;
 
   return (
-    <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <div className="w-full max-w-xl shrink-0 rounded-2xl border border-slate-200 bg-white shadow-sm ring-1 ring-black/5 overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 text-white rounded-t-2xl" style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}cc 100%)` }}>
+      <div className="px-4 sm:px-5 py-3.5 sm:py-4 text-white rounded-t-2xl" style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}cc 100%)` }}>
         <div className="flex items-center gap-2 mb-0.5">
           <ClipboardList className="h-4 w-4 opacity-90 shrink-0" />
           <h4 className="text-base font-bold">{title ?? 'Course Feedback'}</h4>
@@ -470,7 +472,7 @@ function CompletionFeedbackForm({
       </div>
 
       {/* Body */}
-      <div className="p-5 space-y-5">
+      <div className="p-4 sm:p-5 space-y-4 sm:space-y-5">
         {submitted ? (
           <div className="flex items-start gap-3 rounded-xl bg-green-50 border border-green-200 px-4 py-4">
             <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
@@ -504,7 +506,7 @@ function CompletionFeedbackForm({
               </div>
             ))}
 
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-3">
+            <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-x-3 gap-y-2">
               <Button
                 onClick={onSubmit}
                 disabled={submitting}
@@ -568,8 +570,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   React.useEffect(() => { setSubPage(0); }, [currentSlide, selectedLesson?.id]);
   const [showConfetti, setShowConfetti] = useState(false);
   // Certificate earned state — shown in congratulations modal
-  const [earnedCertificate, setEarnedCertificate] = useState<{ id: string; number: string } | null>(null);
-  const [showCertModal, setShowCertModal] = useState(false);
+  const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
   // Interactive block completion (e.g. image gallery require-all-clicked) per lesson
@@ -880,16 +881,30 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           if (certError) {
             toast.error('Your certificate could not be issued', { description: certError.message });
           } else if (certData?.certificate_id && !certData.already_issued) {
-            setEarnedCertificate({ id: certData.certificate_id, number: certData.certificate_number ?? '' });
-            setShowCertModal(true);
+            const certId = certData.certificate_id as string;
             // Pre-generate PDF (fire-and-forget)
-            fetch(`/api/certificates/${certData.certificate_id}/pdf`).catch(() => {});
+            fetch(`/api/certificates/${certId}/pdf`).catch(() => {});
             // Email the student their certificate (fire-and-forget; no-op if SMTP unconfigured)
             fetch('/api/notify/certificate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ certificateId: certData.certificate_id }),
+              body: JSON.stringify({ certificateId: certId }),
             }).catch(() => {});
+            // Reveal the actual certificate in the celebration overlay
+            const display = await fetchCertificateDisplay(supabase, certId);
+            setCelebration(
+              display ?? {
+                certificateId: certId,
+                template: null,
+                data: {
+                  student_name: '',
+                  completion_date: '',
+                  certificate_number: certData.certificate_number ?? '',
+                  institution_name: '',
+                },
+                courseTitle: course?.title ?? 'this course',
+              },
+            );
           }
         }
         // Re-fetch progress silently (no jarring page refresh — local state already updated above)
@@ -1074,14 +1089,25 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     [course],
   );
 
-  // Institution (global) theme layer — fetched once the course's institution is known.
+  // Institution (global) theme layer. Re-fetched when the tab regains focus/visibility
+  // so a global theme change saved in another tab applies without a hard reload.
   useEffect(() => {
     const instId = course?.institution_id;
     if (!instId) return;
     let cancelled = false;
-    supabase.from('institutions').select('theme').eq('id', instId).maybeSingle()
-      .then(({ data }) => { if (!cancelled) setInstitutionTheme(asInstitutionTheme(data?.theme)); });
-    return () => { cancelled = true; };
+    const fetchTheme = () => {
+      supabase.from('institutions').select('theme').eq('id', instId).maybeSingle()
+        .then(({ data }) => { if (!cancelled) setInstitutionTheme(asInstitutionTheme(data?.theme)); });
+    };
+    fetchTheme();
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchTheme(); };
+    window.addEventListener('focus', fetchTheme);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', fetchTheme);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [course?.institution_id, supabase]);
 
   // Effective theme = course override → institution → branding fallback.
@@ -1500,74 +1526,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         </DialogContent>
       </Dialog>
 
-      {/* ── Certificate Earned Modal ─────────────────────────────────────── */}
-      <Dialog open={showCertModal} onOpenChange={setShowCertModal}>
-        <DialogContent className="sm:max-w-lg text-center">
-          <div className="flex flex-col items-center gap-5 py-4">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
-              <Award className="h-14 w-14 text-amber-500" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                Congratulations!
-              </h2>
-              <p className="text-slate-500 mt-2 text-base">
-                You&apos;ve completed <span className="font-bold text-slate-700">{course.title}</span>!
-                Your certificate has been issued.
-              </p>
-              {earnedCertificate?.number && (
-                <p className="text-xs font-mono text-slate-400 mt-1.5">
-                  Certificate #{earnedCertificate.number}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <Button
-                onClick={() => {
-                  setShowCertModal(false);
-                  router.push(withInstitutionPath('/student/certificates', pathname));
-                }}
-                className="bg-[#1E3A5F] hover:bg-[#162d4a] font-bold"
-              >
-                <ExternalLink className="h-4 w-4 mr-1.5" />
-                View in Certificates
-              </Button>
-              {earnedCertificate && (
-                <Button
-                  variant="outline"
-                  onClick={() => window.open(`/api/certificates/${earnedCertificate.id}/pdf`, '_blank')}
-                  className="font-bold"
-                >
-                  <Download className="h-4 w-4 mr-1.5" />
-                  Download PDF
-                </Button>
-              )}
-              {earnedCertificate?.number && (
-                <Button
-                  variant="outline"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${window.location.origin}/verify/${earnedCertificate.number}`
-                    );
-                    toast.success('Verification link copied!');
-                  }}
-                  className="font-bold"
-                >
-                  <Share2 className="h-4 w-4 mr-1.5" />
-                  Share
-                </Button>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              onClick={() => setShowCertModal(false)}
-              className="text-sm text-slate-400"
-            >
-              Continue Learning
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* ── Certificate Earned Celebration ───────────────────────────────── */}
+      <CertificateCelebration
+        open={!!celebration}
+        display={celebration}
+        onClose={() => setCelebration(null)}
+        institutionSlug={resolveInstitutionSlug(pathname)}
+        onViewCertificates={() => {
+          setCelebration(null);
+          router.push(withInstitutionPath('/student/certificates', pathname));
+        }}
+      />
 
       {/* ── Compact course header (hidden in fullscreen) ─────────────────── */}
       {!isFullscreen && (
@@ -1703,6 +1672,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                     <TitleSlide
                       lessonTitle={selectedLesson.title}
                       lessonDescription={selectedLesson.description}
+                      moduleName={course?.title}
                       titleImageUrl={selectedLesson.title_image_url}
                       titleSlideSettings={selectedLesson.title_slide_settings}
                       courseDate={course?.created_at ? new Date(course.created_at).toLocaleDateString('en-CA', { year: 'numeric', month: 'long' }) : null}
@@ -1779,17 +1749,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
                   {/* COMPLETION SLIDE */}
                   {currentSlideData?.kind === 'completion' && (
-                    <div className="relative flex flex-col items-center py-10 px-8 gap-6 flex-1 overflow-y-auto">
+                    <div className="relative flex flex-col items-center gap-5 sm:gap-6 flex-1 min-h-0 overflow-y-auto px-4 sm:px-8 pt-6 sm:pt-10 pb-8 sm:pb-10">
                       {showConfetti && <Confetti />}
-                      {/* Hero — centred */}
-                      <div className="flex flex-col items-center text-center gap-6 w-full">
-                        <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center animate-bounce [animation-iteration-count:1] [animation-duration:0.8s]">
-                          <Award className="h-10 w-10 text-green-500" />
+                      {/* Hero — centred (compact on mobile so the survey stays visible) */}
+                      <div className="flex flex-col items-center text-center gap-4 sm:gap-5 w-full shrink-0">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-50 flex items-center justify-center animate-bounce [animation-iteration-count:1] [animation-duration:0.8s]">
+                          <Award className="h-8 w-8 sm:h-10 sm:w-10 text-green-500" />
                         </div>
                         <div>
-                          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Lesson Complete</p>
-                          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
-                          <p className="text-slate-500 mt-2 text-base">Congratulations! You&apos;ve completed this lesson.</p>
+                          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Lesson Complete</p>
+                          <h3 className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
+                          <p className="text-slate-500 mt-1.5 text-sm sm:text-base">Congratulations! You&apos;ve completed this lesson.</p>
                         </div>
                         {/* Leave a Review — only on last lesson, not in preview */}
                         {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
