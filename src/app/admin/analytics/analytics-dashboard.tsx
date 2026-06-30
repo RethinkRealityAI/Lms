@@ -20,6 +20,7 @@ import {
   Clock,
   Star,
   ClipboardList,
+  MessageSquare,
   Download,
   ChevronDown,
   ChevronRight,
@@ -47,6 +48,7 @@ import { SurveysAnalyticsTab } from '@/components/admin/surveys-analytics-tab';
 import { FeedbackAnalyticsTab, buildFeedbackSummaries } from '@/components/admin/feedback-analytics-tab';
 import { ContentHealthTab } from '@/components/admin/content-health-tab';
 import type { ProblematicQuiz } from '@/lib/db/quiz-health';
+import type { CompletionSurveyBundle } from '@/lib/db/course-feedback';
 
 interface Props {
   trendDays: number;
@@ -61,6 +63,7 @@ interface Props {
     responsesByBlock: Record<string, SurveyResponseWithMeta[]>;
   };
   feedbackCounts: Record<string, number>;
+  completionSurveys: CompletionSurveyBundle;
   eventCounts: EventCounts | null;
   recentEvents: AnalyticsEvent[];
   problematicQuizzes: ProblematicQuiz[];
@@ -551,7 +554,7 @@ function EngagementTab({
   );
 }
 
-export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts, eventCounts, recentEvents, problematicQuizzes }: Props) {
+export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts, completionSurveys, eventCounts, recentEvents, problematicQuizzes }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -696,13 +699,13 @@ export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTre
             <Activity className="h-4 w-4 mr-2" />
             Engagement
           </TabsTrigger>
-          <TabsTrigger value="surveys" className="rounded-lg font-bold text-sm px-4">
-            <ClipboardList className="h-4 w-4 mr-2" />
-            Surveys
-          </TabsTrigger>
           <TabsTrigger value="feedback" className="rounded-lg font-bold text-sm px-4">
-            <Star className="h-4 w-4 mr-2" />
-            Feedback
+            <ClipboardList className="h-4 w-4 mr-2" />
+            Completion Surveys
+          </TabsTrigger>
+          <TabsTrigger value="surveys" className="rounded-lg font-bold text-sm px-4">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            In-Lesson Surveys
           </TabsTrigger>
           <TabsTrigger value="content-health" className="rounded-lg font-bold text-sm px-4">
             <ShieldAlert className="h-4 w-4 mr-2" />
@@ -772,7 +775,7 @@ export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTre
         </TabsContent>
 
         <TabsContent value="feedback">
-          <FeedbackAnalyticsTab summaries={buildFeedbackSummaries(courses, feedbackCounts)} />
+          <FeedbackAnalyticsTab summaries={buildFeedbackSummaries(courses, feedbackCounts)} bundle={completionSurveys} />
         </TabsContent>
 
         <TabsContent value="content-health">

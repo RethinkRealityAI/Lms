@@ -244,3 +244,135 @@ export async function getInstitutionFeedbackCounts(
   }
   return counts;
 }
+
+// ── Completion-survey analytics bundle (global, with answers + aggregates) ────
+
+export interface CompletionSurveyQuestion {
+  id: string;
+  question: string;
+  type: string;
+}
+
+export interface CompletionSurveyResponseRow {
+  id: string;
+  userName: string | null;
+  userEmail: string | null;
+  submittedAt: string;
+  answers: Record<string, unknown>;
+}
+
+export interface CompletionSurveyCourse {
+  courseId: string;
+  courseTitle: string;
+  /** Name of the template the responses were captured under, if resolvable. */
+  templateName: string | null;
+  /** Ordered questions (for answer labels + aggregate ordering). Empty if no template. */
+  questions: CompletionSurveyQuestion[];
+  responseCount: number;
+  uniqueRespondents: number;
+  responses: CompletionSurveyResponseRow[];
+}
+
+export interface CompletionSurveyBundle {
+  courses: CompletionSurveyCourse[];
+  totalResponses: number;
+  totalRespondents: number;
+}
+
+/**
+ * Admin: every course-level completion-survey response for an institution, grouped
+ * by course, with the responder's identity, the answers, and the template questions
+ * (so the dashboard can label answers and aggregate them) — the global counterpart
+ * to the per-course {@link getCourseFeedbackResponses}. Program-level rows
+ * (`program_id` set) are excluded; this is the per-course view.
+ */
+export async function getCompletionSurveyAnalyticsBundle(
+  supabase: SupabaseClient,
+  institutionId: string,
+): Promise<CompletionSurveyBundle> {
+  const { data: rows, error } = await supabase
+    .from('course_feedback_responses')
+    .select(
+      'id, course_id, user_id, template_id, answers, submitted_at, user:users!course_feedback_responses_user_id_fkey(full_name, email)',
+    )
+    .eq('institution_id', institutionId)
+    .is('program_id', null)
+    .order('submitted_at', { ascending: false });
+
+  if (error || !rows?.length) {
+    return { courses: [], totalResponses: 0, totalRespondents: 0 };
+  }
+
+  type Row = {
+    id: string;
+    course_id: string;
+    user_id: string;
+    template_id: string | null;
+    answers: Record<string, unknown> | null;
+    submitted_at: string;
+    user: { full_name: string | null; email: string | null } | { full_name: string | null; email: string | null }[] | null;
+  };
+  const all = rows as unknown as Row[];
+
+  // Resolve course titles and template questions in two batched lookups.
+  const courseIds = Array.from(new Set(all.map((r) => r.course_id)));
+  const templateIds = Array.from(new Set(all.map((r) => r.template_id).filter((t): t is string => !!t)));
+
+  const [{ data: courseRows }, { data: templateRows }] = await Promise.all([
+    supabase.from('courses').select('id, title').in('id', courseIds),
+    templateIds.length
+      ? supabase.from('survey_templates').select('id, name, data').in('id', templateIds)
+      : Promise.resolve({ data: [] as { id: string; name: string; data: unknown }[] }),
+  ]);
+
+  const titleById = new Map((courseRows ?? []).map((c) => [c.id as string, c.title as string]));
+  const templateById = new Map(
+    (templateRows ?? []).map((t) => {
+      const data = t.data as { questions?: CompletionSurveyQuestion[] } | null;
+      return [t.id as string, { name: t.name as string, questions: Array.isArray(data?.questions) ? data!.questions! : [] }];
+    }),
+  );
+
+  const grouped = new Map<string, { rows: Row[]; respondents: Set<string>; templateCounts: Map<string, number> }>();
+  for (const r of all) {
+    if (!grouped.has(r.course_id)) {
+      grouped.set(r.course_id, { rows: [], respondents: new Set(), templateCounts: new Map() });
+    }
+    const g = grouped.get(r.course_id)!;
+    g.rows.push(r);
+    g.respondents.add(r.user_id);
+    if (r.template_id) g.templateCounts.set(r.template_id, (g.templateCounts.get(r.template_id) ?? 0) + 1);
+  }
+
+  const courses: CompletionSurveyCourse[] = Array.from(grouped.entries()).map(([courseId, g]) => {
+    // Use the template most responses were captured under for question labels.
+    const topTemplateId = Array.from(g.templateCounts.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+    const tmpl = topTemplateId ? templateById.get(topTemplateId) : null;
+    return {
+      courseId,
+      courseTitle: titleById.get(courseId) ?? 'Untitled course',
+      templateName: tmpl?.name ?? null,
+      questions: tmpl?.questions ?? [],
+      responseCount: g.rows.length,
+      uniqueRespondents: g.respondents.size,
+      responses: g.rows.map((r) => {
+        const u = Array.isArray(r.user) ? r.user[0] : r.user;
+        return {
+          id: r.id,
+          userName: u?.full_name ?? null,
+          userEmail: u?.email ?? null,
+          submittedAt: r.submitted_at,
+          answers: (r.answers ?? {}) as Record<string, unknown>,
+        };
+      }),
+    };
+  });
+
+  courses.sort((a, b) => b.responseCount - a.responseCount || a.courseTitle.localeCompare(b.courseTitle));
+
+  return {
+    courses,
+    totalResponses: all.length,
+    totalRespondents: new Set(all.map((r) => r.user_id)).size,
+  };
+}

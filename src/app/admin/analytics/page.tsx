@@ -8,7 +8,7 @@ import {
   getStudentProgress,
 } from '@/lib/db/analytics';
 import { getSurveyAnalyticsBundle } from '@/lib/db/surveys';
-import { getInstitutionFeedbackCounts } from '@/lib/db/course-feedback';
+import { getInstitutionFeedbackCounts, getCompletionSurveyAnalyticsBundle } from '@/lib/db/course-feedback';
 import { getProblematicQuizzes } from '@/lib/db/quiz-health';
 import { getEventCounts, getRecentEvents, type AnalyticsEvent, type EventCounts } from '@/lib/db/events';
 import { AnalyticsDashboard } from './analytics-dashboard';
@@ -39,7 +39,7 @@ export default async function AnalyticsPage({
     );
   }
 
-  const [platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts, problematicQuizzes] =
+  const [platform, courses, enrollmentTrend, completionTrend, students, surveyAnalytics, feedbackCounts, completionSurveys, problematicQuizzes] =
     await Promise.all([
       getPlatformStats(supabase, institutionId),
       getCourseStats(supabase, institutionId),
@@ -48,6 +48,7 @@ export default async function AnalyticsPage({
       getStudentProgress(supabase, institutionId),
       getSurveyAnalyticsBundle(supabase, institutionId),
       getInstitutionFeedbackCounts(supabase, institutionId),
+      getCompletionSurveyAnalyticsBundle(supabase, institutionId),
       getProblematicQuizzes(supabase, institutionId).catch(() => []),
     ]);
 
@@ -75,6 +76,7 @@ export default async function AnalyticsPage({
       students={students}
       surveyAnalytics={surveyAnalytics}
       feedbackCounts={feedbackCounts}
+      completionSurveys={completionSurveys}
       eventCounts={eventCounts}
       recentEvents={recentEvents}
       problematicQuizzes={problematicQuizzes}
