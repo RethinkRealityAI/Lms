@@ -1205,6 +1205,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   }, [selectedLesson, lessons]);
   const hasQuiz = selectedLesson ? !!lessonQuizzes[selectedLesson.id] : false;
 
+  // Final-lesson survey gate (display flags). Mirrors the withhold condition in
+  // handleMarkComplete so the completion slide + footer can message it clearly.
+  const isLastLesson =
+    !!selectedLesson && lessons.length > 0 && lessons[lessons.length - 1]?.id === selectedLesson.id;
+  const surveyGatePendingUI = Boolean(
+    isLastLesson && course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted,
+  );
+
   // Quiz gating: count inline quiz blocks for current lesson and check if all answered correctly
   const handleQuizCorrect = useCallback((blockId: string) => {
     if (!selectedLesson) return;
@@ -1757,12 +1765,23 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           <Award className="h-8 w-8 sm:h-10 sm:w-10 text-green-500" />
                         </div>
                         <div>
-                          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Lesson Complete</p>
+                          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">
+                            {isLastLesson ? 'Module Complete' : 'Lesson Complete'}
+                          </p>
                           <h3 className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
-                          <p className="text-slate-500 mt-1.5 text-sm sm:text-base">Congratulations! You&apos;ve completed this lesson.</p>
+                          {surveyGatePendingUI ? (
+                            <p className="text-slate-600 mt-1.5 text-sm sm:text-base font-medium">
+                              To receive your certificate, please complete the module survey and click{' '}
+                              <span className="font-bold">Submit</span>.
+                            </p>
+                          ) : (
+                            <p className="text-slate-500 mt-1.5 text-sm sm:text-base">
+                              Congratulations! You&apos;ve completed this {isLastLesson ? 'module' : 'lesson'}.
+                            </p>
+                          )}
                         </div>
                         {/* Leave a Review — only on last lesson, not in preview */}
-                        {!previewMode && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
+                        {!previewMode && isLastLesson && (
                           <Button variant="outline" onClick={openReviewModal}
                             className="border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-50">
                             <Star className="mr-2 h-4 w-4" />Leave a Review
@@ -1771,21 +1790,41 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                       </div>
 
                       {/* Course completion survey — opens on a dedicated, scrollable page */}
-                      {feedbackTemplate && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
+                      {feedbackTemplate && isLastLesson && (
                         <div className="w-full max-w-xl">
                           {feedbackSubmitted ? (
                             <div className="flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm font-semibold text-green-800">
                               <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
                               Course survey complete — thank you!
                             </div>
+                          ) : course?.completion_survey_required ? (
+                            /* REQUIRED survey — the certificate is gated on it, so make it unmissable */
+                            <div className="rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-5 text-center shadow-sm">
+                              <div className="flex items-center justify-center gap-2 mb-1">
+                                <Award className="h-6 w-6 text-amber-500 shrink-0" />
+                                <p className="font-black text-slate-900">Your certificate is one step away</p>
+                              </div>
+                              <p className="text-sm text-slate-600 mt-1 mb-4">
+                                Module complete! To receive your certificate, please complete the module survey
+                                and click the <span className="font-bold">Submit</span> button.
+                              </p>
+                              <Button
+                                disabled={previewMode}
+                                onClick={() => router.push(withInstitutionPath(`/student/courses/${courseId}/survey`, pathname))}
+                                style={{ backgroundColor: effectiveTheme.progressColor ?? '#1A3C6E' }}
+                                className="font-bold text-white hover:opacity-90 h-11 px-6"
+                              >
+                                {previewMode ? 'Complete Module Survey (disabled in preview)' : 'Complete Module Survey'}
+                                <ChevronRight className="ml-1 h-4 w-4" />
+                              </Button>
+                            </div>
                           ) : (
+                            /* Optional survey — softer ask */
                             <div className="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
                               <ClipboardList className="h-7 w-7 mx-auto mb-2" style={{ color: effectiveTheme.progressColor ?? '#1A3C6E' }} />
                               <p className="font-bold text-slate-900">Please complete this course survey</p>
                               <p className="text-sm text-slate-500 mt-1 mb-4">
-                                {course?.completion_survey_required
-                                  ? 'Your feedback is required to finish the course and receive your certificate.'
-                                  : 'Your feedback helps us improve this course.'}
+                                Your feedback helps us improve this course.
                               </p>
                               <Button
                                 disabled={previewMode}
@@ -1801,7 +1840,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                       )}
 
                       {/* Program survey — shown when this lesson completes a full program */}
-                      {programSurvey && lessons.findIndex(l => l.id === selectedLesson.id) === lessons.length - 1 && (
+                      {programSurvey && isLastLesson && (
                         <div className="w-full max-w-xl space-y-1">
                           <div className="flex items-center gap-2 px-1">
                             <Badge variant="outline" className="text-xs font-semibold text-purple-700 border-purple-200 bg-purple-50">
@@ -1871,6 +1910,15 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                         >
                           Next Lesson <ChevronRight className="h-4 w-4" />
+                        </button>
+                      ) : surveyGatePendingUI && !previewMode ? (
+                        /* Survey gates the certificate — make it the primary footer action */
+                        <button
+                          onClick={() => router.push(withInstitutionPath(`/student/courses/${courseId}/survey`, pathname))}
+                          aria-label="Complete module survey"
+                          className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        >
+                          Complete Module Survey <ChevronRight className="h-4 w-4" />
                         </button>
                       ) : (
                         <button

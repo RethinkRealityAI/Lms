@@ -36,6 +36,7 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   const [done, setDone] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
   const [certNumber, setCertNumber] = useState<string | null>(null);
+  const [certGated, setCertGated] = useState(false);
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
   const institutionSlug = useMemo(() => resolveInstitutionSlug(pathname), [pathname]);
 
@@ -50,13 +51,14 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
         return;
       }
       const [{ data: course }, resolved, existing] = await Promise.all([
-        supabase.from('courses').select('title, institution_id').eq('id', courseId).maybeSingle(),
+        supabase.from('courses').select('title, institution_id, completion_survey_required').eq('id', courseId).maybeSingle(),
         resolveCompletionSurveys(supabase, courseId, user.id),
         getMyCourseFeedback(supabase, courseId, user.id),
       ]);
       if (cancelled) return;
       setCourseTitle(course?.title ?? 'Course');
       setInstitutionId(course?.institution_id ?? null);
+      setCertGated(Boolean(course?.completion_survey_required));
       setTemplate(resolved.course?.template ?? null);
       setTemplateId(resolved.course?.templateId ?? null);
       if (existing) setAlreadyDone(true);
@@ -203,12 +205,27 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                 </div>
               </div>
             ) : (
-              <CompletionSurveyForm
-                surveyData={template.data}
-                accent={accent}
-                submitting={submitting}
-                onSubmit={handleSubmit}
-              />
+              <div className="space-y-5">
+                {certGated && (
+                  <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                    <Award className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-sm font-semibold text-amber-900">
+                      Module complete — one last step! Submitting this survey finishes the module and
+                      issues your certificate.
+                    </p>
+                  </div>
+                )}
+                <CompletionSurveyForm
+                  surveyData={
+                    certGated
+                      ? { ...template.data, submit_label: 'Submit Survey & Get Certificate' }
+                      : template.data
+                  }
+                  accent={accent}
+                  submitting={submitting}
+                  onSubmit={handleSubmit}
+                />
+              </div>
             )}
           </div>
         </div>
