@@ -891,3 +891,16 @@ Client Components:
 Supabase user ID for `tech@sicklecellanemia.ca`: `485e3136-1337-41c3-b8a2-d0d98accb541`
 
 **Note:** This user has `institution_id = '725f40e5-a317-4b8f-80b8-1df6cf3bbe2a'` (GANSID) but role `platform_admin` grants access to all institutions. Tenant context is determined by the URL prefix, not the user's institution_id.
+
+---
+
+## QA Flow Testing (`/qa-flow-test`)
+
+End-to-end test of the student **completion → required survey → certificate** flow as a REAL student (admin preview mode suppresses DB writes, so it can never prove issuance). Run the `/qa-flow-test` slash command, or manually:
+
+1. `node scripts/qa-flow-test.mjs create --slug=scago` → creates the disposable student `qa.certflow.test@example.com` (fixed email; random password printed; signup trigger assigns tenant + student role).
+2. Sign in as it in the preview browser (login inputs are React-controlled — set values via the native setter + `input` events, not plain fill) and walk the **Test Course** (`ba14c955-53de-4c61-974c-e35ff0e0e0a3`; GANSID's is `d264b895-c7d6-4342-a083-17c5182194fe`). NEVER live courses.
+3. Expected: quiz gates hold until answered correctly; final completion slide shows "MODULE COMPLETE" + amber "Your certificate is one step away" card + red "Complete Module Survey" footer button; progress stays incomplete until the survey; survey page shows the amber cert banner + "Submit Survey & Get Certificate"; submit → certificate celebration with a real cert number.
+4. `node scripts/qa-flow-test.mjs cleanup` (**mandatory** — deletes cert/progress/survey/enrollment/events + the account; `status` shows what exists). This flow writes to the **live** Supabase project.
+
+Do NOT auto-run on server launch — it costs a real cert number and live-DB writes each run; it's on-demand by design.
