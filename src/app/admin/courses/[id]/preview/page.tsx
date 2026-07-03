@@ -103,9 +103,9 @@ function PreviewChrome({ courseId }: { courseId: string }) {
       <div className="shrink-0 h-12 bg-[#1E3A5F] flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <Eye className="h-4 w-4 text-white/70" />
-          <span className="text-white text-sm font-semibold">Admin Preview</span>
+          <span className="text-white text-sm font-semibold">Preview · viewing as a student</span>
           <span className="text-white/40 text-sm hidden sm:inline">·</span>
-          <span className="text-white/60 text-xs hidden sm:inline">Student view</span>
+          <span className="text-white/60 text-xs hidden sm:inline">gates are live; progress isn&apos;t saved</span>
         </div>
 
         {/* Device toggle */}

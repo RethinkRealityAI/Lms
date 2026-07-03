@@ -465,7 +465,11 @@ export default async function StudentPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedCourses.map((course: any) => {
-              const moduleNum = course.display_order ?? null;
+              // Module number comes from the title ("Module 7 - ..."), not
+              // display_order — that field is 0-based and skips non-module
+              // entries (e.g. a "Test Course"), which showed "Module 0".
+              const moduleMatch = /^\s*module\s+(\d+)/i.exec(course.title ?? '');
+              const moduleNum = moduleMatch ? moduleMatch[1] : null;
               const isEnrolled = enrolledIds.has(course.id);
               const prog = courseProgress[course.id];
               const progressPercent =
