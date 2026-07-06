@@ -763,8 +763,13 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
         const lessonIds = lessonsData.map(l => l.id);
         if (lessonIds.length > 0) {
+          // Secondary tiebreaker on `created_at` — some imported lessons have blocks
+          // sharing the same order_index; without a deterministic secondary key, Postgres
+          // doesn't guarantee stable ordering for ties, which could scramble reading order.
+          // `created_at` (insertion order) approximates the authored/import order far
+          // better than `id` (a random UUID with no relation to sequence).
           const { data: blocksData } = await supabase.from('lesson_blocks').select('*')
-            .in('lesson_id', lessonIds).order('order_index', { ascending: true });
+            .in('lesson_id', lessonIds).order('order_index', { ascending: true }).order('created_at', { ascending: true });
 
           if (blocksData) {
             const grouped: Record<string, LessonBlock[]> = {};
@@ -1308,6 +1313,21 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     currentSlideRequiredBlockIds,
     completedInteractiveBlocks,
   ]);
+
+  // Persistent, ALWAYS-VISIBLE reason the primary footer action is disabled.
+  // NavButtonWithHint's tooltip is hover-only (group-hover:opacity-100) — invisible on
+  // touch devices, which is why students report the button being "greyed out with no
+  // provided reason." This banner never depends on hover/focus so it's visible on any
+  // device. Also covers the completion-slide "Next Lesson" button, which previously had
+  // no hint mechanism at all.
+  const footerBlockedHint = React.useMemo(() => {
+    if (isCompletionSlide) {
+      return nextLesson && !allQuizzesComplete
+        ? 'Answer all quiz questions correctly in this lesson before continuing to the next lesson.'
+        : null;
+    }
+    return nextBlocked ? nextBlockedHint : null;
+  }, [isCompletionSlide, nextLesson, allQuizzesComplete, nextBlocked, nextBlockedHint]);
 
   // Restore interactive completion when a block remounts with persisted progress (e.g. image gallery sessionStorage)
   useEffect(() => {
@@ -1862,6 +1882,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                     </div>
                   )}
                 </div>
+
+                {/* Always-visible reason the primary action below is disabled (not hover-only —
+                    works on touch devices). See footerBlockedHint above. */}
+                {footerBlockedHint && (
+                  <div className="shrink-0 px-4 py-2 bg-amber-50 border-t border-amber-100 text-center">
+                    <p className="text-xs font-semibold text-amber-800">{footerBlockedHint}</p>
+                  </div>
+                )}
 
                 {/* Navigation Footer — always visible */}
                 <div className="relative shrink-0 flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-white/80 backdrop-blur-sm">

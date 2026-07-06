@@ -108,11 +108,15 @@ export async function loadEditorCourseData(
   const blocksBySlide = new Map<string, BlockData[]>();
 
   if (slideIds.length > 0) {
+    // Secondary tiebreaker on `created_at` for deterministic order when blocks share
+    // order_index (some imported lessons have collisions) — approximates authored/import
+    // order far better than `id` (a random UUID unrelated to sequence).
     const { data: blocksRaw, error: blockErr } = await supabase
       .from('lesson_blocks')
-      .select('id, slide_id, block_type, data, order_index, is_visible')
+      .select('id, slide_id, block_type, data, order_index, is_visible, created_at')
       .in('slide_id', slideIds)
-      .order('order_index');
+      .order('order_index')
+      .order('created_at');
 
     if (blockErr) throw blockErr;
     for (const block of blocksRaw ?? []) {
