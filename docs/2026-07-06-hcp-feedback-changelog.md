@@ -136,6 +136,64 @@ Say the word and I can fix any or all of these the same way.
 
 ---
 
+## 11. Live validation pass (July 6, 2026) — major finding: draft/unpublished slides
+
+Signed in as a disposable real-student account (`scripts/qa-flow-test.mjs`, tenant `scago`) and walked the actual student app, not just the database, per the instruction to "challenge all assumptions."
+
+### Finding: 25 finished slides across M4/M5/M6 were never published
+
+Every slide has a `status` (`draft`/`published`); a real student only ever sees `published` slides. While validating M5 Lesson 4 in the browser, "Case 1-Leila" — the clinical vignette this session's dedup fix (§1.1) was applied to — **did not appear at all**. Tracing it back, the slide was still `status = 'draft'`, invisible to every real student regardless of its content being correct.
+
+Auditing every lesson touched this session turned up **27 draft-status slides** in Module 4 Lesson 2, Module 5 Lessons 4–5, and Module 6 Lessons 1–4 (Modules 7, 10, 11, 12, 13 had none). 25 of the 27 had real, finished content (1–14 blocks each) that simply had never gone live — most plausibly an oversight from initial authoring/import, not intentional. The other 2 ("Course Feedback Survey," "Share your thoughts") were genuinely empty placeholders, correctly left in draft.
+
+**Cross-checked against this session's own fixes:** of every block edited earlier in this session, only one ("A Message From Dr. Dua," M5 L5) sat on a draft slide — every other fix (M4/M6 quiz explanations, M5 Leila dedup, M6 typo/cold-pack/answer-leak/new-quiz, M7 wording, M12/M13 items) was already on a **published, live** slide, so those took effect immediately when made.
+
+**Action taken (with explicit sign-off):** published all 25 content-complete draft slides; left the 2 empty placeholders in draft. This is a real-student-visibility change, so it was not done unilaterally — confirmed with you first.
+
+**Why this likely matters beyond Case 1-Leila:** a slide being in draft doesn't just hide it — surrounding quizzes that *reference* that slide's content still render and still gate completion, so a student could face "What are your differential diagnoses for this patient?" having never seen the patient case it refers to. This is a plausible root cause for some of the "doesn't make sense" feedback, independent of anything else fixed this session.
+
+### Live-browser verification of code fixes (DOM-level, not screenshots — see note below)
+
+- **M5 L4 (Splenic Sequestration):** walked the full lesson slide-by-slide. "Case 1-Leila" now renders with its real content, appears exactly once, and is correctly positioned immediately before the differential-diagnosis quiz that references it. Confirms the §1.1 dedup/reorder fix.
+- **M5 L5 (Acute Chest Syndrome):** "A Message From Dr. Dua" now renders its actual speech-bubble text ("Acute Chest Syndrome is a medical emergency! Don't hesitate to reach out to Haematology…— Dr. Meghna Dua, Paediatric Haematologist") — not blank, and not leaking an answer. Confirms the §1.1/§2 speech-bubble block-type fix.
+- **§1.2 disabled-button hint banner:** triggered both gating paths for real and confirmed the persistent amber banner (not a hover tooltip) rendered correctly on each:
+  - Mid-lesson, an image-gallery slide with `requireAllClicked` unmet → *"Open every required image on this slide (1 block remaining)."* Clicking the required images cleared the block and the banner disappeared; Next then worked.
+  - End-of-lesson, quiz(zes) still unanswered before the completion slide → *"Answer all quiz questions correctly before completing this lesson."*
+- **M6 L1 (Defining Transitions):** walked the full lesson (now including its 9 newly-published draft slides) — content reads coherently end-to-end, Checking In → Reducing the Gaps → Barriers → Knowledge Check → Tips → Ethical/Cultural Considerations → 6 Core Elements → Knowledge Check → References, no blanks or duplicates, reached "Complete Lesson" normally.
+
+### Limitation: screenshots
+
+The preview browser's screenshot/render pipeline hit the previously-documented OneDrive-sync render stall partway through this pass (server logs stayed clean — 200s, normal compile/render times — confirming it's the renderer/compositor, not these changes). Screenshots could not be captured as a result. Verification instead used direct DOM/accessibility-tree inspection (exact rendered text, button disabled-state, banner presence) navigating the real student app as the real student account — a stronger functional check than a screenshot, just not a visual one. Given the recurring nature of this environment issue, a follow-up visual pass outside the OneDrive-synced folder (or once the render stall clears) is the only remaining gap.
+
+Modules 7, 10, 4 (remaining lessons), 11, 12, 13 were content-reviewed and DB-audited this session (see §10 and per-module sections above) but not walked live slide-by-slide in this pass once the environment instability set in; nothing in the earlier database-level re-audit (below) flagged concerns for them.
+
+### Follow-up: the draft/published gap was catalog-wide, not just M4–M6
+
+Challenging the assumption that the gap was confined to the modules named in the feedback, a full-catalog audit found it was much larger:
+
+| Course | Published | Draft-with-content (before) |
+|---|---|---|
+| Module 1 | 20 | 45 (68% of the module was invisible) |
+| Module 2 | 3 | 28 (90% of the module was invisible — its entire "Quality Statement #1–8" backbone) |
+| Module 3 | 12 | 49 (79% invisible) |
+| Module 4 (remaining lessons) | — | 28 |
+| Module 5 (remaining lessons) | — | 28 |
+| Module 8 | 38 | 2 |
+| Modules 6, 7, 9–13 | — | 0 (already fully published) |
+
+**Before publishing any of this, checked for a real risk:** many of the draft slides were titled `"… (copy)"` — literal duplicates left over from editor copy/paste, several of them duplicating an already-*published* slide (e.g. "About the RBC (copy)," "Priapism Defined (copy)," a duplicated Quiz in M3 L2). Blindly publishing these would have recreated the exact unanswerable-duplicate-quiz bug described in §1.1. **Excluded all 26 `"(copy)"`-titled slides from the publish** (left them in draft, listed below for your review) and published only the 154 legitimate, content-complete, non-duplicate slides.
+
+**Post-publish integrity check:** re-scanned every published gated quiz across the whole catalog for duplicate question text. Found one: "How many quality statements exist in the Quality Standard for Sickle Cell Disease?" appears on two different, legitimately separate Module 2 Lesson 1 slides (one embedded mid-lesson at order 10, one as a dedicated review "Quiz" slide at order 19 with an added explanation) — both independently answerable, so this does **not** reproduce the blocking bug, just asks the same question twice. Left as-is (Module 2 wasn't in the original feedback scope) — flagged here rather than fixed unilaterally.
+
+**Needs your decision — 26 leftover `"(copy)"` duplicate slides, still in draft:**
+- Module 1: 12 (incl. a whole duplicated "Welcome to Lesson 3!" / "Content Trigger Warning" / "Learning Objectives" mini-sequence appearing, wrongly labelled, inside Lessons 4 and 5)
+- Module 2: 3, Module 3: 4, Module 4: 3, Module 5: 4
+- These look like safe-to-delete editor artifacts (not the "original" — the non-`(copy)` sibling is what's live), but deleting content wasn't authorized, so they were left untouched in draft, where they're harmless.
+
+**Result:** across the whole SCAGO catalog, 25 + 154 = **179 previously-invisible, finished slides are now live for enrolled students** — most significantly, effectively all of Modules 1–3 are now visible for the first time.
+
+---
+
 ## Verification performed
 
 - `tsc --noEmit` — clean.
@@ -143,4 +201,4 @@ Say the word and I can fix any or all of these the same way.
 - Re-audited quiz health across all of SCAGO after all content edits — **0 broken gated quizzes** (unchanged from before this session).
 - Re-checked every slide touched this session for block-ordering collisions — **none found**.
 - Re-checked every block edited this session for null/empty data — **none found**.
-- **Not verified live in the browser** — the local dev environment hit a known, previously-documented stall (this repository lives inside a OneDrive-synced folder, which intermittently prevents the preview browser from hydrating; server-side logs show the routes compiling and responding normally, and other admin pages loaded fine in the same session, so this looks like the same environment issue rather than a defect in these changes). Recommend a quick manual spot-check of Module 5 Lesson 4 and Module 10 Lesson 2 Slide 13 (the new drag-and-drop exercise) the next time the dev server is stable.
+- **Live-browser validation (§11):** signed in as a real disposable student account and confirmed the dedup/reorder fix, the speech-bubble fix, and the disabled-button hint banner all work correctly against live data — including discovering and closing a 27-slide draft/published gap that database-only checks could not have surfaced. QA account and all its data were deleted after testing (`scripts/qa-flow-test.mjs cleanup`, confirmed clean).
