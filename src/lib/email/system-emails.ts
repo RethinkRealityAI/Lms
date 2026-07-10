@@ -68,6 +68,43 @@ export function certificateEmailVariables(input: {
   };
 }
 
+/** Standard variable set for the legacy claim-invite template. */
+export function legacyClaimInviteEmailVariables(input: {
+  recipientName: string | null;
+  recipientEmail: string;
+  loginUrl: string;
+  /** completed course titles → each becomes a backdated certificate on claim */
+  completedCourseTitles: string[];
+  cmeRequestWaiting: boolean;
+}): Record<string, string> {
+  const certCount = input.completedCourseTitles.length;
+  let completionSummaryBlock = '';
+  if (certCount > 0) {
+    const MAX_LISTED = 15;
+    const listed = input.completedCourseTitles.slice(0, MAX_LISTED);
+    const items = listed
+      .map((t) => `<li style="margin:0 0 6px;color:#334155;font-size:14px;line-height:20px;">${escapeHtml(t)}</li>`)
+      .join('\n');
+    const more = certCount > MAX_LISTED
+      ? `<p style="margin:8px 0 0;color:#64748B;font-size:13px;">…and ${certCount - MAX_LISTED} more.</p>`
+      : '';
+    const cmeNote = input.cmeRequestWaiting
+      ? `<p style="margin:12px 0 0;color:#B45309;font-size:13px;line-height:20px;">Your CME certificate request will also be restored and sent to our team for review.</p>`
+      : '';
+    completionSummaryBlock = `<div style="margin:16px 0;padding:16px 20px;background-color:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;">
+  <p style="margin:0 0 10px;color:#0F172A;font-size:14px;font-weight:bold;">${certCount} certificate${certCount === 1 ? '' : 's'} waiting for you:</p>
+  <ul style="margin:0;padding-left:20px;">${items}</ul>${more}${cmeNote}
+</div>`;
+  }
+  return {
+    recipientName: input.recipientName ? escapeHtml(input.recipientName) : '',
+    greeting: greetingForName(input.recipientName),
+    recipientEmail: escapeHtml(input.recipientEmail),
+    loginUrl: input.loginUrl,
+    completionSummaryBlock,
+  };
+}
+
 /** Standard variable set for the assignment template. */
 export function assignmentEmailVariables(input: {
   recipientName: string | null;

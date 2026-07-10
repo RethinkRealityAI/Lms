@@ -45,6 +45,7 @@ import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
 import { getUserCourseReviews, getSurveyResponsesByUser } from '@/lib/db/surveys';
 import { getUserCourseProgressDetailed, getEnrollableCourses } from '@/lib/db/users';
+import { getLegacyCompletionsForUser, type LegacyCourseCompletion } from '@/lib/db/legacy-users';
 import { getUserQuizPerformance } from '@/lib/db/quizzes';
 import { resetCourseProgress, enrollUsers, unenrollUser } from '@/lib/db/admin-actions';
 import { getUserEvents } from '@/lib/db/events';
@@ -149,18 +150,21 @@ function ProgressTab({ userId, institutionId }: { userId: string; institutionId:
   const [busyCourseId, setBusyCourseId] = useState<string | null>(null);
   const [enrolling, setEnrolling] = useState(false);
   const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
+  const [legacyRows, setLegacyRows] = useState<LegacyCourseCompletion[]>([]);
 
   const load = useCallback(async () => {
     const supabase = createClient();
     try {
-      const [progressRows, quizData, courses] = await Promise.all([
+      const [progressRows, quizData, courses, legacyHistory] = await Promise.all([
         getUserCourseProgressDetailed(supabase, userId, institutionId),
         getUserQuizPerformance(supabase, userId),
         getEnrollableCourses(supabase, userId, institutionId),
+        getLegacyCompletionsForUser(supabase, userId),
       ]);
       setRows(progressRows);
       setQuizPerf(quizData);
       setEnrollable(courses);
+      setLegacyRows(legacyHistory);
     } catch {
       toast.error('Failed to load course progress');
     } finally {
@@ -462,6 +466,41 @@ function ProgressTab({ userId, institutionId }: { userId: string; institutionId:
           </div>
         )}
       </div>
+
+      {/* ── EdApp import history (only for claimed legacy users) ─────────────── */}
+      {legacyRows.length > 0 && (
+        <div className="rounded-xl border border-slate-100 p-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">
+            EdApp import history
+          </p>
+          <p className="text-[11px] text-slate-400 font-medium mb-3">
+            As exported from the previous platform — the source of this user&apos;s backdated progress and certificates.
+          </p>
+          <div className="space-y-1.5">
+            {legacyRows.map((r, i) => {
+              const done = r.completed_at != null || (r.progress_percent ?? 0) >= 95;
+              const mins = r.time_spent_minutes ?? 0;
+              const timeLabel = mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
+              return (
+                <div key={i} className="flex items-center gap-2 text-xs">
+                  <span
+                    className={`h-2 w-2 rounded-full shrink-0 ${done ? 'bg-green-500' : 'bg-slate-300'}`}
+                  />
+                  <span className="font-semibold text-slate-700 truncate flex-1 min-w-0">
+                    {r.course_title || 'Untitled course'}
+                  </span>
+                  <span className="text-slate-400 font-medium shrink-0">
+                    {Math.round(r.progress_percent ?? 0)}%
+                    {r.lessons_total ? ` · ${r.lessons_completed ?? 0}/${r.lessons_total} lessons` : ''}
+                    {mins > 0 ? ` · ${timeLabel}` : ''}
+                    {r.completed_at ? ` · done ${shortDate(r.completed_at)}` : ''}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

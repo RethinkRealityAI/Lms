@@ -6,7 +6,9 @@ import {
   renderSystemEmail,
   certificateEmailVariables,
   assignmentEmailVariables,
+  legacyClaimInviteEmailVariables,
 } from './system-emails';
+import type { EmailSystemType } from '@/lib/db/email-templates';
 
 export const MAX_BULK_RECIPIENTS = 500;
 
@@ -37,7 +39,7 @@ export interface BulkSendResult {
 }
 
 function defaultSampleVariables(
-  type: 'certificate' | 'assignment',
+  type: EmailSystemType,
   institutionSlug: string,
   origin: string,
 ): Record<string, string> {
@@ -50,6 +52,15 @@ function defaultSampleVariables(
       certificateNumber: `${slug}-SAMPLE-00001`,
       verifyUrl: `${origin}/verify/${slug}-SAMPLE-00001`,
       certificatesUrl: `${origin}/${institutionSlug}/student/certificates`,
+    });
+  }
+  if (type === 'legacy_claim_invite') {
+    return legacyClaimInviteEmailVariables({
+      recipientName: 'Sample Learner',
+      recipientEmail: 'sample@example.com',
+      loginUrl: `${origin}/${institutionSlug}/login`,
+      completedCourseTitles: ['Sample Module 1', 'Sample Module 2'],
+      cmeRequestWaiting: false,
     });
   }
   return assignmentEmailVariables({

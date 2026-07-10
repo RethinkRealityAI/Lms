@@ -51,6 +51,7 @@ import { GroupsTab } from '@/components/admin/groups-tab';
 import { UserDetailDialog } from '@/components/admin/user-detail-dialog';
 import type { LegacyUser, UserInvitation } from '@/types';
 import type { ActiveUser } from '@/lib/db/users';
+import type { LegacyCompletionSummary } from '@/lib/db/legacy-users';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -62,6 +63,8 @@ interface Props {
   legacyUsers: LegacyUser[];
   pendingCmeByUser: Record<string, string>;
   unclaimedLegacyUsers: LegacyUser[];
+  /** keyed by legacy_user_id — what a claim would materialize (certs waiting etc.) */
+  legacyCompletionSummaries: Record<string, LegacyCompletionSummary>;
   institutionId: string;
 }
 
@@ -1363,11 +1366,13 @@ function LegacyUsersTab({
   institutionId,
   activeUsers,
   unclaimedCount,
+  completionSummaries,
 }: {
   users: LegacyUser[];
   institutionId: string;
   activeUsers: ActiveUser[];
   unclaimedCount: number;
+  completionSummaries: Record<string, LegacyCompletionSummary>;
 }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -1378,22 +1383,32 @@ function LegacyUsersTab({
   const [page, setPage] = useState(0);
   const [linkUser, setLinkUser] = useState<LegacyUser | null>(null);
   const [linkOpen, setLinkOpen] = useState(false);
+  const [withCertsOnly, setWithCertsOnly] = useState(false);
+  const [claimSendingId, setClaimSendingId] = useState<string | null>(null);
 
-  const filtered = users.filter((u) => {
-    const q = search.toLowerCase();
-    return (
-      !q ||
-      (u.full_name || '').toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q) ||
-      (u.country || '').toLowerCase().includes(q)
-    );
-  });
+  const certsWaiting = (u: LegacyUser) => completionSummaries[u.id]?.certificatesWaiting ?? 0;
+  /** unclaimed + has earned certificates → a claim-invite email is worth sending */
+  const canClaimInvite = (u: LegacyUser) => !u.linked_user_id && certsWaiting(u) > 0;
+  const claimEligibleCount = users.filter(canClaimInvite).length;
+
+  const filtered = users
+    .filter((u) => {
+      const q = search.toLowerCase();
+      return (
+        !q ||
+        (u.full_name || '').toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.country || '').toLowerCase().includes(q)
+      );
+    })
+    .filter((u) => !withCertsOnly || certsWaiting(u) > 0);
+  if (withCertsOnly) filtered.sort((a, b) => certsWaiting(b) - certsWaiting(a));
 
   const totalPages = Math.ceil(filtered.length / LEGACY_PAGE_SIZE);
   const paged = filtered.slice(page * LEGACY_PAGE_SIZE, (page + 1) * LEGACY_PAGE_SIZE);
 
-  // Reset to first page when search changes
-  useEffect(() => { setPage(0); }, [search]);
+  // Reset to first page when search/filter changes
+  useEffect(() => { setPage(0); }, [search, withCertsOnly]);
 
   const uninvitedCount = users.filter((u) => !u.invited_at && !u.linked_user_id).length;
 
@@ -1476,6 +1491,81 @@ function LegacyUsersTab({
     router.refresh();
   };
 
+  /** Claim-invite email ("your certificates are waiting") — no auth pre-creation,
+   *  the recipient signs up with the same email and auto-claims. */
+  const sendClaimInvites = async (legacyUserIds: string[]) => {
+    const res = await fetch('/api/admin/legacy/claim-invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ legacyUserIds }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Failed to send claim invites');
+    return data as { sent: number; failed: number; skipped: number };
+  };
+
+  const handleClaimInvite = async (user: LegacyUser) => {
+    setClaimSendingId(user.id);
+    try {
+      const r = await sendClaimInvites([user.id]);
+      if (r.sent > 0) toast.success(`Claim invite sent to ${user.email}`);
+      else toast.error(`Could not send to ${user.email}`);
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : `Failed to invite ${user.email}`);
+    } finally {
+      setClaimSendingId(null);
+    }
+  };
+
+  const handleBulkClaimInvite = async () => {
+    const targets = filtered.filter((u) => selected.has(u.id) && canClaimInvite(u)).map((u) => u.id);
+    if (targets.length === 0) {
+      toast.info('No unclaimed users with waiting certificates selected');
+      return;
+    }
+    setBulkSending(true);
+    try {
+      const r = await sendClaimInvites(targets);
+      toast.success(`Claim invites: ${r.sent} sent${r.failed ? `, ${r.failed} failed` : ''}${r.skipped ? `, ${r.skipped} skipped` : ''}`);
+      setSelected(new Set());
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send claim invites');
+    } finally {
+      setBulkSending(false);
+    }
+  };
+
+  const handleExportCsv = () => {
+    const header = ['Name', 'Email', 'Affiliation', 'Country', 'Avg Progress %', 'Certificates Waiting', 'CME Request Waiting', 'Last EdApp Completion', 'Status', 'Invited At'];
+    const rows = filtered.map((u) => {
+      const s = completionSummaries[u.id];
+      const status = u.linked_user_id ? 'Joined' : u.invited_at ? 'Invited' : 'Not Invited';
+      return [
+        u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim(),
+        u.email,
+        u.affiliation || '',
+        u.country || '',
+        String(Math.round(u.avg_progress ?? 0)),
+        String(s?.certificatesWaiting ?? 0),
+        s?.cmeRequestWaiting ? 'Yes' : 'No',
+        s?.lastCompletedAt ? s.lastCompletedAt.slice(0, 10) : '',
+        status,
+        u.invited_at ? u.invited_at.slice(0, 10) : '',
+      ];
+    });
+    const csv = [header, ...rows].map((r) => r.map((v) => csvEscape(v)).join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'legacy-users.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${rows.length} users`);
+  };
+
   return (
     <>
       <ImportCsvModal open={showImport} onOpenChange={setShowImport} />
@@ -1492,10 +1582,10 @@ function LegacyUsersTab({
             <div>
               <CardTitle className="text-lg font-black text-slate-900">Legacy Users (EdApp)</CardTitle>
               <CardDescription className="font-medium text-slate-500">
-                {users.length} imported user{users.length !== 1 ? 's' : ''}{uninvitedCount > 0 ? ` \u00B7 ${uninvitedCount} not yet invited` : ''}{unclaimedCount > 0 ? ` \u00B7 ${unclaimedCount} unclaimed` : ''}.
+                {users.length} imported user{users.length !== 1 ? 's' : ''}{uninvitedCount > 0 ? ` \u00B7 ${uninvitedCount} not yet invited` : ''}{unclaimedCount > 0 ? ` \u00B7 ${unclaimedCount} unclaimed` : ''}{claimEligibleCount > 0 ? ` \u00B7 ${claimEligibleCount} with unclaimed certificates` : ''}.
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
@@ -1505,6 +1595,24 @@ function LegacyUsersTab({
                   className="pl-9 w-64"
                 />
               </div>
+              {claimEligibleCount > 0 && (
+                <Button
+                  variant={withCertsOnly ? 'default' : 'outline'}
+                  onClick={() => setWithCertsOnly((v) => !v)}
+                  className={`gap-2 ${withCertsOnly ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''}`}
+                >
+                  <Award className="h-4 w-4" />
+                  Certificates waiting
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                onClick={handleExportCsv}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Export CSV
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowImport(true)}
@@ -1532,6 +1640,17 @@ function LegacyUsersTab({
                 <Mail className="h-3 w-3" />
                 {bulkSending ? 'Sending...' : `Invite Selected (${selected.size})`}
               </Button>
+              {filtered.some((u) => selected.has(u.id) && canClaimInvite(u)) && (
+                <Button
+                  size="sm"
+                  onClick={handleBulkClaimInvite}
+                  disabled={bulkSending}
+                  className="bg-amber-600 hover:bg-amber-700 text-white gap-1"
+                >
+                  <Award className="h-3 w-3" />
+                  {bulkSending ? 'Sending...' : `Send Claim Invites (${filtered.filter((u) => selected.has(u.id) && canClaimInvite(u)).length})`}
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="ghost"
@@ -1569,6 +1688,7 @@ function LegacyUsersTab({
                     <th className={`${TH} text-right`}>Progress</th>
                     <th className={`${TH} text-right`}>Score</th>
                     <th className={`${TH} text-right`}>Completions</th>
+                    <th className={`${TH} text-right`}>Certs Waiting</th>
                     <th className={`${TH} text-center`}>Status</th>
                     <th className={`${TH} text-right w-10`}></th>
                   </tr>
@@ -1614,6 +1734,16 @@ function LegacyUsersTab({
                         <td className="text-right py-3 px-4 font-bold text-slate-900">
                           {u.completions}
                         </td>
+                        <td className="text-right py-3 px-4">
+                          {certsWaiting(u) > 0 && !u.linked_user_id ? (
+                            <Badge className="font-bold bg-amber-50 text-amber-700 border-amber-200">
+                              <Award className="h-3 w-3 mr-1" />
+                              {certsWaiting(u)}{completionSummaries[u.id]?.cmeRequestWaiting ? ' +CME' : ''}
+                            </Badge>
+                          ) : (
+                            <span className="text-xs text-slate-400">—</span>
+                          )}
+                        </td>
                         <td className="text-center py-3 px-4">
                           {legacyStatusBadge(u)}
                         </td>
@@ -1630,7 +1760,19 @@ function LegacyUsersTab({
                                 Link to account…
                               </Button>
                             )}
-                            {canInvite && (
+                            {canClaimInvite(u) && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleClaimInvite(u)}
+                                disabled={claimSendingId === u.id}
+                                className="gap-1 text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
+                              >
+                                <Award className="h-3 w-3" />
+                                {claimSendingId === u.id ? 'Sending...' : 'Claim invite'}
+                              </Button>
+                            )}
+                            {canInvite && !canClaimInvite(u) && (
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -1717,6 +1859,7 @@ export function UserManagementDashboard({
   legacyUsers,
   pendingCmeByUser,
   unclaimedLegacyUsers,
+  legacyCompletionSummaries,
   institutionId,
 }: Props) {
   const [showInvite, setShowInvite] = useState(false);
@@ -1851,6 +1994,7 @@ export function UserManagementDashboard({
             institutionId={institutionId}
             activeUsers={activeUsers}
             unclaimedCount={unclaimedLegacyUsers.length}
+            completionSummaries={legacyCompletionSummaries}
           />
         </TabsContent>
 

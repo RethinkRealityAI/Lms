@@ -75,7 +75,13 @@ export interface EventCounts {
   activeUsers: number;
 }
 
-/** Aggregated event counts for the last N days (admin only). */
+/**
+ * Aggregated event counts for the last N days (admin only).
+ * Events tagged payload.source = 'legacy_import' are EXCLUDED: a legacy-profile
+ * claim replays years of EdApp history in one transaction (migration 047 tags the
+ * burst), and counting it would show phantom completion/enrollment spikes on the
+ * day a heavy user happens to claim.
+ */
 export async function getEventCounts(
   supabase: SupabaseClient,
   institutionId: string,
@@ -84,7 +90,7 @@ export async function getEventCounts(
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const { data, error } = await supabase
     .from('analytics_events')
-    .select('event_type, user_id, created_at')
+    .select('event_type, user_id, created_at, source:payload->>source')
     .eq('institution_id', institutionId)
     .gte('created_at', since)
     .limit(10000);
@@ -93,7 +99,8 @@ export async function getEventCounts(
   const byType: Record<string, number> = {};
   const signInUsersByDay: Record<string, Set<string>> = {};
   const activeUsers = new Set<string>();
-  for (const row of data ?? []) {
+  for (const row of (data ?? []) as Array<{ event_type: string; user_id: string | null; created_at: string; source: string | null }>) {
+    if (row.source === 'legacy_import') continue;
     byType[row.event_type] = (byType[row.event_type] ?? 0) + 1;
     if (row.user_id) activeUsers.add(row.user_id);
     if (row.event_type === 'sign_in' && row.user_id) {

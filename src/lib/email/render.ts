@@ -108,6 +108,19 @@ export const SYSTEM_EMAIL_MERGE_TAGS: Record<string, { label: string; tags: stri
       'buttonColor',
     ],
   },
+  legacy_claim_invite: {
+    label: 'Legacy claim invite',
+    tags: [
+      'recipientName',
+      'greeting',
+      'recipientEmail',
+      'completionSummaryBlock',
+      'loginUrl',
+      'institutionName',
+      'primaryColor',
+      'buttonColor',
+    ],
+  },
   custom: {
     label: 'Custom broadcast',
     tags: [
@@ -150,5 +163,21 @@ export const DEFAULT_SYSTEM_TEMPLATES = {
 </p>
 {{dueDateBlock}}
 <p style="margin:24px 0;"><a href="{{courseUrl}}" style="display:inline-block;padding:12px 28px;background-color:{{buttonColor}};color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;border-radius:8px;">Start learning</a></p>`,
+  },
+  // Fallback for the stored 'legacy_claim_invite' template (seeded in migration 047).
+  legacy_claim_invite: {
+    slug: 'legacy_claim_invite',
+    name: 'Legacy claim invite',
+    subject_template: 'Your {{institutionName}} certificates are waiting',
+    body_html_template: `<h1 style="margin:0 0 16px;color:#0F172A;font-size:22px;">Your learning history moved with us</h1>
+<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:24px;">{{greeting}}</p>
+<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:24px;">
+  You completed courses on our previous learning platform (EdApp). We've moved to a new home — and your history came with us.
+</p>
+{{completionSummaryBlock}}
+<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:24px;">
+  Create your account using this email address (<strong>{{recipientEmail}}</strong>) and your completed courses, progress, and certificates will be restored automatically — backdated to when you originally earned them.
+</p>
+<p style="margin:24px 0;"><a href="{{loginUrl}}" style="display:inline-block;padding:12px 28px;background-color:{{buttonColor}};color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;border-radius:8px;">Claim my account</a></p>`,
   },
 } as const;
