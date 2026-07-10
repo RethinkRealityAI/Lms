@@ -115,12 +115,18 @@ export async function getEventCounts(
 
 export interface UserAuthActivity {
   user_id: string;
+  /** auth.users.last_sign_in_at — only updates on a FRESH login, not on
+   *  persistent-session refreshes, so it goes stale for daily users. */
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
   auth_created_at: string | null;
+  /** The honest recency signal (migration 048): greatest of auth sign-in,
+   *  latest analytics event, and latest lesson completion. Immune to the
+   *  backdated progress rows a legacy claim creates. */
+  last_active_at: string | null;
 }
 
-/** Last sign-in per user from auth.users (admin RPC, institution-scoped). */
+/** Per-user auth + combined last-active timestamps (admin RPC, institution-scoped). */
 export async function getUserAuthActivity(
   supabase: SupabaseClient,
 ): Promise<Record<string, UserAuthActivity>> {

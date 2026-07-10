@@ -937,7 +937,7 @@ function ActiveUsersTab({
       toast.info('No users to export');
       return;
     }
-    const header = ['Name', 'Email', 'Role', 'Active', 'Enrolled Courses', 'Last Sign-in', 'Joined'];
+    const header = ['Name', 'Email', 'Role', 'Active', 'Enrolled Courses', 'Last Active', 'Last Sign-in', 'Joined'];
     const lines = filtered.map((u) =>
       [
         u.full_name ?? '',
@@ -945,6 +945,7 @@ function ActiveUsersTab({
         u.role,
         u.is_active === false ? 'no' : 'yes',
         String(u.enrollment_count),
+        authActivity[u.id]?.last_active_at ?? u.last_activity ?? '',
         authActivity[u.id]?.last_sign_in_at ?? '',
         u.created_at,
       ]
@@ -1016,7 +1017,6 @@ function ActiveUsersTab({
                   <th className={`${TH} text-center`}>Role</th>
                   <th className={`${TH} text-right`}>Courses</th>
                   <th className={`${TH} text-right`}>Last Active</th>
-                  <th className={`${TH} text-right`}>Last Sign-in</th>
                   <th className={`${TH} text-left`}>Groups</th>
                   <th className={`${TH} text-right`}>Joined</th>
                   <th className={`${TH} text-right w-10`}></th>
@@ -1053,13 +1053,10 @@ function ActiveUsersTab({
                     </td>
                     <td className="text-center py-3 px-4">{roleBadge(u.role)}</td>
                     <td className="text-right py-3 px-4 font-bold text-slate-900">{u.enrollment_count}</td>
+                    {/* Combined recency (RPC last_active_at = sign-in ∨ latest event ∨ latest
+                        lesson). Falls back to the progress-based value while the RPC loads. */}
                     <td className="text-right py-3 px-4 text-xs text-slate-500 font-medium">
-                      {relativeDate(u.last_activity)}
-                    </td>
-                    <td className="text-right py-3 px-4 text-xs text-slate-500 font-medium">
-                      {authActivity[u.id]?.last_sign_in_at
-                        ? relativeDate(authActivity[u.id].last_sign_in_at)
-                        : 'Never'}
+                      {relativeDate(authActivity[u.id]?.last_active_at ?? u.last_activity)}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
