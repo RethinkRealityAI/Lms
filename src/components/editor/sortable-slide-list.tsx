@@ -53,7 +53,7 @@ export function SortableSlideList({
     >
       {slides.length === 0 ? (
         <div
-          className={`ml-8 px-3 py-2 text-xs rounded-md border border-dashed transition-colors ${
+          className={`ml-5 px-3 py-2 text-xs rounded-md border border-dashed transition-colors ${
             showLessonHighlight
               ? 'border-blue-400 text-blue-600 bg-blue-50/80'
               : 'border-gray-200 text-gray-400'
@@ -102,7 +102,7 @@ export function SortableSlideList({
             e.stopPropagation();
             onAddSlide(lessonId);
           }}
-          className="ml-8 mt-0.5 w-[calc(100%-2rem)] flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-medium text-gray-400 border border-dashed border-gray-200 rounded-md hover:border-[#1E3A5F] hover:text-[#1E3A5F] hover:bg-[#1E3A5F]/5 transition-all"
+          className="ml-5 mt-0.5 w-[calc(100%-1.25rem)] flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-medium text-gray-400 border border-dashed border-gray-200 rounded-md hover:border-[#1E3A5F] hover:text-[#1E3A5F] hover:bg-[#1E3A5F]/5 transition-all"
           title="Add a new slide to this lesson"
         >
           <Plus className="w-3 h-3" /> Add slide

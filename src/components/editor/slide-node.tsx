@@ -158,20 +158,22 @@ export function SlideNode({ slide, lessonId, slideIndex, onMoveSlide, onDuplicat
           e.stopPropagation();
           setContextMenu({ x: e.clientX, y: e.clientY });
         }}
-        className={`flex items-center gap-1.5 px-2 py-1.5 ml-8 rounded cursor-pointer group transition-colors ${
+        className={`flex items-center gap-1.5 px-2 py-1.5 ml-5 rounded cursor-pointer group transition-colors ${
           isActive ? 'bg-[#DC2626] text-white' : 'hover:bg-gray-50 text-gray-600'
         }`}
       >
-        {/* Draft marker sits to the LEFT of the thumbnail as a compact dot: a full
-            "Draft" text pill (wherever placed) crowds the narrow panel and collapses
-            the slide title to nothing. The dot keeps the draft state visible (with a
-            tooltip) while the title stays readable. */}
+        {/* Compact "Draft" pill to the LEFT of the thumbnail — noticeable but out of
+            the title's space (a full-width pill after the title collapsed it in the
+            narrow panel). */}
         {slide.status !== 'published' && (
           <span
-            className={`shrink-0 w-1.5 h-1.5 rounded-full ${isActive ? 'bg-amber-200' : 'bg-amber-500'}`}
+            className={`shrink-0 text-[8px] font-bold uppercase tracking-wide px-1 py-px rounded ${
+              isActive ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700'
+            }`}
             title="Draft — not visible to students until the course is published"
-            aria-label="Draft slide"
-          />
+          >
+            Draft
+          </span>
         )}
         <SlideThumbnail slide={slide} />
         {isRenaming ? (
@@ -192,8 +194,8 @@ export function SlideNode({ slide, lessonId, slideIndex, onMoveSlide, onDuplicat
           />
         ) : (
           <>
-            <span className="text-[10px] font-semibold tabular-nums shrink-0 opacity-70">{slideIndex + 1}</span>
-            <span className="text-xs truncate flex-1 min-w-0" title={slideLabel}>
+            <span className="text-[10px] font-semibold tabular-nums shrink-0 opacity-70 self-start mt-0.5">{slideIndex + 1}</span>
+            <span className="text-[11px] leading-tight line-clamp-2 flex-1 min-w-0" title={slideLabel}>
               {displayTitle}
             </span>
           </>
