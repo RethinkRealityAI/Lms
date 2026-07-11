@@ -62,6 +62,9 @@ export interface EditorState {
   previewSlideIndex: number;
   isDirty: boolean;
   isSaving: boolean;
+  /** True only while undo/redo is restoring a snapshot — lets the editor's
+   *  edit→draft subscription ignore the restore (undo/redo is not an edit). */
+  isRestoring: boolean;
   lastSaveError: string | null;
   undoStack: EditorAction[];
   redoStack: EditorAction[];
@@ -220,6 +223,13 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
     blocks: snap.blocks,
     themeSettings: snap.themeSettings,
     isDirty: true,
+    // Tag this state change as an undo/redo restore so the editor's edit→draft
+    // subscription ignores it. Undo restores the slide's exact prior status
+    // (including `published`); without this, the subscription would see the
+    // reverted content as a fresh edit and re-flip the slide to draft, leaving
+    // published content unpublished even though it matches what students see.
+    // undo()/redo() clear this flag on the very next set().
+    isRestoring: true,
   };
 }
 
@@ -241,6 +251,7 @@ export function createEditorStore() {
     previewSlideIndex: 0,
     isDirty: false,
     isSaving: false,
+    isRestoring: false,
     lastSaveError: null,
     selectedBlockIds: new Set<string>(),
     undoStack: [],
@@ -781,6 +792,9 @@ export function createEditorStore() {
           { ...last, previousState: currentSnap, timestamp: Date.now() },
         ],
       });
+      // Clear the restore flag. This set touches neither `blocks` nor `slides`,
+      // so the edit→draft subscription short-circuits and cannot re-flip.
+      set({ isRestoring: false });
     },
 
     redo: () => {
@@ -797,6 +811,8 @@ export function createEditorStore() {
           { ...last, previousState: currentSnap, timestamp: Date.now() },
         ],
       });
+      // Clear the restore flag (see undo()).
+      set({ isRestoring: false });
     },
 
     loadCourse: (data) =>

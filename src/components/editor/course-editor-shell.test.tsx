@@ -244,6 +244,82 @@ describe('CourseEditorShell handleSave', () => {
     );
   });
 
+  it('flips a published slide to draft INSTANTLY on edit, before any save', async () => {
+    await act(async () => {
+      render(<CourseEditorShell courseId="course-1" />);
+    });
+    expect(capturedStore).toBeDefined();
+
+    // Mark the slide published (a status-only change must NOT be treated as an edit).
+    await act(async () => {
+      capturedStore.getState().updateSlide('lesson-1', 'slide-1', { status: 'published' });
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const afterPublish = capturedStore.getState().slides.get('lesson-1').find((s: any) => s.id === 'slide-1');
+    expect(afterPublish.status).toBe('published'); // not unpublished by its own status change
+
+    // Now edit a block — no save invoked.
+    await act(async () => {
+      capturedStore.getState().updateBlock('slide-1', 'block-1', { data: { html: '<p>Edited</p>' } });
+    });
+
+    // The subscription should have flipped it to draft immediately.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const afterEdit = capturedStore.getState().slides.get('lesson-1').find((s: any) => s.id === 'slide-1');
+    expect(afterEdit.status).toBe('draft');
+  });
+
+  it('does NOT unpublish a slide when only a block grid dimension changes (auto-fit/resize)', async () => {
+    await act(async () => {
+      render(<CourseEditorShell courseId="course-1" />);
+    });
+    await act(async () => {
+      capturedStore.getState().updateSlide('lesson-1', 'slide-1', { status: 'published' });
+    });
+
+    // Simulate auto-fit / resize: change ONLY a grid geometry field on the block.
+    await act(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const blk = capturedStore.getState().blocks.get('slide-1')[0] as any;
+      capturedStore.getState().updateBlock('slide-1', 'block-1', { data: { ...blk.data, gridH: 99 } });
+    });
+
+    // Layout-only change must NOT unpublish the slide.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const slide = capturedStore.getState().slides.get('lesson-1').find((s: any) => s.id === 'slide-1');
+    expect(slide.status).toBe('published');
+  });
+
+  it('re-publishes a slide when the edit that drafted it is UNDONE', async () => {
+    await act(async () => {
+      render(<CourseEditorShell courseId="course-1" />);
+    });
+    await act(async () => {
+      capturedStore.getState().updateSlide('lesson-1', 'slide-1', { status: 'published' });
+    });
+
+    // Edit the block → subscription flips the slide to draft.
+    await act(async () => {
+      capturedStore.getState().updateBlock('slide-1', 'block-1', { data: { html: '<p>Edited</p>' } });
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const drafted = capturedStore.getState().slides.get('lesson-1').find((s: any) => s.id === 'slide-1');
+    expect(drafted.status).toBe('draft');
+
+    // Undo the edit. It reverts the block content to the published version, so the
+    // slide must go back to published — the subscription must NOT re-draft the restore.
+    await act(async () => {
+      capturedStore.getState().undo();
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const restored = capturedStore.getState().slides.get('lesson-1').find((s: any) => s.id === 'slide-1');
+    expect(restored.status).toBe('published');
+    expect(capturedStore.getState().isRestoring).toBe(false); // flag cleared after restore
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const restoredBlock = capturedStore.getState().blocks.get('slide-1').find((b: any) => b.id === 'block-1');
+    expect(restoredBlock.data.html).not.toBe('<p>Edited</p>'); // content reverted too
+  });
+
   it('reverts a published slide to draft when its content is edited', async () => {
     await act(async () => {
       render(<CourseEditorShell courseId="course-1" />);

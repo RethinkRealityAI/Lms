@@ -61,25 +61,18 @@ async function runWithConcurrency(tasks: Array<() => Promise<void>>, limit: numb
 
 /** Per-entity serialized "last saved" fingerprints, so a save only writes what changed. */
 interface SaveBaseline {
-  slides: Map<string, string>;        // full fp (incl. status/order) — drives save-what-changed
-  slideContent: Map<string, string>;  // content-only fp (no status/order) — drives edit→draft
-  slideBlockIds: Map<string, string>; // sorted block-id list per slide — detects add/remove of blocks
+  slides: Map<string, string>;
   blocks: Map<string, string>;
   lessons: Map<string, string>;
   modules: Map<string, string>;
   theme: string;
 }
 
+// Full fingerprints — used for the SAVE decision (persist anything that changed,
+// including grid geometry so a resize/move IS saved).
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fpSlide = (s: any): string =>
   JSON.stringify([s.title ?? null, s.slide_type ?? null, s.order_index ?? 0, s.status ?? null, s.settings ?? null, s.canvas_data ?? null]);
-/** Content-only fingerprint — deliberately excludes `status` and `order_index` so
- *  publishing/reordering a slide is NOT treated as a content edit that unpublishes it. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fpSlideContent = (s: any): string =>
-  JSON.stringify([s.title ?? null, s.slide_type ?? null, s.settings ?? null, s.canvas_data ?? null]);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const slideBlockIdsFp = (blocks: any[]): string => blocks.map((b) => b.id).sort().join(',');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fpBlock = (b: any): string => JSON.stringify(b.data ?? null);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,39 +84,32 @@ const fpModule = (m: any): string => JSON.stringify([m.title ?? null, m.descript
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildSaveBaseline(state: any): SaveBaseline {
   const b: SaveBaseline = {
-    slides: new Map(), slideContent: new Map(), slideBlockIds: new Map(),
-    blocks: new Map(), lessons: new Map(), modules: new Map(),
+    slides: new Map(), blocks: new Map(), lessons: new Map(), modules: new Map(),
     theme: JSON.stringify(state.themeSettings ?? {}),
   };
-  for (const list of state.slides.values()) for (const s of list) {
-    b.slides.set(s.id, fpSlide(s));
-    b.slideContent.set(s.id, fpSlideContent(s));
-  }
-  for (const [slideId, list] of state.blocks) {
-    b.slideBlockIds.set(slideId, slideBlockIdsFp(list));
-    for (const bl of list) b.blocks.set(bl.id, fpBlock(bl));
-  }
+  for (const list of state.slides.values()) for (const s of list) b.slides.set(s.id, fpSlide(s));
+  for (const list of state.blocks.values()) for (const bl of list) b.blocks.set(bl.id, fpBlock(bl));
   for (const list of state.lessons.values()) for (const l of list) b.lessons.set(l.id, fpLesson(l));
   for (const m of state.modules) b.modules.set(m.id, fpModule(m));
   return b;
 }
 
-/** Slides whose CONTENT (own fields or blocks) changed vs baseline — the ones that,
- *  if currently published, should revert to draft (edit-then-republish workflow). */
+// ── Draft-detection (edit → unpublish) fingerprints ──────────────────────────
+// Grid geometry is LAYOUT, not content. slide-preview auto-fits a block's stored
+// gridH down to its measured content height on mount/measure — that must NOT be
+// read as an "edit" that unpublishes a slide on load. Manual resize/move is layout
+// too (it saves, but doesn't require a republish). So the draft decision excludes
+// the grid keys from block data, and excludes status/order from the slide.
+const GRID_LAYOUT_KEYS = new Set(['gridX', 'gridY', 'gridW', 'gridH']);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function contentChangedSlideIds(state: any, baseline: SaveBaseline): string[] {
-  const ids = new Set<string>();
-  for (const list of state.slides.values()) for (const s of list) {
-    if (baseline.slideContent.get(s.id) !== fpSlideContent(s)) ids.add(s.id);
-  }
-  for (const [slideId, list] of state.blocks) {
-    if (baseline.slideBlockIds.get(slideId) !== slideBlockIdsFp(list)) { ids.add(slideId); continue; }
-    for (const bl of list) {
-      if (baseline.blocks.get(bl.id) !== fpBlock(bl)) { ids.add(slideId); break; }
-    }
-  }
-  return [...ids];
-}
+const fpBlockContent = (b: any): string => {
+  const d = (b.data ?? {}) as Record<string, unknown>;
+  const keys = Object.keys(d).filter((k) => !GRID_LAYOUT_KEYS.has(k)).sort();
+  return JSON.stringify(keys.map((k) => [k, d[k]]));
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fpSlideContent = (s: any): string =>
+  JSON.stringify([s.title ?? null, s.slide_type ?? null, s.settings ?? null, s.canvas_data ?? null]);
 
 // Inner component — has access to editor store via context
 function EditorContent({ courseId }: { courseId: string }) {
@@ -195,11 +181,8 @@ function EditorContent({ courseId }: { courseId: string }) {
     try {
       do {
         pendingRef.current = false;
-        // Editing published content unpublishes the affected slide until the next
-        // Publish. Flip those slides to draft FIRST so the save persists the new
-        // status (no-op for slides that are already draft, e.g. a draft course).
-        const draftIds = contentChangedSlideIds(store.getState(), baseline);
-        if (draftIds.length) store.getState().markSlidesDraft(draftIds);
+        // Slides that were content-edited are already flipped to draft by the live
+        // subscription (see below), so their new status is just persisted here.
         const state = store.getState();
         const tasks: Array<() => Promise<void>> = [];
 
@@ -286,15 +269,6 @@ function EditorContent({ courseId }: { courseId: string }) {
       savingRef.current = false;
     }
 
-    // Refresh the content-diff baselines from the saved state so unchanged slides
-    // don't get re-flagged for draft on the next save (status/order changes here
-    // deliberately don't touch slideContent).
-    if (failCount === 0) {
-      const fresh = store.getState();
-      for (const list of fresh.slides.values()) for (const s of list) baseline.slideContent.set(s.id, fpSlideContent(s));
-      for (const [slideId, list] of fresh.blocks) baseline.slideBlockIds.set(slideId, slideBlockIdsFp(list));
-    }
-
     if (failCount > 0) {
       store.setState({ isSaving: false });
       toast.error('Some changes failed to save', {
@@ -311,12 +285,57 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   // Seed the save baseline from the freshly-loaded (== DB) state once the outer
   // component finishes loading the course into the store (courseId becomes set),
-  // so the first save only persists actual edits — never the whole course.
+  // so the first save only persists actual edits — never the whole course. Then
+  // subscribe for INSTANT edit→draft: the moment a published slide's content or
+  // blocks change, flip it to draft so the Draft badge appears immediately (the
+  // flipped status is then persisted by the next selective save). Subscribing
+  // AFTER load keeps the initial loadCourse from being mistaken for an edit;
+  // comparing CONTENT (not array identity), plus the isRestoring guard, keeps
+  // undo/redo/reorder-restore from spuriously unpublishing.
   const loadedCourseId = useEditorStore((s) => s.courseId);
   useEffect(() => {
-    if (loadedCourseId && store) {
-      baselineRef.current = buildSaveBaseline(store.getState());
-    }
+    if (!loadedCourseId || !store) return;
+    baselineRef.current = buildSaveBaseline(store.getState());
+
+    const unsub = store.subscribe((state, prev) => {
+      // Undo/redo restore the slide's exact prior status (including `published`);
+      // treating that content revert as an "edit" would wrongly re-flip it to
+      // draft. The store tags restores with isRestoring so we skip them here.
+      if (state.isRestoring) return;
+      // A published slide whose blocks changed → draft (markSlidesDraft no-ops if
+      // already draft). Only the changed slide's blocks are fingerprinted, so this
+      // stays cheap even on large courses.
+      if (state.blocks !== prev.blocks) {
+        for (const [slideId, arr] of state.blocks) {
+          const prevArr = prev.blocks.get(slideId);
+          if (arr === prevArr) continue;
+          // Compare CONTENT only (grid geometry excluded) so auto-fit-on-load and
+          // resize/move don't unpublish; add/remove/reorder/edit do.
+          if (
+            !prevArr ||
+            arr.length !== prevArr.length ||
+            arr.some((b, i) => fpBlockContent(b) !== fpBlockContent(prevArr[i]))
+          ) {
+            store.getState().markSlidesDraft([slideId]);
+          }
+        }
+      }
+      // A slide whose OWN content (title/settings/canvas) changed → draft. Excludes
+      // status/order via fpSlideContent, so publishing/reordering never unpublishes.
+      if (state.slides !== prev.slides) {
+        for (const [lessonId, arr] of state.slides) {
+          const prevArr = prev.slides.get(lessonId);
+          if (arr === prevArr) continue;
+          for (const sl of arr) {
+            const prevSl = prevArr?.find((x) => x.id === sl.id);
+            if (prevSl && prevSl !== sl && fpSlideContent(sl) !== fpSlideContent(prevSl)) {
+              store.getState().markSlidesDraft([sl.id]);
+            }
+          }
+        }
+      }
+    });
+    return unsub;
   }, [loadedCourseId, store]);
 
   // ── Publish (save-first) ───────────────────────────────────────────────────
