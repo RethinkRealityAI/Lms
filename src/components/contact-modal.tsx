@@ -25,10 +25,10 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message }),
+        body: JSON.stringify({ type: 'contact', name, email, subject, message }),
       });
 
       if (!res.ok) {

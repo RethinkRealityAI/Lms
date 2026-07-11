@@ -9,6 +9,7 @@ import { getProgramsWithProgress } from '@/lib/db/programs';
 import { getVisibleAnnouncements } from '@/lib/db/announcements';
 import { CmeRequestBanner } from '@/components/student/cme-request-banner';
 import { AnnouncementHost } from '@/components/announcements/announcement-host';
+import { SupportWidget } from '@/components/feedback/support-widget';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -635,6 +636,7 @@ export default async function StudentPage() {
           </div>
         )}
       </div>
+      <SupportWidget />
     </div>
   );
 }
