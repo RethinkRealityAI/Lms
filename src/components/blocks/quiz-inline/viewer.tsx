@@ -54,20 +54,27 @@ export default function QuizInlineViewer({ data, block, context, onComplete }: B
       // would be silently blocked from their certificate (progress shows 100%, but
       // issue_course_certificate refuses on the stale is_correct=false).
       const stickyCorrect = isCorrect || existing?.is_correct === true;
-      const { error } = await supabase
-        .from('quiz_block_responses')
-        .upsert({
-          institution_id: institutionId,
-          course_id: courseId,
-          lesson_id: lessonId,
-          block_id: blockId,
-          user_id: user.id,
-          response: { question_type: questionType, answer },
-          is_correct: stickyCorrect,
-          attempt_count: ((existing?.attempt_count as number | undefined) ?? 0) + 1,
-          answered_at: new Date().toISOString(),
-        }, { onConflict: 'block_id,user_id' });
-      if (error) throw error;
+      const row = {
+        institution_id: institutionId,
+        course_id: courseId,
+        lesson_id: lessonId,
+        block_id: blockId,
+        user_id: user.id,
+        response: { question_type: questionType, answer },
+        is_correct: stickyCorrect,
+        attempt_count: ((existing?.attempt_count as number | undefined) ?? 0) + 1,
+        answered_at: new Date().toISOString(),
+      };
+      // Retry a dropped write. The in-memory completion gate is satisfied the moment
+      // a quiz is answered correctly, but the certificate RPC trusts the DB is_correct —
+      // if this write silently fails, the learner would be "complete" yet uncertifiable.
+      // (The upsert is idempotent on block_id,user_id, so retries are safe.)
+      for (let attempt = 0; ; attempt++) {
+        const { error } = await supabase.from('quiz_block_responses').upsert(row, { onConflict: 'block_id,user_id' });
+        if (!error) break;
+        if (attempt >= 2) throw error;
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
     })().catch(console.error);
   }, [context, blockId, questionType]);
 
