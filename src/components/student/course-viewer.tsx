@@ -17,6 +17,7 @@ import type { Course, Lesson, LessonBlock, Progress as ProgressType } from '@/ty
 import type { BlockViewerContext } from '@/lib/content/block-registry';
 import { LessonBlockRenderer, createFallbackBlockFromLesson } from '@/components/lesson-block-renderer';
 import { sortBlocks } from '@/lib/content/lesson-blocks';
+import { buildLessonPages } from '@/lib/content/lesson-pages';
 import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
@@ -1085,30 +1086,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     const allBlocks = lessonBlocks[selectedLesson.id] ?? [];
     const slides = lessonSlidesMap[selectedLesson.id] ?? [];
 
-    let pageSlides: Array<{ kind: 'page'; slideId: string; slideTitle?: string | null; blocks: LessonBlock[]; settings?: SlideSettings; slideType?: string; canvasData?: Record<string, unknown> | null }> = [];
+    // buildLessonPages renders ONLY blocks on visible (published, non-deleted)
+    // slides — a quiz/block on a draft or soft-deleted slide never appears here,
+    // even when EVERY slide in the lesson is hidden (it returns no pages then,
+    // rather than dumping the lesson's whole block list). This visibility set is
+    // kept in lockstep with the issue_course_certificate RPC's gating_blocks
+    // clause, so the completion gate and server-side cert check always agree.
+    let pageSlides: Slide[] = buildLessonPages(slides, allBlocks);
 
-    if (slides.length > 0 && allBlocks.some(b => b.slide_id)) {
-      // Group blocks by slide_id, then order slides by their order_index
-      const blocksBySlide: Record<string, LessonBlock[]> = {};
-      for (const block of allBlocks) {
-        const sid = block.slide_id ?? '__no_slide__';
-        if (!blocksBySlide[sid]) blocksBySlide[sid] = [];
-        blocksBySlide[sid].push(block);
-      }
-      const sortedSlides = [...slides].sort((a, b) => a.order_index - b.order_index);
-      pageSlides = sortedSlides
-        .filter(s => s.slide_type === 'canvas' || (blocksBySlide[s.id]?.length ?? 0) > 0)
-        .map(s => ({ kind: 'page' as const, slideId: s.id, slideTitle: s.title, blocks: sortBlocks(blocksBySlide[s.id] ?? []), settings: s.settings, slideType: s.slide_type, canvasData: s.canvas_data }));
-
-      // Any blocks without a slide_id get appended as a final page
-      if (blocksBySlide['__no_slide__']?.length) {
-        pageSlides.push({ kind: 'page' as const, slideId: '', blocks: sortBlocks(blocksBySlide['__no_slide__']) });
-      }
-    } else if (allBlocks.length > 0) {
-      // No slide metadata — treat all blocks as a single page (legacy fallback)
-      pageSlides = [{ kind: 'page' as const, slideId: '', blocks: sortBlocks(allBlocks) }];
-    } else {
-      // Absolute fallback — synthesise a block from lesson content
+    // Only synthesize a page when the lesson genuinely has no blocks at all
+    // (legacy content_url lessons). A lesson whose blocks all live on hidden
+    // slides intentionally shows no content — title + completion only.
+    if (pageSlides.length === 0 && allBlocks.length === 0) {
       pageSlides = [{ kind: 'page' as const, slideId: '', blocks: [createFallbackBlockFromLesson(selectedLesson)] }];
     }
 

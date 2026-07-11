@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Save, Undo2, Redo2, Play, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone, Keyboard, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
@@ -42,8 +43,34 @@ export function EditorToolbar({ onSave, onPublish, devicePreview, onDevicePrevie
   const isPublishing = useEditorStore((s) => s.isPublishing);
   const publishError = useEditorStore((s) => s.publishError);
   const publishCourse = useEditorStore((s) => s.publishCourse);
+  const slides = useEditorStore((s) => s.slides);
+
+  // Count slides that are NOT live (draft). `courseStatus` is a coarse course-level
+  // flag; it stays 'published' even after individual slides are flipped to draft by
+  // the edit-then-republish workflow (or created draft-by-default). Once those drafts
+  // are SAVED, isDirty clears — so gating Publish on `isPublished && !isDirty` alone
+  // left draft slides permanently unpublishable (the button read "Published" and was
+  // disabled). Derive the real publishable state from the slides themselves.
+  const draftSlideCount = useMemo(() => {
+    let n = 0;
+    for (const list of slides.values()) {
+      for (const sl of list) if (sl.status !== 'published') n++;
+    }
+    return n;
+  }, [slides]);
 
   const isPublished = courseStatus === 'published';
+  const hasDraftSlides = draftSlideCount > 0;
+  // The only state with genuinely nothing to publish: course published, no unsaved
+  // edits, AND every live slide already published. Anything else → Publish is actionable.
+  const nothingToPublish = isPublished && !isDirty && !hasDraftSlides;
+  const publishTitle = nothingToPublish
+    ? 'Course is published'
+    : isDirty
+      ? 'Save & publish changes'
+      : hasDraftSlides
+        ? `${draftSlideCount} slide${draftSlideCount !== 1 ? 's' : ''} in draft — publish to make ${draftSlideCount !== 1 ? 'them' : 'it'} visible to students`
+        : 'Publish course';
 
   function handleUndo() {
     const action = lastUndoAction;
@@ -184,23 +211,31 @@ export function EditorToolbar({ onSave, onPublish, devicePreview, onDevicePrevie
           {isSaving ? 'Saving...' : 'Save'}
         </button>
         <button
-          onClick={isPublished && !isDirty ? undefined : (onPublish ?? publishCourse)}
-          disabled={(isPublished && !isDirty) || isPublishing}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-colors disabled:cursor-not-allowed ${
-            isPublished && !isDirty
+          onClick={nothingToPublish ? undefined : (onPublish ?? publishCourse)}
+          disabled={nothingToPublish || isPublishing}
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-colors disabled:cursor-not-allowed ${
+            nothingToPublish
               ? 'bg-green-600 opacity-80'
               : 'bg-green-600 hover:bg-green-700'
           }`}
-          title={isPublished && !isDirty ? 'Course is published' : isDirty ? 'Save & publish changes' : 'Publish course'}
+          title={publishTitle}
         >
           {isPublishing ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : isPublished && !isDirty ? (
+          ) : nothingToPublish ? (
             <CheckCircle className="w-3.5 h-3.5" />
           ) : (
             <Send className="w-3.5 h-3.5" />
           )}
-          {isPublished && !isDirty ? 'Published' : isPublishing ? 'Publishing...' : 'Publish'}
+          {nothingToPublish ? 'Published' : isPublishing ? 'Publishing...' : 'Publish'}
+          {!isPublishing && !nothingToPublish && hasDraftSlides && (
+            <span
+              className="min-w-[16px] h-[16px] flex items-center justify-center bg-white/25 text-white text-[10px] font-bold rounded-full px-1"
+              title={`${draftSlideCount} draft slide${draftSlideCount !== 1 ? 's' : ''}`}
+            >
+              {draftSlideCount}
+            </span>
+          )}
         </button>
         </div>
       </div>

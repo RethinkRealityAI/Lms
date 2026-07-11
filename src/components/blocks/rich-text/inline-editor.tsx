@@ -22,7 +22,11 @@ export function InlineRichTextEditor({ html, onChange, onBlur }: InlineRichTextE
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
+      // Disable StarterKit's bundled Link AND Underline — our own configured Link
+      // and the standalone Underline are registered below. Tiptap v3's StarterKit
+      // includes both, so leaving them on duplicated those extensions ("Duplicate
+      // extension names" console warning).
+      StarterKit.configure({ link: false, underline: false }),
       Image,
       Link.configure({ openOnClick: false }),
       Underline,

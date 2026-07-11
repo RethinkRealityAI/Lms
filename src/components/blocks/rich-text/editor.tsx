@@ -42,7 +42,11 @@ export function RichTextEditor({ data, onChange }: BlockEditorProps<RichTextData
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit.configure({ link: false }),
+      // Disable StarterKit's bundled Link AND Underline — we register our own
+      // configured versions below. Tiptap v3's StarterKit includes both, so leaving
+      // them on duplicated the 'underline' extension ("Duplicate extension names"
+      // console warning).
+      StarterKit.configure({ link: false, underline: false }),
       Image,
       Link.configure({
         openOnClick: false,

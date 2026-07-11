@@ -104,6 +104,72 @@ describe('EditorToolbar', () => {
     expect(spinner).toBeInTheDocument();
   });
 
+  // ── Regression: draft slides in a published course must stay publishable ──────
+  // A published course whose individual slides were flipped to draft (edit-then-
+  // republish, or draft-by-default new slides) and then SAVED lands in
+  // courseStatus='published' + isDirty=false. Gating Publish on those two alone
+  // left the button reading "Published" and disabled — trapping the drafts with no
+  // way to publish them. The button must derive its state from the slides too.
+  function loadWithDraftSlide(status: 'published' | 'draft' = 'published') {
+    const slides = new Map<string, unknown>([
+      ['l1', [
+        { id: 's1', title: 'Slide 1', lesson_id: 'l1', order_index: 0, slide_type: 'content', status: 'published' },
+        { id: 's2', title: 'Slide 2', lesson_id: 'l1', order_index: 1, slide_type: 'content', status: 'draft' },
+      ]],
+    ]);
+    store.getState().loadCourse({
+      courseId: 'c1',
+      courseStatus: status,
+      modules: [],
+      lessons: new Map(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      slides: slides as any,
+      blocks: new Map(),
+    });
+  }
+
+  it('keeps Publish actionable when the course is published but a slide is still draft', () => {
+    loadWithDraftSlide('published');
+    // Not dirty (loadCourse clears it), course published, yet one draft slide exists.
+    expect(store.getState().isDirty).toBe(false);
+    renderWithStore(store);
+    const btn = screen.getByRole('button', { name: /publish/i });
+    expect(btn).toBeEnabled();
+    // It is NOT the disabled "Published" done-state...
+    expect(screen.queryByText('Published')).not.toBeInTheDocument();
+    // ...and it surfaces the draft count so the admin knows why it's active.
+    expect(btn).toHaveTextContent('1');
+  });
+
+  it('publishes the drafts when clicked in the stuck state', () => {
+    loadWithDraftSlide('published');
+    const publishSpy = vi.spyOn(store.getState(), 'publishCourse');
+    renderWithStore(store);
+    fireEvent.click(screen.getByRole('button', { name: /publish/i }));
+    expect(publishSpy).toHaveBeenCalled();
+  });
+
+  it('shows the disabled Published state only when every slide is published', () => {
+    const slides = new Map<string, unknown>([
+      ['l1', [
+        { id: 's1', title: 'Slide 1', lesson_id: 'l1', order_index: 0, slide_type: 'content', status: 'published' },
+      ]],
+    ]);
+    store.getState().loadCourse({
+      courseId: 'c1',
+      courseStatus: 'published',
+      modules: [],
+      lessons: new Map(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      slides: slides as any,
+      blocks: new Map(),
+    });
+    renderWithStore(store);
+    const btn = screen.getByRole('button', { name: /published/i });
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveTextContent('Published');
+  });
+
   it('displays publishError text when publishError is set', () => {
     store.setState({ publishError: 'Failed to publish' });
     renderWithStore(store);
