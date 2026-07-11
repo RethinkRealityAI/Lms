@@ -101,21 +101,25 @@ export async function deleteSlide(
   // Soft-delete the slide AND its blocks together (Trash & Restore). Keeping their
   // delete state consistent is what prevents the "quizzes on deleted slides" orphan
   // class — restoreSlide clears both, and every block-read path filters
-  // `deleted_at IS NULL`. The `.is('deleted_at', null)` guard only trashes the
-  // currently-live blocks.
+  // `deleted_at IS NULL`.
+  //
+  // Order matters on partial failure: hide the SLIDE first, then trash its blocks.
+  // If the second update fails, the slide is already HIDDEN — self-healing (the
+  // content-health "stranded" check flags the leftover live blocks, and re-running
+  // delete fixes it) — rather than a VISIBLE slide whose content is already gone.
+  const { error: slideErr } = await supabase
+    .from('slides')
+    .update({ deleted_at: now })
+    .eq('id', slideId);
+  if (slideErr) throw slideErr;
+
+  // The `.is('deleted_at', null)` guard only trashes currently-live blocks.
   const { error: blocksErr } = await supabase
     .from('lesson_blocks')
     .update({ deleted_at: now })
     .eq('slide_id', slideId)
     .is('deleted_at', null);
   if (blocksErr) throw blocksErr;
-
-  const { error } = await supabase
-    .from('slides')
-    .update({ deleted_at: now })
-    .eq('id', slideId);
-
-  if (error) throw error;
 
   await logActivity(supabase, {
     institutionId,
@@ -136,17 +140,20 @@ export async function restoreSlide(
   institutionId: string,
   userId?: string,
 ): Promise<void> {
-  const { error } = await supabase
-    .from('slides')
-    .update({ deleted_at: null })
-    .eq('id', slideId);
-  if (error) throw error;
-
+  // Restore the BLOCKS first, then reveal the slide. If the second update fails,
+  // the slide stays hidden (consistent) instead of a visible slide whose blocks are
+  // still trashed — i.e. an empty slide for students.
   const { error: blocksErr } = await supabase
     .from('lesson_blocks')
     .update({ deleted_at: null })
     .eq('slide_id', slideId);
   if (blocksErr) throw blocksErr;
+
+  const { error } = await supabase
+    .from('slides')
+    .update({ deleted_at: null })
+    .eq('id', slideId);
+  if (error) throw error;
 
   await logActivity(supabase, {
     institutionId,
