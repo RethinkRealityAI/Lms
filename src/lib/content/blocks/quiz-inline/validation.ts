@@ -79,3 +79,44 @@ export function getQuizConfigError(data: Partial<QuizInlineData> | undefined | n
 export function isQuizSatisfiable(data: Partial<QuizInlineData> | undefined | null): boolean {
   return getQuizConfigError(data) === null;
 }
+
+export interface GateSlideLike {
+  kind: string;
+  blocks?: Array<{ id: string; block_type: string; data?: Record<string, unknown> | null }>;
+}
+
+/**
+ * Gating quiz block ids for a lesson, derived from the RENDERED slide set
+ * (course-viewer's currentSlides): only what the student can actually see may
+ * gate. required !== false (editor "Required to continue"), gated question
+ * type, and satisfiable config. See course-viewer.tsx currentLessonQuizBlockIds.
+ *
+ * Why the rendered slide set and NOT the raw block list: blocks survive slide
+ * deletion and RLS hides non-published slides, so a quiz on a soft-deleted or
+ * draft-hidden slide never renders — gating on it would permanently brick the
+ * lesson. Quizzes shown via the no-slide fallback pages (kind 'page' with a
+ * synthesized slideId) still count because they DO render.
+ *
+ * Gating criteria per block:
+ * - `block_type === 'quiz_inline'` with an interactive (gated) question type —
+ *   blocks with null/unknown types render a non-interactive placeholder and can
+ *   never fire onComplete, so including them would block lesson completion.
+ * - `data.required !== false` — only REQUIRED quizzes gate (editor toggle
+ *   "Required to continue"; default true preserves historical behavior;
+ *   explicit false = practice quiz).
+ * - satisfiable config — misconfigured quizzes (correct answer matches no
+ *   option, empty, etc.) can never fire onCorrect, so gating on them would
+ *   brick the lesson. The editor surfaces these to admins (getQuizConfigError).
+ */
+export function getGatingQuizBlockIds(slides: GateSlideLike[]): string[] {
+  return slides
+    .flatMap((s) => (s.kind === 'page' ? s.blocks ?? [] : []))
+    .filter(
+      (b) =>
+        b.block_type === 'quiz_inline' &&
+        b.data?.required !== false &&
+        isGatedQuizType(b.data?.question_type as string | null | undefined) &&
+        isQuizSatisfiable(b.data as Partial<QuizInlineData>),
+    )
+    .map((b) => b.id);
+}

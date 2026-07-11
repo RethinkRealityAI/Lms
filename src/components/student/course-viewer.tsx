@@ -25,8 +25,7 @@ import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { viewedImagesStorageKey } from '@/lib/content/blocks/image-gallery/display-utils';
-import { isGatedQuizType, isQuizSatisfiable } from '@/lib/content/blocks/quiz-inline/validation';
-import type { QuizInlineData } from '@/lib/content/blocks/quiz-inline/schema';
+import { getGatingQuizBlockIds } from '@/lib/content/blocks/quiz-inline/validation';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout, blockSurfaceFillCell } from '@/lib/content/gridConstants';
 import { asCourseTheme } from '@/lib/content/course-theme';
 import { asInstitutionTheme, resolveEffectiveTheme, type InstitutionTheme } from '@/lib/tenant/institution-theme';
@@ -1283,32 +1282,19 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     onAutoAdvance: () => goNextRef.current(),
   }), [courseId, selectedLesson?.id, course?.institution_id, previewMode, effectiveTheme]);
 
-  // Only gate on quiz blocks with an interactive question type.
-  // Blocks with null/unknown types render a non-interactive placeholder and can never
-  // fire onComplete, so including them would permanently block lesson completion.
-  // We ALSO exclude misconfigured quizzes (correct answer matches no option, empty, etc.):
-  // such a quiz can never fire onCorrect, so gating on it would brick the lesson. The
-  // editor surfaces these to admins so the content can be fixed (see quiz-inline/validation).
+  // Gating quiz ids come from getGatingQuizBlockIds (quiz-inline/validation):
+  // only quiz blocks with an interactive question type, required !== false, and a
+  // satisfiable config gate — misconfigured or non-interactive quizzes can never
+  // fire onCorrect/onComplete, so gating on them would permanently brick the lesson.
   // Sourced from currentSlides (not the raw block list) so the gate covers EXACTLY the
   // blocks the student can see: a quiz on a soft-deleted or draft-hidden slide never
   // renders (blocks survive slide deletion; RLS hides non-published slides), so gating
   // on it would brick the lesson — while quizzes shown via the no-slide fallback pages
   // still count.
-  // Only REQUIRED quizzes gate (data.required, editor toggle "Required to continue";
-  // default true preserves historical behavior; explicit false = practice quiz).
-  const isGatingQuizBlock = React.useCallback((b: LessonBlock) =>
-    b.block_type === 'quiz_inline' &&
-    b.data?.required !== false &&
-    isGatedQuizType(b.data?.question_type as string) &&
-    isQuizSatisfiable(b.data as Partial<QuizInlineData>), []);
-
   const currentLessonQuizBlockIds = React.useMemo(() => {
     if (!selectedLesson) return [];
-    return currentSlides
-      .flatMap(s => (s.kind === 'page' ? s.blocks : []))
-      .filter(isGatingQuizBlock)
-      .map(b => b.id);
-  }, [selectedLesson, currentSlides, isGatingQuizBlock]);
+    return getGatingQuizBlockIds(currentSlides);
+  }, [selectedLesson, currentSlides]);
 
   // A lesson the student already completed never re-gates: quiz-correct state lives
   // in memory + quiz_block_responses, but the authoritative fact is the progress row —
@@ -1336,9 +1322,9 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // they can't complete the module. Bypassed for already-completed lessons.
   const currentSlideQuizBlockIds = React.useMemo(() => {
     const slide = currentSlides[currentSlide];
-    if (!slide || slide.kind !== 'page') return [];
-    return slide.blocks.filter(isGatingQuizBlock).map(b => b.id);
-  }, [currentSlides, currentSlide, isGatingQuizBlock]);
+    if (!slide) return [];
+    return getGatingQuizBlockIds([slide]);
+  }, [currentSlides, currentSlide]);
 
   const currentSlideQuizzesComplete = lessonAlreadyCompleted ||
     currentSlideQuizBlockIds.length === 0 ||

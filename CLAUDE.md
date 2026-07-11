@@ -262,6 +262,7 @@ Legacy users: 2,868 imported from EdApp CSV.
 | 051 | course_stats_view_accuracy | `v_course_stats` (admin analytics course table): per-course `quiz_attempt_count`/`avg_quiz_score` from `quiz_block_responses` instead of the empty `quiz_attempts` table (were permanently 0/null; old subquery also had a latent per-lesson row-multiplication bug); `certificate_count` excludes revoked. Authoritative view snapshots now in `supabase/snapshots/analytics-views.sql` (they were never in version control — a rebuild from repo would have resurrected the always-zero bugs) |
 | 052 | reset_clears_quiz_responses | `admin_reset_course_progress()` v2 also deletes the user's `quiz_block_responses` for the course (viewer rehydrates quiz gates from persisted answers, so without this a reset learner's quizzes came back pre-passed — reset = redo the quizzes). `course_feedback_responses` intentionally retained (re-completion re-issues the cert without re-taking the survey). Returns `quiz_responses_cleared` |
 | 053 | admin_certificate_write_policies | Institution-scoped admin INSERT/UPDATE RLS policies on `certificates` (platform_admin exempt). The table had NO write policies: admin dashboard revoke/restore (client UPDATE) silently matched 0 rows and showed phantom success while the cert stayed active; manual award (INSERT) hard-errored. No DELETE policy on purpose — revocation is a status change (037). Verified live: admin revoke/restore now writes; students still can't touch their own certs |
+| 054 | server_side_quiz_verification | `issue_course_certificate` v3 verifies REQUIRED quiz answers server-side (quiz/survey gates were browser-only — an API-savvy student could self-issue). `quiz_block_is_satisfiable(jsonb)` mirrors `quiz-inline/validation.ts` exactly (fail-open: misconfigured quizzes never block); visibility mirrors the viewer (published slides + null-slide fallback + zero-visible-slides fallback page); `required: false` blocks exempt. Grandfather clause: quizzes in lessons completed before 2026-07-11 02:47 UTC exempt (answers weren't persisted before migration 039) — verified zero existing users blocked; live-tested refusal-then-issue. `qa_db_invariants()` RPC (admin/service-role) powers `scripts/audit-db-invariants.mjs` — 14 live-schema regression checks (run after any migration) |
 
 ### RLS Pattern — CRITICAL
 
@@ -709,6 +710,10 @@ Survey viewer receives course/lesson/block context from `CourseViewer` via `Bloc
 21. **Institution branding lives in `src/lib/tenant/branding.ts`** — Logos, colors, taglines, program descriptions. Title slides, nav bars, login pages, and landing pages all read from this config. Add new institutions here.
 22. **Slide templates use unique `id`** — Multiple templates can share the same `slide_type`; use `getTemplateById()` when targeting a specific template (e.g. `learning_objectives`).
 23. **Categorize quiz options** — Items belong to exactly one category (`assignItemToCategory`); viewer ignores orphan options not assigned to any category.
+24. **The student completion gate derives ONLY from the RENDERED slide set** (`currentSlides` / `getGatingQuizBlockIds` in `course-viewer.tsx`) — never from raw `lesson_blocks`. Quiz blocks on deleted/draft slides once counted toward the gate and bricked lessons for real users.
+25. **Every client-side INSERT/UPDATE must have a verified RLS policy** — a missing UPDATE policy fails SILENTLY (0 rows updated, no error). After adding a client write path, prove the policy exists (the admin certificate revoke showed phantom success for exactly this reason — migration 053).
+26. **Certificates are never issued by client INSERT for students** — only via `issue_course_certificate`, `materialize_legacy_completions()`, or the admin award path (under the migration-053 policies). Revocation is a status change, never DELETE.
+27. **After touching sensitive flows** (quiz gating, completion, certificate lifecycle, admin reset, survey gating, enrollment/visibility, analytics counters, migrations/RLS), run the `qa-lms` agent protocol — `npx tsc --noEmit` + `npx vitest run` + `node scripts/audit-cert-attainability.mjs` (+ `audit-db-invariants.mjs` if present) — before pushing. See `docs/qa-playbook.md`.
 
 ---
 
@@ -913,3 +918,5 @@ End-to-end test of the student **completion → required survey → certificate*
 4. `node scripts/qa-flow-test.mjs cleanup` (**mandatory** — deletes cert/progress/survey/enrollment/events + the account; `status` shows what exists). This flow writes to the **live** Supabase project.
 
 Do NOT auto-run on server launch — it costs a real cert number and live-DB writes each run; it's on-demand by design.
+
+Full layered QA protocol (when to run which layer, sensitive-flow inventory, past incidents): `docs/qa-playbook.md` + the `qa-lms` agent (`.claude/agents/qa-lms.md`); read-only audits: `scripts/audit-cert-attainability.mjs` and `scripts/audit-db-invariants.mjs` (if present).
