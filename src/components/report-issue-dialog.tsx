@@ -36,6 +36,8 @@ export interface ReportIssueContext {
   courseTitle?: string;
   lessonId?: string;
   lessonTitle?: string;
+  /** DB slide id — lets the admin card deep-link the editor to this exact slide. */
+  slideId?: string;
   /** 0-based slide index; displayed 1-based. */
   slideIndex?: number;
 }
@@ -99,6 +101,7 @@ export function ReportIssueDialog({ className, ...context }: ReportIssueDialogPr
         course_title: context.courseTitle,
         lesson_id: context.lessonId,
         lesson_title: context.lessonTitle,
+        slide_id: context.slideId,
         slide_index: typeof context.slideIndex === 'number' ? context.slideIndex : undefined,
         user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
       };

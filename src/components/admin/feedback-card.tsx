@@ -67,11 +67,11 @@ export function FeedbackCard({ item, onStatusChange, onDelete }: {
 
   // Deep links: course → admin course page; lesson → editor at that lesson/slide.
   const coursePath = ctx.course_id ? withInstitutionPath(`/admin/courses/${ctx.course_id}`, pathname) : null;
+  // The editor resumes on `?slide=<slide id>` (falls back to `?lesson=`), so pass the
+  // real slide_id — slide_index is a position, not an id, and would be ignored.
   const editorPath = ctx.course_id && ctx.lesson_id
     ? withInstitutionPath(
-        `/admin/courses/${ctx.course_id}/editor?lesson=${ctx.lesson_id}${
-          typeof ctx.slide_index === 'number' ? `&slide=${ctx.slide_index}` : ''
-        }`,
+        `/admin/courses/${ctx.course_id}/editor?lesson=${ctx.lesson_id}${ctx.slide_id ? `&slide=${ctx.slide_id}` : ''}`,
         pathname,
       )
     : null;

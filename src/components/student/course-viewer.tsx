@@ -1906,6 +1906,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         courseTitle={course?.title}
                         lessonId={selectedLesson.id}
                         lessonTitle={selectedLesson.title}
+                        slideId={currentPageSlideId ?? undefined}
                         slideIndex={currentSlide}
                       />
                     </div>

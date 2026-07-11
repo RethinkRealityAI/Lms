@@ -108,6 +108,9 @@ export interface FeedbackContext {
   module_title?: string;
   lesson_id?: string;
   lesson_title?: string;
+  /** DB slide id — used for the admin "open editor at this slide" deep link. */
+  slide_id?: string;
+  /** 0-based slide position — shown as "Slide N" (display only). */
   slide_index?: number;
   user_agent?: string;
 }

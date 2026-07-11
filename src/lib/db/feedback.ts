@@ -43,29 +43,20 @@ export async function listFeedback(
   return (data ?? []) as FeedbackSubmission[];
 }
 
-/** Count of unresolved (status='new') items per type, for hub filter badges. */
-export async function getFeedbackCounts(
-  supabase: SupabaseClient,
-  institutionId: string,
-): Promise<Record<string, number>> {
-  const { data, error } = await supabase
-    .from('feedback_submissions')
-    .select('type')
-    .eq('institution_id', institutionId)
-    .eq('status', 'new');
-  if (error) throw error;
-  const counts: Record<string, number> = {};
-  for (const row of (data ?? []) as { type: string }[]) counts[row.type] = (counts[row.type] ?? 0) + 1;
-  return counts;
-}
-
 export async function updateFeedbackStatus(
   supabase: SupabaseClient,
   id: string,
   status: FeedbackStatus,
 ): Promise<void> {
-  const { error } = await supabase.from('feedback_submissions').update({ status }).eq('id', id);
+  // .select('id') so an RLS-filtered 0-row update surfaces as an error instead of a
+  // silent no-op the optimistic UI would report as success (Engineering Rule 25).
+  const { data, error } = await supabase
+    .from('feedback_submissions')
+    .update({ status })
+    .eq('id', id)
+    .select('id');
   if (error) throw error;
+  if (!data || data.length === 0) throw new Error('Status update affected 0 rows (permission denied or not found)');
 }
 
 export async function deleteFeedback(supabase: SupabaseClient, id: string): Promise<void> {
