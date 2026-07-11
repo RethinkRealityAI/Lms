@@ -505,7 +505,6 @@ export default async function StudentPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedCourses.map((course: any) => {
-              const moduleNum = course.display_order ?? null;
               const isEnrolled = enrolledIds.has(course.id);
               const prog = courseProgress[course.id];
               const progressPercent =
@@ -534,15 +533,6 @@ export default async function StudentPage() {
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-
-                      {/* Module badge */}
-                      {moduleNum != null && (
-                        <div className="absolute top-2.5 left-2.5">
-                          <Badge className="bg-white/90 backdrop-blur text-[#0F172A] border-none font-bold text-[11px] px-2 py-0.5 shadow-sm">
-                            Module {moduleNum}
-                          </Badge>
-                        </div>
-                      )}
 
                       {/* Complete / lock / due badge */}
                       {isComplete ? (
