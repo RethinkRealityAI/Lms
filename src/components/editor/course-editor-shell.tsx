@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback, useContext, useRef } from 'react';
 import { toast } from 'sonner';
 import { createEditorStore } from '@/lib/stores/editor-store';
 import { EditorStoreContext, useEditorStore } from './editor-store-context';
@@ -37,6 +37,59 @@ import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
 interface CourseEditorShellProps {
   courseId: string;
+}
+
+// ── Save helpers ─────────────────────────────────────────────────────────────
+// The editor previously saved EVERY slide/block/lesson/module of the whole course
+// on every save via one Promise.all — hundreds of simultaneous requests on a large
+// module, which exhausts the browser socket pool (net::ERR_INSUFFICIENT_RESOURCES),
+// so the saves fail, isDirty stays true, and slides can never leave draft. These
+// helpers cap concurrency AND only persist entities whose content actually changed.
+
+const SAVE_CONCURRENCY = 6;
+
+/** Run async tasks with at most `limit` in flight at once. */
+async function runWithConcurrency(tasks: Array<() => Promise<void>>, limit: number): Promise<void> {
+  let cursor = 0;
+  const worker = async (): Promise<void> => {
+    while (cursor < tasks.length) {
+      await tasks[cursor++]();
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) || 1 }, worker));
+}
+
+/** Per-entity serialized "last saved" fingerprints, so a save only writes what changed. */
+interface SaveBaseline {
+  slides: Map<string, string>;
+  blocks: Map<string, string>;
+  lessons: Map<string, string>;
+  modules: Map<string, string>;
+  theme: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fpSlide = (s: any): string =>
+  JSON.stringify([s.title ?? null, s.slide_type ?? null, s.order_index ?? 0, s.status ?? null, s.settings ?? null, s.canvas_data ?? null]);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fpBlock = (b: any): string => JSON.stringify(b.data ?? null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fpLesson = (l: any): string =>
+  JSON.stringify([l.title ?? null, l.description ?? null, l.title_image_url ?? null, l.title_slide_settings ?? null]);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fpModule = (m: any): string => JSON.stringify([m.title ?? null, m.description ?? null]);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildSaveBaseline(state: any): SaveBaseline {
+  const b: SaveBaseline = {
+    slides: new Map(), blocks: new Map(), lessons: new Map(), modules: new Map(),
+    theme: JSON.stringify(state.themeSettings ?? {}),
+  };
+  for (const list of state.slides.values()) for (const s of list) b.slides.set(s.id, fpSlide(s));
+  for (const list of state.blocks.values()) for (const bl of list) b.blocks.set(bl.id, fpBlock(bl));
+  for (const list of state.lessons.values()) for (const l of list) b.lessons.set(l.id, fpLesson(l));
+  for (const m of state.modules) b.modules.set(m.id, fpModule(m));
+  return b;
 }
 
 // Inner component — has access to editor store via context
@@ -83,106 +136,141 @@ function EditorContent({ courseId }: { courseId: string }) {
 
   // ── Persistence: save ──────────────────────────────────────────────────────
 
+  // Fingerprints of what's already persisted (seeded from the DB-loaded state on load),
+  // so a save only writes entities that actually changed. savingRef prevents overlapping
+  // saves from stacking; pendingRef captures edits that arrive mid-save so they still save.
+  const baselineRef = useRef<SaveBaseline | null>(null);
+  const savingRef = useRef(false);
+  const pendingRef = useRef(false);
+
   const handleSave = useCallback(async () => {
     if (!institutionId || !store) return;
+    // Never run two saves at once — a second trigger just asks the in-flight save to
+    // loop once more when it finishes (so it can't stack hundreds of parallel requests).
+    if (savingRef.current) { pendingRef.current = true; return; }
+    savingRef.current = true;
+    store.setState({ isSaving: true });
+
     const supabase = createClient();
-    const state = store.getState();
+    // Safety net: if the load-time seed didn't run, seed now (worst case, a single
+    // full save this once — still concurrency-capped so it can't flood).
+    if (!baselineRef.current) baselineRef.current = buildSaveBaseline(store.getState());
+    const baseline = baselineRef.current;
+
     let failCount = 0;
 
-    const tracked = <T,>(promise: Promise<T>, label: string): Promise<void> =>
-      promise.then(() => undefined).catch((err) => {
-        failCount++;
-        console.error(`Failed to save ${label}:`, err);
-      });
+    try {
+      do {
+        pendingRef.current = false;
+        const state = store.getState();
+        const tasks: Array<() => Promise<void>> = [];
 
-    const slidePromises: Promise<void>[] = [];
-    for (const slideList of state.slides.values()) {
-      for (const slide of slideList) {
-        slidePromises.push(
-          tracked(
-            dbUpdateSlide(supabase, slide.id, {
-              title: slide.title,
-              slide_type: slide.slide_type,
-              order_index: slide.order_index,
-              status: slide.status,
-              settings: slide.settings,
-              canvas_data: slide.canvas_data,
-            }, institutionId),
-            `slide ${slide.id}`,
-          ),
-        );
-      }
-    }
-
-    const blockPromises: Promise<void>[] = [];
-    for (const blockList of state.blocks.values()) {
-      for (const block of blockList) {
-        blockPromises.push(
-          tracked(
-            dbUpdateBlock(supabase, block.id, { data: block.data }, institutionId),
-            `block ${block.id}`,
-          ),
-        );
-      }
-    }
-
-    const modulePromises: Promise<void>[] = state.modules.map((mod) =>
-      tracked(
-        dbUpdateModule(supabase, mod.id, { title: mod.title, description: mod.description }),
-        `module ${mod.id}`,
-      ),
-    );
-
-    const lessonPromises: Promise<void>[] = [];
-    for (const lessonList of state.lessons.values()) {
-      for (const lesson of lessonList) {
-        lessonPromises.push(
-          tracked(
-            dbUpdateLesson(supabase, lesson.id, {
-              title: lesson.title,
-              description: lesson.description,
-              title_image_url: lesson.title_image_url ?? null,
-              title_slide_settings: (lesson.title_slide_settings ?? {}) as Record<string, unknown>,
-            }),
-            `lesson ${lesson.id}`,
-          ),
-        );
-      }
-    }
-
-    // Persist course-level theme settings (global course settings modal).
-    // .select('id') so an RLS-filtered 0-row update counts as a failure
-    // (keeps isDirty → auto-save retries + error toast) instead of a silent no-op.
-    const courseThemePromise = tracked(
-      (async () => {
-        const { data, error } = await supabase
-          .from('courses')
-          .update({ theme_settings: state.themeSettings ?? {} })
-          .eq('id', state.courseId ?? courseId)
-          .eq('institution_id', institutionId)
-          .select('id');
-        if (error) throw error;
-        if (!data || data.length === 0) {
-          throw new Error('Course theme update affected 0 rows (blocked by RLS or course not found)');
+        for (const slideList of state.slides.values()) {
+          for (const slide of slideList) {
+            const fp = fpSlide(slide);
+            if (baseline.slides.get(slide.id) === fp) continue; // unchanged
+            tasks.push(async () => {
+              try {
+                await dbUpdateSlide(supabase, slide.id, {
+                  title: slide.title, slide_type: slide.slide_type, order_index: slide.order_index,
+                  status: slide.status, settings: slide.settings, canvas_data: slide.canvas_data,
+                }, institutionId);
+                baseline.slides.set(slide.id, fp);
+              } catch (err) { failCount++; console.error(`Failed to save slide ${slide.id}:`, err); }
+            });
+          }
         }
-      })(),
-      'course theme',
-    );
 
-    await Promise.all([...slidePromises, ...blockPromises, ...modulePromises, ...lessonPromises, courseThemePromise]);
+        for (const blockList of state.blocks.values()) {
+          for (const block of blockList) {
+            const fp = fpBlock(block);
+            if (baseline.blocks.get(block.id) === fp) continue;
+            tasks.push(async () => {
+              try {
+                await dbUpdateBlock(supabase, block.id, { data: block.data }, institutionId);
+                baseline.blocks.set(block.id, fp);
+              } catch (err) { failCount++; console.error(`Failed to save block ${block.id}:`, err); }
+            });
+          }
+        }
+
+        for (const lessonList of state.lessons.values()) {
+          for (const lesson of lessonList) {
+            const fp = fpLesson(lesson);
+            if (baseline.lessons.get(lesson.id) === fp) continue;
+            tasks.push(async () => {
+              try {
+                await dbUpdateLesson(supabase, lesson.id, {
+                  title: lesson.title, description: lesson.description,
+                  title_image_url: lesson.title_image_url ?? null,
+                  title_slide_settings: (lesson.title_slide_settings ?? {}) as Record<string, unknown>,
+                });
+                baseline.lessons.set(lesson.id, fp);
+              } catch (err) { failCount++; console.error(`Failed to save lesson ${lesson.id}:`, err); }
+            });
+          }
+        }
+
+        for (const mod of state.modules) {
+          const fp = fpModule(mod);
+          if (baseline.modules.get(mod.id) === fp) continue;
+          tasks.push(async () => {
+            try {
+              await dbUpdateModule(supabase, mod.id, { title: mod.title, description: mod.description });
+              baseline.modules.set(mod.id, fp);
+            } catch (err) { failCount++; console.error(`Failed to save module ${mod.id}:`, err); }
+          });
+        }
+
+        // Course-level theme settings. .select('id') so an RLS-filtered 0-row update
+        // counts as a failure (keeps it dirty) instead of a silent no-op.
+        const themeFp = JSON.stringify(state.themeSettings ?? {});
+        if (baseline.theme !== themeFp) {
+          tasks.push(async () => {
+            try {
+              const { data, error } = await supabase
+                .from('courses')
+                .update({ theme_settings: state.themeSettings ?? {} })
+                .eq('id', state.courseId ?? courseId)
+                .eq('institution_id', institutionId)
+                .select('id');
+              if (error) throw error;
+              if (!data || data.length === 0) throw new Error('Course theme update affected 0 rows (RLS or course not found)');
+              baseline.theme = themeFp;
+            } catch (err) { failCount++; console.error('Failed to save course theme:', err); }
+          });
+        }
+
+        await runWithConcurrency(tasks, SAVE_CONCURRENCY);
+        // If edits landed while we were saving, loop once more to catch them.
+      } while (pendingRef.current && failCount === 0);
+    } finally {
+      savingRef.current = false;
+    }
 
     if (failCount > 0) {
+      store.setState({ isSaving: false });
       toast.error('Some changes failed to save', {
-        description: `${failCount} item(s) could not be saved. Your changes are preserved locally — try saving again.`,
+        description: `${failCount} item(s) could not be saved. Your changes are kept locally — click Save to retry.`,
         duration: 6000,
       });
-      // Keep isDirty = true so auto-save will retry
+      // isDirty stays true; a later edit or a manual Save retries (now without flooding).
     } else {
       markSaved();
     }
-  }, [institutionId, store, markSaved]);
+  }, [institutionId, store, markSaved, courseId]);
 
   const { saveNow } = useAutoSave(isDirty, handleSave);
+
+  // Seed the save baseline from the freshly-loaded (== DB) state once the outer
+  // component finishes loading the course into the store (courseId becomes set),
+  // so the first save only persists actual edits — never the whole course.
+  const loadedCourseId = useEditorStore((s) => s.courseId);
+  useEffect(() => {
+    if (loadedCourseId && store) {
+      baselineRef.current = buildSaveBaseline(store.getState());
+    }
+  }, [loadedCourseId, store]);
 
   // ── Publish (save-first) ───────────────────────────────────────────────────
   // The Publish button promises "Save & publish changes" when dirty — honour it:

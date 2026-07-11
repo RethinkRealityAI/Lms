@@ -108,6 +108,23 @@ vi.mock('@/lib/db/blocks', () => ({
   deleteBlock: vi.fn().mockResolvedValue(undefined),
 }));
 
+// Capture the editor store instance so tests can make an edit before saving
+// (the save is now SELECTIVE — it only writes entities that changed vs the
+// load-time baseline, so an unedited save is intentionally a no-op).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let capturedStore: any;
+vi.mock('@/lib/stores/editor-store', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/stores/editor-store')>();
+  return {
+    ...actual,
+    createEditorStore: () => {
+      const s = actual.createEditorStore();
+      capturedStore = s;
+      return s;
+    },
+  };
+});
+
 vi.mock('@/lib/db', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/db')>();
   return {
@@ -149,15 +166,21 @@ describe('CourseEditorShell handleSave', () => {
     capturedOnSave = undefined;
   });
 
-  it('calls updateSlide for each slide in the store when handleSave is invoked', async () => {
+  it('persists a CHANGED slide when handleSave is invoked', async () => {
     const { updateSlide } = await import('@/lib/db/slides');
 
     await act(async () => {
       render(<CourseEditorShell courseId="course-1" />);
     });
 
-    // Invoke handleSave directly via the captured callback
     expect(capturedOnSave).toBeDefined();
+    expect(capturedStore).toBeDefined();
+
+    // Edit the slide so it differs from the load-time baseline.
+    await act(async () => {
+      capturedStore.getState().updateSlide('lesson-1', 'slide-1', { title: 'Slide One EDITED' });
+    });
+
     await act(async () => {
       await capturedOnSave!();
     });
@@ -165,9 +188,27 @@ describe('CourseEditorShell handleSave', () => {
     expect(updateSlide).toHaveBeenCalledWith(
       expect.anything(),
       'slide-1',
-      expect.objectContaining({ title: 'Slide One' }),
+      expect.objectContaining({ title: 'Slide One EDITED' }),
       'inst-1',
     );
+  });
+
+  it('does NOT re-save unchanged entities (selective save)', async () => {
+    const { updateSlide } = await import('@/lib/db/slides');
+    const { updateBlock } = await import('@/lib/db/blocks');
+
+    await act(async () => {
+      render(<CourseEditorShell courseId="course-1" />);
+    });
+
+    // No edits made — a save right after load must write nothing (the old code
+    // re-saved the whole course here, which is what flooded the browser).
+    await act(async () => {
+      await capturedOnSave!();
+    });
+
+    expect(updateSlide).not.toHaveBeenCalled();
+    expect(updateBlock).not.toHaveBeenCalled();
   });
 
   it('does not leave loading state when course data is loaded', async () => {
@@ -179,14 +220,18 @@ describe('CourseEditorShell handleSave', () => {
     expect(screen.queryByText('Failed to load course')).toBeNull();
   });
 
-  it('calls updateBlock for each block in the store when handleSave is invoked', async () => {
+  it('persists a CHANGED block when handleSave is invoked', async () => {
     const { updateBlock } = await import('@/lib/db/blocks');
 
     await act(async () => {
       render(<CourseEditorShell courseId="course-1" />);
     });
 
-    expect(capturedOnSave).toBeDefined();
+    expect(capturedStore).toBeDefined();
+    await act(async () => {
+      capturedStore.getState().updateBlock('slide-1', 'block-1', { data: { html: '<p>Changed</p>' } });
+    });
+
     await act(async () => {
       await capturedOnSave!();
     });
@@ -194,26 +239,25 @@ describe('CourseEditorShell handleSave', () => {
     expect(updateBlock).toHaveBeenCalledWith(
       expect.anything(),
       'block-1',
-      expect.objectContaining({ data: { html: '<p>Hello</p>' } }),
+      expect.objectContaining({ data: { html: '<p>Changed</p>' } }),
       'inst-1',
     );
   });
 
-  it('does not call markSaved when a DB update fails and shows error toast', async () => {
+  it('does not call markSaved when a DB update fails, and retries the failed entity', async () => {
     const { updateBlock } = await import('@/lib/db/blocks');
-    const { updateSlide } = await import('@/lib/db/slides');
     const { toast } = await import('sonner');
-
-    // Make updateBlock reject to simulate a DB failure
-    vi.mocked(updateBlock).mockRejectedValueOnce(new Error('DB write failed'));
 
     await act(async () => {
       render(<CourseEditorShell courseId="course-1" />);
     });
 
-    expect(capturedOnSave).toBeDefined();
+    // Edit the block so it's dirty, then make the first save of it fail.
+    await act(async () => {
+      capturedStore.getState().updateBlock('slide-1', 'block-1', { data: { html: '<p>Changed</p>' } });
+    });
+    vi.mocked(updateBlock).mockRejectedValueOnce(new Error('DB write failed'));
 
-    // First save — updateBlock will fail
     await act(async () => {
       await capturedOnSave!();
     });
@@ -224,21 +268,19 @@ describe('CourseEditorShell handleSave', () => {
       expect.objectContaining({ description: expect.stringContaining('could not be saved') }),
     );
 
-    // isDirty should still be true — markSaved was NOT called.
-    // Prove it by clearing mocks and saving again: updateBlock should be called again,
-    // meaning the store still considers itself dirty and auto-save will retry.
+    // markSaved was NOT called and the failed block's baseline was NOT updated, so a
+    // second save retries exactly that block (proving it's still considered dirty).
     vi.mocked(updateBlock).mockClear();
-    vi.mocked(updateSlide).mockClear();
 
     await act(async () => {
       await capturedOnSave!();
     });
 
-    // If markSaved had been called, the store would be clean and a subsequent
-    // save would still persist (handleSave always writes all entities).
-    // The key assertion is that the error toast fired above — confirming the
-    // failure path does NOT call markSaved().
-    expect(updateBlock).toHaveBeenCalled();
-    expect(updateSlide).toHaveBeenCalled();
+    expect(updateBlock).toHaveBeenCalledWith(
+      expect.anything(),
+      'block-1',
+      expect.anything(),
+      'inst-1',
+    );
   });
 });
