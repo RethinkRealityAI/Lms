@@ -121,6 +121,15 @@ export function ScratchRevealEditor({ data, onChange, block }: BlockEditorProps<
             onChange={(e) => onChange({ ...data, prompt: e.target.value || undefined })} className={inputClass} />
         </div>
 
+        <label className="flex items-start justify-between gap-3 cursor-pointer">
+          <span className="text-xs text-gray-600">
+            Required to continue
+            <span className="block text-[11px] text-gray-400">Students must reveal the card before the Next button unlocks on this slide.</span>
+          </span>
+          <input type="checkbox" checked={data.required === true}
+            onChange={(e) => onChange({ ...data, required: e.target.checked })} className="mt-0.5 accent-[#1A3C6E] w-4 h-4 shrink-0" />
+        </label>
+
         <div>
           <label className={labelClass}>Aspect ratio</label>
           <div className="flex flex-wrap gap-1.5">

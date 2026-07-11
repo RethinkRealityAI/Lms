@@ -32,6 +32,10 @@ interface StructurePanelProps {
   onAddSlide?: (lessonId: string, slideData: Slide, template?: SlideTemplateConfig) => void;
   onMoveSlide?: (slideId: string, fromLessonId: string, toLessonId: string) => void;
   onDuplicateSlide?: (slideId: string, lessonId: string) => void;
+  /** Expanded width in px (from the shell's resizer). Ignored when collapsed. */
+  width?: number;
+  /** True while the panel is being drag-resized — suppresses the width transition. */
+  resizing?: boolean;
 }
 
 export function StructurePanel({
@@ -44,6 +48,8 @@ export function StructurePanel({
   onAddSlide,
   onMoveSlide,
   onDuplicateSlide,
+  width,
+  resizing,
 }: StructurePanelProps) {
   const [showAddModule, setShowAddModule] = useState(false);
   const [addSlideForLesson, setAddSlideForLesson] = useState<string | null>(null);
@@ -187,7 +193,10 @@ export function StructurePanel({
   })();
 
   return (
-    <div className={`shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden transition-all duration-300 ${collapsed ? 'w-12' : 'w-[260px]'}`}>
+    <div
+      className={`shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden ${resizing ? '' : 'transition-all duration-300'} ${collapsed ? 'w-12' : width == null ? 'w-[325px]' : ''}`}
+      style={collapsed || width == null ? undefined : { width }}
+    >
       <div className={`flex items-center px-3 py-2.5 border-b border-gray-100 shrink-0 ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest overflow-hidden whitespace-nowrap">

@@ -16,6 +16,8 @@ export interface InstitutionBranding {
   logoDimensions: { width: number; height: number };
   /** Program title shown on login pages */
   programTitle: string;
+  /** Short label for the program-progress stat tile (e.g. "HCP Program", "Patient Education Program") */
+  programStatLabel: string;
   /** Brief description for login page hero */
   description: string;
   /** Feature highlights shown as badges / chips */
@@ -55,6 +57,7 @@ const GANSID_BRANDING: InstitutionBranding = {
   logoUrl: 'https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/canva-exports/logos/gansid-logo.png',
   logoDimensions: { width: 410, height: 110 },
   programTitle: 'Learning Portal',
+  programStatLabel: 'Patient Education Program',
   description: 'Empowering healthcare providers through modular, evidence-based education in inherited blood disorders.',
   highlights: [
     '10 Modules',
@@ -84,6 +87,7 @@ const SCAGO_BRANDING: InstitutionBranding = {
   logoUrl: 'https://ylmnbbrpaeiogdeqezlo.supabase.co/storage/v1/object/public/scago-assets/logos/scago-logo.png',
   logoDimensions: { width: 714, height: 202 },
   programTitle: 'Sickle Cell Disease Education Program for Healthcare Providers',
+  programStatLabel: 'HCP Program',
   description: 'Improve knowledge, skills, and actions of healthcare providers who care for people with sickle cell disease to reduce health inequities and improve access to safe, equitable care.',
   highlights: [
     '13 Modules',

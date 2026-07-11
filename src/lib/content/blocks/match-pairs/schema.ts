@@ -21,6 +21,8 @@ export const matchPairsDataSchema = z.object({
   /** Shuffle the draggable matches so order isn't a giveaway */
   shuffle: z.boolean().default(true),
   show_feedback: z.boolean().default(true),
+  /** Required to continue: gate the Next button until every pair is matched correctly. */
+  required: z.boolean().default(false),
   /** Accent colour for selection highlights + the Check Answer button. Hex. */
   accent_color: z.string().optional(),
   /** Item-card background colour (the draggable items). Hex; blank = frosted glass. */

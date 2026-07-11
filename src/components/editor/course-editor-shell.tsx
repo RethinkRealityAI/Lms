@@ -8,6 +8,8 @@ import { EditorToolbar } from './editor-toolbar';
 import { StructurePanel } from './structure-panel';
 import { PreviewPanel } from './preview-panel';
 import { PropertiesPanel } from './properties-panel';
+import { usePanelResize } from './use-panel-resize';
+import { ResizeHandle } from './resize-handle';
 import { EditorStatusBar } from './editor-status-bar';
 import { EditorDndContext } from './dnd/editor-dnd-context';
 import { DeleteConfirmDialog } from './delete-confirm-dialog';
@@ -147,6 +149,14 @@ function EditorContent({ courseId }: { courseId: string }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [structureCollapsed, setStructureCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
+
+  // Drag-to-resize widths for the two side panels (persisted, 25% wider defaults).
+  const structureResize = usePanelResize({
+    storageKey: 'gansid.editor.structureWidth', defaultWidth: 325, min: 220, max: 560, side: 'right',
+  });
+  const propertiesResize = usePanelResize({
+    storageKey: 'gansid.editor.propertiesWidth', defaultWidth: 375, min: 260, max: 620, side: 'left',
+  });
   const devicePreview = useEditorStore((s) => s.devicePreview) as DevicePreview;
   const setDevicePreview = useEditorStore((s) => s.setDevicePreview);
   const [lessonPreviewOpen, setLessonPreviewOpen] = useState(false);
@@ -994,7 +1004,12 @@ function EditorContent({ courseId }: { courseId: string }) {
             onAddSlide={handleAddSlide}
             onMoveSlide={handleMoveSlide}
             onDuplicateSlide={handleDuplicateSlide}
+            width={structureResize.width}
+            resizing={structureResize.isResizing}
           />
+          {!structureCollapsed && (
+            <ResizeHandle active={structureResize.isResizing} onPointerDown={structureResize.startResize} />
+          )}
           <PreviewPanel
             devicePreview={devicePreview}
             onDeleteBlock={(blockId) => {
@@ -1005,12 +1020,17 @@ function EditorContent({ courseId }: { courseId: string }) {
             onCopyBlockToSlide={handleCopyBlockToSlide}
             onMoveBlockToSlide={handleMoveBlockToSlide}
           />
+          {!propertiesCollapsed && (
+            <ResizeHandle active={propertiesResize.isResizing} onPointerDown={propertiesResize.startResize} />
+          )}
           <PropertiesPanel
             collapsed={propertiesCollapsed}
             onToggleCollapse={() => setPropertiesCollapsed((c) => !c)}
             onAddBlock={handleAddBlock}
             onDeleteBlock={handleDeleteKey}
             onOpenCourseSettings={() => setSettingsOpen(true)}
+            width={propertiesResize.width}
+            resizing={propertiesResize.isResizing}
           />
         </div>
       </EditorDndContext>

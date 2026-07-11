@@ -28,6 +28,7 @@ import { ReportIssueDialog } from '@/components/report-issue-dialog';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { viewedImagesStorageKey } from '@/lib/content/blocks/image-gallery/display-utils';
 import { getGatingQuizBlockIds } from '@/lib/content/blocks/quiz-inline/validation';
+import { getRequiredInteractiveBlockIds } from '@/lib/content/blocks/interactive-gating';
 import { GRID_COLS, GRID_MARGIN, GRID_CONTAINER_PADDING, getBlockGridLayout, blockSurfaceFillCell } from '@/lib/content/gridConstants';
 import { asCourseTheme } from '@/lib/content/course-theme';
 import { asInstitutionTheme, resolveEffectiveTheme, type InstitutionTheme } from '@/lib/tenant/institution-theme';
@@ -1428,15 +1429,24 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     currentLessonQuizBlockIds.length === 0 ||
     currentLessonQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
 
+  // Required interactive (non-quiz) blocks on THIS slide: Drag to Match, Fill in
+  // the Blank, Scratch to Reveal, Before/After, Slider, and required-click image
+  // galleries. Client-only navigation gate — never fed to the certificate RPC, so
+  // deleting/redoing an interactive block can't strand a learner (see
+  // interactive-gating.ts). Satisfiability-guarded there so a misconfigured block
+  // can't brick the slide.
   const currentSlideRequiredBlockIds = React.useMemo(() => {
     const slide = currentSlides[currentSlide];
     if (!slide || slide.kind !== 'page') return [];
-    return slide.blocks
-      .filter(b => b.block_type === 'image_gallery' && b.data?.requireAllClicked === true)
-      .map(b => b.id);
+    return getRequiredInteractiveBlockIds([slide]);
   }, [currentSlides, currentSlide]);
 
-  const allInteractiveBlocksComplete = currentSlideRequiredBlockIds.length === 0 ||
+  // Bypass for an already-completed lesson, mirroring the quiz gates: interactive
+  // completion lives only in memory (not persisted), so on a revisit/reload the set
+  // is empty and would otherwise wrongly block Next on a lesson the learner already
+  // finished. The authoritative fact is the progress row.
+  const allInteractiveBlocksComplete = lessonAlreadyCompleted ||
+    currentSlideRequiredBlockIds.length === 0 ||
     currentSlideRequiredBlockIds.every(id => completedInteractiveBlocks[selectedLesson?.id ?? '']?.has(id));
 
   // Required quizzes gate Next on THEIR OWN slide (not just at the completion slide) —
@@ -1468,9 +1478,9 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         id => !completedInteractiveBlocks[selectedLesson.id]?.has(id),
       ).length;
       if (remaining > 0) {
-        return `Open every required image on this slide (${remaining} block${remaining === 1 ? '' : 's'} remaining).`;
+        return `Complete the required activity on this slide (${remaining} remaining).`;
       }
-      return 'Open every required image on this slide before continuing.';
+      return 'Complete the required activity on this slide before continuing.';
     }
     if (!currentSlideQuizzesComplete) {
       return 'Answer the quiz on this slide correctly to continue.';

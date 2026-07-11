@@ -28,6 +28,10 @@ interface PropertiesPanelProps {
   onDeleteBlock?: () => void;
   /** Opens the Course Settings modal (background, block style, header colours, etc.). */
   onOpenCourseSettings?: () => void;
+  /** Expanded width in px (from the shell's resizer). Ignored when collapsed. */
+  width?: number;
+  /** True while the panel is being drag-resized — suppresses the width transition. */
+  resizing?: boolean;
 }
 
 const AVAILABLE_BLOCKS = [
@@ -343,7 +347,7 @@ function SlideEditor({ slideId }: { slideId: string }) {
   );
 }
 
-export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDeleteBlock, onOpenCourseSettings }: PropertiesPanelProps) {
+export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDeleteBlock, onOpenCourseSettings, width, resizing }: PropertiesPanelProps) {
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const slides = useEditorStore((s) => s.slides);
   const blocks = useEditorStore((s) => s.blocks);
@@ -492,7 +496,10 @@ export function PropertiesPanel({ collapsed, onToggleCollapse, onAddBlock, onDel
   const showTabs = activeSlideId !== null;
 
   return (
-    <div className={`shrink-0 bg-white border-l border-gray-100 flex flex-col overflow-hidden transition-all duration-300 ${collapsed ? 'w-12' : 'w-[300px]'}`}>
+    <div
+      className={`shrink-0 bg-white border-l border-gray-100 flex flex-col overflow-hidden ${resizing ? '' : 'transition-all duration-300'} ${collapsed ? 'w-12' : width == null ? 'w-[375px]' : ''}`}
+      style={collapsed || width == null ? undefined : { width }}
+    >
       <div className={`flex flex-col border-b border-gray-100 shrink-0 ${collapsed ? 'py-2.5 items-center' : ''}`}>
         <div className={`flex items-center gap-2 ${collapsed ? 'justify-center' : 'px-3 pt-2.5 pb-2'} shrink-0`}>
           <button

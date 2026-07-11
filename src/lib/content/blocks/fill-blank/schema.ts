@@ -25,6 +25,8 @@ export const fillBlankDataSchema = z.object({
   /** Word-bank mode only: shuffle the bank so the order isn't a giveaway. */
   shuffle: z.boolean().default(true),
   show_feedback: z.boolean().default(true),
+  /** Required to continue: gate the Next button until every blank is correct. */
+  required: z.boolean().default(false),
   /** Message shown when every blank is correct / every word is corrected. */
   feedback_correct: z.string().optional(),
   /** Word-bank mode only: message shown when one or more blanks are wrong. */

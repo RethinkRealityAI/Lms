@@ -1,3 +1,4 @@
+import type React from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { getUserInstitutionId } from '@/lib/db/users';
 import { getVisibleCourseIds } from '@/lib/db/course-assignments';
@@ -13,8 +14,40 @@ import { SupportWidget } from '@/components/feedback/support-widget';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { BookOpen, CheckCircle, TrendingUp, Target, GraduationCap, Award, Lock, Clock, Play } from 'lucide-react';
+import { BookOpen, CheckCircle, GraduationCap, Award, Lock, Clock, Play } from 'lucide-react';
 import { redirect } from 'next/navigation';
+
+/** Admin-style analytics stat card for the student dashboard header. */
+function StatTile({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  color = 'text-slate-600',
+}: {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200/70 bg-white shadow-[0_4px_20px_rgb(0,0,0,0.04)] p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 leading-tight">{title}</p>
+          <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 leading-none">{value}</p>
+          {subtitle && (
+            <p className="text-[11px] text-slate-400 font-medium mt-1 truncate">{subtitle}</p>
+          )}
+        </div>
+        <div className={`p-2.5 rounded-xl bg-slate-50 shrink-0 ${color}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function StudentPage() {
   const supabase = await createClient();
@@ -202,21 +235,6 @@ export default async function StudentPage() {
     const prog = courseProgress[id];
     return prog && prog.total > 0 && prog.completed === prog.total;
   }).length;
-  const overallPercent = enrolledCount > 0
-    ? Math.round(
-        enrolledCourseIds.reduce((sum, id) => {
-          const prog = courseProgress[id];
-          return sum + (prog && prog.total > 0 ? (prog.completed / prog.total) * 100 : 0);
-        }, 0) / enrolledCount
-      )
-    : 0;
-  // Sum per-course completed counts (live lessons in visible enrolled courses only) —
-  // the raw progress set includes orphaned rows for deleted lessons and left courses.
-  const totalLessonsCompleted = enrolledCourseIds.reduce(
-    (sum, id) => sum + (courseProgress[id]?.completed ?? 0),
-    0,
-  );
-
   // CME certificate eligibility + current request (for the dashboard banner)
   // Authoritative eligibility = completed every catalog course (server RPC), matching what
   // request_cme_certificate enforces — avoids a banner/RPC mismatch under restricted visibility.
@@ -228,6 +246,29 @@ export default async function StudentPage() {
   const programProgress = institutionId
     ? await getProgramsWithProgress(supabase, institutionId, user.id).catch(() => [])
     : [];
+  // The program stat tile represents the institution's main certificate program.
+  // Institutions currently have exactly one, but if a smaller specialized track is
+  // added later, pick the flagship (most courses) so the tile can't silently swap to
+  // it — deterministic rather than "whichever was created last".
+  const primaryProgram = programProgress.length > 0
+    ? programProgress.reduce((best, p) => (p.totalCourses > best.totalCourses ? p : best))
+    : null;
+
+  // Course certificates earned in THIS institution (program certs are shown
+  // separately via the program tile). Scoped to the active portal + non-revoked.
+  let courseCertCount = 0;
+  try {
+    const { count } = await supabase
+      .from('certificates')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('institution_id', institutionId)
+      .not('course_id', 'is', null)
+      .is('revoked_at', null);
+    courseCertCount = count ?? 0;
+  } catch {
+    courseCertCount = 0;
+  }
 
   // "Continue where you left off" — most recently completed lesson in an enrolled,
   // not-yet-finished course. Defensive: never break the dashboard if this fails.
@@ -306,60 +347,36 @@ export default async function StudentPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Compact dark header — welcome + stats on one line */}
-      <div className="bg-[#0F172A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col lg:flex-row lg:items-center gap-3">
-          {/* Left: welcome */}
-          <div className="shrink-0">
-            <h2 className="text-lg font-black tracking-tight text-white leading-tight">
+      {/* Analytics header — admin-style stat cards on a light surface */}
+      <div className="bg-white border-b border-slate-200/70">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-black tracking-tight text-slate-900 leading-tight">
               {firstName ? `Welcome back, ${firstName}` : 'Capacity Building Curriculum'}
             </h2>
-            <p className="text-slate-400 text-xs font-medium">
+            <p className="text-slate-500 text-sm font-medium">
               {sortedCourses.length} modules · {branding.programTitle}
             </p>
           </div>
 
-          {/* Right: stats */}
-          <div className="flex flex-wrap gap-2 lg:ml-auto">
-            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
-              <div className="rounded-full bg-[#0099CA]/20 p-1.5 shrink-0">
-                <BookOpen className="h-3.5 w-3.5 text-[#0099CA]" />
-              </div>
-              <div>
-                <p className="text-base font-black text-white leading-none">{enrolledCount}</p>
-                <p className="text-[10px] font-medium text-slate-400">Enrolled</p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
-              <div className="rounded-full bg-green-500/20 p-1.5 shrink-0">
-                <CheckCircle className="h-3.5 w-3.5 text-green-400" />
-              </div>
-              <div>
-                <p className="text-base font-black text-white leading-none">{completedCourseCount}</p>
-                <p className="text-[10px] font-medium text-slate-400">Completed</p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
-              <div className="rounded-full bg-[#DC2626]/20 p-1.5 shrink-0">
-                <TrendingUp className="h-3.5 w-3.5 text-[#DC2626]" />
-              </div>
-              <div>
-                <p className="text-base font-black text-white leading-none">{overallPercent}%</p>
-                <p className="text-[10px] font-medium text-slate-400">Progress</p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-2 flex items-center gap-2">
-              <div className="rounded-full bg-[#1E3A5F]/60 p-1.5 shrink-0">
-                <Target className="h-3.5 w-3.5 text-blue-300" />
-              </div>
-              <div>
-                <p className="text-base font-black text-white leading-none">{totalLessonsCompleted}</p>
-                <p className="text-[10px] font-medium text-slate-400">Lessons</p>
-              </div>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <StatTile title="Modules" value={sortedCourses.length} subtitle="available to you" icon={BookOpen} color="text-blue-600" />
+            <StatTile title="Started" value={enrolledCount} subtitle="courses begun" icon={Play} color="text-cyan-600" />
+            <StatTile title="Completed" value={completedCourseCount} subtitle="courses finished" icon={CheckCircle} color="text-green-600" />
+            <StatTile title="Course Certificates" value={courseCertCount} subtitle="earned" icon={Award} color="text-amber-600" />
+            <StatTile
+              title={branding.programStatLabel}
+              value={primaryProgram ? `${primaryProgram.completedCourseIds.length}/${primaryProgram.totalCourses}` : '—'}
+              subtitle={
+                primaryProgram
+                  ? primaryProgram.earnedCertificate
+                    ? 'Program certificate earned'
+                    : 'modules toward certificate'
+                  : 'no program yet'
+              }
+              icon={GraduationCap}
+              color={primaryProgram?.earnedCertificate ? 'text-green-600' : 'text-indigo-600'}
+            />
           </div>
         </div>
       </div>

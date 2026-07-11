@@ -20,6 +20,8 @@ export const scratchRevealDataSchema = z.object({
   reveal_threshold: z.number().min(20).max(100).default(55),
   /** Celebration when revealed */
   animation: z.enum(['none', 'confetti', 'sparkles']).default('confetti'),
+  /** Required to continue: gate the Next button until the learner reveals the card. */
+  required: z.boolean().default(false),
   /** Optional instruction shown above the card */
   prompt: z.string().optional(),
   /** Aspect ratio of the card (w/h) */

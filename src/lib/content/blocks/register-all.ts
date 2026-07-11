@@ -215,6 +215,7 @@ registerBlockType({
     animation: 'confetti' as const,
     aspect: '16/9' as const,
     fit: 'contain' as const,
+    required: false,
   },
   ViewerComponent: React.lazy(() => import('@/components/blocks/scratch-reveal/viewer')),
   EditorComponent: React.lazy(() =>
@@ -265,6 +266,7 @@ registerBlockType({
     prompt_side: 'left' as const,
     shuffle: true,
     show_feedback: true,
+    required: false,
   },
   ViewerComponent: React.lazy(() => import('@/components/blocks/match-pairs/viewer')),
   EditorComponent: React.lazy(() =>
@@ -287,6 +289,7 @@ registerBlockType({
     distractors: ['carbon'],
     shuffle: true,
     show_feedback: true,
+    required: false,
   },
   ViewerComponent: React.lazy(() => import('@/components/blocks/fill-blank/viewer')),
   EditorComponent: React.lazy(() =>
