@@ -57,6 +57,7 @@ export default function LessonBlocksPage({
       .from('lesson_blocks')
       .select('*')
       .eq('lesson_id', params.lessonId)
+      .is('deleted_at', null)
       .order('order_index', { ascending: true });
     setBlocks((blockRows as LessonBlock[]) || []);
     setLoading(false);
