@@ -75,6 +75,9 @@ src/
                          #   h-[calc(100vh-3rem)] preview vs h-[calc(100vh-6rem)] student
     lesson-block-renderer.tsx   # Renders any LessonBlock using registry
     leave-review-button.tsx     # CLIENT — star-rating review modal (Dialog + Supabase upsert)
+    report-issue-dialog.tsx     # CLIENT — in-viewer red "Report issue" flag (issue pills + structured context → /api/feedback)
+    feedback/support-widget.tsx # CLIENT — dashboard "Support" FAB (suggestion/issue/bug → /api/feedback)
+    admin/feedback-card.tsx     # Admin Support-hub card: type/category/status pills + context deep-links (Page/Course/Lesson→editor)
     editor/              # Three-panel editor components
       course-editor-shell.tsx   # Editor root — loads course data, owns all CRUD handlers
       editor-toolbar.tsx        # Save/Undo/Redo/Preview/Publish toolbar
@@ -117,6 +120,7 @@ src/
       block-registry.ts         # Runtime Map of registered block types
       blocks/register-all.ts    # 'use client' — registers ALL block types on import
       slide-templates.ts        # Slide template picker configs (id, defaultBlocks, settings)
+      feedback-taxonomy.ts      # Feedback types + category pills + status styling (shared source of truth)
       title-slide-settings.ts   # Per-lesson title slide overrides (size, color, footer, logo)
       lesson-blocks.ts          # sortBlocks(), createLegacyBlockPayload()
     canvas/
@@ -141,6 +145,7 @@ src/
       certificates.ts       # Certificate CRUD (award, revoke, detail queries)
       surveys.ts            # Survey response CRUD + analytics queries
       survey-templates.ts   # Reusable institution-scoped survey templates
+      feedback.ts           # Unified feedback CRUD (list/status/delete) — powers the admin Support hub (migration 064)
     canva/
       auth.ts               # Canva OAuth PKCE helpers, token refresh
       api.ts                # Canva REST API (designs, exports)
