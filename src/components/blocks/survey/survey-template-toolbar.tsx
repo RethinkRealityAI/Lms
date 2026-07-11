@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { BookmarkPlus, FolderOpen, Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useEditorStore } from '@/components/editor/editor-store-context';
+import { EditorStoreContext } from '@/components/editor/editor-store-context';
 import {
   applySurveyTemplate,
   createSurveyTemplate,
@@ -38,7 +38,14 @@ interface SurveyTemplateToolbarProps {
 }
 
 export function SurveyTemplateToolbar({ data, onApply }: SurveyTemplateToolbarProps) {
-  const institutionId = useEditorStore((s) => s.institutionId);
+  // Read the editor store WITHOUT throwing when rendered outside the course editor.
+  // The admin Surveys hub reuses SurveyEditor to build templates, where there is no
+  // EditorStoreContext.Provider — useEditorStore() would throw and crash the page.
+  // institutionId is set once at course load and never changes, so a non-reactive
+  // getState() read is correct; when there's no store (the hub), institutionId is
+  // undefined and the redundant save/load toolbar hides itself (return null below).
+  const store = useContext(EditorStoreContext);
+  const institutionId = store?.getState().institutionId;
   const [templates, setTemplates] = useState<SurveyTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string>('');
