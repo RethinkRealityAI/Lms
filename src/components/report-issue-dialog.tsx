@@ -1,24 +1,19 @@
 'use client';
 
 /**
- * ReportIssueDialog — small in-app "Report an issue" dialog.
+ * ReportIssueDialog — the in-viewer "Report issue" control.
  *
- * Renders its own trigger (icon button or text link) + a shadcn Dialog with a
- * "What went wrong?" textarea. On open it prefills the signed-in user's name
- * and email from their `users` row (email stays editable as a fallback for
- * edge cases where no profile is found) and captures a context block the user
- * can see before sending: page URL, course/lesson/slide identifiers (when
- * provided via props), user agent, and timestamp.
+ * Trigger: a red, filled flag + "Report issue" label (label hidden on the smallest
+ * screens). Opens a compact dialog pre-scoped to the current course/lesson/slide:
+ * quick-pick issue-category pills + an optional message + the reporter's email
+ * (prefilled from their profile).
  *
- * Submits through the existing public /api/contact route (name/email/subject/
- * message). The context is appended to the message body as a structured
- * "--- Context ---" suffix, so the admin Support inbox (which renders messages
- * with whitespace-pre-wrap) shows it with zero schema changes. The route
- * resolves institution_id from the institution_slug cookie set by middleware,
- * so no institution identifiers are hardcoded or passed here.
+ * Submits to /api/feedback as `type: 'issue'` with a STRUCTURED context object
+ * (page URL, course/lesson/slide ids + titles, user agent) — no text blob — so the
+ * admin support hub can render pills and deep links instead of a raw dump.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Flag, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { FEEDBACK_TYPES, categoryLabel, type FeedbackContext } from '@/lib/content/feedback-taxonomy';
 
 export interface ReportIssueContext {
   courseId?: string;
@@ -45,51 +41,23 @@ export interface ReportIssueContext {
 }
 
 interface ReportIssueDialogProps extends ReportIssueContext {
-  /** 'icon' = small flag icon button (viewer chrome); 'link' = inline text link. */
-  variant?: 'icon' | 'link';
-  /** Extra classes for the trigger element. */
+  /** Extra classes for the trigger element (placement/visibility). */
   className?: string;
 }
 
-function buildContextLines(ctx: ReportIssueContext, capturedAt: string): string[] {
-  const lines: string[] = ['--- Context ---'];
-  if (typeof window !== 'undefined') lines.push(`Page: ${window.location.href}`);
-  if (ctx.courseId || ctx.courseTitle) {
-    lines.push(`Course: ${ctx.courseTitle ?? '(untitled)'}${ctx.courseId ? ` (${ctx.courseId})` : ''}`);
-  }
-  if (ctx.lessonId || ctx.lessonTitle) {
-    lines.push(`Lesson: ${ctx.lessonTitle ?? '(untitled)'}${ctx.lessonId ? ` (${ctx.lessonId})` : ''}`);
-  }
-  if (typeof ctx.slideIndex === 'number') lines.push(`Slide: ${ctx.slideIndex + 1}`);
-  if (typeof navigator !== 'undefined') lines.push(`User agent: ${navigator.userAgent}`);
-  lines.push(`Reported at: ${capturedAt}`);
-  return lines;
-}
+const ISSUE_CATEGORIES = FEEDBACK_TYPES.issue.categories;
 
-export function ReportIssueDialog({
-  variant = 'icon',
-  className,
-  ...context
-}: ReportIssueDialogProps) {
+export function ReportIssueDialog({ className, ...context }: ReportIssueDialogProps) {
   const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [capturedAt, setCapturedAt] = useState('');
-
-  // Capture the context snapshot when the dialog opens so the user sees
-  // exactly what will be sent.
-  const contextLines = useMemo(
-    () => (open ? buildContextLines(context, capturedAt) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [open, capturedAt, context.courseId, context.courseTitle, context.lessonId, context.lessonTitle, context.slideIndex],
-  );
 
   // Prefill name/email from the signed-in user's profile on open.
   useEffect(() => {
     if (!open) return;
-    setCapturedAt(new Date().toISOString());
     let cancelled = false;
     (async () => {
       const supabase = createClient();
@@ -101,15 +69,22 @@ export function ReportIssueDialog({
         .eq('id', user.id)
         .maybeSingle();
       if (cancelled) return;
-      setName((prev) => prev || profile?.full_name || 'Platform User');
+      setName((prev) => prev || profile?.full_name || 'Student');
       setEmail((prev) => prev || profile?.email || user.email || '');
     })();
     return () => { cancelled = true; };
   }, [open]);
 
+  const contextSummary = [
+    context.courseTitle,
+    context.lessonTitle,
+    typeof context.slideIndex === 'number' ? `Slide ${context.slideIndex + 1}` : null,
+  ].filter(Boolean).join(' · ');
+
   const handleSubmit = async () => {
-    if (!message.trim()) {
-      toast.error('Please describe the issue before submitting.');
+    const finalMessage = message.trim() || (category ? categoryLabel('issue', category) ?? '' : '');
+    if (!finalMessage) {
+      toast.error('Pick an issue or describe what went wrong.');
       return;
     }
     if (!email.trim()) {
@@ -118,16 +93,26 @@ export function ReportIssueDialog({
     }
     setSubmitting(true);
     try {
-      const subject = `Issue report — ${context.courseTitle ?? context.lessonTitle ?? 'Student portal'}`;
-      const fullMessage = `${message.trim()}\n\n${contextLines.join('\n')}`;
-      const res = await fetch('/api/contact', {
+      const feedbackContext: FeedbackContext = {
+        page_url: typeof window !== 'undefined' ? window.location.href : undefined,
+        course_id: context.courseId,
+        course_title: context.courseTitle,
+        lesson_id: context.lessonId,
+        lesson_title: context.lessonTitle,
+        slide_index: typeof context.slideIndex === 'number' ? context.slideIndex : undefined,
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      };
+      const res = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim() || 'Platform User',
+          type: 'issue',
+          category,
+          name: name.trim() || 'Student',
           email: email.trim(),
-          subject,
-          message: fullMessage,
+          subject: `Issue report — ${context.courseTitle ?? context.lessonTitle ?? 'Student portal'}`,
+          message: finalMessage,
+          context: feedbackContext,
         }),
       });
       if (!res.ok) {
@@ -138,6 +123,7 @@ export function ReportIssueDialog({
         description: 'We typically respond within 1–2 business days.',
       });
       setMessage('');
+      setCategory(null);
       setOpen(false);
     } catch (err: unknown) {
       toast.error('Could not submit your report', {
@@ -148,56 +134,64 @@ export function ReportIssueDialog({
     }
   };
 
-  const trigger =
-    variant === 'icon' ? (
+  return (
+    <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`p-1 text-slate-400 hover:text-[#DC2626] transition-colors rounded ${className ?? ''}`}
+        className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[#DC2626] hover:bg-red-50 transition-colors ${className ?? ''}`}
         title="Report an issue"
         aria-label="Report an issue"
       >
-        <Flag className="w-4 h-4" />
+        <Flag className="w-4 h-4 fill-[#DC2626]" />
+        <span className="text-xs font-semibold hidden sm:inline">Report issue</span>
       </button>
-    ) : (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className={`text-sm font-semibold text-slate-400 hover:text-slate-600 transition-colors inline-flex items-center gap-1.5 ${className ?? ''}`}
-      >
-        <Flag className="w-3.5 h-3.5" />
-        Report an issue
-      </button>
-    );
 
-  return (
-    <>
-      {trigger}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-black">Report an Issue</DialogTitle>
+            <DialogTitle className="text-lg font-black">Report an issue</DialogTitle>
             <DialogDescription>
               Tell us what went wrong and our team will take a look.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
+              <Label className="font-bold text-slate-700">What kind of issue?</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {ISSUE_CATEGORIES.map((c) => {
+                  const active = category === c.slug;
+                  return (
+                    <button
+                      key={c.slug}
+                      type="button"
+                      onClick={() => setCategory(active ? null : c.slug)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                        active
+                          ? 'bg-[#DC2626] border-[#DC2626] text-white'
+                          : 'bg-white border-slate-200 text-slate-600 hover:border-[#DC2626] hover:text-[#DC2626]'
+                      }`}
+                    >
+                      {c.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="report-issue-message" className="font-bold text-slate-700">
-                What went wrong?
+                Tell us more <span className="font-medium text-slate-400">(optional if you picked one above)</span>
               </Label>
               <Textarea
                 id="report-issue-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="e.g. The video on this slide won't play..."
-                rows={4}
+                placeholder="e.g. The video on this slide won't play…"
+                rows={3}
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="report-issue-email" className="font-bold text-slate-700">
-                Your email
-              </Label>
+              <Label htmlFor="report-issue-email" className="font-bold text-slate-700">Your email</Label>
               <Input
                 id="report-issue-email"
                 type="email"
@@ -205,17 +199,11 @@ export function ReportIssueDialog({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
               />
-              <p className="text-xs text-slate-400 font-medium">
-                We&apos;ll use this to follow up on your report.
-              </p>
             </div>
-            {contextLines.length > 0 && (
-              <div className="space-y-1.5">
-                <Label className="font-bold text-slate-700">Included automatically</Label>
-                <pre className="text-[11px] leading-relaxed text-slate-500 bg-slate-50 rounded-lg p-3 whitespace-pre-wrap break-all font-mono max-h-32 overflow-y-auto">
-                  {contextLines.slice(1).join('\n')}
-                </pre>
-              </div>
+            {contextSummary && (
+              <p className="text-xs text-slate-400 font-medium">
+                Attached automatically: {contextSummary}
+              </p>
             )}
           </div>
           <DialogFooter>
@@ -224,7 +212,7 @@ export function ReportIssueDialog({
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={submitting || !message.trim()}
+              disabled={submitting}
               className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold"
             >
               {submitting ? (
@@ -233,7 +221,7 @@ export function ReportIssueDialog({
                   Submitting…
                 </>
               ) : (
-                'Submit Report'
+                'Submit report'
               )}
             </Button>
           </DialogFooter>

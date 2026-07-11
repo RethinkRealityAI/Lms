@@ -65,12 +65,18 @@ export async function POST(request: NextRequest) {
     institutionId = inst?.id ?? null;
   }
 
-  const { error: dbError } = await supabase.from('contact_submissions').insert({
+  // Writes to the unified feedback_submissions table as a plain contact message.
+  // (Kept as a backward-compatible alias for /api/feedback; the public contact form
+  // now posts to /api/feedback directly.)
+  const { error: dbError } = await supabase.from('feedback_submissions').insert({
+    type: 'contact',
     name: name.trim(),
     email: email.trim(),
     subject: subject.trim(),
     message: message.trim(),
     institution_id: institutionId,
+    context: {},
+    status: 'new',
   });
 
   if (dbError) {
