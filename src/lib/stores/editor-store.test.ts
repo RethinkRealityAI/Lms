@@ -338,6 +338,30 @@ describe('EditorStore', () => {
       expect(state.isDirty).toBe(false);
     });
 
+    it('restoreSlide re-inserts a removed slide at its index with its blocks', () => {
+      const slides = new Map([
+        ['l1', [
+          { id: 's1', title: 'Slide 1', lesson_id: 'l1', order_index: 0, slide_type: 'content', status: 'published' } as any,
+          { id: 's2', title: 'Slide 2', lesson_id: 'l1', order_index: 1, slide_type: 'content', status: 'published' } as any,
+          { id: 's3', title: 'Slide 3', lesson_id: 'l1', order_index: 2, slide_type: 'content', status: 'published' } as any,
+        ]],
+      ]);
+      const blocks = new Map([
+        ['s2', [{ id: 'b1', slide_id: 's2', block_type: 'rich_text', data: {}, order_index: 0, is_visible: true } as any]],
+      ]);
+      store.getState().loadCourse({ courseId: 'c1', modules: [], lessons: new Map(), slides, blocks });
+
+      const removed = store.getState().slides.get('l1')!.find((s) => s.id === 's2')!;
+      const removedBlocks = store.getState().blocks.get('s2')!;
+      store.getState().removeSlide('l1', 's2');
+      expect(store.getState().slides.get('l1')!.map((s) => s.id)).toEqual(['s1', 's3']);
+
+      // Undo: restore at the original index with its blocks intact.
+      store.getState().restoreSlide('l1', removed, 1, removedBlocks);
+      expect(store.getState().slides.get('l1')!.map((s) => s.id)).toEqual(['s1', 's2', 's3']);
+      expect(store.getState().blocks.get('s2')).toEqual(removedBlocks);
+    });
+
     it('publishCourse sets publishError and resets isPublishing when db call rejects', async () => {
       vi.mocked(mockDbPublishCourse).mockRejectedValueOnce(new Error('Network failure'));
 

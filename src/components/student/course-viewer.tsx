@@ -770,7 +770,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           // `created_at` (insertion order) approximates the authored/import order far
           // better than `id` (a random UUID with no relation to sequence).
           const { data: blocksData } = await supabase.from('lesson_blocks').select('*')
-            .in('lesson_id', lessonIds).order('order_index', { ascending: true }).order('created_at', { ascending: true });
+            .in('lesson_id', lessonIds).is('deleted_at', null).order('order_index', { ascending: true }).order('created_at', { ascending: true });
 
           if (blocksData) {
             const grouped: Record<string, LessonBlock[]> = {};

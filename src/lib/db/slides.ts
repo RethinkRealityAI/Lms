@@ -97,20 +97,22 @@ export async function deleteSlide(
   institutionId: string,
   userId?: string,
 ): Promise<void> {
-  // Hard-delete the slide's blocks first. `lesson_blocks` has no deleted_at
-  // column (hard delete only), so soft-deleting only the slide used to leave its
-  // blocks behind as orphans — surfaced as "quizzes on deleted slides" in the
-  // content-health panel. They can never render once the slide is gone, and a
-  // deleted slide's content is not meant to survive it, so remove them together.
+  const now = new Date().toISOString();
+  // Soft-delete the slide AND its blocks together (Trash & Restore). Keeping their
+  // delete state consistent is what prevents the "quizzes on deleted slides" orphan
+  // class — restoreSlide clears both, and every block-read path filters
+  // `deleted_at IS NULL`. The `.is('deleted_at', null)` guard only trashes the
+  // currently-live blocks.
   const { error: blocksErr } = await supabase
     .from('lesson_blocks')
-    .delete()
-    .eq('slide_id', slideId);
+    .update({ deleted_at: now })
+    .eq('slide_id', slideId)
+    .is('deleted_at', null);
   if (blocksErr) throw blocksErr;
 
   const { error } = await supabase
     .from('slides')
-    .update({ deleted_at: new Date().toISOString() })
+    .update({ deleted_at: now })
     .eq('id', slideId);
 
   if (error) throw error;
@@ -121,6 +123,38 @@ export async function deleteSlide(
     entityType: 'slide',
     entityId: slideId,
     action: 'delete',
+  });
+}
+
+/**
+ * Restore a soft-deleted slide and its blocks (the "Undo" for slide deletion).
+ * Clears `deleted_at` on the slide and every block that belongs to it.
+ */
+export async function restoreSlide(
+  supabase: SupabaseClient,
+  slideId: string,
+  institutionId: string,
+  userId?: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('slides')
+    .update({ deleted_at: null })
+    .eq('id', slideId);
+  if (error) throw error;
+
+  const { error: blocksErr } = await supabase
+    .from('lesson_blocks')
+    .update({ deleted_at: null })
+    .eq('slide_id', slideId);
+  if (blocksErr) throw blocksErr;
+
+  await logActivity(supabase, {
+    institutionId,
+    userId,
+    entityType: 'slide',
+    entityId: slideId,
+    action: 'update',
+    changes: { restored: true },
   });
 }
 

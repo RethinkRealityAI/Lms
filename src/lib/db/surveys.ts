@@ -121,6 +121,7 @@ export async function getCourseSurveySummaries(
       .from('lesson_blocks')
       .select('id, lesson_id, lessons!inner(course_id, courses!inner(institution_id))')
       .eq('block_type', 'survey')
+      .is('deleted_at', null)
       .eq('lessons.courses.institution_id', institutionId),
   ]);
 
@@ -171,6 +172,7 @@ export async function getSurveyBlocksForCourse(
     .from('lesson_blocks')
     .select('id, title, lesson_id, data')
     .eq('block_type', 'survey')
+    .is('deleted_at', null)
     .in('lesson_id', lessonIds);
 
   if (!blocks?.length) return [];

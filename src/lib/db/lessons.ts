@@ -109,6 +109,7 @@ export async function getBlocksByLesson(
     .from('lesson_blocks')
     .select('*')
     .eq('lesson_id', lessonId)
+    .is('deleted_at', null)
     .order('order_index', { ascending: true });
   if (error) return [];
   return (data ?? []) as LessonBlock[];

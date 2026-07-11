@@ -84,6 +84,9 @@ export interface EditorState {
   removeLesson: (moduleId: string, lessonId: string) => void;
   addSlide: (lessonId: string, slide: Slide) => void;
   removeSlide: (lessonId: string, slideId: string) => void;
+  /** Re-insert a restored (un-trashed) slide at `index` with its blocks. No undo
+   *  entry — it IS the Undo — and not a dirty change (the DB already matches). */
+  restoreSlide: (lessonId: string, slide: Slide, index: number, blocks: BlockData[]) => void;
   reorderSlides: (lessonId: string, slideIds: string[]) => void;
   updateSlide: (lessonId: string, slideId: string, changes: Partial<Slide>) => void;
   moveSlideToLesson: (slideId: string, fromLessonId: string, toLessonId: string) => void;
@@ -386,6 +389,19 @@ export function createEditorStore() {
         const next = new Map(s.slides);
         next.set(lessonId, existing.filter((sl) => sl.id !== slideId));
         return { slides: next, ...push(s, snap, 'removeSlide', slideId) };
+      });
+    },
+
+    restoreSlide: (lessonId, slide, index, blocks) => {
+      set((s) => {
+        const list = [...(s.slides.get(lessonId) ?? [])];
+        const at = Math.min(Math.max(0, index), list.length);
+        list.splice(at, 0, slide);
+        const nextSlides = new Map(s.slides);
+        nextSlides.set(lessonId, list);
+        const nextBlocks = new Map(s.blocks);
+        nextBlocks.set(slide.id, blocks);
+        return { slides: nextSlides, blocks: nextBlocks };
       });
     },
 

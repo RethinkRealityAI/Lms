@@ -114,6 +114,7 @@ export async function loadEditorCourseData(
       .from('lesson_blocks')
       .select('id, slide_id, block_type, data, order_index, is_visible, created_at')
       .in('slide_id', slideIds)
+      .is('deleted_at', null)
       .order('order_index')
       .order('created_at');
 

@@ -4,6 +4,7 @@ import {
   createSlide,
   updateSlide,
   deleteSlide,
+  restoreSlide,
   reorderSlides,
   getSlideTemplates,
 } from './slides';
@@ -90,13 +91,23 @@ describe('deleteSlide', () => {
     expect(supabase.from).toHaveBeenCalledWith('slides');
   });
 
-  it('cascades: deletes the slide\'s lesson_blocks too (no orphans on deleted slides)', async () => {
+  it('soft-deletes the slide\'s lesson_blocks too (consistent trash, no orphans)', async () => {
     const supabase = makeMockSupabase(null);
     await deleteSlide(supabase as any, 's1', 'inst-1');
-    // lesson_blocks are hard-deleted alongside the slide, so nothing is left to
-    // surface as "quizzes on deleted slides".
+    // The slide AND its blocks are soft-deleted together, so nothing is left to
+    // surface as "quizzes on deleted slides", and both can be restored.
     expect(supabase.from).toHaveBeenCalledWith('lesson_blocks');
     expect(supabase.from).toHaveBeenCalledWith('slides');
+  });
+});
+
+describe('restoreSlide', () => {
+  it('clears deleted_at on the slide and its lesson_blocks, and logs activity', async () => {
+    const supabase = makeMockSupabase(null);
+    await restoreSlide(supabase as any, 's1', 'inst-1');
+    expect(supabase.from).toHaveBeenCalledWith('slides');
+    expect(supabase.from).toHaveBeenCalledWith('lesson_blocks');
+    expect(supabase.from).toHaveBeenCalledWith('content_activity_log');
   });
 
   it('logs activity after deleting a slide', async () => {

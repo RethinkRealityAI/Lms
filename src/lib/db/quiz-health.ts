@@ -40,6 +40,7 @@ export async function getProblematicQuizzes(
       'id, slide_id, data, lessons!inner(id, title, order_index, deleted_at, courses!inner(id, title, institution_id))',
     )
     .eq('block_type', 'quiz_inline')
+    .is('deleted_at', null)
     .eq('institution_id', institutionId);
 
   // Throw rather than returning [] — an empty array means "all quizzes are
@@ -126,6 +127,7 @@ export async function getCourseQuizHealth(
       'id, slide_id, data, slides(deleted_at), lessons!inner(id, title, order_index, deleted_at, course_id, courses!inner(id, title, institution_id))',
     )
     .eq('block_type', 'quiz_inline')
+    .is('deleted_at', null)
     .eq('lessons.course_id', courseId);
 
   // Throw rather than returning empty results — "no issues" must never be the

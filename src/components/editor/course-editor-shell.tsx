@@ -20,7 +20,7 @@ import { createClient } from '@/lib/supabase/client';
 import { loadEditorCourseData } from '@/lib/db/editor';
 import { getUserInstitutionId } from '@/lib/db/users';
 import { resolveInstitutionSlug } from '@/lib/tenant/path';
-import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide, moveSlideToLesson as dbMoveSlideToLesson, duplicateSlide as dbDuplicateSlide } from '@/lib/db/slides';
+import { updateSlide as dbUpdateSlide, deleteSlide as dbDeleteSlide, restoreSlide as dbRestoreSlide, moveSlideToLesson as dbMoveSlideToLesson, duplicateSlide as dbDuplicateSlide } from '@/lib/db/slides';
 import { duplicateBlock as dbDuplicateBlock } from '@/lib/db/blocks';
 import { updateBlock as dbUpdateBlock, createBlock as dbCreateBlock, deleteBlock as dbDeleteBlock } from '@/lib/db/blocks';
 import { createModule as dbCreateModule, deleteModule as dbDeleteModule, updateModule as dbUpdateModule } from '@/lib/db/modules';
@@ -690,14 +690,38 @@ function EditorContent({ courseId }: { courseId: string }) {
     }
     if (selectedEntity.type === 'slide') {
       for (const [lessonId, slideList] of slides) {
-        if (slideList.some((s) => s.id === selectedEntity.id)) {
+        const idx = slideList.findIndex((s) => s.id === selectedEntity.id);
+        if (idx >= 0) {
+          // Capture enough to restore before we remove it from the tree.
+          const slide = slideList[idx];
+          const slideBlocks = store!.getState().blocks.get(slide.id) ?? [];
           try {
-            await dbDeleteSlide(supabase, selectedEntity.id, institutionId);
-            removeSlide(lessonId, selectedEntity.id);
-            // Select parent lesson
+            await dbDeleteSlide(supabase, slide.id, institutionId);
+            removeSlide(lessonId, slide.id);
             selectEntity({ type: 'lesson', id: lessonId });
+            // Undo: the delete soft-deletes the slide + its blocks, so restore just
+            // clears deleted_at on both and re-inserts them at the original index.
+            toast('Slide deleted', {
+              description: slide.title || 'Untitled slide',
+              duration: 8000,
+              action: {
+                label: 'Undo',
+                onClick: async () => {
+                  try {
+                    await dbRestoreSlide(supabase, slide.id, institutionId);
+                    store!.getState().restoreSlide(lessonId, slide, idx, slideBlocks);
+                    selectEntity({ type: 'slide', id: slide.id });
+                    toast.success('Slide restored');
+                  } catch (err) {
+                    console.error('Failed to restore slide:', err);
+                    toast.error('Failed to restore slide');
+                  }
+                },
+              },
+            });
           } catch (err) {
             console.error('Failed to delete slide:', err);
+            toast.error('Failed to delete slide');
           }
           break;
         }
