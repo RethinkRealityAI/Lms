@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, EyeOff, HelpCircle, Unlink, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { getCourseQuizHealth, type CourseQuizHealth } from '@/lib/db/quiz-health';
@@ -34,6 +35,28 @@ export function CourseHealthIndicator() {
   const [open, setOpen] = useState(false);
   const [quizHealth, setQuizHealth] = useState<CourseQuizHealth>(EMPTY_HEALTH);
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  // The popover is portaled to <body> so it can never be trapped behind the
+  // editor's stacking contexts (the toolbar's backdrop-blur, or the slide
+  // preview's z-90 layer) — it clipped behind the preview otherwise. Anchor it to
+  // the chip via a fixed position computed from the button's on-screen rect.
+  const POPOVER_WIDTH = 384; // w-96
+  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+
+  const positionPopover = useCallback(() => {
+    const r = buttonRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - POPOVER_WIDTH - 8));
+    setPos({ top: r.bottom + 8, left });
+  }, []);
+
+  const toggleOpen = useCallback(() => {
+    setOpen((v) => {
+      if (!v) positionPopover();
+      return !v;
+    });
+  }, [positionPopover]);
 
   const lessonTitleById = useMemo(() => {
     const map = new Map<string, string>();
@@ -86,23 +109,31 @@ export function CourseHealthIndicator() {
     wasBusyRef.current = busy;
   }, [isSaving, isPublishing, refreshQuizHealth]);
 
-  // Close the popover on outside click / Escape.
+  // Close the popover on outside click / Escape. The panel is portaled outside
+  // rootRef, so a click inside it must also count as "inside" (check popoverRef).
   useEffect(() => {
     if (!open) return;
     function onMouseDown(e: MouseEvent) {
-      if (rootRef.current?.contains(e.target as Node)) return;
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (popoverRef.current?.contains(target)) return;
       setOpen(false);
     }
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') setOpen(false);
     }
+    // Keep the portaled panel anchored to the chip if the layout shifts.
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', positionPopover);
+    window.addEventListener('scroll', positionPopover, true);
     return () => {
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', positionPopover);
+      window.removeEventListener('scroll', positionPopover, true);
     };
-  }, [open]);
+  }, [open, positionPopover]);
 
   const issueCount = draftSlides.length + quizHealth.problematic.length + quizHealth.stranded.length;
   if (issueCount === 0) return null;
@@ -120,7 +151,8 @@ export function CourseHealthIndicator() {
   return (
     <div ref={rootRef} className="relative">
       <button
-        onClick={() => setOpen((v) => !v)}
+        ref={buttonRef}
+        onClick={toggleOpen}
         className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider transition-colors"
         title="Content health — issues in this course"
       >
@@ -128,8 +160,11 @@ export function CourseHealthIndicator() {
         {issueCount} issue{issueCount !== 1 ? 's' : ''}
       </button>
 
-      {open && (
-        <div className="absolute left-0 top-full mt-2 w-96 max-h-[26rem] overflow-y-auto bg-white rounded-xl shadow-xl border border-gray-200 z-[80] py-2">
+      {open && createPortal(
+        <div
+          ref={popoverRef}
+          style={{ position: 'fixed', top: pos.top, left: pos.left, width: POPOVER_WIDTH }}
+          className="max-h-[26rem] overflow-y-auto bg-white rounded-xl shadow-xl border border-gray-200 z-[95] py-2">
           <div className="flex items-center justify-between px-4 pb-2 border-b border-gray-100">
             <span className="text-xs font-semibold text-gray-700">Content health</span>
             <button
@@ -208,7 +243,8 @@ export function CourseHealthIndicator() {
               ))}
             </div>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

@@ -90,6 +90,15 @@ describe('deleteSlide', () => {
     expect(supabase.from).toHaveBeenCalledWith('slides');
   });
 
+  it('cascades: deletes the slide\'s lesson_blocks too (no orphans on deleted slides)', async () => {
+    const supabase = makeMockSupabase(null);
+    await deleteSlide(supabase as any, 's1', 'inst-1');
+    // lesson_blocks are hard-deleted alongside the slide, so nothing is left to
+    // surface as "quizzes on deleted slides".
+    expect(supabase.from).toHaveBeenCalledWith('lesson_blocks');
+    expect(supabase.from).toHaveBeenCalledWith('slides');
+  });
+
   it('logs activity after deleting a slide', async () => {
     const supabase = makeMockSupabase(null);
     await deleteSlide(supabase as any, 's1', 'inst-1');

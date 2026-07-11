@@ -34,8 +34,17 @@ interface TypeCache {
   swipe?: { options: string[]; swipe_cards?: Array<{ question: string; correct: 'left' | 'right' }> };
 }
 
-function parseSelectAllCorrect(correct?: string): Set<string> {
-  return new Set((correct ?? '').split('; ').map(s => s.trim()).filter(Boolean));
+// select_all's correct_answer is stored as EITHER a '; '-joined string OR a
+// string[] (SCAGO-imported quizzes use the array form). The Zod schema types it as
+// `string`, so the array shape is a runtime-only surprise — calling .split on an
+// array threw "(e ?? '').split is not a function" and crashed the whole editor the
+// moment a select_all quiz with array data was opened. Guard both shapes, exactly
+// like the viewer's parser (quiz-inline/viewer.tsx).
+function parseSelectAllCorrect(correct?: unknown): Set<string> {
+  const parts = Array.isArray(correct)
+    ? correct.map((v) => String(v))
+    : String(correct ?? '').split('; ');
+  return new Set(parts.map((s) => s.trim()).filter(Boolean));
 }
 
 function encodeSelectAllCorrect(selected: Set<string>): string {

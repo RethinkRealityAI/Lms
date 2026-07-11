@@ -97,6 +97,17 @@ export async function deleteSlide(
   institutionId: string,
   userId?: string,
 ): Promise<void> {
+  // Hard-delete the slide's blocks first. `lesson_blocks` has no deleted_at
+  // column (hard delete only), so soft-deleting only the slide used to leave its
+  // blocks behind as orphans — surfaced as "quizzes on deleted slides" in the
+  // content-health panel. They can never render once the slide is gone, and a
+  // deleted slide's content is not meant to survive it, so remove them together.
+  const { error: blocksErr } = await supabase
+    .from('lesson_blocks')
+    .delete()
+    .eq('slide_id', slideId);
+  if (blocksErr) throw blocksErr;
+
   const { error } = await supabase
     .from('slides')
     .update({ deleted_at: new Date().toISOString() })

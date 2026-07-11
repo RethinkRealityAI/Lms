@@ -162,6 +162,17 @@ export function SlideNode({ slide, lessonId, slideIndex, onMoveSlide, onDuplicat
           isActive ? 'bg-[#DC2626] text-white' : 'hover:bg-gray-50 text-gray-600'
         }`}
       >
+        {/* Draft marker sits to the LEFT of the thumbnail as a compact dot: a full
+            "Draft" text pill (wherever placed) crowds the narrow panel and collapses
+            the slide title to nothing. The dot keeps the draft state visible (with a
+            tooltip) while the title stays readable. */}
+        {slide.status !== 'published' && (
+          <span
+            className={`shrink-0 w-1.5 h-1.5 rounded-full ${isActive ? 'bg-amber-200' : 'bg-amber-500'}`}
+            title="Draft — not visible to students until the course is published"
+            aria-label="Draft slide"
+          />
+        )}
         <SlideThumbnail slide={slide} />
         {isRenaming ? (
           <input
@@ -185,18 +196,6 @@ export function SlideNode({ slide, lessonId, slideIndex, onMoveSlide, onDuplicat
             <span className="text-xs truncate flex-1 min-w-0" title={slideLabel}>
               {displayTitle}
             </span>
-            {slide.status !== 'published' && (
-              <span
-                className={`shrink-0 text-[9px] font-semibold uppercase tracking-wider px-1.5 py-px rounded-full border ${
-                  isActive
-                    ? 'bg-white/15 border-white/30 text-amber-100'
-                    : 'bg-amber-50 border-amber-200 text-amber-700'
-                }`}
-                title="Draft — not visible to students until the course is published"
-              >
-                Draft
-              </span>
-            )}
           </>
         )}
         {!isRenaming && (
