@@ -871,6 +871,12 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // ---------------------------------------------------------------------------
   const handleMarkComplete = useCallback(async () => {
     if (!selectedLesson) return;
+    // Redoing a completed lesson is a pure no-op: without this guard the upsert
+    // below OVERWRITES the original completed_at on every revisit (clobbering
+    // completion history — including backdated legacy-import dates), re-fires the
+    // "Progress saved" toast, and re-calls the certificate RPC. Only an admin
+    // reset (which deletes the progress row) makes a lesson completable again.
+    if (!previewMode && progress[selectedLesson.id]?.completed === true) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     // Course-completion gate: when this is the final lesson and a completion
