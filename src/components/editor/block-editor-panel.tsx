@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
+import { ChunkErrorBoundary } from './chunk-error-boundary';
 import {
   Trash2, AlignStartVertical, AlignCenterVertical, AlignEndVertical,
   AlignHorizontalJustifyStart, AlignHorizontalJustifyCenter, AlignHorizontalJustifyEnd,
@@ -320,22 +321,23 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
         );
       })()}
 
-      <Suspense
-        key={block.id}
-        fallback={
-          <div className="animate-pulse bg-gray-100 rounded-lg h-32" />
-        }
-      >
-        <EditorComponent
-          data={block.data}
-          block={{ id: block.id, title: '' }}
-          slideBlockStyle={slideBlockStyle}
-          breakpoint={breakpoint}
-          onChange={(newData) => {
-            updateBlock(slideId, blockId, { data: newData as Record<string, unknown> });
-          }}
-        />
-      </Suspense>
+      <ChunkErrorBoundary key={block.id} label={block.block_type}>
+        <Suspense
+          fallback={
+            <div className="animate-pulse bg-gray-100 rounded-lg h-32" />
+          }
+        >
+          <EditorComponent
+            data={block.data}
+            block={{ id: block.id, title: '' }}
+            slideBlockStyle={slideBlockStyle}
+            breakpoint={breakpoint}
+            onChange={(newData) => {
+              updateBlock(slideId, blockId, { data: newData as Record<string, unknown> });
+            }}
+          />
+        </Suspense>
+      </ChunkErrorBoundary>
     </div>
   );
 }
