@@ -90,6 +90,32 @@ export async function setCourseCompletionSurveyRequired(
   return { error: error?.message ?? null };
 }
 
+/** Read whether lessons must be completed in order (migration 059). Defaults true. */
+export async function getCourseSequentialLessons(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('courses')
+    .select('sequential_lessons')
+    .eq('id', courseId)
+    .maybeSingle();
+  return data?.sequential_lessons ?? true;
+}
+
+/** Toggle whether learners must finish each lesson before the next unlocks. */
+export async function setCourseSequentialLessons(
+  supabase: SupabaseClient,
+  courseId: string,
+  sequential: boolean,
+): Promise<{ error: string | null }> {
+  const { error } = await supabase
+    .from('courses')
+    .update({ sequential_lessons: sequential })
+    .eq('id', courseId);
+  return { error: error?.message ?? null };
+}
+
 /** The current user's existing completion-feedback response for a course, if any. */
 export async function getMyCourseFeedback(
   supabase: SupabaseClient,

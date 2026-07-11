@@ -1,5 +1,5 @@
 import type { LessonBlock } from '@/types';
-import { sortBlocks } from './lesson-blocks';
+import { sortBlocksByGrid } from './lesson-blocks';
 
 /** Slide render settings (background, per-slide overrides). Mirrors the viewer's local shape. */
 export interface SlideSettings {
@@ -80,7 +80,7 @@ export function buildLessonPages(
         kind: 'page' as const,
         slideId: s.id,
         slideTitle: s.title,
-        blocks: sortBlocks(blocksBySlide[s.id] ?? []),
+        blocks: sortBlocksByGrid(blocksBySlide[s.id] ?? []),
         settings: s.settings,
         slideType: s.slide_type,
         canvasData: s.canvas_data,
@@ -88,14 +88,14 @@ export function buildLessonPages(
 
     // Legacy slide-less blocks mixed into a slide-model lesson still render.
     if (blocksBySlide[NO_SLIDE]?.length) {
-      pages.push({ kind: 'page' as const, slideId: '', blocks: sortBlocks(blocksBySlide[NO_SLIDE]) });
+      pages.push({ kind: 'page' as const, slideId: '', blocks: sortBlocksByGrid(blocksBySlide[NO_SLIDE]) });
     }
     return pages;
   }
 
   if (allBlocks.length > 0) {
     // No block references a slide — pure legacy lesson; nothing to hide.
-    return [{ kind: 'page' as const, slideId: '', blocks: sortBlocks(allBlocks) }];
+    return [{ kind: 'page' as const, slideId: '', blocks: sortBlocksByGrid(allBlocks) }];
   }
 
   return [];

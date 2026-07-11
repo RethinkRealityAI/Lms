@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from '@/components/ui/textarea';
 import {
   CheckCircle, Circle, Play, Loader2, Star, Send,
-  ChevronLeft, ChevronRight, Award, BookOpen,
+  ChevronLeft, ChevronRight, ChevronDown, Award, BookOpen,
   Minimize2, Maximize2, Menu, X, Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -35,6 +35,7 @@ import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getMyCourseFeedback, getMyProgramFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
+import { getViewedSlideIds, markSlideViewed } from '@/lib/db/slide-progress';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
 import { CertificateCelebration } from '@/components/certificates/certificate-celebration';
@@ -551,6 +552,16 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [lessonBlocks, setLessonBlocks] = useState<Record<string, LessonBlock[]>>({});
   const [lessonSlidesMap, setLessonSlidesMap] = useState<Record<string, Array<{ id: string; order_index: number; title?: string | null; settings?: SlideSettings; slide_type?: string; canvas_data?: Record<string, unknown> | null }>>>({});
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
+  // Authenticated user id — cached so slide-progress writes/reads don't re-fetch getUser().
+  const [userId, setUserId] = useState<string | null>(null);
+  // Per-slide progress (migration 059): DB slide ids the learner has viewed in this course.
+  const [viewedSlideIds, setViewedSlideIds] = useState<Set<string>>(new Set());
+  // Which lessons are expanded in the sidebar to reveal their slide list.
+  const [expandedLessons, setExpandedLessons] = useState<Set<string>>(new Set());
+  // If the initial progress fetch ERRORS (network blip, not just empty), sequential gating
+  // must FAIL OPEN — otherwise a transient error would lock every lesson for a learner who
+  // may have finished the course. Empty-but-successful still gates normally (a new learner).
+  const [progressLoadFailed, setProgressLoadFailed] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   // Slide viewer
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -638,13 +649,102 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
   useEffect(() => { fetchData(); }, [courseId]);
 
+  // ── Slide-level progress + sequential lesson gating (migration 059) ─────────
+  const sequentialLessons = (course as { sequential_lessons?: boolean } | null)?.sequential_lessons !== false;
+
+  const isLessonComplete = useCallback(
+    (lessonId: string) => !!progress[lessonId]?.completed,
+    [progress],
+  );
+
+  // A slide counts as "done" if the learner viewed it OR its lesson is already complete
+  // (covers learners who finished lessons before slide_progress existed — no backfill needed).
+  const isSlideViewed = useCallback(
+    (slideId: string, lessonId: string) => viewedSlideIds.has(slideId) || !!progress[lessonId]?.completed,
+    [viewedSlideIds, progress],
+  );
+
+  // Content pages (real DB slides, excluding synthesized legacy pages) per lesson — powers
+  // the sidebar slide list, jump-to-slide, and the slide-count progress bar.
+  const lessonPagesMap = React.useMemo(() => {
+    const map: Record<string, Array<{ slideId: string; slideTitle?: string | null }>> = {};
+    for (const lesson of lessons) {
+      const pages = buildLessonPages(lessonSlidesMap[lesson.id] ?? [], lessonBlocks[lesson.id] ?? []);
+      map[lesson.id] = pages.filter((p) => p.slideId).map((p) => ({ slideId: p.slideId, slideTitle: p.slideTitle }));
+    }
+    return map;
+  }, [lessons, lessonSlidesMap, lessonBlocks]);
+
+  const allContentSlides = React.useMemo(() => {
+    const arr: Array<{ slideId: string; lessonId: string }> = [];
+    for (const lesson of lessons) for (const p of lessonPagesMap[lesson.id] ?? []) arr.push({ slideId: p.slideId, lessonId: lesson.id });
+    return arr;
+  }, [lessons, lessonPagesMap]);
+
+  // A lesson is locked when sequential gating is on and an earlier lesson isn't complete.
+  // A completed lesson is never locked (revisiting is always allowed); preview mode is exempt.
+  const isLessonLocked = useCallback(
+    (lessonIndex: number) => {
+      // Fail OPEN when gating is off, in preview, or when the progress load errored (a
+      // transient failure must never lock a learner out of content they may have completed).
+      if (!sequentialLessons || previewMode || progressLoadFailed || lessonIndex <= 0) return false;
+      const lesson = lessons[lessonIndex];
+      if (lesson && isLessonComplete(lesson.id)) return false;
+      return lessons.slice(0, lessonIndex).some((l) => !isLessonComplete(l.id));
+    },
+    [sequentialLessons, previewMode, progressLoadFailed, lessons, isLessonComplete],
+  );
+
+  const toggleLessonExpanded = useCallback((lessonId: string) => {
+    setExpandedLessons((prev) => {
+      const next = new Set(prev);
+      if (next.has(lessonId)) next.delete(lessonId); else next.add(lessonId);
+      return next;
+    });
+  }, []);
+
+  const lockedToast = useCallback((lessonIndex: number) => {
+    const prev = lessonIndex > 0 ? lessons[lessonIndex - 1] : null;
+    toast.info('Complete the previous lesson first', {
+      description: prev ? `Finish "${prev.title}" to unlock this lesson.` : undefined,
+    });
+  }, [lessons]);
+
   // ---------------------------------------------------------------------------
-  // Lesson selection — always resets to slide 0
+  // Lesson selection — gated by sequential completion; always resets to slide 0
   // ---------------------------------------------------------------------------
   const selectLesson = useCallback((lesson: Lesson) => {
+    const idx = lessons.findIndex((l) => l.id === lesson.id);
+    if (isLessonLocked(idx)) { lockedToast(idx); return; }
     setSelectedLesson(lesson);
     setCurrentSlide(0);
-  }, []);
+  }, [lessons, isLessonLocked, lockedToast]);
+
+  // Jump straight to a slide from the sidebar. Same-lesson = set the slide index (content page
+  // i sits at currentSlides index i+1, after the title slide); cross-lesson = switch lesson and
+  // let the pending-nav effect land on the slide once its slides rebuild.
+  const jumpToSlide = useCallback((lesson: Lesson, slideId: string) => {
+    const idx = lessons.findIndex((l) => l.id === lesson.id);
+    if (isLessonLocked(idx)) { lockedToast(idx); return; }
+    // Only jump to slides the learner has already reached (revisit). Jumping FORWARD to an
+    // unseen slide would skip any required quiz/interactive gate on an intermediate slide —
+    // forward progress must go through the gated Next button. Slides of a completed lesson all
+    // read as viewed, so completed lessons are fully revisitable.
+    if (!isSlideViewed(slideId, lesson.id)) {
+      toast.info('Keep going to reach this slide', {
+        description: 'Work through the lesson in order — later slides unlock as you go.',
+      });
+      return;
+    }
+    if (lesson.id !== selectedLesson?.id) {
+      pendingNavigateRef.current = slideId;
+      setSelectedLesson(lesson);
+      setCurrentSlide(0);
+    } else {
+      const i = (lessonPagesMap[lesson.id] ?? []).findIndex((p) => p.slideId === slideId);
+      if (i >= 0) { navDirection.current = 'backward'; setCurrentSlide(i + 1); }
+    }
+  }, [lessons, isLessonLocked, lockedToast, isSlideViewed, selectedLesson?.id, lessonPagesMap]);
 
   // ---------------------------------------------------------------------------
   // Data fetching
@@ -659,6 +759,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setPageLoading(false); return; }
+      setUserId(user.id);
 
       // Sequential program guard — if this course sits inside a sequential program
       // and an earlier-ordered course isn't certified yet, lock the viewer.
@@ -743,9 +844,15 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         // at the first incomplete lesson.
         const progressMap: Record<string, ProgressType> = {};
         if (enrollment && lessonsData.length > 0) {
-          const { data: progressData } = await supabase.from('progress').select('*')
+          const { data: progressData, error: progressErr } = await supabase.from('progress').select('*')
             .eq('user_id', user.id).in('lesson_id', lessonsData.map(l => l.id));
-          if (progressData) {
+          // supabase-js returns {data:null,error} on failure (never throws), so a transient
+          // error would otherwise leave progress empty → every lesson reads "incomplete" →
+          // sequential gating locks the whole course. Fail the GATE open when the load errored.
+          if (progressErr) {
+            setProgressLoadFailed(true);
+          } else if (progressData) {
+            setProgressLoadFailed(false);
             progressData.forEach(p => { progressMap[p.lesson_id] = p; });
             setProgress(progressMap);
           }
@@ -804,6 +911,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
             const qm: Record<string, boolean> = {};
             quizzesData.forEach(q => { qm[q.lesson_id] = true; });
             setLessonQuizzes(qm);
+          }
+
+          // Per-slide progress (migration 059) — which slides the learner has already
+          // viewed, for the smooth progress bar + sidebar checkmarks. Preview mode never
+          // reads/writes progress. Never breaks the viewer on failure.
+          if (user && !previewMode) {
+            const viewed = await getViewedSlideIds(supabase, user.id, courseId).catch(() => new Set<string>());
+            setViewedSlideIds(viewed);
           }
 
           // Rehydrate the quiz gate from persisted answers. Correct answers are
@@ -1150,6 +1265,23 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     if (!onLocationChange) return;
     onLocationChange(selectedLesson?.id ?? null, currentPageSlideId);
   }, [selectedLesson?.id, currentPageSlideId, onLocationChange]);
+
+  // Mark the current slide viewed (migration 059) — drives the progress bar + sidebar
+  // checkmarks. Optimistic local add, idempotent DB upsert, fire-and-forget. Title/completion
+  // slides (no slideId) and preview mode are never tracked.
+  useEffect(() => {
+    if (previewMode || !userId || !currentPageSlideId || !selectedLesson) return;
+    if (viewedSlideIds.has(currentPageSlideId)) return;
+    const slideId = currentPageSlideId;
+    setViewedSlideIds((prev) => { const n = new Set(prev); n.add(slideId); return n; });
+    void markSlideViewed(supabase, {
+      userId,
+      slideId,
+      courseId,
+      lessonId: selectedLesson.id,
+      institutionId: (course?.institution_id as string | undefined) ?? null,
+    }).catch(() => {});
+  }, [currentPageSlideId, userId, previewMode, selectedLesson, courseId, course?.institution_id, viewedSlideIds, supabase]);
 
   // One-time jump to the editor-requested slide. Must wait until ALL lesson data
   // has loaded (pageLoading === false) — otherwise the effect fires on the
@@ -1531,7 +1663,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     Object.entries(progress).filter(([id, p]) => p.completed && lessonIdSet.has(id)).length,
     lessons.length,
   );
-  const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
+  // Progress bar is SLIDE-granular (migration 059) so it advances as the learner moves through
+  // slides, not only when a whole lesson completes. Falls back to lesson-granular for legacy
+  // lessons that have no slides at all.
+  const viewedContentCount = allContentSlides.filter((s) => isSlideViewed(s.slideId, s.lessonId)).length;
+  const totalContentSlides = allContentSlides.length;
+  const progressPercent = totalContentSlides > 0
+    ? Math.round((viewedContentCount / totalContentSlides) * 100)
+    : (lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0);
 
   function getSlideAnimation(transition?: string, direction: 'forward' | 'backward' = 'forward'): string {
     switch (transition) {
@@ -1655,22 +1794,69 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
               </CardHeader>
               <CardContent className="p-0 flex-1 overflow-hidden">
                 <div role="list" aria-label="Course lessons" className="h-full overflow-y-auto divide-y divide-slate-100">
-                  {lessons.map(lesson => (
-                    <button key={lesson.id} role="listitem" onClick={() => selectLesson(lesson)}
-                      aria-current={selectedLesson?.id === lesson.id ? 'true' : undefined}
-                      aria-label={`${lesson.title}${progress[lesson.id]?.completed ? ' (completed)' : ''}`}
-                      className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-inset ${
-                        selectedLesson?.id === lesson.id
-                          ? 'bg-blue-50 text-[#1E3A5F] border-l-2 border-[#1E3A5F]'
-                          : 'hover:bg-slate-50 text-slate-700 border-l-2 border-transparent'
-                      }`}
-                    >
-                      {progress[lesson.id]?.completed
-                        ? <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
-                        : <Circle className="h-4 w-4 text-slate-300 shrink-0" />}
-                      <span className="text-sm font-medium leading-snug">{lesson.title}</span>
-                    </button>
-                  ))}
+                  {lessons.map((lesson, lIdx) => {
+                    const locked = isLessonLocked(lIdx);
+                    const complete = isLessonComplete(lesson.id);
+                    const isSelected = selectedLesson?.id === lesson.id;
+                    const pages = lessonPagesMap[lesson.id] ?? [];
+                    const expanded = !locked && (expandedLessons.has(lesson.id) || isSelected);
+                    const viewedInLesson = pages.filter((p) => isSlideViewed(p.slideId, lesson.id)).length;
+                    return (
+                      <div key={lesson.id}>
+                        <div className={`flex items-center ${isSelected ? 'bg-blue-50 border-l-2 border-[#1E3A5F]' : 'border-l-2 border-transparent'}`}>
+                          <button role="listitem"
+                            onClick={() => { if (locked) { lockedToast(lIdx); return; } selectLesson(lesson); setExpandedLessons(prev => new Set(prev).add(lesson.id)); }}
+                            aria-current={isSelected ? 'true' : undefined}
+                            aria-label={`${lesson.title}${complete ? ' (completed)' : locked ? ' (locked)' : ''}`}
+                            /* NOT `disabled` — a native disabled button swallows the click, so the
+                               "complete the previous lesson" toast would never fire. aria-disabled +
+                               styling convey the locked state while keeping onClick reachable. */
+                            aria-disabled={locked || undefined}
+                            className={`flex-1 min-w-0 text-left pl-5 py-3.5 flex items-center gap-3 transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-inset ${
+                              locked ? 'text-slate-400 cursor-not-allowed' : isSelected ? 'text-[#1E3A5F]' : 'hover:bg-slate-50 text-slate-700'
+                            }`}
+                          >
+                            {locked ? <Lock className="h-4 w-4 text-slate-300 shrink-0" />
+                              : complete ? <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                              : <Circle className="h-4 w-4 text-slate-300 shrink-0" />}
+                            <span className="text-sm font-medium leading-snug flex-1 min-w-0">{lesson.title}</span>
+                            {pages.length > 0 && !locked && (
+                              <span className="text-[10px] font-bold text-slate-400 tabular-nums shrink-0">{viewedInLesson}/{pages.length}</span>
+                            )}
+                          </button>
+                          {pages.length > 0 && !locked ? (
+                            <button onClick={() => toggleLessonExpanded(lesson.id)}
+                              aria-label={expanded ? `Collapse ${lesson.title} slides` : `Expand ${lesson.title} slides`}
+                              className="p-2 mr-1 text-slate-400 hover:text-slate-700 shrink-0 rounded focus-visible:ring-2 focus-visible:ring-[#2563EB]">
+                              {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </button>
+                          ) : <span className="w-8 shrink-0" />}
+                        </div>
+                        {expanded && pages.length > 0 && (
+                          <div role="list" aria-label={`${lesson.title} slides`} className="pb-1.5 bg-slate-50/40">
+                            {pages.map((page, pIdx) => {
+                              const viewed = isSlideViewed(page.slideId, lesson.id);
+                              const isCurrentSlide = isSelected && currentPageSlideId === page.slideId;
+                              return (
+                                <button key={page.slideId} role="listitem"
+                                  onClick={() => jumpToSlide(lesson, page.slideId)}
+                                  aria-current={isCurrentSlide ? 'true' : undefined}
+                                  className={`w-full text-left pl-11 pr-3 py-2 flex items-center gap-2.5 text-xs transition-colors ${
+                                    isCurrentSlide ? 'bg-blue-100/70 text-[#1E3A5F] font-bold' : 'hover:bg-slate-100 text-slate-500'
+                                  }`}
+                                >
+                                  {viewed
+                                    ? <CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                    : <Circle className={`h-3.5 w-3.5 shrink-0 ${isCurrentSlide ? 'text-[#1E3A5F]' : 'text-slate-300'}`} />}
+                                  <span className="truncate leading-snug">{page.slideTitle || `Slide ${pIdx + 1}`}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -1983,7 +2169,10 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                     {isCompletionSlide ? (
                       nextLesson ? (
                         <button
-                          onClick={() => selectLesson(nextLesson)}
+                          /* Sanctioned forward path: only reachable once this lesson is complete,
+                             so it advances directly and bypasses the sequential lock (which could
+                             otherwise briefly block it before progress state settles). */
+                          onClick={() => { setSelectedLesson(nextLesson); setCurrentSlide(0); setExpandedLessons(prev => new Set(prev).add(nextLesson.id)); }}
                           disabled={!allQuizzesComplete}
                           aria-label="Next lesson"
                           className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
@@ -2087,32 +2276,66 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
             <div role="list" aria-label="Course lessons" className="flex-1 overflow-y-auto px-3 pb-5 space-y-1.5">
               {lessons.map((lesson, i) => {
                 const active = selectedLesson?.id === lesson.id;
-                const done = progress[lesson.id]?.completed;
+                const done = isLessonComplete(lesson.id);
+                const locked = isLessonLocked(i);
+                const pages = lessonPagesMap[lesson.id] ?? [];
                 return (
-                  <button
-                    key={lesson.id}
-                    role="listitem"
-                    onClick={() => { selectLesson(lesson); setLessonMenuOpen(false); }}
-                    aria-current={active ? 'true' : undefined}
-                    style={active && effectiveTheme.chromeAccent ? { boxShadow: `inset 3px 0 0 ${effectiveTheme.chromeAccent}` } : undefined}
-                    className={`w-full text-left px-3.5 py-3 rounded-2xl flex items-center gap-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
-                      active
-                        ? 'bg-white/90 text-slate-900 shadow-md shadow-slate-900/10 ring-1 ring-slate-900/10 border border-white'
-                        : 'bg-white/45 hover:bg-white/75 border border-white/60 text-slate-600'
-                    }`}
-                  >
-                    <span
-                      className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                        done ? 'bg-green-100 text-green-600'
-                          : active ? 'bg-slate-900/10 text-slate-700'
-                          : 'bg-slate-100 text-slate-400'
+                  <div key={lesson.id} className="space-y-1">
+                    <button
+                      role="listitem"
+                      onClick={() => { if (locked) { lockedToast(i); return; } selectLesson(lesson); if (pages.length === 0) setLessonMenuOpen(false); }}
+                      /* aria-disabled not `disabled`, so the locked toast still fires on tap. */
+                      aria-disabled={locked || undefined}
+                      aria-current={active ? 'true' : undefined}
+                      aria-label={`${lesson.title}${done ? ' (completed)' : locked ? ' (locked)' : ''}`}
+                      style={active && effectiveTheme.chromeAccent ? { boxShadow: `inset 3px 0 0 ${effectiveTheme.chromeAccent}` } : undefined}
+                      className={`w-full text-left px-3.5 py-3 rounded-2xl flex items-center gap-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+                        locked
+                          ? 'bg-white/30 border border-white/40 text-slate-400 cursor-not-allowed'
+                          : active
+                            ? 'bg-white/90 text-slate-900 shadow-md shadow-slate-900/10 ring-1 ring-slate-900/10 border border-white'
+                            : 'bg-white/45 hover:bg-white/75 border border-white/60 text-slate-600'
                       }`}
                     >
-                      {done ? <CheckCircle className="h-4 w-4" /> : i + 1}
-                    </span>
-                    <span className={`text-sm leading-snug min-w-0 flex-1 break-words ${active ? 'font-bold' : 'font-semibold'}`}>{lesson.title}</span>
-                    {active && <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />}
-                  </button>
+                      <span
+                        className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                          locked ? 'bg-slate-200/60 text-slate-400'
+                            : done ? 'bg-green-100 text-green-600'
+                            : active ? 'bg-slate-900/10 text-slate-700'
+                            : 'bg-slate-100 text-slate-400'
+                        }`}
+                      >
+                        {locked ? <Lock className="h-4 w-4" /> : done ? <CheckCircle className="h-4 w-4" /> : i + 1}
+                      </span>
+                      <span className={`text-sm leading-snug min-w-0 flex-1 break-words ${active ? 'font-bold' : 'font-semibold'}`}>{lesson.title}</span>
+                      {active && (pages.length > 0
+                        ? <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+                        : <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />)}
+                    </button>
+                    {active && pages.length > 0 && (
+                      <div className="pl-3.5 pr-1 space-y-1">
+                        {pages.map((page, pIdx) => {
+                          const viewed = isSlideViewed(page.slideId, lesson.id);
+                          const isCurrentSlide = currentPageSlideId === page.slideId;
+                          return (
+                            <button
+                              key={page.slideId}
+                              onClick={() => { jumpToSlide(lesson, page.slideId); setLessonMenuOpen(false); }}
+                              aria-current={isCurrentSlide ? 'true' : undefined}
+                              className={`w-full text-left px-3 py-2 rounded-xl flex items-center gap-2.5 text-xs transition-all ${
+                                isCurrentSlide ? 'bg-white/90 text-slate-900 font-bold ring-1 ring-slate-900/10' : 'bg-white/40 hover:bg-white/70 text-slate-600'
+                              }`}
+                            >
+                              {viewed
+                                ? <CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                : <Circle className="h-3.5 w-3.5 text-slate-300 shrink-0" />}
+                              <span className="truncate leading-snug">{page.slideTitle || `Slide ${pIdx + 1}`}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>

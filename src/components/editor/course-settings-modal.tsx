@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Image as ImageIcon, Type, SlidersHorizontal, RotateCcw, Loader2, MessageSquare } from 'lucide-react';
+import { Image as ImageIcon, Type, SlidersHorizontal, RotateCcw, Loader2, MessageSquare, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { ColorSwatch } from './theme-editor/color-swatch';
 import { DropZoneUploader } from './drop-zone-uploader';
@@ -11,7 +11,7 @@ import { useEditorStore } from './editor-store-context';
 import { DEFAULT_COURSE_THEME, type CourseThemeSettings, type BlockStyle } from '@/lib/content/course-theme';
 import { createClient } from '@/lib/supabase/client';
 import { getSurveyTemplates, type SurveyTemplate } from '@/lib/db/survey-templates';
-import { getCompletionSurvey, setCourseCompletionSurveyTemplate, getCourseCompletionSurveyRequired, setCourseCompletionSurveyRequired } from '@/lib/db/course-feedback';
+import { getCompletionSurvey, setCourseCompletionSurveyTemplate, getCourseCompletionSurveyRequired, setCourseCompletionSurveyRequired, getCourseSequentialLessons, setCourseSequentialLessons } from '@/lib/db/course-feedback';
 
 const BLOCK_STYLES: { value: BlockStyle; label: string; description: string; preview: string }[] = [
   { value: 'glass', label: 'Light Glass', description: 'Frosted glass · transparent on light slides (default)', preview: 'bg-white/25 border border-slate-200/60 shadow-md backdrop-blur-sm' },
@@ -61,6 +61,10 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
   const [surveyRequired, setSurveyRequired] = useState(true);
   const [requiredSaving, setRequiredSaving] = useState(false);
 
+  // ── Sequential lessons (migration 059) ──────────────────────────────────────
+  const [sequentialLessons, setSequentialLessons] = useState(true);
+  const [sequentialSaving, setSequentialSaving] = useState(false);
+
   useEffect(() => {
     if (!open || !courseId || !institutionId) return;
     let cancelled = false;
@@ -70,15 +74,32 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
       getSurveyTemplates(supabase, institutionId),
       getCompletionSurvey(supabase, courseId),
       getCourseCompletionSurveyRequired(supabase, courseId),
-    ]).then(([templates, current, required]) => {
+      getCourseSequentialLessons(supabase, courseId),
+    ]).then(([templates, current, required, sequential]) => {
       if (cancelled) return;
       setSurveyTemplates(templates);
       setSelectedSurveyTemplateId(current.templateId);
       setSurveyRequired(required);
+      setSequentialLessons(sequential);
       setSurveyLoading(false);
     });
     return () => { cancelled = true; };
   }, [open, courseId, institutionId]);
+
+  const handleSequentialChange = async (sequential: boolean) => {
+    if (!courseId) return;
+    setSequentialLessons(sequential); // optimistic
+    setSequentialSaving(true);
+    const supabase = createClient();
+    const { error } = await setCourseSequentialLessons(supabase, courseId, sequential);
+    setSequentialSaving(false);
+    if (error) {
+      setSequentialLessons(!sequential); // revert
+      toast.error('Failed to update setting', { description: error });
+    } else {
+      toast.success(sequential ? 'Lessons must now be completed in order' : 'Learners can access any lesson');
+    }
+  };
 
   const handleRequiredChange = async (required: boolean) => {
     if (!courseId) return;
@@ -425,6 +446,33 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
               className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-60 ${surveyRequired ? 'bg-[#1E3A5F]' : 'bg-gray-300'}`}
             >
               <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${surveyRequired ? 'translate-x-5' : 'translate-x-0.5'}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* ── LESSON FLOW ───────────────────────────────────────────── */}
+        <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4 mb-3">
+          <SectionHeading
+            icon={<Lock className="w-4 h-4" />}
+            title="Lesson flow"
+            hint="How learners move between lessons"
+          />
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-gray-700">Sequential lessons</p>
+              <p className="text-[10px] text-gray-400 leading-tight">
+                When on, each lesson stays locked until the previous one is complete. Turn off for non-linear or reference courses.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={sequentialLessons}
+              disabled={sequentialSaving}
+              onClick={() => handleSequentialChange(!sequentialLessons)}
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-60 ${sequentialLessons ? 'bg-[#1E3A5F]' : 'bg-gray-300'}`}
+            >
+              <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${sequentialLessons ? 'translate-x-5' : 'translate-x-0.5'}`} />
             </button>
           </div>
         </div>
