@@ -43,10 +43,17 @@ export default function QuizInlineViewer({ data, block, context, onComplete }: B
       if (!user) return;
       const { data: existing } = await supabase
         .from('quiz_block_responses')
-        .select('attempt_count')
+        .select('attempt_count, is_correct')
         .eq('block_id', blockId)
         .eq('user_id', user.id)
         .maybeSingle();
+      // Never DOWNGRADE a previously-correct answer to incorrect on a later re-attempt.
+      // The lesson-completion gate (correctQuizBlocks) and the certificate treat
+      // "answered correctly at least once" as satisfied and never revert; if the
+      // persisted flag downgraded, a learner who passed then re-explored the quiz
+      // would be silently blocked from their certificate (progress shows 100%, but
+      // issue_course_certificate refuses on the stale is_correct=false).
+      const stickyCorrect = isCorrect || existing?.is_correct === true;
       const { error } = await supabase
         .from('quiz_block_responses')
         .upsert({
@@ -56,7 +63,7 @@ export default function QuizInlineViewer({ data, block, context, onComplete }: B
           block_id: blockId,
           user_id: user.id,
           response: { question_type: questionType, answer },
-          is_correct: isCorrect,
+          is_correct: stickyCorrect,
           attempt_count: ((existing?.attempt_count as number | undefined) ?? 0) + 1,
           answered_at: new Date().toISOString(),
         }, { onConflict: 'block_id,user_id' });

@@ -1569,6 +1569,36 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     handleMarkComplete();
   }, [currentSlide, selectedLesson?.id, allQuizzesComplete]);
 
+  // Self-heal certificate issuance. On the FINAL lesson's completion slide with every
+  // lesson done and the survey satisfied, re-attempt issuance. The RPC is idempotent
+  // (returns already_issued for an existing cert), so this only celebrates a NEWLY
+  // issued cert — e.g. a learner who was stranded by a stale is_correct=false quiz
+  // answer and has since re-answered it correctly. Fires once per ARRIVAL at the slide
+  // (the ref resets on leaving), so leaving to fix a quiz and returning retries.
+  const certRetryFiredRef = useRef(false);
+  useEffect(() => {
+    if (currentSlideData?.kind !== 'completion') { certRetryFiredRef.current = false; return; }
+    if (previewMode || !userId || !selectedLesson || celebration || certRetryFiredRef.current) return;
+    const isFinalLesson = lessons.length > 0 && lessons[lessons.length - 1]?.id === selectedLesson.id;
+    const allDone = lessons.length > 0 && lessons.every(l => progress[l.id]?.completed);
+    const surveyPending = Boolean(course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted);
+    if (!isFinalLesson || !allDone || surveyPending) return;
+    certRetryFiredRef.current = true;
+    (async () => {
+      const { data: certData } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
+      if (certData?.certificate_id && !certData.already_issued) {
+        const certId = certData.certificate_id as string;
+        fetch(`/api/certificates/${certId}/pdf`).catch(() => {});
+        fetch('/api/notify/certificate', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ certificateId: certId }),
+        }).catch(() => {});
+        const display = await fetchCertificateDisplay(supabase, certId);
+        if (display) setCelebration(display);
+      }
+    })();
+  }, [currentSlideData, celebration, previewMode, userId, selectedLesson?.id, lessons, progress, course, feedbackTemplate, feedbackSubmitted, courseId, supabase]);
+
   // Confetti when completion slide is first shown per lesson
   useEffect(() => {
     if (!selectedLesson) return;

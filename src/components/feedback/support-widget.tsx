@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { MessageSquarePlus, Loader2, Lightbulb, Flag, Bug } from 'lucide-react';
 import { toast } from 'sonner';
 import { FEEDBACK_TYPES, type FeedbackType, type FeedbackContext } from '@/lib/content/feedback-taxonomy';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 
 const INTENTS: { type: Exclude<FeedbackType, 'contact'>; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { type: 'suggestion', label: 'Suggestion', icon: Lightbulb },
@@ -30,6 +31,7 @@ const INTENTS: { type: Exclude<FeedbackType, 'contact'>; label: string; icon: Re
 ];
 
 interface EnrolledCourse { id: string; title: string }
+interface EnrolledCourseRow { id: string; title: string; institution_id: string }
 
 export function SupportWidget() {
   const [open, setOpen] = useState(false);
@@ -50,17 +52,27 @@ export function SupportWidget() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) return;
-      const [{ data: profile }, { data: enr }] = await Promise.all([
+      // Resolve the ACTIVE portal institution (from the slug/cookie), so a dual-access
+      // learner viewing SCAGO only sees SCAGO courses — not their GANSID enrolments.
+      // (The submission's institution_id is already server-derived from the same slug.)
+      const slug = resolveInstitutionSlug();
+      const [{ data: profile }, instRes, { data: enr }] = await Promise.all([
         supabase.from('users').select('full_name, email').eq('id', user.id).maybeSingle(),
-        supabase.from('course_enrollments').select('courses(id, title)').eq('user_id', user.id),
+        slug
+          ? supabase.from('institutions').select('id').eq('slug', slug).maybeSingle()
+          : Promise.resolve({ data: null as { id: string } | null }),
+        supabase.from('course_enrollments').select('courses(id, title, institution_id)').eq('user_id', user.id),
       ]);
       if (cancelled) return;
       setName((prev) => prev || profile?.full_name || 'Student');
       setEmail((prev) => prev || profile?.email || user.email || '');
+      const activeInstitutionId = instRes?.data?.id ?? null;
       const list = (enr ?? [])
-        .map((r) => (r as { courses: EnrolledCourse | EnrolledCourse[] | null }).courses)
+        .map((r) => (r as { courses: EnrolledCourseRow | EnrolledCourseRow[] | null }).courses)
         .map((c) => (Array.isArray(c) ? c[0] : c))
-        .filter((c): c is EnrolledCourse => !!c);
+        .filter((c): c is EnrolledCourseRow => !!c)
+        .filter((c) => !activeInstitutionId || c.institution_id === activeInstitutionId)
+        .map((c) => ({ id: c.id, title: c.title }));
       setCourses(list);
     })();
     return () => { cancelled = true; };

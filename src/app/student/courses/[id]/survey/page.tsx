@@ -37,6 +37,7 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   const [alreadyDone, setAlreadyDone] = useState(false);
   const [certNumber, setCertNumber] = useState<string | null>(null);
   const [certGated, setCertGated] = useState(false);
+  const [certIssueError, setCertIssueError] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
   const institutionSlug = useMemo(() => resolveInstitutionSlug(pathname), [pathname]);
 
@@ -111,8 +112,13 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
         }
       }
 
-      const { data: certData } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
-      if (certData?.certificate_id) {
+      const { data: certData, error: certError } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
+      if (certError) {
+        // The RPC refused (e.g. a required quiz still isn't answered correctly).
+        // Surface it instead of silently stranding the learner at "100% complete,
+        // no certificate, no explanation".
+        setCertIssueError(certError.message || 'Your certificate could not be issued yet.');
+      } else if (certData?.certificate_id) {
         setCertNumber(certData.certificate_number ?? null);
         if (!certData.already_issued) {
           fetch(`/api/certificates/${certData.certificate_id}/pdf`).catch(() => {});
@@ -192,6 +198,13 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                 {certNumber && (
                   <div className="inline-flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-800">
                     <Award className="h-4 w-4" /> Certificate issued — {certNumber}
+                  </div>
+                )}
+                {certIssueError && !certNumber && (
+                  <div className="mx-auto max-w-md rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm font-semibold text-amber-900">
+                    Your certificate isn&apos;t ready yet: {certIssueError} Head back to the module, make sure
+                    every required quiz is answered correctly, and return to the module-complete screen — your
+                    certificate will be issued there.
                   </div>
                 )}
                 <div>
