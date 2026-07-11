@@ -116,14 +116,22 @@ export function CourseSettingsModal({ open, onOpenChange }: CourseSettingsModalP
     if (!courseId || !institutionId) return;
     setSaving(true);
     const supabase = createClient();
-    const { error } = await supabase
+    // .select('id') so an RLS-filtered 0-row update surfaces as a failure
+    // instead of silently succeeding without writing anything.
+    const { data, error } = await supabase
       .from('courses')
       .update({ theme_settings: theme })
       .eq('id', courseId)
-      .eq('institution_id', institutionId);
+      .eq('institution_id', institutionId)
+      .select('id');
     setSaving(false);
-    if (error) toast.error('Failed to save', { description: error.message });
-    else toast.success('Course theme saved');
+    if (error) {
+      toast.error('Failed to save', { description: error.message });
+    } else if (!data || data.length === 0) {
+      toast.error('Failed to save', { description: 'No rows were updated — you may not have permission to edit this course.' });
+    } else {
+      toast.success('Course theme saved');
+    }
   };
 
   const lessonColor = theme.lesson_title_color || DEFAULT_COURSE_THEME.lesson_title_color;

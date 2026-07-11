@@ -11,6 +11,11 @@ export interface SlideTemplateConfig {
   accentColor: string;
 }
 
+// THEMING RULE: templates must NOT pin `background: '#FFFFFF'` in defaultSettings.
+// An unset background means "inherit" — the slide falls back to the course
+// `default_background`, then the institution theme, then white (resolveEffectiveTheme).
+// Only templates with a DELIBERATE distinct look (gradient title, black media,
+// tinted quiz/disclaimer) may pin a background.
 export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
   {
     id: 'title',
@@ -44,7 +49,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
         },
       },
     ],
-    defaultSettings: { background: '#FFFFFF' },
+    defaultSettings: {},
     accentColor: '#0891B2',
   },
   {
@@ -66,7 +71,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
         },
       },
     ],
-    defaultSettings: { background: '#FFFFFF' },
+    defaultSettings: {},
     accentColor: '#64748B',
   },
   {
@@ -77,7 +82,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     defaultBlocks: [
       { block_type: 'rich_text', data: { html: '<h2>Title</h2><p>Your content here...</p>', mode: 'standard' } },
     ],
-    defaultSettings: { background: '#FFFFFF' },
+    defaultSettings: {},
     accentColor: '#2563EB',
   },
   {
@@ -130,7 +135,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     defaultBlocks: [
       { block_type: 'iframe', data: { url: '', height: 600 } },
     ],
-    defaultSettings: { background: '#FFFFFF' },
+    defaultSettings: {},
     accentColor: '#0099CA',
   },
   {
@@ -139,7 +144,7 @@ export const SLIDE_TEMPLATES: SlideTemplateConfig[] = [
     name: 'Freeform Canvas',
     description: 'Free-form layout with tldraw — place content anywhere',
     defaultBlocks: [],
-    defaultSettings: { background: '#FFFFFF' },
+    defaultSettings: {},
     accentColor: '#8B5CF6',
   },
 ];

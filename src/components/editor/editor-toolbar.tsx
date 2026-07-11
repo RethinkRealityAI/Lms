@@ -3,10 +3,13 @@
 import { Save, Undo2, Redo2, Play, Send, CheckCircle, Loader2, Monitor, Tablet, Smartphone, Keyboard, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEditorStore } from './editor-store-context';
+import { CourseHealthIndicator } from './course-health-indicator';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 
 interface EditorToolbarProps {
   onSave?: () => void;
+  /** Save-first publish handler (saves when dirty, publishes only if the save succeeded). Falls back to the store's publishCourse. */
+  onPublish?: () => void;
   courseId?: string;
   devicePreview: DevicePreview;
   onDevicePreviewChange: (device: DevicePreview) => void;
@@ -25,7 +28,7 @@ const ACTION_LABELS: Record<string, string> = {
   reorderSlides: 'reorder slides',
 };
 
-export function EditorToolbar({ onSave, devicePreview, onDevicePreviewChange, onPreviewLesson, onShowShortcuts, onOpenSettings }: EditorToolbarProps) {
+export function EditorToolbar({ onSave, onPublish, devicePreview, onDevicePreviewChange, onPreviewLesson, onShowShortcuts, onOpenSettings }: EditorToolbarProps) {
   const isDirty = useEditorStore((s) => s.isDirty);
   const isSaving = useEditorStore((s) => s.isSaving);
   const undo = useEditorStore((s) => s.undo);
@@ -84,6 +87,7 @@ export function EditorToolbar({ onSave, devicePreview, onDevicePreviewChange, on
             Draft
           </div>
         )}
+        <CourseHealthIndicator />
       </div>
       <div className="flex items-center gap-2">
         {publishError && (
@@ -180,7 +184,7 @@ export function EditorToolbar({ onSave, devicePreview, onDevicePreviewChange, on
           {isSaving ? 'Saving...' : 'Save'}
         </button>
         <button
-          onClick={isPublished && !isDirty ? undefined : publishCourse}
+          onClick={isPublished && !isDirty ? undefined : (onPublish ?? publishCourse)}
           disabled={(isPublished && !isDirty) || isPublishing}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-colors disabled:cursor-not-allowed ${
             isPublished && !isDirty

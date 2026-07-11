@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { withInstitutionPath } from '@/lib/tenant/path';
+import { withInstitutionPath, resolveInstitutionSlug } from '@/lib/tenant/path';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,7 +120,10 @@ function InstitutionThemeCard({
   const set = (patch: Partial<InstitutionTheme>) => setTheme((t) => ({ ...t, ...patch }));
 
   const save = async () => {
-    if (!institutionId) return;
+    if (!institutionId) {
+      toast.error('Failed to save theme', { description: 'Institution context not loaded yet — reload the page and try again.' });
+      return;
+    }
     setSaving(true);
     // Convert to a plain record, stripping empty strings so unset fields stay
     // truly inherited at the course level.
@@ -128,13 +131,21 @@ function InstitutionThemeCard({
     for (const [k, v] of Object.entries(theme)) {
       if (v != null && String(v).trim()) clean[k] = String(v).trim();
     }
-    const { error } = await supabase
+    // .select('id') so an RLS-filtered 0-row update surfaces as a failure
+    // instead of silently succeeding without writing anything.
+    const { data, error } = await supabase
       .from('institutions')
       .update({ theme: clean })
-      .eq('id', institutionId);
+      .eq('id', institutionId)
+      .select('id');
     setSaving(false);
-    if (error) toast.error('Failed to save theme', { description: error.message });
-    else toast.success('Institution theme saved');
+    if (error) {
+      toast.error('Failed to save theme', { description: error.message });
+    } else if (!data || data.length === 0) {
+      toast.error('Failed to save theme', { description: 'No rows were updated — you may not have permission to edit this institution.' });
+    } else {
+      toast.success('Institution theme saved');
+    }
   };
 
   // Institution branding — used as gradient fallback colours.
@@ -468,20 +479,17 @@ interface VerificationCode {
 function useInstitutionContext(supabase: ReturnType<typeof createClient>) {
   const [ctx, setCtx] = useState<{ id: string | null; slug: string | null }>({ id: null, slug: null });
   useEffect(() => {
-    const slugCookie = document.cookie
-      .split('; ')
-      .find((c) => c.startsWith('institution_slug='));
-    const slug = slugCookie?.split('=')[1] ?? null;
-    if (slug) {
-      supabase
-        .from('institutions')
-        .select('id')
-        .eq('slug', slug)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data) setCtx({ id: data.id, slug });
-        });
-    }
+    // resolveInstitutionSlug handles the cookie fallback + slug validation
+    // (replaces the previous hand-rolled document.cookie parse).
+    const slug = resolveInstitutionSlug();
+    supabase
+      .from('institutions')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setCtx({ id: data.id, slug });
+      });
   }, [supabase]);
   return ctx;
 }

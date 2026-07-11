@@ -1,12 +1,16 @@
 'use client';
 
+import { useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import { Image as ImageIcon, Paintbrush } from 'lucide-react';
 import { ColorSwatch } from './color-swatch';
 import { useEditorStore } from '../editor-store-context';
 import { DropZoneUploader } from '../drop-zone-uploader';
 import { CanvaDesignPicker } from '../canva-design-picker';
-import { DEFAULT_BLOCK_STYLE } from '@/lib/content/gridConstants';
 import { SLIDE_BACKGROUND_FITS, resolveSlideBackgroundFit } from '@/lib/content/slide-background';
+import { resolveEffectiveTheme } from '@/lib/tenant/institution-theme';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import type { Slide } from '@/types';
 
 const BLOCK_STYLES: { value: string; label: string; description: string; preview: string }[] = [
@@ -43,6 +47,16 @@ interface SlideStyleEditorProps {
 export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
   const slides = useEditorStore((s) => s.slides);
   const updateSlide = useEditorStore((s) => s.updateSlide);
+  const themeSettings = useEditorStore((s) => s.themeSettings);
+  const institutionTheme = useEditorStore((s) => s.institutionTheme);
+  const pathname = usePathname();
+  const institutionSlug = resolveInstitutionSlug(pathname);
+  // Resolved course → institution → branding cascade — what this slide inherits
+  // for any setting it doesn't pin itself.
+  const effectiveTheme = useMemo(
+    () => resolveEffectiveTheme({ course: themeSettings, institution: institutionTheme, branding: getInstitutionBranding(institutionSlug) }),
+    [themeSettings, institutionTheme, institutionSlug],
+  );
 
   let slide: Slide | undefined;
   let lessonId: string = '';
@@ -54,15 +68,36 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
   if (!slide) return null;
 
   const settings = slide.settings as Record<string, unknown>;
-  const bg = (settings.background as string) || '#FFFFFF';
+  // A setting is "pinned" only when the key is present; unset = inherit the theme cascade.
+  const bg = typeof settings.background === 'string' && settings.background ? settings.background : null;
   const bgImage = typeof settings.background_image === 'string' ? settings.background_image : null;
-  const blockStyle = (settings.block_style as string) ?? DEFAULT_BLOCK_STYLE;
+  const blockStyle = typeof settings.block_style === 'string' ? settings.block_style : null;
+  const titleColor = typeof settings.title_color === 'string' && settings.title_color ? settings.title_color : null;
 
+  // Inherited (resolved) values — shown as hints on the Inherit presets.
+  const inheritedBg = effectiveTheme.defaultBackground ?? '#FFFFFF';
+  const inheritedBlockStyle = effectiveTheme.defaultBlockStyle;
+  const inheritedTitleColor = effectiveTheme.slideTitleColor;
+
+  /**
+   * Merge changes into slide.settings. Keys set to `undefined` are DELETED from
+   * the object (not just set to undefined): the editor save path replaces the
+   * whole `slides.settings` jsonb column with this object, so a deleted key is
+   * truly removed in the DB and the slide falls back to the theme cascade.
+   */
   function updateSettings(changes: Record<string, unknown>) {
-    updateSlide(lessonId, slideId, {
-      settings: { ...settings, ...changes },
-    });
+    const next: Record<string, unknown> = { ...settings };
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === undefined) delete next[key];
+      else next[key] = value;
+    }
+    updateSlide(lessonId, slideId, { settings: next });
   }
+
+  const swatchStyle = (value: string): React.CSSProperties =>
+    value === 'gradient'
+      ? { background: 'linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)' }
+      : { backgroundColor: value };
 
   const BG_PRESETS = [
     { label: 'White', value: '#FFFFFF' },
@@ -86,6 +121,23 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Block Style</p>
         <p className="text-[10px] text-gray-400 mb-2.5">How component containers look on this slide</p>
         <div className="grid grid-cols-2 gap-2">
+          {/* Inherit — unset the per-slide override and follow course/institution default */}
+          <button
+            onClick={() => updateSettings({ block_style: undefined })}
+            className={`flex flex-col items-start gap-1.5 p-2.5 rounded-xl border text-left transition-all ${
+              blockStyle === null
+                ? 'border-[#1E3A5F] bg-blue-50 ring-1 ring-[#1E3A5F]/30'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+            }`}
+          >
+            <div className={`w-full h-6 rounded-md ${BLOCK_STYLES.find((s) => s.value === inheritedBlockStyle)?.preview ?? 'border-2 border-dashed border-gray-200'}`} />
+            <span className={`text-[11px] font-semibold leading-tight ${blockStyle === null ? 'text-[#1E3A5F]' : 'text-gray-700'}`}>
+              Inherit
+            </span>
+            <span className="text-[9px] text-gray-400 leading-tight">
+              Course/institution default — currently {BLOCK_STYLES.find((s) => s.value === inheritedBlockStyle)?.label ?? inheritedBlockStyle}
+            </span>
+          </button>
           {BLOCK_STYLES.map((s) => {
             const active = blockStyle === s.value;
             return (
@@ -115,6 +167,22 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Background Color</p>
         <div className="flex gap-1.5 flex-wrap">
+          {/* Inherit — remove the per-slide pin; slide follows course/institution default */}
+          <button
+            onClick={() => updateSettings({ background: undefined })}
+            title={`Inherits ${inheritedBg === 'gradient' ? 'the theme gradient' : inheritedBg} from the course/institution theme`}
+            className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-lg transition-colors border ${
+              bg === null
+                ? 'border-[#1E3A5F] text-[#1E3A5F] bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300 text-gray-600'
+            }`}
+          >
+            <span
+              className="w-3 h-3 rounded-full border border-gray-300 shrink-0"
+              style={swatchStyle(inheritedBg)}
+            />
+            Inherit
+          </button>
           {BG_PRESETS.map((preset) => (
             <button
               key={preset.value}
@@ -129,11 +197,16 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
             </button>
           ))}
         </div>
+        {bg === null && (
+          <p className="text-[10px] text-gray-400 mt-1">
+            Inheriting {inheritedBg === 'gradient' ? 'the theme gradient' : inheritedBg} from the course/institution theme
+          </p>
+        )}
         {bg !== 'gradient' && (
           <div className="mt-2">
             <ColorSwatch
               label="Custom"
-              value={bg.startsWith('#') ? bg : '#FFFFFF'}
+              value={bg?.startsWith('#') ? bg : inheritedBg.startsWith('#') ? inheritedBg : '#FFFFFF'}
               onChange={(v) => updateSettings({ background: v })}
             />
           </div>
@@ -144,6 +217,22 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Slide Title Color</p>
         <div className="flex gap-1.5 flex-wrap">
+          {/* Inherit — remove the per-slide pin; title uses the theme's slide title colour */}
+          <button
+            onClick={() => updateSettings({ title_color: undefined })}
+            title={`Inherits ${inheritedTitleColor} from the course/institution theme`}
+            className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-lg transition-colors border ${
+              titleColor === null
+                ? 'border-[#1E3A5F] text-[#1E3A5F] bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300 text-gray-600'
+            }`}
+          >
+            <span
+              className="w-3 h-3 rounded-full border border-gray-300 shrink-0"
+              style={{ backgroundColor: inheritedTitleColor }}
+            />
+            Inherit
+          </button>
           {[
             { label: 'Slate', value: '#64748b' },
             { label: 'Navy', value: '#1E3A5F' },
@@ -155,7 +244,7 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
               key={preset.value}
               onClick={() => updateSettings({ title_color: preset.value })}
               className={`px-2 py-1 text-xs rounded-lg transition-colors border ${
-                ((settings.title_color as string) || '#64748b') === preset.value
+                titleColor === preset.value
                   ? 'border-[#1E3A5F] text-[#1E3A5F] bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300 text-gray-600'
               }`}
@@ -167,7 +256,7 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
         <div className="mt-2">
           <ColorSwatch
             label="Custom"
-            value={((settings.title_color as string) || '#64748b')}
+            value={titleColor ?? inheritedTitleColor}
             onChange={(v) => updateSettings({ title_color: v })}
           />
         </div>
@@ -188,7 +277,7 @@ export function SlideStyleEditor({ slideId }: SlideStyleEditorProps) {
           label="Drop image or click to upload"
           currentUrl={bgImage ?? undefined}
           onUpload={(url) => updateSettings({ background_image: url })}
-          onRemove={() => updateSettings({ background_image: null })}
+          onRemove={() => updateSettings({ background_image: undefined })}
           previewMode="image"
         />
         <p className="text-[10px] text-gray-400 mt-1">Full-page background behind slide content</p>

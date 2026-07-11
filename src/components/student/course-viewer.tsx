@@ -23,6 +23,7 @@ import { SlideContentArea } from '@/components/shared/slide-frame';
 import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
 import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
+import { ReportIssueDialog } from '@/components/report-issue-dialog';
 import { ShortcutHint } from '@/components/student/shortcut-hint';
 import { viewedImagesStorageKey } from '@/lib/content/blocks/image-gallery/display-utils';
 import { getGatingQuizBlockIds } from '@/lib/content/blocks/quiz-inline/validation';
@@ -1725,6 +1726,13 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                       >
                         {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                       </button>
+                      <ReportIssueDialog
+                        courseId={courseId}
+                        courseTitle={course?.title}
+                        lessonId={selectedLesson.id}
+                        lessonTitle={selectedLesson.title}
+                        slideIndex={currentSlide}
+                      />
                     </div>
                   </div>
                   <div className="w-full rounded-full h-[3px]"

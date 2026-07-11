@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   Trash2, AlignStartVertical, AlignCenterVertical, AlignEndVertical,
   AlignHorizontalJustifyStart, AlignHorizontalJustifyCenter, AlignHorizontalJustifyEnd,
@@ -8,6 +9,9 @@ import {
 import { getBlockType } from '@/lib/content/block-registry';
 import { getCompatibleTypes, transformBlockData } from '@/lib/content/block-type-compat';
 import { GRID_COLS, getBlockGridLayout, blockSurfaceFillCell } from '@/lib/content/gridConstants';
+import { resolveEffectiveTheme } from '@/lib/tenant/institution-theme';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import { useEditorStore } from './editor-store-context';
 import { BlockTemplateToolbar } from './block-template-toolbar';
 import { extractLayout } from '@/lib/db/block-templates';
@@ -44,6 +48,8 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
   const switchBlockType = useEditorStore((s) => s.switchBlockType);
   const slides = useEditorStore((s) => s.slides);
   const themeSettings = useEditorStore((s) => s.themeSettings);
+  const institutionTheme = useEditorStore((s) => s.institutionTheme);
+  const pathname = usePathname();
   const devicePreview = useEditorStore((s) => s.devicePreview);
   const breakpoint = devicePreview === 'mobile' ? 'mobile' : devicePreview === 'tablet' ? 'tablet' : 'desktop';
 
@@ -82,8 +88,16 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
   }
 
   const EditorComponent = definition.EditorComponent;
-  // slides is Map<lessonId, Slide[]> — search all lesson arrays for this slideId
-  let slideBlockStyle: string = themeSettings.default_block_style ?? 'glass';
+  // Default block style comes from the full theme cascade (course → institution →
+  // system default), not just the course settings — a slide-level block_style
+  // still overrides it below. slides is Map<lessonId, Slide[]> — search all
+  // lesson arrays for this slideId.
+  const effectiveTheme = resolveEffectiveTheme({
+    course: themeSettings,
+    institution: institutionTheme,
+    branding: getInstitutionBranding(resolveInstitutionSlug(pathname)),
+  });
+  let slideBlockStyle: string = effectiveTheme.defaultBlockStyle;
   for (const slideArray of slides.values()) {
     const found = slideArray.find((s) => s.id === slideId);
     if (found) {

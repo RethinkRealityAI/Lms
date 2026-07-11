@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { Monitor, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
@@ -10,6 +10,8 @@ import { EditorStoreContext, useEditorStore } from './editor-store-context';
 import { createClient } from '@/lib/supabase/client';
 import { createBlock as dbCreateBlock } from '@/lib/db/blocks';
 import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { resolveEffectiveTheme } from '@/lib/tenant/institution-theme';
+import { getInstitutionBranding } from '@/lib/tenant/branding';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 import type { Slide, LessonBlock } from '@/types';
 
@@ -54,6 +56,16 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
 
   const pathname = usePathname();
   const institutionSlug = resolveInstitutionSlug(pathname);
+
+  // Resolved theme cascade (course → institution → branding) — the title slide
+  // must render with the SAME gradient/logo/background the student viewer uses
+  // (mirrors slide-preview.tsx's resolution).
+  const themeSettings = useEditorStore((s) => s.themeSettings);
+  const institutionTheme = useEditorStore((s) => s.institutionTheme);
+  const effectiveTheme = useMemo(
+    () => resolveEffectiveTheme({ course: themeSettings, institution: institutionTheme, branding: getInstitutionBranding(institutionSlug) }),
+    [themeSettings, institutionTheme, institutionSlug],
+  );
 
   // Find the currently selected slide and its owning lesson
   let selectedSlide: Slide | null = null;
@@ -298,6 +310,7 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                 lessonDescription={lessonDescription}
                 moduleName={moduleName}
                 titleImageUrl={titleImageUrl}
+                titleSlideSettings={titleSlideSettings}
                 slideNumber={slideIndex + 1}
                 totalSlides={siblingSlides.length}
               />
@@ -320,6 +333,10 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
                     titleImageUrl={titleImageUrl ?? undefined}
                     institutionSlug={institutionSlug}
                     titleSlideSettings={titleSlideSettings}
+                    titleLogoUrl={effectiveTheme.titleLogoUrl}
+                    gradientFrom={effectiveTheme.titleGradientFrom}
+                    gradientTo={effectiveTheme.titleGradientTo}
+                    defaultBackgroundImageUrl={effectiveTheme.defaultTitleBackgroundUrl}
                   />
                 </div>
               </div>

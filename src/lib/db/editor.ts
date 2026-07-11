@@ -7,7 +7,6 @@ export interface EditorCourseData {
     id: string;
     title: string;
     description: string | null;
-    theme_overrides: Record<string, unknown>;
     theme_settings: Record<string, unknown>;
     status: string;
     institution_id: string;
@@ -26,7 +25,7 @@ export async function loadEditorCourseData(
   // Fetch course scoped to institution
   const { data: course, error: courseErr } = await supabase
     .from('courses')
-    .select('id, title, description, theme_overrides, theme_settings, status, institution_id')
+    .select('id, title, description, theme_settings, status, institution_id')
     .eq('id', courseId)
     .eq('institution_id', institutionId)
     .is('deleted_at', null)

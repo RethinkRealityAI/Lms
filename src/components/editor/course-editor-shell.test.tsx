@@ -47,7 +47,7 @@ vi.mock('@/lib/db/editor', () => ({
       id: 'course-1',
       title: 'Test Course',
       description: null,
-      theme_overrides: {},
+      theme_settings: {},
       status: 'draft',
       institution_id: 'inst-1',
     },

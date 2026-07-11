@@ -185,6 +185,18 @@ export function SlideNode({ slide, lessonId, slideIndex, onMoveSlide, onDuplicat
             <span className="text-xs truncate flex-1 min-w-0" title={slideLabel}>
               {displayTitle}
             </span>
+            {slide.status !== 'published' && (
+              <span
+                className={`shrink-0 text-[9px] font-semibold uppercase tracking-wider px-1.5 py-px rounded-full border ${
+                  isActive
+                    ? 'bg-white/15 border-white/30 text-amber-100'
+                    : 'bg-amber-50 border-amber-200 text-amber-700'
+                }`}
+                title="Draft — not visible to students until the course is published"
+              >
+                Draft
+              </span>
+            )}
           </>
         )}
         {!isRenaming && (

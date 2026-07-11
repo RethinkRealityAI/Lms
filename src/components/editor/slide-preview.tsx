@@ -57,6 +57,8 @@ interface SlidePreviewProps {
   lessonDescription?: string | null;
   /** Title image URL for title slide background */
   titleImageUrl?: string | null;
+  /** Per-lesson title slide overrides (size, colour, footer, logo) */
+  titleSlideSettings?: import('@/lib/content/title-slide-settings').TitleSlideSettings | null;
   /** Current slide index (1-based) */
   slideNumber?: number;
   /** Total slides in this lesson */
@@ -79,6 +81,7 @@ export function SlidePreview({
   moduleName,
   lessonDescription,
   titleImageUrl,
+  titleSlideSettings,
   slideNumber = 1,
   totalSlides = 1,
 }: SlidePreviewProps) {
@@ -305,6 +308,8 @@ export function SlidePreview({
               moduleName={moduleName}
               titleImageUrl={titleImageUrl}
               institutionSlug={institutionSlug}
+              titleSlideSettings={titleSlideSettings}
+              titleLogoUrl={effectiveTheme.titleLogoUrl}
               gradientFrom={effectiveTheme.titleGradientFrom}
               gradientTo={effectiveTheme.titleGradientTo}
               defaultBackgroundImageUrl={effectiveTheme.defaultTitleBackgroundUrl}

@@ -150,15 +150,21 @@ function EditorContent({ courseId }: { courseId: string }) {
       }
     }
 
-    // Persist course-level theme settings (global course settings modal)
+    // Persist course-level theme settings (global course settings modal).
+    // .select('id') so an RLS-filtered 0-row update counts as a failure
+    // (keeps isDirty → auto-save retries + error toast) instead of a silent no-op.
     const courseThemePromise = tracked(
       (async () => {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('courses')
           .update({ theme_settings: state.themeSettings ?? {} })
           .eq('id', state.courseId ?? courseId)
-          .eq('institution_id', institutionId);
+          .eq('institution_id', institutionId)
+          .select('id');
         if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error('Course theme update affected 0 rows (blocked by RLS or course not found)');
+        }
       })(),
       'course theme',
     );
@@ -177,6 +183,24 @@ function EditorContent({ courseId }: { courseId: string }) {
   }, [institutionId, store, markSaved]);
 
   const { saveNow } = useAutoSave(isDirty, handleSave);
+
+  // ── Publish (save-first) ───────────────────────────────────────────────────
+  // The Publish button promises "Save & publish changes" when dirty — honour it:
+  // run the save first and only publish if every write succeeded (handleSave
+  // keeps isDirty=true on any failure, so a failed save aborts the publish).
+  const handlePublish = useCallback(async () => {
+    if (!store) return;
+    if (store.getState().isDirty) {
+      await handleSave();
+      if (store.getState().isDirty) {
+        toast.error('Publish cancelled', {
+          description: 'Your changes could not be saved. Fix the save error, then publish again.',
+        });
+        return;
+      }
+    }
+    await store.getState().publishCourse();
+  }, [store, handleSave]);
 
   // ── Persistence: add module ────────────────────────────────────────────────
 
@@ -247,7 +271,14 @@ function EditorContent({ courseId }: { courseId: string }) {
     try {
       const { createSlide: dbCreateSlide } = await import('@/lib/db/slides');
       const supabase = createClient();
-      const existing = store?.getState().slides.get(lessonId) ?? [];
+      const editorState = store?.getState();
+      const existing = editorState?.slides.get(lessonId) ?? [];
+      // No phantom drafts: slides added to an already-published course go live
+      // immediately (matching publishCourse()'s cascade). Students only ever see
+      // published slides, so leaving these as 'draft' silently hides finished
+      // content. Draft courses keep 'draft' — nothing is visible until publish.
+      const slideStatus =
+        editorState?.courseStatus === 'published' ? 'published' : (slideData.status ?? 'draft');
       const slide = await dbCreateSlide(
         supabase,
         {
@@ -255,7 +286,7 @@ function EditorContent({ courseId }: { courseId: string }) {
           slide_type: slideData.slide_type,
           title: slideData.title ?? undefined,
           order_index: existing.length,
-          status: slideData.status ?? 'draft',
+          status: slideStatus,
           settings: slideData.settings ?? {},
         },
         institutionId,
@@ -762,6 +793,7 @@ function EditorContent({ courseId }: { courseId: string }) {
     <>
       <EditorToolbar
         onSave={saveNow}
+        onPublish={handlePublish}
         courseId={courseId}
         devicePreview={devicePreview}
         onDevicePreviewChange={setDevicePreview}
@@ -944,7 +976,7 @@ export function CourseEditorShell({ courseId }: CourseEditorShellProps) {
           courseTitle: data.course.title,
           institutionId,
           courseStatus: data.course.status as import('@/types').CourseStatus,
-          courseTheme: data.course.theme_settings ?? {},
+          themeSettings: data.course.theme_settings ?? {},
           modules: data.modules,
           lessons: data.lessonsByModule,
           slides: data.slidesByLesson,

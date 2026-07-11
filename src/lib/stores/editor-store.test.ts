@@ -197,9 +197,9 @@ describe('EditorStore', () => {
       expect(store.getState().undoStack).toHaveLength(0);
     });
 
-    it('resets courseTheme on load', () => {
-      store.getState().updateCourseTheme({ primaryColor: '#FF0000' });
-      expect(store.getState().courseTheme).toMatchObject({ primaryColor: '#FF0000' });
+    it('resets themeSettings on load when none provided', () => {
+      store.getState().updateThemeSettings({ accent_color: '#FF0000' });
+      expect(store.getState().themeSettings).toMatchObject({ accent_color: '#FF0000' });
       store.getState().loadCourse({
         courseId: 'c2',
         modules: [],
@@ -207,7 +207,19 @@ describe('EditorStore', () => {
         slides: new Map(),
         blocks: new Map(),
       });
-      expect(store.getState().courseTheme).toEqual({});
+      expect(store.getState().themeSettings).toEqual({});
+    });
+
+    it('populates themeSettings from loaded course data', () => {
+      store.getState().loadCourse({
+        courseId: 'c3',
+        themeSettings: { default_background: '#0F172A' },
+        modules: [],
+        lessons: new Map(),
+        slides: new Map(),
+        blocks: new Map(),
+      });
+      expect(store.getState().themeSettings).toEqual({ default_background: '#0F172A' });
     });
   });
 
@@ -291,6 +303,39 @@ describe('EditorStore', () => {
 
       expect(store.getState().isPublishing).toBe(false);
       expect(store.getState().courseStatus).toBe('published');
+    });
+
+    it('publishCourse flips every loaded slide to published so Draft badges clear', async () => {
+      vi.mocked(mockDbPublishCourse).mockResolvedValueOnce(undefined);
+
+      const slides = new Map([
+        ['l1', [
+          { id: 's1', title: 'Slide 1', lesson_id: 'l1', order_index: 0, slide_type: 'content', status: 'draft' } as any,
+          { id: 's2', title: 'Slide 2', lesson_id: 'l1', order_index: 1, slide_type: 'content', status: 'published' } as any,
+        ]],
+        ['l2', [
+          { id: 's3', title: 'Slide 3', lesson_id: 'l2', order_index: 0, slide_type: 'content', status: 'draft' } as any,
+        ]],
+      ]);
+
+      store.getState().loadCourse({
+        courseId: 'c1',
+        institutionId: 'inst-1',
+        modules: [],
+        lessons: new Map(),
+        slides,
+        blocks: new Map(),
+      });
+
+      await store.getState().publishCourse();
+
+      const state = store.getState();
+      expect(state.courseStatus).toBe('published');
+      for (const list of state.slides.values()) {
+        for (const slide of list) expect(slide.status).toBe('published');
+      }
+      // Mirroring the DB's already-persisted state must not mark the editor dirty
+      expect(state.isDirty).toBe(false);
     });
 
     it('publishCourse sets publishError and resets isPublishing when db call rejects', async () => {
@@ -443,35 +488,35 @@ describe('EditorStore', () => {
     });
   });
 
-  describe('updateCourseTheme', () => {
-    it('merges theme changes into courseTheme', () => {
-      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
-      expect(store.getState().courseTheme).toMatchObject({ primaryColor: '#DC2626' });
+  describe('updateThemeSettings', () => {
+    it('merges theme changes into themeSettings', () => {
+      store.getState().updateThemeSettings({ accent_color: '#DC2626' });
+      expect(store.getState().themeSettings).toMatchObject({ accent_color: '#DC2626' });
     });
 
     it('merges multiple updates additively', () => {
-      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
-      store.getState().updateCourseTheme({ accentColor: '#0099CA' });
-      expect(store.getState().courseTheme).toMatchObject({
-        primaryColor: '#DC2626',
-        accentColor: '#0099CA',
+      store.getState().updateThemeSettings({ accent_color: '#DC2626' });
+      store.getState().updateThemeSettings({ slider_accent: '#0099CA' });
+      expect(store.getState().themeSettings).toMatchObject({
+        accent_color: '#DC2626',
+        slider_accent: '#0099CA',
       });
     });
 
     it('marks store as dirty', () => {
-      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      store.getState().updateThemeSettings({ accent_color: '#DC2626' });
       expect(store.getState().isDirty).toBe(true);
     });
 
     it('pushes to undo stack', () => {
-      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      store.getState().updateThemeSettings({ accent_color: '#DC2626' });
       expect(store.getState().undoStack).toHaveLength(1);
     });
 
     it('undo reverts theme change', () => {
-      store.getState().updateCourseTheme({ primaryColor: '#DC2626' });
+      store.getState().updateThemeSettings({ accent_color: '#DC2626' });
       store.getState().undo();
-      expect(store.getState().courseTheme).toEqual({});
+      expect(store.getState().themeSettings).toEqual({});
     });
   });
 

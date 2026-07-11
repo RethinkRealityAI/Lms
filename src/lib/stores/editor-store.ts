@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import type { Slide, EntitySelection, EditorAction, InstitutionTheme, CourseStatus } from '@/types';
+import type { Slide, EntitySelection, EditorAction, CourseStatus } from '@/types';
 import type { CourseThemeSettings } from '@/lib/content/course-theme';
 import type { InstitutionTheme as InstitutionDbTheme } from '@/lib/tenant/institution-theme';
 import { publishCourse as dbPublishCourse } from '@/lib/db';
@@ -40,7 +40,6 @@ interface Snapshot {
   lessons: Map<string, LessonData[]>;
   slides: Map<string, Slide[]>;
   blocks: Map<string, BlockData[]>;
-  courseTheme: Record<string, unknown>;
   themeSettings: CourseThemeSettings;
 }
 
@@ -56,7 +55,6 @@ export interface EditorState {
   lessons: Map<string, LessonData[]>;
   slides: Map<string, Slide[]>;
   blocks: Map<string, BlockData[]>;
-  courseTheme: Record<string, unknown>;
   themeSettings: CourseThemeSettings;
   /** Institution-wide theme loaded from `institutions.theme` — used as cascade layer below course settings. */
   institutionTheme: InstitutionDbTheme;
@@ -71,7 +69,6 @@ export interface EditorState {
   setCourseStatus: (status: CourseStatus) => void;
   publishCourse: () => Promise<void>;
   selectEntity: (entity: EntitySelection | null) => void;
-  updateCourseTheme: (changes: Partial<InstitutionTheme>) => void;
   /** Global course settings (header colours, default block style + background) — courses.theme_settings */
   updateThemeSettings: (changes: Partial<CourseThemeSettings>) => void;
   /** Set the institution theme after async fetch — no undo entry, not a dirty change. */
@@ -117,7 +114,8 @@ export interface EditorState {
     courseTitle?: string | null;
     institutionId?: string;
     courseStatus?: CourseStatus;
-    courseTheme?: Record<string, unknown>;
+    /** Course-level theme (courses.theme_settings) — populates `themeSettings`. */
+    themeSettings?: Record<string, unknown>;
     modules: ModuleData[];
     lessons: Map<string, LessonData[]>;
     slides: Map<string, Slide[]>;
@@ -183,7 +181,6 @@ function snapshot(state: EditorState): Snapshot {
     lessons: new Map(Array.from(state.lessons.entries()).map(([k, v]) => [k, [...v]])),
     slides: new Map(Array.from(state.slides.entries()).map(([k, v]) => [k, [...v]])),
     blocks: new Map(state.blocks),
-    courseTheme: { ...state.courseTheme },
     themeSettings: { ...state.themeSettings },
   };
 }
@@ -217,7 +214,6 @@ function restoreSnapshot(snap: Snapshot): Partial<EditorState> {
     lessons: snap.lessons,
     slides: snap.slides,
     blocks: snap.blocks,
-    courseTheme: snap.courseTheme,
     themeSettings: snap.themeSettings,
     isDirty: true,
   };
@@ -235,7 +231,6 @@ export function createEditorStore() {
     lessons: new Map(),
     slides: new Map(),
     blocks: new Map(),
-    courseTheme: {},
     themeSettings: {},
     institutionTheme: {},
     selectedEntity: null,
@@ -262,21 +257,25 @@ export function createEditorStore() {
         const { createClient } = await import('@/lib/supabase/client');
         const supabase = createClient();
         await dbPublishCourse(supabase, courseId, institutionId);
-        set({ courseStatus: 'published', isPublishing: false });
+        // dbPublishCourse flipped every live slide to 'published' in the DB —
+        // mirror that locally so Draft badges clear without a reload. Not a
+        // dirty change (the DB already holds exactly this state) and no undo entry.
+        set((s) => {
+          const nextSlides = new Map<string, Slide[]>();
+          for (const [lessonId, list] of s.slides) {
+            nextSlides.set(
+              lessonId,
+              list.map((sl) => (sl.status === 'published' ? sl : { ...sl, status: 'published' as const })),
+            );
+          }
+          return { slides: nextSlides, courseStatus: 'published', isPublishing: false };
+        });
       } catch (error) {
         set({ isPublishing: false, publishError: error instanceof Error ? error.message : 'Failed to publish' });
       }
     },
 
     selectEntity: (entity) => set({ selectedEntity: entity }),
-
-    updateCourseTheme: (changes) => {
-      const snap = snapshot(get());
-      set((s) => ({
-        courseTheme: { ...s.courseTheme, ...changes },
-        ...push(s, snap, 'updateCourseTheme', 'course'),
-      }));
-    },
 
     updateThemeSettings: (changes) => {
       const snap = snapshot(get());
@@ -784,8 +783,7 @@ export function createEditorStore() {
         lessons: data.lessons,
         slides: data.slides,
         blocks: data.blocks,
-        courseTheme: {},
-        themeSettings: (data.courseTheme ?? {}) as CourseThemeSettings,
+        themeSettings: (data.themeSettings ?? {}) as CourseThemeSettings,
         isDirty: false,
         isSaving: false,
         isPublishing: false,
