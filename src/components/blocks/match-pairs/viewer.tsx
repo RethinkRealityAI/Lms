@@ -76,13 +76,21 @@ function ItemCard({ side, theme, size = 'full' }: { side: MatchSide; theme: Matc
   );
 }
 
-// Draggable item (lives in the ITEMS column, or docked inside a MATCHES card)
-function DraggableItem({ id, side, theme, size = 'full' }: { id: string; side: MatchSide; theme: MatchTheme; size?: 'full' | 'thumb' }) {
+// Draggable item (lives in the ITEMS column, or docked inside a MATCHES card).
+// Also TAP-selectable: `onTap` picks it up without dragging (mouse click, touch
+// tap, or Enter/Space) so the block is completable without a drag gesture.
+function DraggableItem({ id, side, theme, size = 'full', onTap, selected }: {
+  id: string; side: MatchSide; theme: MatchTheme; size?: 'full' | 'thumb';
+  onTap?: () => void; selected?: boolean;
+}) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `p-${id}`, data: { promptId: id } });
   return (
     <div
       ref={setNodeRef} {...listeners} {...attributes}
-      style={theme.itemStyle}
+      onClick={onTap}
+      onKeyDown={onTap ? (e) => { if (e.key === 'Enter') { e.preventDefault(); onTap(); } } : undefined}
+      aria-pressed={onTap ? !!selected : undefined}
+      style={{ ...theme.itemStyle, ...(selected ? { boxShadow: `0 0 0 2px ${theme.accent}` } : null) }}
       className={itemCardClass(theme, size, cn('touch-none cursor-grab active:cursor-grabbing',
         isDragging ? 'opacity-30 scale-95' : 'shadow-sm hover:brightness-105'))}
     >
@@ -92,17 +100,22 @@ function DraggableItem({ id, side, theme, size = 'full' }: { id: string; side: M
 }
 
 // A MATCHES card = a drop target. When matched, the item docks at the left.
-function MatchCard({ answerId, answer, dockedSide, dockedId, state, theme }: {
+function MatchCard({ answerId, answer, dockedSide, dockedId, state, theme, onTap, highlight }: {
   answerId: string; answer: MatchSide; dockedSide: MatchSide | null; dockedId: string | null;
-  state: 'correct' | 'wrong' | null; theme: MatchTheme;
+  state: 'correct' | 'wrong' | null; theme: MatchTheme; onTap?: () => void; highlight?: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `a-${answerId}`, data: { answerId } });
   return (
     <div
       ref={setNodeRef}
-      style={state ? undefined : theme.matchStyle}
+      onClick={onTap}
+      onKeyDown={onTap ? (e) => { if (e.key === 'Enter') { e.preventDefault(); onTap(); } } : undefined}
+      role={onTap ? 'button' : undefined}
+      tabIndex={onTap && !state ? 0 : undefined}
+      style={state ? undefined : { ...theme.matchStyle, ...(highlight ? { boxShadow: `0 0 0 2px ${theme.accent}` } : null) }}
       className={cn(
         'rounded-xl border-2 flex items-center gap-2 overflow-hidden p-2', CARD_MIN_H,
+        onTap && !state && 'cursor-pointer',
         theme.usesGlassMatch && !state && 'backdrop-blur-md',
         isOver && !state && 'ring-2 ring-offset-0 brightness-105',
         state === 'correct' ? 'border-green-400 bg-green-50' : state === 'wrong' ? 'border-red-400 bg-red-50' : '',
@@ -170,6 +183,8 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
   const [placed, setPlaced] = useState<Record<string, string>>({}); // answerId -> promptId
   const [submitted, setSubmitted] = useState(false);
   const [activePromptId, setActivePromptId] = useState<string | null>(null);
+  // Tap-to-match: the item the learner has "picked up" by tapping (no drag needed).
+  const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
   const firedRef = useRef(false);
 
   const pairById = useMemo(() => Object.fromEntries(pairs.map(p => [p.id, p])), [pairs]);
@@ -202,7 +217,29 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
     });
   }
 
-  function reset() { setPlaced({}); setSubmitted(false); firedRef.current = false; }
+  // Tap an item to pick it up / put it down (no drag).
+  function tapItem(promptId: string) {
+    if (submitted) return;
+    setSelectedPromptId(prev => (prev === promptId ? null : promptId));
+  }
+  // Tap a match card: dock the picked-up item here, or (with nothing picked up)
+  // send the card's docked item back to the bank.
+  function tapMatch(answerId: string) {
+    if (submitted) return;
+    setPlaced(prev => {
+      const next = { ...prev };
+      if (selectedPromptId) {
+        for (const k of Object.keys(next)) if (next[k] === selectedPromptId) delete next[k];
+        next[answerId] = selectedPromptId;
+      } else if (next[answerId]) {
+        delete next[answerId];
+      }
+      return next;
+    });
+    setSelectedPromptId(null);
+  }
+
+  function reset() { setPlaced({}); setSubmitted(false); setSelectedPromptId(null); firedRef.current = false; }
 
   if (pairs.length === 0) {
     return <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-400">Add match pairs in the editor.</div>;
@@ -219,7 +256,8 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
             ? <div key={p.id} style={theme.itemStyle} className={cn('rounded-lg border flex items-center justify-center overflow-hidden p-2 opacity-30', 'w-full', CARD_MIN_H)}>
                 <CardInner side={p.prompt} textStyle={theme.textStyle} />
               </div>
-            : <DraggableItem key={p.id} id={p.id} side={p.prompt} theme={theme} />;
+            : <DraggableItem key={p.id} id={p.id} side={p.prompt} theme={theme}
+                onTap={() => tapItem(p.id)} selected={selectedPromptId === p.id} />;
         })}
       </BankZone>
     </div>
@@ -241,6 +279,8 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
               dockedId={promptId}
               state={state}
               theme={theme}
+              onTap={() => tapMatch(aid)}
+              highlight={!!selectedPromptId && !promptId}
             />
           );
         })}
@@ -250,7 +290,7 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
 
   return (
     <div className={cn(BLOCK_CONTENT_SHELL, 'space-y-3')}>
-      <p className="text-sm font-semibold text-[color:var(--surface-text)]">{data.instructions || 'Drag each item onto its match.'}</p>
+      <p className="text-sm font-semibold text-[color:var(--surface-text)]">{data.instructions || 'Tap an item then tap its match — or drag it across.'}</p>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-2 gap-2.5 sm:gap-3 items-start">
