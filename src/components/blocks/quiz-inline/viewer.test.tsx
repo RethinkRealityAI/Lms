@@ -1,6 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import QuizInlineViewer from './viewer';
+
+// The persistence tests need a mocked Supabase client (the render-only tests above
+// pass no `context`, so persistAnswer short-circuits and never touches it).
+vi.mock('@/lib/supabase/client', () => ({ createClient: vi.fn() }));
+import { createClient } from '@/lib/supabase/client';
 
 const QUIZ_DATA = {
   question_type: 'multiple_choice' as const,
@@ -269,5 +274,68 @@ describe('QuizInlineViewer — select_all', () => {
     fireEvent.click(screen.getByText('Blue'));
     fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
     expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument();
+  });
+});
+
+describe('QuizInlineViewer — answer persistence to quiz_block_responses', () => {
+  const CTX = { courseId: 'c1', lessonId: 'l1', institutionId: 'i1' };
+
+  function mockClient(existing: { attempt_count?: number; is_correct?: boolean } | null, upsert = vi.fn().mockResolvedValue({ error: null })) {
+    (createClient as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }) },
+      from: vi.fn(() => ({
+        select: () => ({ eq: () => ({ eq: () => ({ maybeSingle: async () => ({ data: existing }) }) }) }),
+        upsert,
+      })),
+    });
+    return upsert;
+  }
+
+  function answerMC(correct: boolean) {
+    fireEvent.click(screen.getByText(correct ? /B\. 4/ : /A\. 3/));
+    fireEvent.click(screen.getByRole('button', { name: /check answer/i }));
+  }
+
+  it('persists is_correct=true for a correct answer', async () => {
+    const upsert = mockClient(null);
+    render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} context={CTX} />);
+    answerMC(true);
+    await waitFor(() => expect(upsert).toHaveBeenCalled());
+    expect(upsert.mock.calls[0][0]).toMatchObject({ is_correct: true, block_id: 'block-1', user_id: 'u1' });
+  });
+
+  it('records is_correct=false for a wrong answer when there is no prior correct response', async () => {
+    const upsert = mockClient(null);
+    render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} context={CTX} />);
+    answerMC(false);
+    await waitFor(() => expect(upsert).toHaveBeenCalled());
+    expect(upsert.mock.calls[0][0].is_correct).toBe(false);
+  });
+
+  it('STICKY-CORRECT: a later wrong answer does NOT downgrade a prior is_correct=true', async () => {
+    // The dapo bug: a wrong re-attempt overwrote a passing answer -> cert RPC refused.
+    const upsert = mockClient({ attempt_count: 1, is_correct: true });
+    render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} context={CTX} />);
+    answerMC(false);
+    await waitFor(() => expect(upsert).toHaveBeenCalled());
+    expect(upsert.mock.calls[0][0].is_correct).toBe(true);
+  });
+
+  it('retries a dropped write (so the gate/DB cannot diverge)', async () => {
+    const upsert = vi.fn()
+      .mockResolvedValueOnce({ error: { message: 'network' } })
+      .mockResolvedValueOnce({ error: null });
+    mockClient(null, upsert);
+    render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} context={CTX} />);
+    answerMC(true);
+    await waitFor(() => expect(upsert).toHaveBeenCalledTimes(2), { timeout: 2000 });
+  });
+
+  it('never persists in preview mode', async () => {
+    const upsert = mockClient(null);
+    render(<QuizInlineViewer data={QUIZ_DATA} block={DEFAULT_BLOCK} context={{ ...CTX, previewMode: true }} />);
+    answerMC(true);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(upsert).not.toHaveBeenCalled();
   });
 });
