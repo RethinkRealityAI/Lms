@@ -4,6 +4,7 @@ import { getVisibleCourseIds } from '@/lib/db/course-assignments';
 import { getTenantContext } from '@/lib/tenant/server';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { getMyCmeRequest, isEligibleForCme } from '@/lib/db';
+import { getMyInstitutionSlugs } from '@/lib/db/memberships';
 import { getProgramsWithProgress } from '@/lib/db/programs';
 import { getVisibleAnnouncements } from '@/lib/db/announcements';
 import { CmeRequestBanner } from '@/components/student/cme-request-banner';
@@ -54,15 +55,24 @@ export default async function StudentPage() {
     redirect(`/${institutionSlug}/login`);
   }
 
-  // Tenant guard: send a student viewing a tenant that isn't theirs back to their own tenant.
-  // Prevents wrong-tenant viewing and any URL-driven mis-scoping of courses/CME. platform_admin
-  // never reaches /student (middleware bounces admins to /admin), so tenant-switching is unaffected.
+  // Tenant guard (dual access, migration 055): a student viewing a tenant they belong
+  // to sees THAT institution's catalog/CME/programs; a student viewing a tenant they do
+  // NOT belong to is sent back to their primary. Membership (not the single primary
+  // institution_id) is the source of truth, so a GANSID+SCAGO member sees SCAGO on /scago
+  // and GANSID on /gansid. platform_admin never reaches /student (middleware bounces admins
+  // to /admin), so tenant-switching is unaffected.
   if (tenantInstitutionId && institutionId !== tenantInstitutionId) {
-    const { data: ownInst } = await supabase
-      .from('institutions').select('slug').eq('id', institutionId).maybeSingle();
-    const ownSlug = (ownInst?.slug as string | undefined) ?? null;
-    if (ownSlug && ownSlug !== institutionSlug) {
-      redirect(`/${ownSlug}/student`);
+    const mySlugs = await getMyInstitutionSlugs(supabase);
+    if (mySlugs.includes(institutionSlug)) {
+      // Member of the viewed tenant → scope the whole dashboard to it.
+      institutionId = tenantInstitutionId;
+    } else {
+      const { data: ownInst } = await supabase
+        .from('institutions').select('slug').eq('id', institutionId).maybeSingle();
+      const ownSlug = (ownInst?.slug as string | undefined) ?? null;
+      if (ownSlug && ownSlug !== institutionSlug) {
+        redirect(`/${ownSlug}/student`);
+      }
     }
   }
 
@@ -89,9 +99,11 @@ export default async function StudentPage() {
     isLegacyClaimed = false;
   }
 
-  // Fetch visible announcements for this user. Never breaks the dashboard.
+  // Fetch visible announcements for this user, scoped to the ACTIVE portal institution
+  // (institutionId is the viewed tenant when the user is a member). Never breaks the dashboard.
   const announcements = await getVisibleAnnouncements(supabase, {
     userId: user.id,
+    institutionId,
     userCreatedAt,
     isLegacyClaimed,
   }).catch(() => []);
@@ -113,10 +125,17 @@ export default async function StudentPage() {
 
   let coursesRaw: any[] = [];
   if (visibleIds.length > 0) {
+    // Scope the rendered set to the ACTIVE institution. The enrollments union above is
+    // NOT institution-scoped (a dual-access learner's course_enrollments span both
+    // GANSID and SCAGO), so without this filter their GANSID courses would leak onto
+    // the SCAGO dashboard. Everything downstream — enrolled count, progress, completion
+    // stats, "continue where you left off" — derives from coursesRaw, so this one filter
+    // keeps the whole dashboard cleanly separated per portal. (No cross-contamination.)
     const { data: primary } = await supabase
       .from('courses')
       .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id, display_order')
       .in('id', visibleIds)
+      .eq('institution_id', institutionId)
       .is('deleted_at', null);
     if (primary) {
       coursesRaw = primary;
@@ -126,6 +145,7 @@ export default async function StudentPage() {
         .from('courses')
         .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id')
         .in('id', visibleIds)
+        .eq('institution_id', institutionId)
         .is('deleted_at', null);
       coursesRaw = (fallback ?? []).map((c) => ({ ...c, display_order: null }));
     }
@@ -200,7 +220,7 @@ export default async function StudentPage() {
   // Authoritative eligibility = completed every catalog course (server RPC), matching what
   // request_cme_certificate enforces — avoids a banner/RPC mismatch under restricted visibility.
   const eligible = await isEligibleForCme(supabase, user.id, institutionId);
-  const initialRequest = await getMyCmeRequest(supabase, user.id);
+  const initialRequest = await getMyCmeRequest(supabase, user.id, institutionId);
   const profileHref = `/${institutionSlug}/student/profile`;
 
   // Program progress — "X of Y courses complete" toward each program certificate
@@ -370,6 +390,7 @@ export default async function StudentPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
           <CmeRequestBanner
             userId={user.id}
+            institutionId={institutionId}
             eligible={eligible}
             initialRequest={initialRequest}
             profileHref={profileHref}

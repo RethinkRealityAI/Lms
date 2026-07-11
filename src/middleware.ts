@@ -22,8 +22,8 @@ function getRoleFromToken(user: any): string | null {
 async function getUserAuthInfo(
   supabase: any,
   user: any
-): Promise<{ role: string; slug: string | null }> {
-  // Single DB lookup for both role and the user's own institution slug.
+): Promise<{ role: string; slug: string | null; slugs: string[] }> {
+  // Single DB lookup for both role and the user's own PRIMARY institution slug.
   // Prioritizing the DB prevents stale JWT metadata from locking updated admins
   // out, and gives us the authoritative tenant for tenant-enforcement below.
   const { data, error } = await supabase
@@ -46,7 +46,23 @@ async function getUserAuthInfo(
   const slugRaw = Array.isArray(inst) ? inst[0]?.slug : inst?.slug;
   const slug = typeof slugRaw === "string" ? slugRaw.toLowerCase() : null;
 
-  return { role, slug };
+  // Every institution this user may enter (dual access, migration 055): their
+  // memberships UNION their primary. Falls back to the primary slug alone if the
+  // RPC is unavailable, so enforcement never gets stricter than before on error.
+  let slugs: string[] = [];
+  try {
+    const { data: slugData } = await supabase.rpc("get_my_institution_slugs");
+    if (Array.isArray(slugData)) {
+      slugs = slugData
+        .filter((s: unknown): s is string => typeof s === "string")
+        .map((s: string) => s.toLowerCase());
+    }
+  } catch {
+    slugs = [];
+  }
+  if (slugs.length === 0 && slug) slugs = [slug];
+
+  return { role, slug, slugs };
 }
 
 function getInstitutionSlug(pathname: string): string | null {
@@ -139,22 +155,24 @@ export async function middleware(request: NextRequest) {
     normalizedPath.startsWith("/student") ||
     normalizedPath === "/login";
 
-  // Resolve role + own institution slug once per request (single DB query)
+  // Resolve role + own institution slug + full membership set once per request.
   let role: string | null = null;
   let ownSlug: string | null = null;
+  let mySlugs: string[] = [];
   if (user && needsRoleCheck) {
     const info = await getUserAuthInfo(supabase, user);
     role = info.role;
     ownSlug = info.slug;
+    mySlugs = info.slugs;
   }
 
-  // --- Tenant enforcement ---
-  // A logged-in user may only use their OWN institution's URL prefix. If they
-  // land on another tenant's prefix (e.g. a GANSID user opening /scago/student),
-  // redirect to their own slug with a real HTTP redirect BEFORE any layout renders.
-  // This is what keeps the navbar/branding from getting stuck on the wrong tenant
-  // (both prefixes rewrite to the same internal route, so a client-side guard would
-  // not re-render the layout). platform_admin is exempt so it can switch tenants.
+  // --- Tenant enforcement (dual access, migration 055) ---
+  // A logged-in user may use the URL prefix of ANY institution they're a member of.
+  // If they land on a tenant they do NOT belong to (e.g. a GANSID-only user opening
+  // /scago/student), redirect to their PRIMARY slug with a real HTTP redirect BEFORE
+  // any layout renders — both prefixes rewrite to the same internal route, so a
+  // client-side guard would not re-render the layout/branding. platform_admin is
+  // exempt so it can switch tenants freely.
   if (
     user &&
     role &&
@@ -162,7 +180,7 @@ export async function middleware(request: NextRequest) {
     institutionSlugInPath &&
     ownSlug &&
     SUPPORTED_INSTITUTION_SLUGS.has(ownSlug) &&
-    ownSlug !== institutionSlugInPath &&
+    !mySlugs.includes(institutionSlugInPath) &&
     (normalizedPath.startsWith("/admin") || normalizedPath.startsWith("/student"))
   ) {
     return NextResponse.redirect(
@@ -219,11 +237,17 @@ export async function middleware(request: NextRequest) {
     return applyInstitutionContext(response, selectedInstitution);
   }
 
-  // Redirect authenticated users away from login page — to their OWN tenant
-  // (platform_admin keeps whatever tenant prefix the URL/cookie selected).
+  // Redirect authenticated users away from login page. Honour the selected tenant
+  // when the user is a member of it (dual access) — so a GANSID user who opened
+  // /scago/login lands on /scago — otherwise fall back to their primary tenant.
+  // platform_admin keeps whatever tenant prefix the URL/cookie selected.
   if (normalizedPath === "/login" && user && role) {
     const targetSlug =
-      role !== "platform_admin" && ownSlug ? ownSlug : selectedInstitution;
+      role === "platform_admin"
+        ? selectedInstitution
+        : mySlugs.includes(selectedInstitution)
+        ? selectedInstitution
+        : ownSlug ?? selectedInstitution;
     const dest = ADMIN_ROLES.has(role) ? "/admin" : "/student";
     return NextResponse.redirect(
       new URL(withInstitution(dest, targetSlug), request.url)

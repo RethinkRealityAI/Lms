@@ -99,6 +99,10 @@ export async function deleteAnnouncement(
 
 export interface VisibleAnnouncementContext {
   userId: string;
+  /** The ACTIVE portal institution — announcements are scoped to it so a dual-access
+   *  learner sees only the viewed institution's announcements (migration 056 broadened
+   *  RLS to their whole membership set, so the app must narrow to the active one). */
+  institutionId: string;
   /** users.created_at — used for the first_time audience */
   userCreatedAt: string | null;
   /** user has a linked legacy_users row */
@@ -106,16 +110,20 @@ export interface VisibleAnnouncementContext {
 }
 
 /**
- * Student: announcements the user should see right now. RLS already limits
- * to live (active, in-window) rows of the user's institution; this filters
- * audience and removes seen/dismissed ones.
+ * Student: announcements the user should see right now. RLS limits to live (active,
+ * in-window) rows of ANY institution the user belongs to (migration 056); this narrows
+ * to the ACTIVE portal institution, then filters audience and removes seen/dismissed ones.
  */
 export async function getVisibleAnnouncements(
   supabase: SupabaseClient,
   ctx: VisibleAnnouncementContext,
 ): Promise<Announcement[]> {
   const [{ data: rows, error }, { data: dismissals, error: dErr }] = await Promise.all([
-    supabase.from('announcements').select('*').order('created_at', { ascending: false }),
+    supabase
+      .from('announcements')
+      .select('*')
+      .eq('institution_id', ctx.institutionId)
+      .order('created_at', { ascending: false }),
     supabase.from('announcement_dismissals').select('announcement_id').eq('user_id', ctx.userId),
   ]);
   if (error) throw error;

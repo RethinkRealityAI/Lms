@@ -30,19 +30,21 @@ export default function CertificatesPage() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // Fetch user's institution name for certificate display
-      const { data: userData } = await supabase
-        .from('users')
-        .select('institution_id')
-        .eq('id', user.id)
-        .single();
-      if (userData?.institution_id) {
-        const { data: inst } = await supabase
-          .from('institutions')
-          .select('name, description')
-          .eq('id', userData.institution_id)
-          .single();
-        if (inst) setInstitutionName(inst.description || inst.name);
+      // Resolve the ACTIVE institution from the portal (URL/cookie slug), NOT the user's
+      // primary. A dual-access learner viewing /scago must see only SCAGO certificates
+      // under the SCAGO name — never their GANSID credentials. (No cross-contamination.)
+      const activeSlug = resolveInstitutionSlug(pathname);
+      const { data: inst } = await supabase
+        .from('institutions')
+        .select('id, name, description')
+        .eq('slug', activeSlug)
+        .maybeSingle();
+      if (inst) setInstitutionName(inst.description || inst.name);
+
+      if (!inst?.id) {
+        setCertificates([]);
+        setLoading(false);
+        return;
       }
 
       const { data, error } = await supabase
@@ -54,6 +56,7 @@ export default function CertificatesPage() {
           template:certificate_templates!certificates_template_id_fkey(*)
         `)
         .eq('user_id', user.id)
+        .eq('institution_id', inst.id)
         .order('issued_at', { ascending: false });
 
       if (error) {

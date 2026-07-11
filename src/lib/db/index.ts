@@ -27,3 +27,4 @@ export * from './email-templates';
 export * from './announcements';
 export * from './survey-assignments';
 export * from './quizzes';
+export * from './memberships';

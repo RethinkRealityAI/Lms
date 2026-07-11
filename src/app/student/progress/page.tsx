@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { withInstitutionPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -33,15 +33,36 @@ export default function StudentProgressPage() {
       return;
     }
 
-    // Get enrollments with course details
+    // Resolve the ACTIVE institution from the portal (URL/cookie slug). A dual-access
+    // learner's enrollments/progress/quizzes span both institutions, so every query below
+    // is scoped to this institution's courses — the SCAGO progress page never shows GANSID
+    // progress and vice-versa. (No cross-contamination.)
+    const activeSlug = resolveInstitutionSlug(pathname);
+    const { data: inst } = await supabase
+      .from('institutions')
+      .select('id')
+      .eq('slug', activeSlug)
+      .maybeSingle();
+    const activeInstId = inst?.id as string | undefined;
+    if (!activeInstId) {
+      setLoading(false);
+      return;
+    }
+
+    // Get enrollments, scoped to the active institution's courses.
     const { data: enrollmentData } = await supabase
       .from('course_enrollments')
       .select('*, courses(*)')
       .eq('user_id', user.id);
-    setEnrollments(enrollmentData || []);
+    const scopedEnrollments = (enrollmentData || []).filter(
+      (e: any) => e.courses?.institution_id === activeInstId
+    );
+    setEnrollments(scopedEnrollments);
 
-    // Get all lessons for enrolled courses
-    const courseIds = (enrollmentData || []).map((e: any) => e.course_id);
+    // Get all lessons for the scoped enrolled courses
+    const courseIds = scopedEnrollments.map((e: any) => e.course_id);
+    const courseIdSet = new Set<string>(courseIds);
+    let scopedLessonIds = new Set<string>();
     if (courseIds.length > 0) {
       const { data: lessonData } = await supabase
         .from('lessons')
@@ -49,10 +70,13 @@ export default function StudentProgressPage() {
         .in('course_id', courseIds)
         .is('deleted_at', null);
       setAllLessons(lessonData || []);
+      scopedLessonIds = new Set((lessonData || []).map((l: any) => l.id as string));
+    } else {
+      setAllLessons([]);
     }
 
-    // Get completed lessons — drop rows whose lesson was soft-deleted so counts
-    // can't exceed the live lesson totals
+    // Get completed lessons — drop rows whose lesson was soft-deleted (so counts can't
+    // exceed live totals) OR whose course isn't in the active institution.
     const { data: completedData } = await supabase
       .from('progress')
       .select('*, lessons(*, courses(id, title))')
@@ -60,16 +84,23 @@ export default function StudentProgressPage() {
       .eq('completed', true)
       .order('completed_at', { ascending: false });
     setCompletedLessons(
-      (completedData || []).filter((row: any) => row.lessons && row.lessons.deleted_at == null)
+      (completedData || []).filter(
+        (row: any) =>
+          row.lessons &&
+          row.lessons.deleted_at == null &&
+          row.lessons.course_id &&
+          courseIdSet.has(row.lessons.course_id)
+      )
     );
 
-    // Get inline quiz answers (quiz_attempts is the unused standalone-quiz store)
+    // Get inline quiz answers, scoped to lessons in the active institution's courses
+    // (quiz_attempts is the unused standalone-quiz store).
     const { data: quizData } = await supabase
       .from('quiz_block_responses')
       .select('id, lesson_id, is_correct, answered_at')
       .eq('user_id', user.id)
       .order('answered_at', { ascending: false });
-    setQuizResponses(quizData || []);
+    setQuizResponses((quizData || []).filter((q: any) => scopedLessonIds.has(q.lesson_id)));
 
     setLoading(false);
   };

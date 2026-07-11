@@ -12,6 +12,8 @@ import type { CmeCertificateRequest } from '@/types';
 
 interface CmeRequestBannerProps {
   userId: string;
+  /** Active portal institution — CME requests are per-institution (migration 057). */
+  institutionId: string;
   eligible: boolean;
   initialRequest: CmeCertificateRequest | null;
   profileHref: string;
@@ -19,6 +21,7 @@ interface CmeRequestBannerProps {
 
 export function CmeRequestBanner({
   userId,
+  institutionId,
   eligible,
   initialRequest,
   profileHref,
@@ -35,7 +38,7 @@ export function CmeRequestBanner({
   const handleRequest = async () => {
     setBusy(true);
     try {
-      const { error } = await requestCmeCertificate(supabase, null);
+      const { error } = await requestCmeCertificate(supabase, institutionId, null);
       if (error) {
         toast.error('Could not submit request', { description: error });
         return;
@@ -43,7 +46,7 @@ export function CmeRequestBanner({
       toast.success('Certificate request submitted', {
         description: 'Your request is now pending review.',
       });
-      const updated = await getMyCmeRequest(supabase, userId);
+      const updated = await getMyCmeRequest(supabase, userId, institutionId);
       setRequest(updated);
     } finally {
       setBusy(false);

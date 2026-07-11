@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, CheckCircle, Award, BarChart3, Briefcase, Building2, Globe, ScrollText, History, Link2 } from 'lucide-react';
 import type { User as UserType, CmeCertificateRequest } from '@/types';
 import { isAdminRole } from '@/lib/auth/roles';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
 import type { StudentProgress } from '@/lib/db/analytics';
 import {
   getMyCmeRequest,
@@ -36,6 +37,8 @@ export default function ProfilePage() {
   const [cmeBusy, setCmeBusy] = useState(false);
   const [legacyHistory, setLegacyHistory] = useState<LegacyHistory | null>(null);
   const [linkingLegacy, setLinkingLegacy] = useState(false);
+  // Active portal institution (dual access) — scopes stats + CME to the viewed portal.
+  const [activeInstId, setActiveInstId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     full_name: '',
     bio: '',
@@ -76,19 +79,46 @@ export default function ProfilePage() {
         });
       }
 
-      // Load learning stats
-      const { data: progressData } = await supabase
-        .from('v_student_progress')
-        .select('*')
-        .eq('user_id', authUser.id)
+      // Resolve the ACTIVE portal institution (URL/cookie slug), not the user's primary —
+      // a dual-access learner's stats + CME must reflect the portal they're viewing.
+      const activeSlug = resolveInstitutionSlug();
+      const { data: activeInst } = await supabase
+        .from('institutions')
+        .select('id')
+        .eq('slug', activeSlug)
         .maybeSingle();
-      if (progressData) setStats(progressData as StudentProgress);
+      const resolvedInstId = (activeInst?.id as string | undefined) ?? data?.institution_id ?? null;
+      setActiveInstId(resolvedInstId);
 
-      // Certificate of completion (CME) state + eligibility
-      if (data?.institution_id) {
+      // Learning stats, scoped to the active institution (migration 057 RPC) so the card
+      // never sums a dual-access learner's two institutions together.
+      if (resolvedInstId) {
+        const { data: progressJson } = await supabase.rpc('get_my_student_progress', {
+          p_institution_id: resolvedInstId,
+        });
+        if (progressJson) {
+          const p = progressJson as Record<string, unknown>;
+          setStats({
+            user_id: authUser.id,
+            email: data?.email ?? '',
+            full_name: data?.full_name ?? null,
+            enrollment_count: Number(p.enrollment_count ?? 0),
+            completed_lessons: Number(p.completed_lessons ?? 0),
+            quiz_attempts: Number(p.quiz_attempts ?? 0),
+            avg_quiz_score: Number(p.avg_quiz_score ?? 0),
+            certificates_earned: Number(p.certificates_earned ?? 0),
+            last_activity: (p.last_activity as string | null) ?? null,
+          });
+        }
+      }
+
+      // Certificate of completion (CME) state + eligibility — scoped to the active portal
+      // (CME/Mainpro+ is institution-specific), so a dual-access learner sees the right
+      // program's eligibility and request state on each portal.
+      if (resolvedInstId && data?.id) {
         const [request, eligible] = await Promise.all([
-          getMyCmeRequest(supabase, data.id),
-          isEligibleForCme(supabase, data.id, data.institution_id),
+          getMyCmeRequest(supabase, data.id, resolvedInstId),
+          isEligibleForCme(supabase, data.id, resolvedInstId),
         ]);
         setCmeRequest(request);
         setCmeEligible(eligible);
@@ -221,10 +251,10 @@ export default function ProfilePage() {
   };
 
   const handleRequestCme = async () => {
-    if (!user) return;
+    if (!user || !activeInstId) return;
     setCmeBusy(true);
     try {
-      const { error } = await requestCmeCertificate(supabase, null);
+      const { error } = await requestCmeCertificate(supabase, activeInstId, null);
       if (error) {
         toast.error('Could not submit request', { description: error });
         return;
@@ -232,7 +262,7 @@ export default function ProfilePage() {
       toast.success('Certificate request submitted', {
         description: 'Your request is now pending review.',
       });
-      const request = await getMyCmeRequest(supabase, user!.id);
+      const request = await getMyCmeRequest(supabase, user.id, activeInstId);
       setCmeRequest(request);
     } finally {
       setCmeBusy(false);
@@ -240,16 +270,16 @@ export default function ProfilePage() {
   };
 
   const handleCancelCme = async () => {
-    if (!cmeRequest || !user) return;
+    if (!cmeRequest || !user || !activeInstId) return;
     setCmeBusy(true);
     try {
-      const { error } = await cancelMyCmeRequest(supabase, cmeRequest.id, user!.id);
+      const { error } = await cancelMyCmeRequest(supabase, cmeRequest.id, user.id);
       if (error) {
         toast.error('Could not cancel request', { description: error });
         return;
       }
       toast.success('Request cancelled');
-      const request = await getMyCmeRequest(supabase, user!.id);
+      const request = await getMyCmeRequest(supabase, user.id, activeInstId);
       setCmeRequest(request);
     } finally {
       setCmeBusy(false);

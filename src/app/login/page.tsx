@@ -18,6 +18,7 @@ import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 import { logSignInEvent } from '@/lib/db/events';
+import { joinInstitution, signupPrecheck } from '@/lib/db/memberships';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -65,6 +66,9 @@ function LoginContent() {
   const [resetSent, setResetSent] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState('');
+  // Friendly banner shown on the Sign In tab when an existing account is detected
+  // during signup (dual access, migration 055).
+  const [signupNotice, setSignupNotice] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -248,6 +252,18 @@ function LoginContent() {
       const finalRole = normalizeRole(userData?.role || 'student');
       const finalName = userData?.full_name;
 
+      // Dual access (migration 055): signing in on a portal grants membership to it, so a
+      // GANSID user who signed in on /scago now gets SCAGO access. Idempotent no-op when
+      // they're already a member (e.g. their own institution). Students only — admins are
+      // governed by their global role. Non-fatal so a hiccup never blocks sign-in.
+      if (!isAdminRole(finalRole)) {
+        try {
+          await joinInstitution(supabase, resolveInstitutionSlug(pathname) || 'gansid');
+        } catch (joinErr) {
+          console.error('Institution join on sign-in (non-critical):', joinErr);
+        }
+      }
+
       toast.success('Welcome back!', {
         description: `You have successfully signed in${finalName ? `, ${finalName}` : ''}.`,
       });
@@ -270,6 +286,31 @@ function LoginContent() {
     setLoading(true);
 
     try {
+      const currentSlug = resolveInstitutionSlug(pathname) || 'gansid';
+      const currentName = branding.name;
+
+      // Dual access (migration 055): if this email already has an account, don't dead-end.
+      // A shared Supabase auth namespace means one email = one account across institutions;
+      // instead of blocking, guide them to sign in — signing in on this portal grants access.
+      const pre = await signupPrecheck(supabase, formData.email.trim().toLowerCase(), currentSlug);
+      if (pre.status === 'member') {
+        setActiveTab('signin');
+        setSignupNotice(`You already have a ${currentName} account — just sign in below.`);
+        setErrors({});
+        setLoading(false);
+        return;
+      }
+      if (pre.status === 'other_institution') {
+        setActiveTab('signin');
+        setSignupNotice(
+          `Good news — you already have an account with ${pre.primary_name ?? 'another program'}. ` +
+            `Just sign in and you'll get access to ${currentName} content too.`
+        );
+        setErrors({});
+        setLoading(false);
+        return;
+      }
+
       // Validate verification code for admin signup
       if (formData.role === 'institution_admin') {
         if (!formData.verificationCode || formData.verificationCode.trim() === '') {
@@ -305,21 +346,6 @@ function LoginContent() {
         }
       }
 
-      // Check if email already exists
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('email')
-        .eq('email', formData.email.trim().toLowerCase())
-        .single();
-
-      if (existingUser) {
-        setErrors({ email: 'An account with this email already exists. Please sign in instead.' });
-        setLoading(false);
-        return;
-      }
-
-      const signupInstitutionSlug = resolveInstitutionSlug(pathname) || 'gansid';
-
       const { data, error } = await supabase.auth.signUp({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -327,7 +353,7 @@ function LoginContent() {
           data: {
             role: formData.role,
             full_name: formData.fullName.trim(),
-            institution_slug: signupInstitutionSlug,
+            institution_slug: currentSlug,
           },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
         },
@@ -346,13 +372,20 @@ function LoginContent() {
         throw new Error('Account creation failed. Please try again.');
       }
 
-      // Detect duplicate signup: Supabase returns a user with empty identities
-      // when the email already belongs to a confirmed account.
+      // Fallback duplicate detection: Supabase returns a user with empty identities
+      // when the email already belongs to a confirmed account (should be rare — the
+      // signup_precheck above normally catches this first). Guide to sign in, don't dead-end.
       if (
         data.user.identities &&
         data.user.identities.length === 0
       ) {
-        throw new Error('An account with this email already exists. Please sign in instead.');
+        setActiveTab('signin');
+        setSignupNotice(
+          `You already have an account with this email. Just sign in and you'll get access to ${currentName} content too.`
+        );
+        setErrors({});
+        setLoading(false);
+        return;
       }
 
       // Increment verification code usage for admin
@@ -365,30 +398,17 @@ function LoginContent() {
         }
       }
 
-      // Best-effort: ensure institution membership exists for tenant-scoped access.
-      const institutionSlug = resolveInstitutionSlug(pathname) || 'gansid';
-      try {
-        const { data: institutionData } = await supabase
-          .from('institutions')
-          .select('id')
-          .eq('slug', institutionSlug)
-          .maybeSingle();
-
-        if (institutionData?.id) {
-          await supabase
-            .from('institution_memberships')
-            .upsert([
-              {
-                institution_id: institutionData.id,
-                user_id: data.user.id,
-                role: formData.role === 'institution_admin' ? 'institution_admin' : 'student',
-                is_active: true,
-              },
-            ]);
+      // Ensure a membership row for this portal when the signup auto-confirmed (session
+      // present → the client is now authenticated, so the auth.uid()-bound RPC works). If
+      // email confirmation is required instead, the membership is created on first sign-in
+      // (handleSignIn also calls join_institution). Either way get_my_institution_slugs
+      // already unions the user's primary institution, so access is never blocked meanwhile.
+      if (data.session) {
+        try {
+          await joinInstitution(supabase, currentSlug);
+        } catch (membershipErr) {
+          console.error('Institution membership setup (non-critical):', membershipErr);
         }
-      } catch (membershipErr) {
-        // Non-critical
-        console.error('Institution membership setup (non-critical):', membershipErr);
       }
 
       // If session exists (email auto-confirmed), redirect to dashboard
@@ -590,7 +610,7 @@ function LoginContent() {
             </p>
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'signin' | 'signup')} className="w-full">
+          <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as 'signin' | 'signup'); if (v === 'signup') setSignupNotice(null); }} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-5 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200">
               <TabsTrigger
                 value="signin"
@@ -609,6 +629,12 @@ function LoginContent() {
             </TabsList>
 
             <TabsContent value="signin" className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
+              {signupNotice && (
+                <div className="mb-4 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-3.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+                  <p className="text-sm font-semibold text-green-800 leading-snug">{signupNotice}</p>
+                </div>
+              )}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="signin-email" className="text-xs font-black uppercase tracking-widest text-slate-400">

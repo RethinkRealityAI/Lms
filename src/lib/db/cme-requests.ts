@@ -27,31 +27,44 @@ export async function isEligibleForCme(
   return data === true;
 }
 
-/** The user's most recent request (pending/issued/declined), if any. */
+/**
+ * The user's most recent request (pending/issued/declined) FOR THE GIVEN INSTITUTION, if any.
+ * Institution-scoped for dual access (migration 057) — a CME cert in one institution must not
+ * surface as "issued" on another institution's portal.
+ */
 export async function getMyCmeRequest(
   supabase: SupabaseClient,
   userId: string,
+  institutionId: string,
 ): Promise<CmeCertificateRequest | null> {
   const { data } = await supabase
     .from('cme_certificate_requests')
     .select('*')
     .eq('user_id', userId)
+    .eq('institution_id', institutionId)
     .order('requested_at', { ascending: false })
     .limit(1)
     .maybeSingle();
   return (data as CmeCertificateRequest) ?? null;
 }
 
-/** Create a CME request via the eligibility-enforcing RPC. Idempotent (returns existing open/issued). */
+/** Create a CME request (for the active portal institution) via the eligibility-enforcing RPC.
+ *  Idempotent per institution (returns the existing open/issued request). */
 export async function requestCmeCertificate(
   supabase: SupabaseClient,
+  institutionId: string,
   programLabel: string | null,
 ): Promise<{ status: CmeRequestStatus | null; created: boolean; error: string | null }> {
-  const { data, error } = await supabase.rpc('request_cme_certificate', { p_program_label: programLabel });
+  const { data, error } = await supabase.rpc('request_cme_certificate', {
+    p_institution_id: institutionId,
+    p_program_label: programLabel,
+  });
   if (error) {
     const reason = /not_eligible/.test(error.message)
       ? 'You must complete all courses before requesting your certificate.'
-      : error.message;
+      : /not_member/.test(error.message)
+        ? 'This certificate is not available for your account on this portal.'
+        : error.message;
     return { status: null, created: false, error: reason };
   }
   const res = (data ?? {}) as { status?: CmeRequestStatus; created?: boolean };
