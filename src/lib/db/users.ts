@@ -27,34 +27,67 @@ export async function getActiveUsers(
   supabase: SupabaseClient,
   institutionId: string,
 ): Promise<ActiveUser[]> {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, role, full_name, avatar_url, is_active, created_at, updated_at')
-    .eq('institution_id', institutionId)
-    .order('created_at', { ascending: false });
-  if (error || !data) return [];
+  // Supabase defaults to 1,000 rows max. Fetch all with pagination.
+  const PAGE_SIZE = 1000;
+  type UserRow = Omit<ActiveUser, 'enrollment_count' | 'last_activity'>;
+
+  const data: UserRow[] = [];
+  let from = 0;
+  let hasMore = true;
+  while (hasMore) {
+    const { data: page, error } = await supabase
+      .from('users')
+      .select('id, email, role, full_name, avatar_url, is_active, created_at, updated_at')
+      .eq('institution_id', institutionId)
+      .order('created_at', { ascending: false })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) break;
+    data.push(...((page ?? []) as UserRow[]));
+    hasMore = (page?.length ?? 0) === PAGE_SIZE;
+    from += PAGE_SIZE;
+  }
 
   const userIds = data.map((u) => u.id);
   if (userIds.length === 0) return data.map((u) => ({ ...u, enrollment_count: 0, last_activity: null }));
 
-  const { data: enrollments } = await supabase
-    .from('course_enrollments')
-    .select('user_id')
-    .in('user_id', userIds);
+  const enrollments: { user_id: string }[] = [];
+  from = 0;
+  hasMore = true;
+  while (hasMore) {
+    const { data: page, error } = await supabase
+      .from('course_enrollments')
+      .select('user_id')
+      .in('user_id', userIds)
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) break;
+    enrollments.push(...((page ?? []) as { user_id: string }[]));
+    hasMore = (page?.length ?? 0) === PAGE_SIZE;
+    from += PAGE_SIZE;
+  }
 
   const enrollmentCounts: Record<string, number> = {};
-  for (const e of enrollments ?? []) {
+  for (const e of enrollments) {
     enrollmentCounts[e.user_id] = (enrollmentCounts[e.user_id] || 0) + 1;
   }
 
-  const { data: progress } = await supabase
-    .from('progress')
-    .select('user_id, completed_at')
-    .in('user_id', userIds)
-    .order('completed_at', { ascending: false });
+  const progress: { user_id: string; completed_at: string | null }[] = [];
+  from = 0;
+  hasMore = true;
+  while (hasMore) {
+    const { data: page, error } = await supabase
+      .from('progress')
+      .select('user_id, completed_at')
+      .in('user_id', userIds)
+      .order('completed_at', { ascending: false })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) break;
+    progress.push(...((page ?? []) as { user_id: string; completed_at: string | null }[]));
+    hasMore = (page?.length ?? 0) === PAGE_SIZE;
+    from += PAGE_SIZE;
+  }
 
   const lastActivity: Record<string, string> = {};
-  for (const p of progress ?? []) {
+  for (const p of progress) {
     if (p.completed_at && !lastActivity[p.user_id]) {
       lastActivity[p.user_id] = p.completed_at;
     }

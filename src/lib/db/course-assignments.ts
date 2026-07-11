@@ -108,12 +108,13 @@ export async function getVisibleCourseIds(
   userId: string,
   institutionId: string
 ): Promise<string[]> {
-  // Get all published courses for institution
+  // Get all published, non-deleted courses for institution
   const { data: allCourses, error: coursesErr } = await supabase
     .from('courses')
     .select('id, access_mode')
     .eq('institution_id', institutionId)
-    .eq('is_published', true);
+    .eq('is_published', true)
+    .is('deleted_at', null);
 
   if (coursesErr || !allCourses) return [];
 

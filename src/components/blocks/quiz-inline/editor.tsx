@@ -688,6 +688,24 @@ export function QuizInlineEditor({ data, onChange }: BlockEditorProps<QuizInline
       <div className="border-t border-gray-100 pt-4 space-y-3">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Feedback & Options</p>
 
+        {/* Required-to-continue toggle */}
+        <div className="flex items-start gap-2">
+          <input
+            id="quiz-required"
+            type="checkbox"
+            checked={data.required ?? true}
+            onChange={(e) => onChange({ ...data, required: e.target.checked })}
+            className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#1E3A5F] focus:ring-[#1E3A5F]"
+          />
+          <label htmlFor="quiz-required" className="text-sm text-gray-700">
+            Required to continue
+            <span className="block text-xs text-gray-400">
+              Students must answer correctly before the Next button unlocks on this slide.
+              Unchecked = practice quiz; never blocks progress.
+            </span>
+          </label>
+        </div>
+
         {/* Show feedback toggle */}
         <div className="flex items-center gap-2">
           <input

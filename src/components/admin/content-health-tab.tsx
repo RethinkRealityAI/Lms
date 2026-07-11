@@ -17,8 +17,27 @@ const QUESTION_TYPE_LABELS: Record<string, string> = {
   swipe: 'Swipe',
 };
 
-export function ContentHealthTab({ quizzes }: { quizzes: ProblematicQuiz[] }) {
+export function ContentHealthTab({ quizzes }: { quizzes: ProblematicQuiz[] | null }) {
   const pathname = usePathname();
+
+  // null = the quiz-health query failed — distinct from [] (all healthy).
+  if (quizzes === null) {
+    return (
+      <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.04)] bg-white mt-4">
+        <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-50">
+            <AlertTriangle className="h-6 w-6 text-amber-600" />
+          </div>
+          <div>
+            <p className="text-base font-black text-slate-900">Couldn&apos;t load quiz health</p>
+            <p className="text-sm font-medium text-slate-500">
+              The quiz health check failed to run. Reload the page to try again.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (quizzes.length === 0) {
     return (

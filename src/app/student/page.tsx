@@ -96,15 +96,28 @@ export default async function StudentPage() {
     isLegacyClaimed,
   }).catch(() => []);
 
-  // Get visible course IDs based on access_mode + assignments
-  const visibleIds = await getVisibleCourseIds(supabase, user.id, institutionId);
+  // Visible = catalog visibility (access_mode + assignments) UNION the student's
+  // enrollments. Enrollment trumps catalog visibility: an admin can restrict or
+  // unlist a course after students enrolled, but enrolled students keep access
+  // (RLS grants it), so the course must stay on their dashboard and in their
+  // stats — otherwise a learner who just completed it sees "Enrolled 0 / 0%".
+  const catalogVisibleIds = await getVisibleCourseIds(supabase, user.id, institutionId);
+
+  const { data: enrollments } = await supabase
+    .from('course_enrollments')
+    .select('course_id')
+    .eq('user_id', user.id);
+  const enrolledIdsRaw: string[] = (enrollments ?? []).map((e: any) => e.course_id);
+
+  const visibleIds = Array.from(new Set([...catalogVisibleIds, ...enrolledIdsRaw]));
 
   let coursesRaw: any[] = [];
   if (visibleIds.length > 0) {
     const { data: primary } = await supabase
       .from('courses')
       .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id, display_order')
-      .in('id', visibleIds);
+      .in('id', visibleIds)
+      .is('deleted_at', null);
     if (primary) {
       coursesRaw = primary;
     } else {
@@ -112,7 +125,8 @@ export default async function StudentPage() {
       const { data: fallback } = await supabase
         .from('courses')
         .select('id, title, description, slug, thumbnail_url, is_published, status, institution_id')
-        .in('id', visibleIds);
+        .in('id', visibleIds)
+        .is('deleted_at', null);
       coursesRaw = (fallback ?? []).map((c) => ({ ...c, display_order: null }));
     }
   }
@@ -125,13 +139,12 @@ export default async function StudentPage() {
     return String(a.title ?? '').localeCompare(String(b.title ?? ''));
   });
 
-  // Fetch enrollments for this student
-  const { data: enrollments } = await supabase
-    .from('course_enrollments')
-    .select('course_id')
-    .eq('user_id', user?.id ?? '');
-
-  const enrolledIds = new Set((enrollments ?? []).map((e: any) => e.course_id));
+  // Chips count enrollments to courses the grid can actually render (fetched =
+  // readable under RLS) so the stats and the cards can never disagree. With the
+  // union above this includes enrolled restricted courses; it still excludes an
+  // enrollment to a course that was since unpublished or deleted.
+  const renderableIdSet = new Set(coursesRaw.map((c: any) => c.id));
+  const enrolledIds = new Set(enrolledIdsRaw.filter((id) => renderableIdSet.has(id)));
   const enrolledCourseIds = Array.from(enrolledIds) as string[];
 
   // Fetch lesson counts for enrolled courses to compute progress
@@ -176,7 +189,12 @@ export default async function StudentPage() {
         }, 0) / enrolledCount
       )
     : 0;
-  const totalLessonsCompleted = completedLessonIds.size;
+  // Sum per-course completed counts (live lessons in visible enrolled courses only) —
+  // the raw progress set includes orphaned rows for deleted lessons and left courses.
+  const totalLessonsCompleted = enrolledCourseIds.reduce(
+    (sum, id) => sum + (courseProgress[id]?.completed ?? 0),
+    0,
+  );
 
   // CME certificate eligibility + current request (for the dashboard banner)
   // Authoritative eligibility = completed every catalog course (server RPC), matching what

@@ -226,6 +226,7 @@ export interface Certificate {
   award_reason?: string;
   certificate_number?: string;
   pdf_url?: string;
+  revoked_at?: string | null;
   course?: Course;
 }
 

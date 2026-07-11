@@ -66,7 +66,8 @@ interface Props {
   completionSurveys: CompletionSurveyBundle;
   eventCounts: EventCounts | null;
   recentEvents: AnalyticsEvent[];
-  problematicQuizzes: ProblematicQuiz[];
+  /** null = quiz health couldn't load (distinct from [] = all healthy) */
+  problematicQuizzes: ProblematicQuiz[] | null;
 }
 
 // ── CSV export (client-side, no deps) ────────────────────────────────────────
@@ -710,7 +711,7 @@ export function AnalyticsDashboard({ trendDays, platform, courses, enrollmentTre
           <TabsTrigger value="content-health" className="rounded-lg font-bold text-sm px-4">
             <ShieldAlert className="h-4 w-4 mr-2" />
             Content Health
-            {problematicQuizzes.length > 0 && (
+            {problematicQuizzes !== null && problematicQuizzes.length > 0 && (
               <span className="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-black bg-red-500 text-white">
                 {problematicQuizzes.length}
               </span>

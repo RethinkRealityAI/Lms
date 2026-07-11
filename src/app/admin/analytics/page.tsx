@@ -49,7 +49,8 @@ export default async function AnalyticsPage({
       getSurveyAnalyticsBundle(supabase, institutionId),
       getInstitutionFeedbackCounts(supabase, institutionId),
       getCompletionSurveyAnalyticsBundle(supabase, institutionId),
-      getProblematicQuizzes(supabase, institutionId).catch(() => []),
+      // null = quiz health couldn't load (distinct from [] = all healthy)
+      getProblematicQuizzes(supabase, institutionId).catch(() => null),
     ]);
 
   // Engagement events are best-effort — never break the page if the

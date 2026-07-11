@@ -60,6 +60,15 @@ export function CertificatesDashboard({ templates: initialTemplates, certificate
   const [templates, setTemplates] = useState(initialTemplates);
   const [certificates, setCertificates] = useState(initialCerts);
   const [assignments, setAssignments] = useState(initialAssignments);
+
+  // router.refresh() delivers fresh props after awards/assignments — sync local
+  // copies so changes are visible without a hard reload.
+  useEffect(() => {
+    setCertificates(initialCerts);
+  }, [initialCerts]);
+  useEffect(() => {
+    setAssignments(initialAssignments);
+  }, [initialAssignments]);
   const [editingTemplate, setEditingTemplate] = useState<CertificateTemplate | null>(null);
   const [creatingTemplate, setCreatingTemplate] = useState(false);
   const [saving, setSaving] = useState(false);

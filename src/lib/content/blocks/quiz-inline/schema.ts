@@ -11,6 +11,14 @@ export const quizInlineDataSchema = z.object({
   options: z.array(z.string()).optional(),
   correct_answer: z.string().optional(),
   show_feedback: z.boolean().default(true),
+  /**
+   * Whether a correct answer is required to progress. Required quizzes block the
+   * Next button on their own slide (and lesson completion) until answered
+   * correctly; optional quizzes never gate. Undefined = required — matches the
+   * platform's historical behavior where every satisfiable quiz gated completion
+   * (the viewer gate checks `required !== false`).
+   */
+  required: z.boolean().optional(),
   /** Custom message shown when the student answers correctly */
   feedback_correct: z.string().optional(),
   /** Custom message shown when the student answers incorrectly */

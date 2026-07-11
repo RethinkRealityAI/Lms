@@ -86,7 +86,11 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
   useEffect(() => {
     getProgramCompletionCounts(supabase, institutionId)
       .then(setCompletionCounts)
-      .catch(() => {});
+      .catch(() => {
+        // Keep the empty-object fallback so the tab still renders, but tell the
+        // admin the "N completed" badges are unreliable rather than showing 0.
+        toast.error('Failed to load completion counts');
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [institutionId, programs]);
 

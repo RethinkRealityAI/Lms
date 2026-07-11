@@ -804,6 +804,30 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
             quizzesData.forEach(q => { qm[q.lesson_id] = true; });
             setLessonQuizzes(qm);
           }
+
+          // Rehydrate the quiz gate from persisted answers. Correct answers are
+          // upserted to quiz_block_responses as the student plays, but the gate
+          // state (correctQuizBlocks) was memory-only — after a reload, revisiting
+          // a lesson demanded quizzes the student had already passed.
+          if (user) {
+            const { data: pastAnswers } = await supabase
+              .from('quiz_block_responses')
+              .select('lesson_id, block_id')
+              .eq('user_id', user.id)
+              .eq('is_correct', true)
+              .in('lesson_id', lessonIds);
+            if (pastAnswers && pastAnswers.length > 0) {
+              setCorrectQuizBlocks(prev => {
+                const next = { ...prev };
+                for (const row of pastAnswers as { lesson_id: string; block_id: string }[]) {
+                  const set = new Set(next[row.lesson_id] ?? []);
+                  set.add(row.block_id);
+                  next[row.lesson_id] = set;
+                }
+                return next;
+              });
+            }
+          }
         }
       }
 
@@ -1259,19 +1283,35 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // We ALSO exclude misconfigured quizzes (correct answer matches no option, empty, etc.):
   // such a quiz can never fire onCorrect, so gating on it would brick the lesson. The
   // editor surfaces these to admins so the content can be fixed (see quiz-inline/validation).
+  // Sourced from currentSlides (not the raw block list) so the gate covers EXACTLY the
+  // blocks the student can see: a quiz on a soft-deleted or draft-hidden slide never
+  // renders (blocks survive slide deletion; RLS hides non-published slides), so gating
+  // on it would brick the lesson — while quizzes shown via the no-slide fallback pages
+  // still count.
+  // Only REQUIRED quizzes gate (data.required, editor toggle "Required to continue";
+  // default true preserves historical behavior; explicit false = practice quiz).
+  const isGatingQuizBlock = React.useCallback((b: LessonBlock) =>
+    b.block_type === 'quiz_inline' &&
+    b.data?.required !== false &&
+    isGatedQuizType(b.data?.question_type as string) &&
+    isQuizSatisfiable(b.data as Partial<QuizInlineData>), []);
+
   const currentLessonQuizBlockIds = React.useMemo(() => {
     if (!selectedLesson) return [];
-    const blocks = lessonBlocks[selectedLesson.id] ?? [];
-    return blocks
-      .filter(b =>
-        b.block_type === 'quiz_inline' &&
-        isGatedQuizType(b.data?.question_type as string) &&
-        isQuizSatisfiable(b.data as Partial<QuizInlineData>),
-      )
+    return currentSlides
+      .flatMap(s => (s.kind === 'page' ? s.blocks : []))
+      .filter(isGatingQuizBlock)
       .map(b => b.id);
-  }, [selectedLesson, lessonBlocks]);
+  }, [selectedLesson, currentSlides, isGatingQuizBlock]);
 
-  const allQuizzesComplete = currentLessonQuizBlockIds.length === 0 ||
+  // A lesson the student already completed never re-gates: quiz-correct state lives
+  // in memory + quiz_block_responses, but the authoritative fact is the progress row —
+  // without this, revisiting a finished lesson after a reload showed a disabled
+  // "Next Lesson" button demanding quizzes the student had already passed.
+  const lessonAlreadyCompleted = !!selectedLesson && progress[selectedLesson.id]?.completed === true;
+
+  const allQuizzesComplete = lessonAlreadyCompleted ||
+    currentLessonQuizBlockIds.length === 0 ||
     currentLessonQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
 
   const currentSlideRequiredBlockIds = React.useMemo(() => {
@@ -1285,9 +1325,27 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const allInteractiveBlocksComplete = currentSlideRequiredBlockIds.length === 0 ||
     currentSlideRequiredBlockIds.every(id => completedInteractiveBlocks[selectedLesson?.id ?? '']?.has(id));
 
-  // Gate: is the next slide the completion slide and quizzes aren't done?
+  // Required quizzes gate Next on THEIR OWN slide (not just at the completion slide) —
+  // otherwise students skip ahead, reach the final slide, and are confused about why
+  // they can't complete the module. Bypassed for already-completed lessons.
+  const currentSlideQuizBlockIds = React.useMemo(() => {
+    const slide = currentSlides[currentSlide];
+    if (!slide || slide.kind !== 'page') return [];
+    return slide.blocks.filter(isGatingQuizBlock).map(b => b.id);
+  }, [currentSlides, currentSlide, isGatingQuizBlock]);
+
+  const currentSlideQuizzesComplete = lessonAlreadyCompleted ||
+    currentSlideQuizBlockIds.length === 0 ||
+    currentSlideQuizBlockIds.every(id => correctQuizBlocks[selectedLesson?.id ?? '']?.has(id));
+
+  // Gate: unanswered required quiz on this slide, required images unopened, or
+  // reaching the completion slide with any lesson quiz still unanswered (backstop
+  // for quizzes skipped via sidebar/keyboard navigation).
   const nextSlideIsCompletion = currentSlides[currentSlide + 1]?.kind === 'completion';
-  const nextBlocked = (nextSlideIsCompletion && !allQuizzesComplete) || !allInteractiveBlocksComplete;
+  const nextBlocked =
+    (nextSlideIsCompletion && !allQuizzesComplete) ||
+    !allInteractiveBlocksComplete ||
+    !currentSlideQuizzesComplete;
 
   const nextBlockedHint = React.useMemo(() => {
     if (!nextBlocked) return null;
@@ -1300,6 +1358,9 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       }
       return 'Open every required image on this slide before continuing.';
     }
+    if (!currentSlideQuizzesComplete) {
+      return 'Answer the quiz on this slide correctly to continue.';
+    }
     if (nextSlideIsCompletion && !allQuizzesComplete) {
       return 'Answer all quiz questions correctly before completing this lesson.';
     }
@@ -1307,6 +1368,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   }, [
     nextBlocked,
     allInteractiveBlocksComplete,
+    currentSlideQuizzesComplete,
     nextSlideIsCompletion,
     allQuizzesComplete,
     selectedLesson,

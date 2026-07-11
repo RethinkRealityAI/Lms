@@ -42,7 +42,10 @@ export async function getProblematicQuizzes(
     .eq('block_type', 'quiz_inline')
     .eq('institution_id', institutionId);
 
-  if (error || !data) return [];
+  // Throw rather than returning [] — an empty array means "all quizzes are
+  // healthy", which a failed query must never masquerade as.
+  if (error) throw error;
+  if (!data) return [];
 
   const out: ProblematicQuiz[] = [];
   for (const row of data as unknown as Array<{

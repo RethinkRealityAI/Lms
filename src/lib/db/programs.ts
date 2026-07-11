@@ -1,14 +1,20 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Program, ProgramWithCourses } from '@/types';
 
-/** All programs for an institution, each with its ordered course list. */
+/**
+ * All programs for an institution, each with its ordered course list.
+ * Soft-deleted courses are always excluded; pass `publishedOnly` for progress
+ * displays so the denominator matches award_program_certificates() (which
+ * counts only live + published courses).
+ */
 export async function getPrograms(
   supabase: SupabaseClient,
   institutionId: string,
+  opts: { publishedOnly?: boolean } = {},
 ): Promise<ProgramWithCourses[]> {
   const { data, error } = await supabase
     .from('programs')
-    .select('*, program_courses(order_index, course:courses(id, title))')
+    .select('*, program_courses(order_index, course:courses(id, title, is_published, deleted_at))')
     .eq('institution_id', institutionId)
     .order('created_at', { ascending: false });
 
@@ -16,7 +22,11 @@ export async function getPrograms(
   return (data ?? []).map((p: any) => ({
     ...p,
     courses: (p.program_courses ?? [])
-      .filter((pc: any) => pc.course)
+      .filter((pc: any) =>
+        pc.course &&
+        pc.course.deleted_at == null &&
+        (!opts.publishedOnly || pc.course.is_published),
+      )
       .map((pc: any) => ({ id: pc.course.id, title: pc.course.title, order_index: pc.order_index ?? 0 }))
       .sort((a: any, b: any) => a.order_index - b.order_index),
   })) as ProgramWithCourses[];
@@ -151,7 +161,9 @@ export async function getProgramsWithProgress(
   institutionId: string,
   userId: string,
 ): Promise<ProgramProgress[]> {
-  const programs = await getPrograms(supabase, institutionId);
+  // publishedOnly keeps the progress denominator in sync with the award trigger,
+  // so a program with an unpublished course can still reach 100%.
+  const programs = await getPrograms(supabase, institutionId, { publishedOnly: true });
   if (programs.length === 0) return [];
 
   const { data: certs, error } = await supabase

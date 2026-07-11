@@ -78,23 +78,25 @@ export async function getPlatformStats(
   supabase: SupabaseClient,
   institutionId: string,
 ): Promise<PlatformStats | null> {
-  // Fetch institution-scoped course stats and student progress first —
-  // we can derive several platform stats from them.
-  const [courseStats, studentProgress] = await Promise.all([
-    getCourseStats(supabase, institutionId),
-    getStudentProgress(supabase, institutionId),
-  ]);
+  // Course stats drive course counts + completion rate (an institution has
+  // far fewer than the 1000-row view cap of courses, so this is safe).
+  const courseStats = await getCourseStats(supabase, institutionId);
 
-  // Direct institution-scoped counts for things not derivable from the views
+  const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  // Direct institution-scoped counts. Exact `head: true` counts everywhere a
+  // total is reported — deriving totals by summing the (1000-row-capped) view
+  // arrays silently undercounts once an institution grows past the cap.
   const [
     usersRes,
     studentsRes,
     adminsRes,
     certificatesRes,
-    quizAttemptsRes,
-    reviewsRes,
-    avgRatingRes,
-    monthlyActiveRes,
+    enrollmentsRes,
+    completionsRes,
+    quizTotalRes,
+    quizCorrectRes,
+    activeEventsRes,
   ] = await Promise.all([
     supabase
       .from('users')
@@ -112,43 +114,51 @@ export async function getPlatformStats(
       .in('role', ['institution_admin', 'instructor', 'admin', 'platform_admin']),
     supabase
       .from('certificates')
-      .select('id, courses!inner(institution_id)', { count: 'exact', head: true })
-      .eq('courses.institution_id', institutionId),
-    supabase
-      .from('quiz_attempts')
-      .select('id, quizzes!inner(lessons!inner(courses!inner(institution_id)))', { count: 'exact', head: true })
-      .eq('quizzes.lessons.courses.institution_id', institutionId),
-    supabase
-      .from('course_reviews')
-      .select('id, courses!inner(institution_id)', { count: 'exact', head: true })
-      .eq('courses.institution_id', institutionId),
-    supabase
-      .from('course_reviews')
-      .select('rating, courses!inner(institution_id)')
-      .eq('courses.institution_id', institutionId),
-    // Monthly active: users in this institution who had activity in the last 30 days
-    supabase
-      .from('users')
       .select('id', { count: 'exact', head: true })
       .eq('institution_id', institutionId)
-      .gte('updated_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+      .is('revoked_at', null),
+    supabase
+      .from('course_enrollments')
+      .select('id, courses!inner(institution_id)', { count: 'exact', head: true })
+      .eq('courses.institution_id', institutionId),
+    supabase
+      .from('progress')
+      .select('id, lessons!inner(courses!inner(institution_id))', { count: 'exact', head: true })
+      .eq('completed', true)
+      .is('lessons.deleted_at', null)
+      .eq('lessons.courses.institution_id', institutionId),
+    // Inline quizzes (quiz_block_responses) are what course content actually
+    // uses — the legacy quiz_attempts table is empty platform-wide.
+    supabase
+      .from('quiz_block_responses')
+      .select('id', { count: 'exact', head: true })
+      .eq('institution_id', institutionId),
+    supabase
+      .from('quiz_block_responses')
+      .select('id', { count: 'exact', head: true })
+      .eq('institution_id', institutionId)
+      .eq('is_correct', true),
+    // Monthly active = distinct users with a real activity event in 30 days.
+    // (users.updated_at only changes on profile edits — it is not activity.)
+    supabase
+      .from('analytics_events')
+      .select('user_id')
+      .eq('institution_id', institutionId)
+      .gte('created_at', since30d)
+      .not('user_id', 'is', null)
+      .limit(10000),
   ]);
 
-  const totalEnrollments = courseStats.reduce(
-    (sum, c) => sum + (Number(c.enrollment_count) || 0),
-    0,
-  );
-  const totalCompletions = studentProgress.reduce(
-    (sum, s) => sum + (Number(s.completed_lessons) || 0),
-    0,
-  );
+  const totalEnrollments = enrollmentsRes.count ?? 0;
+  const totalCompletions = completionsRes.count ?? 0;
 
-  // Compute avg quiz score from reviews result
-  const ratings = avgRatingRes.data ?? [];
-  const avgScore =
-    ratings.length > 0
-      ? ratings.reduce((sum: number, r: { rating: number }) => sum + Number(r.rating), 0) / ratings.length
-      : 0;
+  // Avg quiz score = % of inline quiz answers currently correct
+  const quizTotal = quizTotalRes.count ?? 0;
+  const avgScore = quizTotal > 0 ? ((quizCorrectRes.count ?? 0) / quizTotal) * 100 : 0;
+
+  const monthlyActive = new Set(
+    ((activeEventsRes.data ?? []) as { user_id: string }[]).map((r) => r.user_id),
+  ).size;
 
   // Compute completion rate: fully completed enrollments / total enrollments
   const completionRate =
@@ -177,9 +187,9 @@ export async function getPlatformStats(
     total_enrollments: totalEnrollments,
     total_completions: totalCompletions,
     total_certificates: certificatesRes.count ?? 0,
-    total_quiz_attempts: quizAttemptsRes.count ?? 0,
+    total_quiz_attempts: quizTotal,
     avg_quiz_score: avgScore,
-    monthly_active_users: monthlyActiveRes.count ?? 0,
+    monthly_active_users: monthlyActive,
     completion_rate: completionRate,
   };
 }

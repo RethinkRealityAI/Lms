@@ -288,7 +288,9 @@ export default function AdminSupportPage() {
       .eq('institution_id', institutionId)
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      toast.error('Failed to load messages', { description: error.message });
+    } else if (data) {
       setSubmissions(data);
     }
     setLoading(false);

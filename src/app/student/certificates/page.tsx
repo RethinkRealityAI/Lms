@@ -88,16 +88,19 @@ export default function CertificatesPage() {
     institution_name: institutionName || 'Unknown Institution',
   });
 
+  // Revoked certificates stay visible for transparency but don't count as earned
+  const activeCerts = certificates.filter((c) => !c.revoked_at);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <div className="bg-[#0F172A] px-4 sm:px-6 lg:px-8 py-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl font-black tracking-tight text-white">My Certificates</h1>
-            {!loading && certificates.length > 0 && (
+            {!loading && activeCerts.length > 0 && (
               <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 font-black text-sm px-3 py-1 rounded-full border border-amber-500/30">
                 <Award className="h-3.5 w-3.5" />
-                {certificates.length} earned
+                {activeCerts.length} earned
               </span>
             )}
           </div>
@@ -140,9 +143,10 @@ export default function CertificatesPage() {
             {certificates.map((cert) => {
               const template = cert.template as CertificateTemplate | null;
               const certData = buildCertData(cert);
+              const isRevoked = !!cert.revoked_at;
 
               return (
-                <Card key={cert.id} className="group hover:-translate-y-1 hover:shadow-xl transition-all duration-300 border-none shadow-md bg-white overflow-hidden">
+                <Card key={cert.id} className={`group hover:-translate-y-1 hover:shadow-xl transition-all duration-300 border-none shadow-md bg-white overflow-hidden ${isRevoked ? 'opacity-60' : ''}`}>
                   {template ? (
                     <div className="bg-slate-100 p-4 flex justify-center">
                       <CertificateRenderer template={template} data={certData} scale={0.35} showQR={false} institutionSlug={resolveInstitutionSlug()} />
@@ -157,6 +161,9 @@ export default function CertificatesPage() {
                     <div>
                       <h3 className="font-black text-lg text-slate-900 flex items-center gap-1.5">
                         {cert.course?.title ?? cert.program?.title ?? 'Certificate of Achievement'}
+                        {isRevoked && (
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Revoked</span>
+                        )}
                         {!cert.course && cert.program && (
                           <span className="text-[10px] font-bold uppercase tracking-wide text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Program</span>
                         )}
@@ -175,16 +182,20 @@ export default function CertificatesPage() {
                           <Eye className="h-3.5 w-3.5 mr-1" /> View
                         </Button>
                       )}
-                      <Button
-                        size="sm"
-                        className="bg-[#1E3A5F] hover:bg-[#162d4a]"
-                        onClick={() => window.open(`/api/certificates/${cert.id}/pdf`, '_blank')}
-                      >
-                        <Download className="h-3.5 w-3.5 mr-1" /> Download PDF
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleShare(cert)}>
-                        <Share2 className="h-3.5 w-3.5 mr-1" /> Share
-                      </Button>
+                      {!isRevoked && (
+                        <>
+                          <Button
+                            size="sm"
+                            className="bg-[#1E3A5F] hover:bg-[#162d4a]"
+                            onClick={() => window.open(`/api/certificates/${cert.id}/pdf`, '_blank')}
+                          >
+                            <Download className="h-3.5 w-3.5 mr-1" /> Download PDF
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => handleShare(cert)}>
+                            <Share2 className="h-3.5 w-3.5 mr-1" /> Share
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

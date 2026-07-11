@@ -27,6 +27,7 @@ import {
   addLegacyGroupMembers,
   removeGroupMember,
 } from '@/lib/db/groups';
+import { getLegacyUsers } from '@/lib/db/legacy-users';
 import type { UserGroupWithCounts, UserGroupMember } from '@/types';
 
 interface GroupsTabProps {
@@ -136,11 +137,7 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
         .select('id, email, full_name')
         .eq('institution_id', institutionId)
         .order('email'),
-      supabase
-        .from('legacy_users')
-        .select('id, email, full_name')
-        .eq('institution_id', institutionId)
-        .order('full_name'),
+      getLegacyUsers(supabase, institutionId),
     ]);
 
     const activeUsers = (usersData.data ?? []).map((u: any) => ({
@@ -150,7 +147,7 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
       source: 'active' as const,
     }));
 
-    const legacyUsers = (legacyData.data ?? []).map((l: any) => ({
+    const legacyUsers = legacyData.map((l) => ({
       id: l.id,
       email: l.email,
       full_name: l.full_name,
@@ -173,6 +170,7 @@ export function GroupsTab({ institutionId }: GroupsTabProps) {
       }
       await openMembers(selectedGroup);
       toast.success('Member added');
+      await loadGroups();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Failed to add member');
     }

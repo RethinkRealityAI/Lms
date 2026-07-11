@@ -18,7 +18,7 @@ export default function StudentProgressPage() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [allLessons, setAllLessons] = useState<any[]>([]);
   const [completedLessons, setCompletedLessons] = useState<any[]>([]);
-  const [quizAttempts, setQuizAttempts] = useState<any[]>([]);
+  const [quizResponses, setQuizResponses] = useState<any[]>([]);
   const supabase = createClient();
 
   useEffect(() => {
@@ -51,22 +51,25 @@ export default function StudentProgressPage() {
       setAllLessons(lessonData || []);
     }
 
-    // Get completed lessons
+    // Get completed lessons — drop rows whose lesson was soft-deleted so counts
+    // can't exceed the live lesson totals
     const { data: completedData } = await supabase
       .from('progress')
       .select('*, lessons(*, courses(id, title))')
       .eq('user_id', user.id)
       .eq('completed', true)
       .order('completed_at', { ascending: false });
-    setCompletedLessons(completedData || []);
+    setCompletedLessons(
+      (completedData || []).filter((row: any) => row.lessons && row.lessons.deleted_at == null)
+    );
 
-    // Get quiz attempts
+    // Get inline quiz answers (quiz_attempts is the unused standalone-quiz store)
     const { data: quizData } = await supabase
-      .from('quiz_attempts')
-      .select('*, quizzes(title, lesson_id, lessons(title, course_id, courses(title)))')
+      .from('quiz_block_responses')
+      .select('id, lesson_id, is_correct, answered_at')
       .eq('user_id', user.id)
-      .order('completed_at', { ascending: false });
-    setQuizAttempts(quizData || []);
+      .order('answered_at', { ascending: false });
+    setQuizResponses(quizData || []);
 
     setLoading(false);
   };
@@ -74,11 +77,9 @@ export default function StudentProgressPage() {
   // Calculate overall stats
   const totalEnrollments = enrollments.length;
   const totalCompletedLessons = completedLessons.length;
-  const averageScore = quizAttempts.length > 0
+  const averageScore = quizResponses.length > 0
     ? Math.round(
-        quizAttempts.reduce((acc: number, attempt: any) =>
-          acc + (attempt.score / attempt.total_questions) * 100, 0
-        ) / quizAttempts.length
+        (quizResponses.filter((r: any) => r.is_correct === true).length / quizResponses.length) * 100
       )
     : 0;
 
@@ -200,7 +201,7 @@ export default function StudentProgressPage() {
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-3xl font-black text-slate-900">{quizAttempts.length > 0 ? `${averageScore}%` : '\u2014'}</div>
+            <div className="text-3xl font-black text-slate-900">{quizResponses.length > 0 ? `${averageScore}%` : '\u2014'}</div>
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">Academic Performance</p>
           </CardContent>
         </Card>
@@ -253,30 +254,34 @@ export default function StudentProgressPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-slate-50">
-                {quizAttempts.length > 0 ? (
-                  quizAttempts.slice(0, 5).map((attempt: any) => (
-                    <div key={attempt.id} className="flex justify-between items-center p-5 hover:bg-slate-50/50 transition-colors">
-                      <div className="max-w-[70%]">
-                        <p className="font-bold text-slate-900 line-clamp-1">{attempt.quizzes?.title}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
-                          {attempt.quizzes?.lessons?.courses?.title}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className={cn(
-                          "px-3 py-1 rounded-full text-xs font-black",
-                          (attempt.score / attempt.total_questions) >= 0.7
-                            ? "bg-green-100 text-green-700"
-                            : "bg-orange-100 text-orange-700"
-                        )}>
-                          {Math.round((attempt.score / attempt.total_questions) * 100)}%
+                {quizResponses.length > 0 ? (
+                  quizResponses.slice(0, 5).map((response: any) => {
+                    const lesson = allLessons.find((l: any) => l.id === response.lesson_id);
+                    const course = enrollments.find((e: any) => e.course_id === lesson?.course_id)?.courses;
+                    return (
+                      <div key={response.id} className="flex justify-between items-center p-5 hover:bg-slate-50/50 transition-colors">
+                        <div className="max-w-[70%]">
+                          <p className="font-bold text-slate-900 line-clamp-1">{lesson?.title ?? 'Lesson quiz'}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
+                            {course?.title}
+                          </p>
                         </div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
-                          {new Date(attempt.completed_at).toLocaleDateString()}
-                        </p>
+                        <div className="text-right">
+                          <div className={cn(
+                            "px-3 py-1 rounded-full text-xs font-black",
+                            response.is_correct
+                              ? "bg-green-100 text-green-700"
+                              : "bg-orange-100 text-orange-700"
+                          )}>
+                            {response.is_correct ? 'Correct' : 'Incorrect'}
+                          </div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
+                            {new Date(response.answered_at).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 px-6">
                     <div className="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center mb-4">

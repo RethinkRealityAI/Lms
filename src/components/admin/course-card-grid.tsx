@@ -76,6 +76,13 @@ export function CourseCardGrid({ courses, categories }: CourseCardGridProps) {
   const [localCourses, setLocalCourses] = useState(courses);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // router.refresh() after a save delivers a fresh `courses` prop — resync so
+  // edits are visible without a hard reload. Safe for drag-reorder: this only
+  // fires when the prop identity changes (i.e. after a server re-render).
+  useEffect(() => {
+    setLocalCourses(courses);
+  }, [courses]);
+
   useEffect(() => {
     async function loadInstitutionId() {
       const { data: { user } } = await supabase.auth.getUser();
