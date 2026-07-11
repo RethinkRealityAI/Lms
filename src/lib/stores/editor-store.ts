@@ -105,6 +105,10 @@ export interface EditorState {
   setPreviewSlideIndex: (index: number) => void;
   devicePreview: 'desktop' | 'tablet' | 'mobile';
   setDevicePreview: (d: 'desktop' | 'tablet' | 'mobile') => void;
+  /** Flip the given slides from 'published' back to 'draft' (edit-then-republish
+   *  workflow). No-op for slides that are already draft. No undo entry — it's a
+   *  side-effect of editing, applied by the save layer. */
+  markSlidesDraft: (slideIds: string[]) => void;
   markSaved: () => void;
   setSaveError: (error: string | null) => void;
   undo: () => void;
@@ -626,6 +630,28 @@ export function createEditorStore() {
     setPreviewSlideIndex: (index) => set({ previewSlideIndex: index }),
 
     setDevicePreview: (d) => set({ devicePreview: d }),
+
+    markSlidesDraft: (slideIds) => {
+      if (slideIds.length === 0) return;
+      const idSet = new Set(slideIds);
+      set((s) => {
+        let changed = false;
+        const next = new Map(s.slides);
+        for (const [lessonId, list] of s.slides) {
+          let listChanged = false;
+          const updated = list.map((sl) => {
+            if (idSet.has(sl.id) && sl.status === 'published') {
+              listChanged = true;
+              changed = true;
+              return { ...sl, status: 'draft' as const };
+            }
+            return sl;
+          });
+          if (listChanged) next.set(lessonId, updated);
+        }
+        return changed ? { slides: next } : ({} as Partial<EditorState>);
+      });
+    },
 
     markSaved: () => set({ isDirty: false, isSaving: false, lastSaveError: null }),
 

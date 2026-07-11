@@ -61,7 +61,9 @@ async function runWithConcurrency(tasks: Array<() => Promise<void>>, limit: numb
 
 /** Per-entity serialized "last saved" fingerprints, so a save only writes what changed. */
 interface SaveBaseline {
-  slides: Map<string, string>;
+  slides: Map<string, string>;        // full fp (incl. status/order) — drives save-what-changed
+  slideContent: Map<string, string>;  // content-only fp (no status/order) — drives edit→draft
+  slideBlockIds: Map<string, string>; // sorted block-id list per slide — detects add/remove of blocks
   blocks: Map<string, string>;
   lessons: Map<string, string>;
   modules: Map<string, string>;
@@ -71,6 +73,13 @@ interface SaveBaseline {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fpSlide = (s: any): string =>
   JSON.stringify([s.title ?? null, s.slide_type ?? null, s.order_index ?? 0, s.status ?? null, s.settings ?? null, s.canvas_data ?? null]);
+/** Content-only fingerprint — deliberately excludes `status` and `order_index` so
+ *  publishing/reordering a slide is NOT treated as a content edit that unpublishes it. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fpSlideContent = (s: any): string =>
+  JSON.stringify([s.title ?? null, s.slide_type ?? null, s.settings ?? null, s.canvas_data ?? null]);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slideBlockIdsFp = (blocks: any[]): string => blocks.map((b) => b.id).sort().join(',');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fpBlock = (b: any): string => JSON.stringify(b.data ?? null);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,14 +91,38 @@ const fpModule = (m: any): string => JSON.stringify([m.title ?? null, m.descript
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildSaveBaseline(state: any): SaveBaseline {
   const b: SaveBaseline = {
-    slides: new Map(), blocks: new Map(), lessons: new Map(), modules: new Map(),
+    slides: new Map(), slideContent: new Map(), slideBlockIds: new Map(),
+    blocks: new Map(), lessons: new Map(), modules: new Map(),
     theme: JSON.stringify(state.themeSettings ?? {}),
   };
-  for (const list of state.slides.values()) for (const s of list) b.slides.set(s.id, fpSlide(s));
-  for (const list of state.blocks.values()) for (const bl of list) b.blocks.set(bl.id, fpBlock(bl));
+  for (const list of state.slides.values()) for (const s of list) {
+    b.slides.set(s.id, fpSlide(s));
+    b.slideContent.set(s.id, fpSlideContent(s));
+  }
+  for (const [slideId, list] of state.blocks) {
+    b.slideBlockIds.set(slideId, slideBlockIdsFp(list));
+    for (const bl of list) b.blocks.set(bl.id, fpBlock(bl));
+  }
   for (const list of state.lessons.values()) for (const l of list) b.lessons.set(l.id, fpLesson(l));
   for (const m of state.modules) b.modules.set(m.id, fpModule(m));
   return b;
+}
+
+/** Slides whose CONTENT (own fields or blocks) changed vs baseline — the ones that,
+ *  if currently published, should revert to draft (edit-then-republish workflow). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function contentChangedSlideIds(state: any, baseline: SaveBaseline): string[] {
+  const ids = new Set<string>();
+  for (const list of state.slides.values()) for (const s of list) {
+    if (baseline.slideContent.get(s.id) !== fpSlideContent(s)) ids.add(s.id);
+  }
+  for (const [slideId, list] of state.blocks) {
+    if (baseline.slideBlockIds.get(slideId) !== slideBlockIdsFp(list)) { ids.add(slideId); continue; }
+    for (const bl of list) {
+      if (baseline.blocks.get(bl.id) !== fpBlock(bl)) { ids.add(slideId); break; }
+    }
+  }
+  return [...ids];
 }
 
 // Inner component — has access to editor store via context
@@ -162,6 +195,11 @@ function EditorContent({ courseId }: { courseId: string }) {
     try {
       do {
         pendingRef.current = false;
+        // Editing published content unpublishes the affected slide until the next
+        // Publish. Flip those slides to draft FIRST so the save persists the new
+        // status (no-op for slides that are already draft, e.g. a draft course).
+        const draftIds = contentChangedSlideIds(store.getState(), baseline);
+        if (draftIds.length) store.getState().markSlidesDraft(draftIds);
         const state = store.getState();
         const tasks: Array<() => Promise<void>> = [];
 
@@ -246,6 +284,15 @@ function EditorContent({ courseId }: { courseId: string }) {
       } while (pendingRef.current && failCount === 0);
     } finally {
       savingRef.current = false;
+    }
+
+    // Refresh the content-diff baselines from the saved state so unchanged slides
+    // don't get re-flagged for draft on the next save (status/order changes here
+    // deliberately don't touch slideContent).
+    if (failCount === 0) {
+      const fresh = store.getState();
+      for (const list of fresh.slides.values()) for (const s of list) baseline.slideContent.set(s.id, fpSlideContent(s));
+      for (const [slideId, list] of fresh.blocks) baseline.slideBlockIds.set(slideId, slideBlockIdsFp(list));
     }
 
     if (failCount > 0) {
@@ -361,12 +408,10 @@ function EditorContent({ courseId }: { courseId: string }) {
       const supabase = createClient();
       const editorState = store?.getState();
       const existing = editorState?.slides.get(lessonId) ?? [];
-      // No phantom drafts: slides added to an already-published course go live
-      // immediately (matching publishCourse()'s cascade). Students only ever see
-      // published slides, so leaving these as 'draft' silently hides finished
-      // content. Draft courses keep 'draft' — nothing is visible until publish.
-      const slideStatus =
-        editorState?.courseStatus === 'published' ? 'published' : (slideData.status ?? 'draft');
+      // New content is always a draft until the admin clicks Publish — even in a
+      // published course. This is safe (and no longer a "phantom draft") because
+      // the editor now shows Draft badges + a content-health panel, so unpublished
+      // slides are impossible to miss, and Publish flips the whole course live.
       const slide = await dbCreateSlide(
         supabase,
         {
@@ -374,7 +419,7 @@ function EditorContent({ courseId }: { courseId: string }) {
           slide_type: slideData.slide_type,
           title: slideData.title ?? undefined,
           order_index: existing.length,
-          status: slideStatus,
+          status: slideData.status ?? 'draft',
           settings: slideData.settings ?? {},
         },
         institutionId,

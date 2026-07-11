@@ -222,14 +222,14 @@ export async function duplicateSlide(
     .limit(1);
   const nextIndex = (existingSlides?.[0]?.order_index ?? -1) + 1;
 
-  // 3. Create the duplicate slide — carry the source's status so duplicating a
-  // published slide in a live course doesn't create an invisible "phantom draft".
+  // 3. Create the duplicate as a DRAFT — a copy is new content, so it stays hidden
+  // from students until the admin publishes (editor Draft badges make it visible).
   const newSlide = await createSlide(supabase, {
     lesson_id: lessonId,
     slide_type: sourceSlide.slide_type,
     title: sourceSlide.title ? `${sourceSlide.title} (copy)` : undefined,
     order_index: nextIndex,
-    status: sourceSlide.status,
+    status: 'draft',
     settings: sourceSlide.settings,
     canvas_data: sourceSlide.canvas_data,
   }, institutionId);

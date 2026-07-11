@@ -244,6 +244,31 @@ describe('CourseEditorShell handleSave', () => {
     );
   });
 
+  it('reverts a published slide to draft when its content is edited', async () => {
+    await act(async () => {
+      render(<CourseEditorShell courseId="course-1" />);
+    });
+    expect(capturedStore).toBeDefined();
+
+    // Simulate a previously-published slide, then edit a block on it.
+    await act(async () => {
+      capturedStore.getState().updateSlide('lesson-1', 'slide-1', { status: 'published' });
+    });
+    await act(async () => {
+      capturedStore.getState().updateBlock('slide-1', 'block-1', { data: { html: '<p>Edited</p>' } });
+    });
+
+    await act(async () => {
+      await capturedOnSave!();
+    });
+
+    // Editing published content unpublishes that slide until the next Publish.
+    const slide = capturedStore.getState().slides.get('lesson-1')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .find((s: any) => s.id === 'slide-1');
+    expect(slide.status).toBe('draft');
+  });
+
   it('does not call markSaved when a DB update fails, and retries the failed entity', async () => {
     const { updateBlock } = await import('@/lib/db/blocks');
     const { toast } = await import('sonner');
