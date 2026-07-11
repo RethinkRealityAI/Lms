@@ -401,8 +401,8 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint
         {data.clickForMore && (
           <div>
             <label className="block text-[11px] font-medium text-gray-500 mb-1">Tap hint text</label>
-            <input type="text" value={data.clickHint ?? 'Tap for more'}
-              onChange={(e) => onChange({ ...data, clickHint: e.target.value })}
+            <input type="text" value={data.clickHint ?? ''}
+              onChange={(e) => onChange({ ...data, clickHint: e.target.value || undefined })}
               placeholder="Tap for more" className={inputClass} />
           </div>
         )}
@@ -437,7 +437,7 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint
       {/* ── 5. Prompt / caption for the whole block ── */}
       <div className={sectionClass}>
         <p className={sectionLabelClass}>Block Prompt</p>
-        <p className="text-[11px] text-gray-400 -mt-1">Optional text shown above or below the entire image block — use for instructions or context.</p>
+        <p className="text-[11px] text-gray-400 -mt-1">Text shown above or below the whole image block. Leave the text blank to show a default tap instruction; type your own to override it.</p>
 
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Position</label>
@@ -461,7 +461,7 @@ export function ImageGalleryEditor({ data, onChange, slideBlockStyle, breakpoint
             <textarea
               value={data.prompt ?? ''}
               onChange={(e) => onChange({ ...data, prompt: e.target.value || undefined })}
-              placeholder="e.g. Tap each image to learn more"
+              placeholder="Tap each image for more (default)"
               rows={2}
               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent resize-none"
             />

@@ -639,9 +639,17 @@ export default function ImageGalleryViewer({ data, block, context, onComplete }:
   }
 
   const showProgress = data.requireAllClicked && !context?.editing && images.length > 1;
-  const promptText = data.prompt?.trim();
   const promptPosition = data.promptPosition ?? 'none';
-  const showPrompt = !!promptText && promptPosition !== 'none';
+  // When the author enables a prompt position but leaves the text blank, fall back
+  // to a sensible instruction so they don't have to type the same "tap for more" on
+  // every gallery (the editor keeps it as a placeholder, not stored data). Only for
+  // interactive galleries — a static gallery has nothing to tap, so no default.
+  const promptInteractive = clickForMore || data.requireAllClicked === true || data.enableLightbox !== false;
+  const defaultPrompt = promptInteractive
+    ? (images.length > 1 ? 'Tap each image for more' : 'Tap the image for more')
+    : '';
+  const promptText = data.prompt?.trim() || defaultPrompt;
+  const showPrompt = promptPosition !== 'none' && !!promptText;
 
   const promptEl = showPrompt ? (
     <p className="text-sm text-[color:var(--surface-text,#0f172a)] opacity-80 leading-relaxed whitespace-pre-line">
