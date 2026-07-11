@@ -390,9 +390,13 @@ export default function SurveyViewer({
   }
 
   return (
-    <div className={cn(BLOCK_CONTENT_SHELL, '-m-4 @md:-m-5')}>
+    // Full-bleed rounded card: clip to rounded-2xl and drop the flex gap so the
+    // gradient header attaches flush to the body. Clipping here (not relying on the
+    // parent cell) fixes the header's top-corner "notch" in the editor canvas, whose
+    // block cell is intentionally overflow-visible for resize handles/toolbar.
+    <div className={cn(BLOCK_CONTENT_SHELL, '-m-4 @md:-m-5 gap-0 sm:gap-0 overflow-hidden rounded-2xl')}>
       <div
-        className="px-6 py-5 text-white shrink-0 rounded-t-2xl text-center"
+        className="px-6 py-5 text-white shrink-0 text-center"
         style={{ backgroundImage: `linear-gradient(to right, ${theme.gradientStart}, ${theme.gradientEnd})` }}
       >
         <div className="flex items-center justify-center gap-2 mb-1">
