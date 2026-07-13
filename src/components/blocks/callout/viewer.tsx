@@ -26,13 +26,40 @@ const AVATAR_RADIUS = {
   rounded: 'rounded-xl',
 };
 
+// Full sanitizer (mirrors rich-text/content-list): strips scripts, drops <img> with
+// unresolvable relative src, neutralises javascript:/vbscript:/data: hrefs, and forces
+// links to open safely in a new tab. Speech-bubble text is authored in the same Tiptap
+// editor as rich-text, so it must be cleaned the same way.
 function sanitizeHtml(html: string): string {
-  return (html ?? '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  let result = (html ?? '').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  result = result.replace(/<img\s+[^>]*src=["'](?!https?:\/\/|data:)[^"']*["'][^>]*\/?>/gi, '');
+  result = result.replace(
+    /(<a\b[^>]*\bhref=)(["'])\s*(?:javascript|vbscript|data):[^"']*\2/gi,
+    '$1$2#$2',
+  );
+  result = result.replace(
+    /<a\b(?![^>]*\btarget=)/gi,
+    '<a target="_blank" rel="noopener noreferrer nofollow"',
+  );
+  return result;
+}
+
+/** Perceived sRGB luminance (0–1) of a #rrggbb colour; 0.5 for anything unparseable. */
+function luminance(hex: string): number {
+  const m = /^#?([0-9a-f]{6})$/i.exec((hex ?? '').trim());
+  if (!m) return 0.5;
+  const n = parseInt(m[1], 16);
+  return ((0.299 * ((n >> 16) & 255)) + (0.587 * ((n >> 8) & 255)) + (0.114 * (n & 255))) / 255;
+}
+
+/** Pick a readable text colour (near-white or near-black) for a solid background. */
+function readableTextOn(hex: string): string {
+  return luminance(hex) > 0.6 ? '#0f172a' : '#ffffff';
 }
 
 // ── Speech Bubble Viewer ─────────────────────────────────────────────────────
 
-function SpeechBubbleViewer({ data }: { data: CalloutData }) {
+function SpeechBubbleViewer({ data, accent }: { data: CalloutData; accent: string }) {
   const {
     bubble_text = '',
     author_name,
@@ -43,31 +70,54 @@ function SpeechBubbleViewer({ data }: { data: CalloutData }) {
     avatar_style = 'circle',
   } = data;
 
-  const isRight = direction === 'right'; // avatar on the right side
-  const cfg = BUBBLE_CONFIGS[bubble_style] ?? BUBBLE_CONFIGS.light;
+  const isRight = direction === 'right'; // avatar sits on the right, below the bubble
+  // The "accent" style follows the resolved theme accent (global → institution → course).
+  const cfg = bubble_style === 'accent'
+    ? { bg: accent, text: readableTextOn(accent), shadow: '0 4px 24px rgba(0,0,0,0.14)' }
+    : (BUBBLE_CONFIGS[bubble_style] ?? BUBBLE_CONFIGS.light);
   const avatarClass = AVATAR_RADIUS[avatar_style] ?? AVATAR_RADIUS.circle;
+  // Links must read against the bubble background: a light bubble text → dark-blue link,
+  // a light-on-dark/accent bubble → light-blue link. Underline is applied in CSS.
+  const linkColor = luminance(cfg.text) > 0.6 ? '#93c5fd' : '#2563eb';
+
+  const avatar = (
+    <div className={`w-14 h-14 overflow-hidden ${avatarClass} ring-2 ring-white/30 shadow-lg`}>
+      {avatar_url ? (
+        <img src={avatar_url} alt={author_name ?? 'Speaker'} className="w-full h-full object-cover" />
+      ) : (
+        <div
+          className="w-full h-full flex items-center justify-center"
+          style={{ backgroundColor: accent, color: readableTextOn(accent) }}
+        >
+          {author_name ? (
+            <span className="text-xl font-black select-none">{author_name[0].toUpperCase()}</span>
+          ) : (
+            <UserRound className="w-7 h-7 opacity-80" />
+          )}
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className={`flex items-end gap-3 ${!isRight ? 'flex-row-reverse' : ''}`}>
-      {/* ── Speech bubble ───────────────────────────────────────────── */}
-      <div className="relative flex-1 min-w-0">
+    <div className="w-full">
+      {/* ── Speech bubble (full width) ──────────────────────────────── */}
+      <div className="relative">
         <div
-          className="rounded-2xl px-5 py-4 leading-relaxed"
+          className="rounded-2xl px-5 py-4 leading-relaxed overflow-hidden"
           style={{ backgroundColor: cfg.bg, color: cfg.text, boxShadow: cfg.shadow }}
         >
-          {/* Message */}
+          {/* Message — real rich-text styling (headings, bold, underline, links, lists).
+              Colour inherits the bubble text; links use the contrast-aware --sb-link. */}
           <div
-            className="prose prose-sm max-w-none [&>p:last-child]:mb-0"
-            style={{ color: 'inherit' }}
+            className="rich-text-viewer sb-bubble-content max-w-none break-words [&>:first-child]:mt-0 [&>p:last-child]:mb-0"
+            style={{ color: 'inherit', ['--sb-link' as string]: linkColor } as CSSProperties}
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(bubble_text) }}
           />
 
           {/* Attribution inside the bubble */}
           {(author_name || author_title) && (
-            <div
-              className="mt-3 pt-2.5 border-t"
-              style={{ borderColor: `${cfg.text}20` }}
-            >
+            <div className="mt-3 pt-2.5 border-t" style={{ borderColor: `${cfg.text}20` }}>
               {author_name && (
                 <p className="text-sm font-bold leading-snug" style={{ color: cfg.text }}>
                   — {author_name}
@@ -82,44 +132,22 @@ function SpeechBubbleViewer({ data }: { data: CalloutData }) {
           )}
         </div>
 
-        {/* Tail — CSS triangle pointing toward the avatar */}
+        {/* Tail — CSS triangle pointing DOWN toward the avatar below, on the chosen side. */}
         <div
-          className={`absolute bottom-5 ${isRight ? '-right-[13px]' : '-left-[13px]'}`}
+          className={`absolute -bottom-[11px] ${isRight ? 'right-8' : 'left-8'}`}
           style={{
             width: 0,
             height: 0,
-            borderTop: '9px solid transparent',
-            borderBottom: '9px solid transparent',
-            ...(isRight
-              ? { borderLeft: `13px solid ${cfg.bg}` }
-              : { borderRight: `13px solid ${cfg.bg}` }),
+            borderLeft: '10px solid transparent',
+            borderRight: '10px solid transparent',
+            borderTop: `12px solid ${cfg.bg}`,
           }}
         />
       </div>
 
-      {/* ── Avatar ──────────────────────────────────────────────────── */}
-      <div className="shrink-0 flex flex-col items-center gap-1.5">
-        <div
-          className={`w-14 h-14 overflow-hidden ${avatarClass} ring-2 ring-white/30 shadow-lg`}
-        >
-          {avatar_url ? (
-            <img
-              src={avatar_url}
-              alt={author_name ?? 'Speaker'}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-indigo-400 to-violet-600 flex items-center justify-center">
-              {author_name ? (
-                <span className="text-white text-xl font-black select-none">
-                  {author_name[0].toUpperCase()}
-                </span>
-              ) : (
-                <UserRound className="w-7 h-7 text-white/80" />
-              )}
-            </div>
-          )}
-        </div>
+      {/* ── Avatar (below the bubble, under the tail) ───────────────── */}
+      <div className={`mt-3 flex ${isRight ? 'justify-end pr-4' : 'justify-start pl-4'}`}>
+        <div className="shrink-0">{avatar}</div>
       </div>
     </div>
   );
@@ -127,9 +155,11 @@ function SpeechBubbleViewer({ data }: { data: CalloutData }) {
 
 // ── Main Viewer ──────────────────────────────────────────────────────────────
 
-export default function CalloutViewer({ data }: BlockViewerProps<CalloutData>) {
+export default function CalloutViewer({ data, context }: BlockViewerProps<CalloutData>) {
+  // Default accent cascades from global settings → institution → course theme.
+  const accent = context?.theme?.accent || '#1A3C6E';
   if (data.mode === 'speech_bubble') {
-    return <SpeechBubbleViewer data={data} />;
+    return <SpeechBubbleViewer data={data} accent={accent} />;
   }
 
   // Default: callout mode. Icon + colours honor per-block overrides, else the variant preset.

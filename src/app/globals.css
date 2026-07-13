@@ -294,6 +294,14 @@
   text-decoration: underline;
 }
 
+/* Speech-bubble rich text: link colour adapts to the bubble background (set inline via
+   --sb-link so it reads on light, dark, or accent bubbles); long URLs wrap instead of
+   spilling past the bubble edge. */
+.rich-text-viewer.sb-bubble-content a {
+  color: var(--sb-link, #2563eb);
+  overflow-wrap: anywhere;
+}
+
 /* Horizontal rule */
 .tiptap hr,
 .rich-text-viewer hr {
