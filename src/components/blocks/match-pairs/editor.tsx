@@ -102,6 +102,15 @@ export function MatchPairsEditor({ data: rawData, onChange }: BlockEditorProps<M
           <input type="checkbox" checked={data.show_feedback ?? true}
             onChange={(e) => onChange({ ...data, show_feedback: e.target.checked })} className="accent-[#1A3C6E] w-4 h-4" />
         </label>
+        {(data.show_feedback ?? true) && (
+          <div className="space-y-2 rounded-lg bg-gray-50/70 p-2.5 border border-gray-100">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Result messages (optional)</p>
+            <input type="text" value={data.feedback_correct ?? ''} placeholder="All correct: e.g. Great — every pair matches!"
+              onChange={(e) => onChange({ ...data, feedback_correct: e.target.value || undefined })} className={inputClass} />
+            <input type="text" value={data.feedback_incorrect ?? ''} placeholder="Some wrong: e.g. Not quite — fix the red ones"
+              onChange={(e) => onChange({ ...data, feedback_incorrect: e.target.value || undefined })} className={inputClass} />
+          </div>
+        )}
         <label className="flex items-start justify-between gap-3 cursor-pointer">
           <span className="text-xs text-gray-600">
             Required to continue
@@ -131,6 +140,12 @@ export function MatchPairsEditor({ data: rawData, onChange }: BlockEditorProps<M
                 onChange={(s) => setPair(pair.id, { prompt: s })} />
               <SideEditor label="Matches to" slot="match" side={pair.match}
                 onChange={(s) => setPair(pair.id, { match: s })} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Feedback (optional)</label>
+              <input type="text" value={pair.feedback ?? ''}
+                placeholder="Shown under this pair after checking — explains the match"
+                onChange={(e) => setPair(pair.id, { feedback: e.target.value || undefined })} className={inputClass} />
             </div>
           </div>
         ))}

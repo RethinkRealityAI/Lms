@@ -58,3 +58,57 @@ describe('MatchPairsViewer tap-to-match (no-drag fallback)', () => {
     expect(screen.getByText('Cat').closest('[role="button"]')).not.toBeNull();
   });
 });
+
+describe('MatchPairsViewer feedback', () => {
+  function matchAll() {
+    fireEvent.click(screen.getByText('Cat'));
+    fireEvent.click(screen.getByText('Meow'));
+    fireEvent.click(screen.getByText('Dog'));
+    fireEvent.click(screen.getByText('Woof'));
+    fireEvent.click(screen.getByRole('button', { name: /Check Answer/i }));
+  }
+
+  it('shows per-pair feedback under each match only after checking', () => {
+    const data = makeData({
+      pairs: [
+        { id: 'p1', prompt: { type: 'text', text: 'Cat' }, match: { type: 'text', text: 'Meow' }, feedback: 'Cats meow.' },
+        { id: 'p2', prompt: { type: 'text', text: 'Dog' }, match: { type: 'text', text: 'Woof' }, feedback: 'Dogs woof.' },
+      ],
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render(<MatchPairsViewer data={data as any} block={block} />);
+
+    // Not shown before submitting.
+    expect(screen.queryByText('Cats meow.')).toBeNull();
+
+    matchAll();
+
+    expect(screen.getByText('Cats meow.')).toBeInTheDocument();
+    expect(screen.getByText('Dogs woof.')).toBeInTheDocument();
+  });
+
+  it('uses the custom "all correct" message when provided', () => {
+    const data = makeData({ feedback_correct: 'Perfect pairing!' });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render(<MatchPairsViewer data={data as any} block={block} />);
+    matchAll();
+    expect(screen.getByText('Perfect pairing!')).toBeInTheDocument();
+    expect(screen.queryByText(/All matched correctly/i)).toBeNull();
+  });
+
+  it('hides all feedback when show_feedback is off', () => {
+    const data = makeData({
+      show_feedback: false,
+      feedback_correct: 'Perfect pairing!',
+      pairs: [
+        { id: 'p1', prompt: { type: 'text', text: 'Cat' }, match: { type: 'text', text: 'Meow' }, feedback: 'Cats meow.' },
+        { id: 'p2', prompt: { type: 'text', text: 'Dog' }, match: { type: 'text', text: 'Woof' }, feedback: 'Dogs woof.' },
+      ],
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render(<MatchPairsViewer data={data as any} block={block} />);
+    matchAll();
+    expect(screen.queryByText('Cats meow.')).toBeNull();
+    expect(screen.queryByText('Perfect pairing!')).toBeNull();
+  });
+});

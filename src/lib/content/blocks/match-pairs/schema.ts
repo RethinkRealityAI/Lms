@@ -14,6 +14,8 @@ export const matchPairsDataSchema = z.object({
     prompt: sideSchema.default({ type: 'text' }),
     /** The draggable item the learner matches to the prompt */
     match: sideSchema.default({ type: 'text' }),
+    /** Optional explanation shown beneath this pair after the learner checks answers. */
+    feedback: z.string().optional(),
   })).default([]),
   /** Which side the (fixed) prompts sit on; matches go on the other side */
   prompt_side: z.enum(['left', 'right']).default('left'),
@@ -21,6 +23,10 @@ export const matchPairsDataSchema = z.object({
   /** Shuffle the draggable matches so order isn't a giveaway */
   shuffle: z.boolean().default(true),
   show_feedback: z.boolean().default(true),
+  /** General message shown when everything is matched correctly (falls back to a default). */
+  feedback_correct: z.string().optional(),
+  /** General message shown when some pairs are wrong (falls back to a default). */
+  feedback_incorrect: z.string().optional(),
   /** Required to continue: gate the Next button until every pair is matched correctly. */
   required: z.boolean().default(false),
   /** Accent colour for selection highlights + the Check Answer button. Hex. */
@@ -69,7 +75,13 @@ export function normalizeMatchPairsData(input: unknown): MatchPairsData {
     const promptRaw = po.prompt !== undefined ? po.prompt : po.left;
     const matchRaw = po.match !== undefined ? po.match : po.right;
     const id = typeof po.id === 'string' && po.id ? (po.id as string) : `mp-${i}`;
-    return { id, prompt: normalizeMatchSide(promptRaw), match: normalizeMatchSide(matchRaw) };
+    const feedback = typeof po.feedback === 'string' && po.feedback ? (po.feedback as string) : undefined;
+    return {
+      id,
+      prompt: normalizeMatchSide(promptRaw),
+      match: normalizeMatchSide(matchRaw),
+      ...(feedback ? { feedback } : {}),
+    };
   });
   const instructions = typeof d.instructions === 'string' && d.instructions
     ? (d.instructions as string)

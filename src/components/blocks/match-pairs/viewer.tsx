@@ -133,7 +133,7 @@ function MatchCard({ answerId, answer, dockedSide, dockedId, state, theme, onTap
   );
 }
 
-export default function MatchPairsViewer({ data: rawData, onComplete }: BlockViewerProps<MatchPairsData>) {
+export default function MatchPairsViewer({ data: rawData, onComplete, context }: BlockViewerProps<MatchPairsData>) {
   const data = useMemo(() => normalizeMatchPairsData(rawData), [rawData]);
   const pairs = useMemo(() => data.pairs.filter(p => p?.id), [data.pairs]);
   const promptSide = data.prompt_side ?? 'left';
@@ -146,8 +146,10 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
   useEffect(() => { setMounted(true); }, []);
 
   // Resolve the colour theme (props win; otherwise frosted-glass surface tokens).
+  const themeAccent = context?.theme?.accent;
   const theme = useMemo<MatchTheme>(() => {
-    const accent = (data.accent_color || '').trim() || '#1E3A5F';
+    // Default accent cascades from global settings → institution → course theme.
+    const accent = (data.accent_color || '').trim() || themeAccent || '#1E3A5F';
     const textColor = (data.text_color || '').trim();
     const textStyle: CSSProperties = textColor ? { color: textColor } : { color: 'var(--surface-text)' };
     const itemColor = (data.item_color || '').trim();
@@ -169,7 +171,7 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
       usesGlassItem: !itemColor, usesGlassMatch: !matchColor,
       overlayItemStyle, overlayTextStyle,
     };
-  }, [data.accent_color, data.item_color, data.match_color, data.text_color]);
+  }, [data.accent_color, data.item_color, data.match_color, data.text_color, themeAccent]);
 
   const order = useMemo(() => {
     const ids = pairs.map(p => p.id);
@@ -270,18 +272,25 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
         {order.map(aid => {
           const promptId = placed[aid] ?? null;
           const state = submitted && promptId ? (promptId === aid ? 'correct' : 'wrong') : null;
+          const pairFeedback = pairById[aid]?.feedback?.trim();
           return (
-            <MatchCard
-              key={aid}
-              answerId={aid}
-              answer={pairById[aid].match}
-              dockedSide={promptId ? pairById[promptId].prompt : null}
-              dockedId={promptId}
-              state={state}
-              theme={theme}
-              onTap={() => tapMatch(aid)}
-              highlight={!!selectedPromptId && !promptId}
-            />
+            <div key={aid} className="space-y-1">
+              <MatchCard
+                answerId={aid}
+                answer={pairById[aid].match}
+                dockedSide={promptId ? pairById[promptId].prompt : null}
+                dockedId={promptId}
+                state={state}
+                theme={theme}
+                onTap={() => tapMatch(aid)}
+                highlight={!!selectedPromptId && !promptId}
+              />
+              {submitted && showFeedback && pairFeedback && (
+                <p className="px-1 text-[11px] leading-snug text-[color:var(--surface-text-muted)]">
+                  {pairFeedback}
+                </p>
+              )}
+            </div>
           );
         })}
       </div>
@@ -307,8 +316,9 @@ export default function MatchPairsViewer({ data: rawData, onComplete }: BlockVie
       {submitted && showFeedback && (
         <div className={cn('flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-2.5',
           allCorrect ? 'bg-green-100 text-green-800' : 'bg-amber-50 text-amber-800')}>
-          {allCorrect ? <><CheckCircle className="h-4 w-4" /> All matched correctly!</>
-            : <><XCircle className="h-4 w-4" /> {correctCount} of {pairs.length} correct — fix the red ones.</>}
+          {allCorrect
+            ? <><CheckCircle className="h-4 w-4 shrink-0" /> {data.feedback_correct?.trim() || 'All matched correctly!'}</>
+            : <><XCircle className="h-4 w-4 shrink-0" /> {data.feedback_incorrect?.trim() || `${correctCount} of ${pairs.length} correct — fix the red ones.`}</>}
         </div>
       )}
 
