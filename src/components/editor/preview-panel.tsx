@@ -14,12 +14,7 @@ import { resolveEffectiveTheme } from '@/lib/tenant/institution-theme';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import type { DevicePreview } from '@/lib/canvas/canvas-utils';
 import type { Slide, LessonBlock } from '@/types';
-
-const DEVICE_WIDTHS: Record<DevicePreview, string> = {
-  desktop: '100%',
-  tablet: '768px',
-  mobile: '375px',
-};
+import { DEVICE_FRAME, isFramedDevice } from '@/lib/content/device-frames';
 
 const CanvasSlideEditor = dynamic(
   () => import('./canvas-slide-editor'),
@@ -264,10 +259,13 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
   const isCanvasSlide = selectedSlide?.slide_type === 'canvas';
 
   // The editor canvas is ALWAYS editable, at every device width. The device toggle
-  // just narrows the card (content stays responsive via container queries) and, for
-  // tablet/mobile, frames it as a device. Exact device rendering is the Preview
-  // dialog (Play button) which embeds the real viewer in a device-sized iframe.
-  const isDeviceFramed = devicePreview !== 'desktop';
+  // frames tablet/mobile as a real device — a true-ratio viewport (9:16 mobile /
+  // 3:4 tablet) that fills the panel height, so vertical layout reflects the device.
+  // Content stays responsive via container queries (the card width drives them).
+  // Pixel-exact rendering (incl. the viewer's vertical centering) is the Preview
+  // dialog (Play button), which embeds the real viewer in the same-ratio iframe.
+  const isDeviceFramed = isFramedDevice(devicePreview);
+  const frameSpec = isDeviceFramed ? DEVICE_FRAME[devicePreview] : null;
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
@@ -285,11 +283,15 @@ export function PreviewPanel({ devicePreview, onDeleteBlock, onDuplicateBlock, o
         ) : (
           <div
             className={`bg-white overflow-hidden transition-all duration-300 flex flex-col ${
-              isDeviceFramed
-                ? 'rounded-[2rem] border-[10px] border-slate-900 shadow-2xl ring-1 ring-black/10'  // editable, framed as a device
+              frameSpec
+                ? `${frameSpec.radius} ${frameSpec.bezel} border-slate-900 shadow-2xl ring-1 ring-black/10`  // editable, framed as a real-ratio device
                 : 'rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.06)]'
             }`}
-            style={{ width: DEVICE_WIDTHS[devicePreview], maxWidth: '100%', height: '100%', minHeight: '500px' }}
+            style={
+              frameSpec
+                ? { aspectRatio: frameSpec.aspectRatio, maxWidth: frameSpec.maxWidth, height: '100%' }
+                : { width: '100%', maxWidth: '100%', height: '100%', minHeight: '500px' }
+            }
           >
             {selectedSlide ? (
               <SlidePreview

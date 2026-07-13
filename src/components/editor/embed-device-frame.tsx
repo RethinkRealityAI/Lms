@@ -3,11 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { withInstitutionPath } from '@/lib/tenant/path';
-
-const SIZES: Record<'tablet' | 'mobile', { w: number; radius: string; bezel: string }> = {
-  tablet: { w: 834, radius: 'rounded-[1.8rem]', bezel: 'border-[12px]' },
-  mobile: { w: 390, radius: 'rounded-[2.4rem]', bezel: 'border-[11px]' },
-};
+import { DEVICE_FRAME } from '@/lib/content/device-frames';
 
 interface EmbedDeviceFrameProps {
   courseId: string;
@@ -73,12 +69,12 @@ export function EmbedDeviceFrame({
     }
   }, [navigateSlideId]);
 
-  const cfg = SIZES[device];
+  const cfg = DEVICE_FRAME[device];
   return (
     <div className="h-full w-full flex items-center justify-center bg-slate-100/80 p-4 overflow-auto">
       <div
         className={`bg-white ${cfg.radius} shadow-2xl ring-1 ring-black/10 overflow-hidden ${cfg.bezel} border-slate-900 shrink-0`}
-        style={{ width: cfg.w, maxWidth: '100%', height: '100%', maxHeight: '100%' }}
+        style={{ aspectRatio: cfg.aspectRatio, maxWidth: cfg.maxWidth, height: '100%' }}
       >
         <iframe
           ref={iframeRef}

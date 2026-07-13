@@ -10,6 +10,11 @@ export function ShortcutHint() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    // These are keyboard-only shortcuts, so never show them on a device without a
+    // physical keyboard (touch-primary) or a phone-narrow viewport.
+    const isTouchOrNarrow =
+      window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+    if (isTouchOrNarrow) return;
     if (!localStorage.getItem(STORAGE_KEY)) {
       setShow(true);
     }
