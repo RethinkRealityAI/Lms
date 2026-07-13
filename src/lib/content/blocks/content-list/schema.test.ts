@@ -50,8 +50,11 @@ describe('contentListDataSchema', () => {
     expect(result.data?.items).toEqual([]);
     expect(result.data?.bullet_style).toBe('disc');
     expect(result.data?.font_size).toBe('auto');
-    expect(result.data?.enable_animations).toBe(false);
+    // Animations are ON by default with a 500ms entrance and no forced uniform direction.
+    expect(result.data?.enable_animations).toBe(true);
+    expect(result.data?.animation_duration_ms).toBe(500);
     expect(result.data?.animation_stagger_ms).toBe(120);
+    expect(result.data?.animation_uniform).toBe(false);
   });
 
   it('rejects invalid bullet_style', () => {

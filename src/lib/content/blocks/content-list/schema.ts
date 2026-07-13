@@ -54,8 +54,15 @@ export const contentListDataSchema = z.object({
   accordion_accent_color: z.string().optional(),
 
   // ── Animation (both modes share entrance animation; accordion always animates expand) ──
-  enable_animations: z.boolean().default(false),
+  /** Entrance animation is ON by default for new lists. */
+  enable_animations: z.boolean().default(true),
+  /** How long each item's entrance runs (ms). Falls back to 500 when unset. */
+  animation_duration_ms: z.number().int().min(0).default(500),
   animation_stagger_ms: z.number().int().min(0).default(120),
+  /** When true, `animation_direction` applies to EVERY item (the per-item control is hidden). */
+  animation_uniform: z.boolean().default(false),
+  /** The shared entrance direction used for all items when `animation_uniform` is true. */
+  animation_direction: contentListItemAnimationSchema.optional(),
 
   // ── Optional companion media (image/video) placed around the list ──
   media: mediaFieldSchema.optional(),

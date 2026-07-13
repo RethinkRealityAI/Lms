@@ -163,6 +163,7 @@ function ItemEditor({
   index,
   total,
   animationsEnabled,
+  uniformAnimation,
   isAccordion,
   onChange,
   onRemove,
@@ -173,6 +174,7 @@ function ItemEditor({
   index: number;
   total: number;
   animationsEnabled: boolean;
+  uniformAnimation: boolean;
   isAccordion: boolean;
   onChange: (item: ContentListItem) => void;
   onRemove: () => void;
@@ -239,7 +241,7 @@ function ItemEditor({
         />
       </div>
 
-      {animationsEnabled ? (
+      {animationsEnabled && !uniformAnimation ? (
         <div>
           <label className={labelClass}>Entrance animation</label>
           <select
@@ -266,7 +268,8 @@ function ItemEditor({
 
 export function ContentListEditor({ data, onChange, block }: BlockEditorProps<ContentListData>) {
   const items = data.items ?? [];
-  const enableAnimations = data.enable_animations ?? false;
+  const enableAnimations = data.enable_animations ?? true;
+  const uniformAnimation = data.animation_uniform ?? false;
   const displayMode: ContentListDisplayMode = data.display_mode ?? 'list';
   const isAccordion = displayMode === 'accordion';
 
@@ -442,21 +445,77 @@ export function ContentListEditor({ data, onChange, block }: BlockEditorProps<Co
           onChange={(enable_animations) => update({ enable_animations })}
         />
         {enableAnimations ? (
-          <div>
-            <label className={labelClass}>Stagger delay (ms)</label>
-            <input
-              type="number"
-              min={0}
-              step={10}
-              value={data.animation_stagger_ms ?? 120}
-              onChange={(e) =>
-                update({
-                  animation_stagger_ms: e.target.value === '' ? 120 : Number(e.target.value),
-                })
-              }
-              className={`${inputClass} w-28`}
-            />
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className={labelClass}>Duration (ms)</label>
+                <input
+                  type="number"
+                  min={0}
+                  step={50}
+                  value={data.animation_duration_ms ?? 500}
+                  onChange={(e) =>
+                    update({
+                      animation_duration_ms: e.target.value === '' ? 500 : Number(e.target.value),
+                    })
+                  }
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Stagger delay (ms)</label>
+                <input
+                  type="number"
+                  min={0}
+                  step={10}
+                  value={data.animation_stagger_ms ?? 120}
+                  onChange={(e) =>
+                    update({
+                      animation_stagger_ms: e.target.value === '' ? 120 : Number(e.target.value),
+                    })
+                  }
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <label className="flex items-center justify-between cursor-pointer">
+              <span className="text-xs font-medium text-gray-700">Same direction for all items</span>
+              <input
+                type="checkbox"
+                checked={uniformAnimation}
+                onChange={(e) =>
+                  update({
+                    animation_uniform: e.target.checked,
+                    // Seed a direction the first time it's turned on so the dropdown isn't empty.
+                    ...(e.target.checked && !data.animation_direction
+                      ? { animation_direction: 'left' as ContentListItemAnimation }
+                      : {}),
+                  })
+                }
+                className="accent-[#1A3C6E] w-4 h-4"
+              />
+            </label>
+
+            {uniformAnimation ? (
+              <div>
+                <label className={labelClass}>Direction (applies to all items)</label>
+                <select
+                  value={data.animation_direction ?? 'left'}
+                  onChange={(e) =>
+                    update({ animation_direction: e.target.value as ContentListItemAnimation })
+                  }
+                  className={inputClass}
+                >
+                  {ITEM_ANIMATIONS.map((a) => (
+                    <option key={a.value} value={a.value}>
+                      {a.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+          </>
         ) : null}
       </div>
 
@@ -469,6 +528,7 @@ export function ContentListEditor({ data, onChange, block }: BlockEditorProps<Co
             index={index}
             total={items.length}
             animationsEnabled={enableAnimations}
+            uniformAnimation={uniformAnimation}
             isAccordion={isAccordion}
             onChange={(next) => setItem(index, next)}
             onRemove={() => removeItem(index)}

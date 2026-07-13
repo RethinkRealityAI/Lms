@@ -73,21 +73,36 @@ function initialOpenSet(mode: string | undefined, count: number): Set<number> {
 
 // ─── Accordion ────────────────────────────────────────────────────────────────
 
+/** Resolve an item's entrance direction: the shared direction when uniform, else its own. */
+function resolveItemAnimation(
+  data: ContentListData,
+  item: ContentListItem,
+  fallback: ContentListItemAnimation,
+): ContentListItemAnimation {
+  if (data.animation_uniform) return data.animation_direction ?? fallback;
+  return item.animation ?? fallback;
+}
+
 function AccordionView({
   items,
   data,
   sizeClass,
   enableAnimations,
   staggerMs,
+  durationMs,
+  themeAccent,
 }: {
   items: ContentListItem[];
   data: ContentListData;
   sizeClass: string;
   enableAnimations: boolean;
   staggerMs: number;
+  durationMs: number;
+  themeAccent?: string;
 }) {
   const baseId = useId();
-  const accent = data.accordion_accent_color || DEFAULT_ACCENT;
+  // Default accent cascades from global settings → institution → course theme.
+  const accent = data.accordion_accent_color || themeAccent || DEFAULT_ACCENT;
   const iconKind = data.accordion_icon ?? 'caret';
   const iconAtStart = (data.accordion_icon_position ?? 'right') === 'left';
   const allowMultiple = data.accordion_multiple ?? false;
@@ -116,12 +131,13 @@ function AccordionView({
         const headerId = `${baseId}-h-${index}`;
         const panelId = `${baseId}-p-${index}`;
 
-        const itemAnim: ContentListItemAnimation = item.animation ?? 'up';
+        const itemAnim = resolveItemAnimation(data, item, 'up');
         const shouldAnimate = enableAnimations && itemAnim !== 'none';
         const cardStyle: CSSProperties = shouldAnimate
           ? {
               animationName: ITEM_ANIMATION_NAME[itemAnim],
               animationDelay: `${index * staggerMs}ms`,
+              animationDuration: `${durationMs}ms`,
             }
           : {};
 
@@ -218,12 +234,14 @@ function ListView({
   sizeClass,
   enableAnimations,
   staggerMs,
+  durationMs,
 }: {
   items: ContentListItem[];
   data: ContentListData;
   sizeClass: string;
   enableAnimations: boolean;
   staggerMs: number;
+  durationMs: number;
 }) {
   const bulletStyle = data.bullet_style ?? 'disc';
   const ListTag = listTagForBulletStyle(bulletStyle);
@@ -249,13 +267,14 @@ function ListView({
       style={listStyle}
     >
       {items.map((item, index) => {
-        const itemAnim: ContentListItemAnimation = item.animation ?? 'left';
+        const itemAnim = resolveItemAnimation(data, item, 'left');
         const shouldAnimate = enableAnimations && itemAnim !== 'none';
 
         const liStyle: CSSProperties | undefined = shouldAnimate
           ? {
               animationName: ITEM_ANIMATION_NAME[itemAnim],
               animationDelay: `${index * staggerMs}ms`,
+              animationDuration: `${durationMs}ms`,
             }
           : undefined;
 
@@ -276,11 +295,13 @@ function ListView({
   );
 }
 
-export default function ContentListViewer({ data }: BlockViewerProps<ContentListData>) {
+export default function ContentListViewer({ data, context }: BlockViewerProps<ContentListData>) {
   const items = useMemo(() => data.items ?? [], [data.items]);
+  const themeAccent = context?.theme?.accent;
   const fontSize = data.font_size ?? 'auto';
-  const enableAnimations = data.enable_animations ?? false;
+  const enableAnimations = data.enable_animations ?? true;
   const staggerMs = data.animation_stagger_ms ?? 120;
+  const durationMs = data.animation_duration_ms ?? 500;
   const isAccordion = (data.display_mode ?? 'list') === 'accordion';
 
   const sizeClass = fontSize === 'auto' ? '' : FONT_SIZE_CLASS[fontSize];
@@ -307,6 +328,8 @@ export default function ContentListViewer({ data }: BlockViewerProps<ContentList
           sizeClass={sizeClass}
           enableAnimations={enableAnimations}
           staggerMs={staggerMs}
+          durationMs={durationMs}
+          themeAccent={themeAccent}
         />
       ) : (
         <ListView
@@ -315,6 +338,7 @@ export default function ContentListViewer({ data }: BlockViewerProps<ContentList
           sizeClass={sizeClass}
           enableAnimations={enableAnimations}
           staggerMs={staggerMs}
+          durationMs={durationMs}
         />
       )}
     </div>
