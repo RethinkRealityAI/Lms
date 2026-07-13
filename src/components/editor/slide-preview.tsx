@@ -477,7 +477,7 @@ export function SlidePreview({
                               updated_at: new Date().toISOString(),
                             }}
                             lessonTitle={lessonTitle}
-                            context={{ editing: true, blockStyle, soleBlock: blocks.length === 1 }}
+                            context={{ editing: true, blockStyle, soleBlock: blocks.length === 1, theme: effectiveTheme }}
                           />
                         </Suspense>
                       );
