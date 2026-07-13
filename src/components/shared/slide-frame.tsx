@@ -118,7 +118,7 @@ export function SlideContentArea({ children }: { children: ReactNode }) {
   // to the slide width, not the viewport — keeping editor preview ≈ real device.
   // Outer padding is intentionally minimal: per-block containers own the padding.
   return (
-    <div className="slide-cq px-1.5 py-1.5 overflow-y-auto flex-1 flex flex-col gap-2.5">
+    <div className="slide-cq px-1.5 py-1.5 overflow-y-auto flex-1 min-h-0 flex flex-col gap-2.5">
       {children}
     </div>
   );

@@ -167,14 +167,27 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, onBlockCom
     const layout = getBlockGridLayout((block.data ?? {}) as Record<string, unknown>);
     const stretch = blockSurfaceFillCell(block.block_type);
     const align = (block.data as Record<string, unknown>)?.contentAlign;
-    const alignContent = stretch ? 'stretch' : align === 'center' ? 'center' : align === 'bottom' ? 'end' : 'start';
+    // Vertical placement inside the (now viewport-filling) content area:
+    //  • Interactive fill-cell blocks STRETCH to fill the whole slide.
+    //  • Content blocks use auto margins so they CENTER by default when the
+    //    content is shorter than the slide — no dead space dumped at the bottom —
+    //    yet collapse to top-anchored + scrollable when content is taller than the
+    //    slide (auto margins never clip). Explicit "Top"/"Bottom" (the Vertical
+    //    Position control) override the centered default.
+    const vPlacement = stretch
+      ? 'flex-1 min-h-0'
+      : align === 'top'
+        ? 'mb-auto'
+        : align === 'bottom'
+          ? 'mt-auto'
+          : 'my-auto';
     return (
       <div
-        className="w-full grid-viewer flex-1 min-h-0"
+        className={`w-full grid-viewer ${vPlacement}`}
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`,
-          alignContent,
+          alignContent: stretch ? 'stretch' : 'start',
           gap: `${GRID_MARGIN[1]}px ${GRID_MARGIN[0]}px`,
           padding: `${GRID_CONTAINER_PADDING[1]}px ${GRID_CONTAINER_PADDING[0]}px`,
         }}
@@ -197,7 +210,7 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, onBlockCom
   // If no custom grid layout, render simple vertical stack (backward compatible)
   if (!hasGridLayout) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5 my-auto">
         {blocks.map(block => (
           <div key={block.id} className="relative overflow-hidden rounded-2xl min-h-0">
             <LessonBlockRenderer block={block} lessonTitle={lessonTitle} onQuizCorrect={onQuizCorrect} onBlockComplete={onBlockComplete} context={mergedContext} />
@@ -212,7 +225,7 @@ function GridBlockRenderer({ blocks, lessonTitle = '', onQuizCorrect, onBlockCom
   // mirroring the editor's contentAlign behavior for WYSIWYG parity.
   return (
     <div
-      className="w-full grid-viewer"
+      className="w-full grid-viewer my-auto"
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`,
@@ -2021,7 +2034,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                             <div className="absolute inset-0 bg-black/20" />
                           </div>
                         )}
-                        <div className="relative z-10 flex-1 overflow-y-auto">
+                        <div className="relative z-10 flex-1 min-h-0 flex flex-col">
                           <SlideContentArea>
                             <GridBlockRenderer
                               blocks={hasPages ? pages[subPage] ?? pages[0] : currentSlideData.blocks}

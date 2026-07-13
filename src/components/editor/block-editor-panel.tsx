@@ -174,12 +174,13 @@ export function BlockEditorPanel({ blockId, onDelete }: BlockEditorPanelProps) {
           </p>
           <div className="flex gap-1">
             {([
-              { value: undefined,  Icon: AlignStartVertical,  title: 'Top (default)' },
-              { value: 'center',   Icon: AlignCenterVertical, title: 'Middle' },
+              { value: 'top',      Icon: AlignStartVertical,  title: 'Top' },
+              { value: undefined,  Icon: AlignCenterVertical, title: 'Middle (default)' },
               { value: 'bottom',   Icon: AlignEndVertical,    title: 'Bottom' },
             ] as const).map(({ value, Icon, title }) => {
               const current = (block.data as Record<string,unknown>)?.contentAlign;
-              const isActive = current === value || (value === undefined && !current);
+              // Undefined contentAlign now means Middle (the centered default).
+              const isActive = current === value || (value === undefined && (!current || current === 'center'));
               return (
                 <button
                   key={title}
