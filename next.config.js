@@ -40,13 +40,11 @@ const nextConfig = {
               "base-uri 'self'",
               // Form actions: self + Supabase auth
               "form-action 'self' https://ylmnbbrpaeiogdeqezlo.supabase.co",
-              // Frame ancestors: self only (prevent clickjacking)
-              "frame-ancestors 'self'",
+              // Frame ancestors: self + explicitly allow-listed partner sites that embed
+              // the platform (SCAGO's public site embeds the student portal). Add new
+              // embed hosts here — do NOT widen this to a wildcard (clickjacking).
+              "frame-ancestors 'self' https://www.sicklecellanemia.ca https://sicklecellanemia.ca",
             ].join('; '),
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',

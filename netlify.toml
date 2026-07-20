@@ -40,10 +40,17 @@
   force = false
 
 # Headers for security and performance
+# NOTE: X-Frame-Options is intentionally NOT set here — it can only express
+# DENY/SAMEORIGIN, not a specific allow-listed external origin, and would
+# override/conflict with next.config.js's CSP frame-ancestors (which does
+# allow-list the SCAGO site as an embed host). Modern browsers honour
+# frame-ancestors over X-Frame-Options when both would apply, but Netlify's
+# edge-level header here is applied as a static rule regardless of route, so
+# leaving DENY in place would still block the embed in browsers that fall
+# back to XFO. Framing protection is handled entirely via CSP frame-ancestors.
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
