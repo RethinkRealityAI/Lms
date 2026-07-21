@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/cookie-options";
 
 const DEFAULT_INSTITUTION_SLUG = "gansid";
 const SUPPORTED_INSTITUTION_SLUGS = new Set(["gansid", "scago"]);
@@ -128,6 +129,9 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // SameSite=None;Secure so the refreshed auth cookie survives a cross-origin
+      // iframe embed (must match the browser + server clients exactly).
+      cookieOptions: AUTH_COOKIE_OPTIONS,
       cookies: {
         getAll() {
           return request.cookies.getAll();

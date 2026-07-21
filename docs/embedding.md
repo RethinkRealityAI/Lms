@@ -1,10 +1,29 @@
 # Embedding the LMS in another site (iframe)
 
 The platform is embedded on the SCAGO public site
-(`https://www.sicklecellanemia.ca/`, e.g. the HCP e-learning page under
-Resources & Education → E-learning → HCP Modules). This doc records what was
-changed to allow that, and the one gotcha that governs whether **signed-in**
-embedding will actually work in every browser.
+(`https://www.sicklecellanemia.ca/`, HCP e-learning page). The site runs on
+**Framer**, which renders custom embeds inside its own sandbox iframe on
+`framerusercontent.com`.
+
+## Current state (authoritative — read this first)
+
+- **CSP is fully removed** (`next.config.js` sets no `Content-Security-Policy`
+  and no `X-Frame-Options`). Framing is unrestricted, so the Framer sandbox
+  nesting can't block the frame from loading. (Earlier we tried an allow-listed
+  `frame-ancestors`, but Framer's intermediate sandbox origin is in the ancestor
+  chain and can't be reliably enumerated — §1 below is kept as history.)
+- **In-iframe login is a COOKIE problem, not a CSP problem.** Auth cookies in a
+  cross-origin iframe are third-party. We set them `SameSite=None; Secure`
+  (`src/lib/supabase/cookie-options.ts`, applied in the browser, server, and
+  middleware Supabase clients) so the session survives the frame in
+  **Chrome / Firefox / Edge**.
+- **Safari still won't persist an in-frame session** (ITP blocks third-party
+  cookies regardless of SameSite). The only cross-browser-complete fix is to
+  serve the LMS from a **subdomain of the embedding site** (e.g.
+  `learn.sicklecellanemia.ca` → the Netlify site) so the iframe is *same-site*
+  and cookies are first-party everywhere, Safari included. See §4.
+- The old "break out to a top-level tab for login" flow was **removed** by
+  product decision (inline login is wanted). §3 is kept as history.
 
 ---
 
@@ -136,5 +155,35 @@ change.*
 3. Redeploy; verify headers with the `curl -I` above.
 4. `NEXT_PUBLIC_SITE_URL` + Supabase redirect allow-list stay on the **LMS**
    origin (never the embedding site).
-5. Decide the auth model: unauthenticated content embeds fine as-is; anything
-   requiring login should use the top-level break-out (§3).
+5. Decide the auth model: unauthenticated content embeds fine as-is; for
+   reliable **in-frame login on every browser (incl. Safari), use the subdomain
+   in §4** — otherwise inline login works only in Chrome/Firefox/Edge.
+
+---
+
+## 4. RECOMMENDED: serve the LMS from a subdomain of the embedding site
+
+This is the clean fix that makes in-iframe login work in **all** browsers,
+Safari included, with no cookie hacks and no top-level break-out — because the
+iframe becomes **same-site** with the parent, so the auth cookies are no longer
+third-party.
+
+Setup (one-time):
+
+1. **Netlify** → the `org-lms` site → Domain management → add a custom domain,
+   e.g. `learn.sicklecellanemia.ca`.
+2. **DNS** (on the Framer/registrar side for sicklecellanemia.ca): add the
+   record Netlify shows — typically a `CNAME` `learn` → `org-lms.netlify.app`
+   (or Netlify's provided target). Wait for it to verify + issue TLS.
+3. **Supabase** → Auth → URL Configuration: add
+   `https://learn.sicklecellanemia.ca/auth/callback` (and `/reset-password`) to
+   the redirect allow-list; set Site URL to `https://learn.sicklecellanemia.ca`.
+   Set `NEXT_PUBLIC_SITE_URL=https://learn.sicklecellanemia.ca` in Netlify env.
+4. **Embed** `https://learn.sicklecellanemia.ca/scago/student` instead of the
+   `*.netlify.app` URL.
+
+Now `www.sicklecellanemia.ca` (parent) and `learn.sicklecellanemia.ca` (iframe)
+share the registrable domain `sicklecellanemia.ca` → same-site → cookies are
+first-party → login persists in the iframe on every browser. With this in place,
+the `SameSite=None; Secure` setting is harmless (works same-site too) but no
+longer load-bearing, and Safari is no longer a problem.
