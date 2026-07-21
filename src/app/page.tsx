@@ -496,7 +496,7 @@ export default function Home() {
           <ScagoHero pathname={pathname} branding={branding} />
           <LandingNotification institutionSlug={institutionSlug} />
           <ReturningLearnerSection
-            accent="#059669"
+            institutionSlug={institutionSlug}
             signInHref={withInstitutionPath('/login', pathname)}
             signUpHref={withInstitutionPath('/login?tab=signup', pathname)}
           />

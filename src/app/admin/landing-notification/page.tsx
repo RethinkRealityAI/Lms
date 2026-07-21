@@ -1,10 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { getTenantContext } from '@/lib/tenant/server';
 import { getLandingNotifications } from '@/lib/db/landing-notifications';
-import { LandingNotificationsManager } from '@/components/admin/landing-notifications-manager';
+import { getLandingReturningInfo } from '@/lib/db/landing-returning';
+import { LandingAdminTabs } from '@/components/admin/landing-admin-tabs';
 import { Bell } from 'lucide-react';
 
-export default async function LandingNotificationPage() {
+export default async function LandingPage() {
   const supabase = await createClient();
   const { institutionId, institutionSlug } = await getTenantContext();
 
@@ -16,18 +17,22 @@ export default async function LandingNotificationPage() {
         </div>
         <h2 className="text-xl font-black text-slate-700 mb-2">No institution found</h2>
         <p className="text-sm text-slate-400 font-medium max-w-sm">
-          Landing notifications are scoped to an institution. Make sure you are accessing this page
+          Landing content is scoped to an institution. Make sure you are accessing this page
           via a valid tenant URL (e.g. <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">/scago/admin/landing-notification</code>).
         </p>
       </div>
     );
   }
 
-  const initialNotifications = await getLandingNotifications(supabase, institutionId);
+  const [notifications, returning] = await Promise.all([
+    getLandingNotifications(supabase, institutionId),
+    getLandingReturningInfo(supabase, institutionId),
+  ]);
 
   return (
-    <LandingNotificationsManager
-      initialNotifications={initialNotifications}
+    <LandingAdminTabs
+      notifications={notifications}
+      returning={returning}
       institutionId={institutionId}
       institutionSlug={institutionSlug}
     />
