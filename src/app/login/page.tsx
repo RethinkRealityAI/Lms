@@ -19,6 +19,7 @@ import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 import { logSignInEvent } from '@/lib/db/events';
 import { joinInstitution, signupPrecheck } from '@/lib/db/memberships';
+import { isEmbedded } from '@/lib/embed';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -77,6 +78,17 @@ function LoginContent() {
     verificationCode: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // When embedded in a cross-origin iframe, in-frame auth cookies get blocked
+  // (see @/lib/embed + docs/embedding.md §3). Detected client-side after mount
+  // (needs `window`), so it can't run during SSR/first render.
+  const [embedded, setEmbedded] = useState(false);
+  const [topUrl, setTopUrl] = useState('');
+  useEffect(() => {
+    if (isEmbedded()) {
+      setEmbedded(true);
+      setTopUrl(window.location.href);
+    }
+  }, []);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -496,6 +508,53 @@ function LoginContent() {
       setResetLoading(false);
     }
   };
+
+  // ── Embedded (cross-origin iframe) breakout ────────────────────────────────
+  // Third-party cookies are blocked in this context, so a session created here
+  // would not persist. Instead of showing the in-frame form, offer to continue
+  // in the TOP-LEVEL tab (target="_top"), where auth is first-party and sticks.
+  // After login the learner is on the full portal; they can return to the embed.
+  if (embedded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-white">
+        <div className="w-full max-w-md text-center rounded-3xl border border-slate-200 shadow-[0_24px_48px_-16px_rgba(0,0,0,0.12)] bg-white p-8">
+          <div className="inline-flex items-center justify-center bg-white rounded-2xl p-3 shadow-sm ring-1 ring-slate-100 mb-5">
+            <Image
+              src={branding.logoUrl}
+              alt={`${branding.name} logo`}
+              width={branding.logoDimensions.width}
+              height={branding.logoDimensions.height}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+          </div>
+          <h1 className="text-xl font-black text-slate-900 mb-2">Sign in to {branding.name}</h1>
+          <p className="text-sm text-slate-600 leading-relaxed mb-6">
+            For your security, signing in opens the full {branding.name} learning
+            portal in this browser tab. Your progress and certificates are saved
+            there — you can come back to this page anytime.
+          </p>
+          <a
+            href={topUrl || '#'}
+            target="_top"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white shadow-sm transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ backgroundColor: branding.primaryColor }}
+          >
+            Continue to sign in
+            <ArrowRight className="h-4 w-4" />
+          </a>
+          <a
+            href={topUrl || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex w-full items-center justify-center text-xs font-semibold text-slate-500 hover:text-slate-800"
+          >
+            Or open in a new tab
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-red-100 selection:text-red-900">
