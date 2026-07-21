@@ -393,13 +393,6 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
         </div>
       </section>
 
-      {/* Returning EdApp learners — how sign-in works (below the modules) */}
-      <ReturningLearnerSection
-        accent="#059669"
-        signInHref={withInstitutionPath('/login', pathname)}
-        signUpHref={withInstitutionPath('/login?tab=signup', pathname)}
-      />
-
       {/* Support & feedback how-to */}
       <LandingSupportSection
         coverImageUrl={SCAGO_COVER_IMAGE}
@@ -502,6 +495,11 @@ export default function Home() {
         <>
           <ScagoHero pathname={pathname} branding={branding} />
           <LandingNotification institutionSlug={institutionSlug} />
+          <ReturningLearnerSection
+            accent="#059669"
+            signInHref={withInstitutionPath('/login', pathname)}
+            signUpHref={withInstitutionPath('/login?tab=signup', pathname)}
+          />
           <ScagoProgram pathname={pathname} branding={branding} />
         </>
       ) : (

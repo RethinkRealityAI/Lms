@@ -44,14 +44,14 @@ export function ReturningLearnerSection({ accent = '#059669', signInHref, signUp
           <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-white/70" />
 
           <div className="p-8 sm:p-10 md:p-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/60 mb-5">
-              <Sparkles className="h-4 w-4" style={{ color: accent }} />
-              <span className="text-xs font-black uppercase tracking-widest" style={{ color: accent }}>Returning from EdApp?</span>
-            </div>
-
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight tracking-tight mb-4 max-w-2xl">
-              Your account and progress are already here.
+            <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest mb-4" style={{ color: accent }}>
+              <Sparkles className="h-4 w-4" />
+              Returning from EdApp?
             </h2>
+
+            <h3 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight tracking-tight mb-4 max-w-2xl">
+              Your account and progress are already here.
+            </h3>
             <p className="text-slate-600 font-medium leading-relaxed text-base md:text-lg max-w-2xl mb-8">
               We&rsquo;ve carried over your profile, completed modules, and certificates from EdApp. There&rsquo;s nothing to
               re-enrol in and nothing to rebuild — the one thing to know is which email to use.
