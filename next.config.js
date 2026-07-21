@@ -40,10 +40,21 @@ const nextConfig = {
               "base-uri 'self'",
               // Form actions: self + Supabase auth
               "form-action 'self' https://ylmnbbrpaeiogdeqezlo.supabase.co",
-              // Frame ancestors: self + explicitly allow-listed partner sites that embed
-              // the platform (SCAGO's public site embeds the student portal). Add new
-              // embed hosts here — do NOT widen this to a wildcard (clickjacking).
-              "frame-ancestors 'self' https://www.sicklecellanemia.ca https://sicklecellanemia.ca",
+              // Frame ancestors: framing restriction intentionally REMOVED so the app
+              // can be embedded on the SCAGO site. That site runs on **Framer**, which
+              // renders custom embeds inside its OWN sandbox iframe served from
+              // framerusercontent.com — so the real ancestor chain is
+              //   sicklecellanemia.ca (top) → framerusercontent.com (Framer sandbox) → us
+              // and `frame-ancestors` requires EVERY ancestor to match. An allow-list
+              // can't reliably enumerate Framer's embed/preview origins (they differ
+              // between published site, canvas, and preview), so with no frame-ancestors
+              // directive (and no X-Frame-Options) any site may now frame the app.
+              //
+              // Trade-off: this drops the clickjacking protection that frame-ancestors
+              // gave. Acceptable here (no destructive one-click actions without a
+              // confirmation/login), but to RE-TIGHTEN once the embed is confirmed
+              // working, restore a scoped list that also covers Framer, e.g.:
+              //   "frame-ancestors 'self' https://www.sicklecellanemia.ca https://sicklecellanemia.ca https://framerusercontent.com https://framer.com https://*.framer.app https://*.framer.website",
             ].join('; '),
           },
           {
