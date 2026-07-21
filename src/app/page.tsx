@@ -23,6 +23,7 @@ import { PublicNav } from '@/components/public-nav';
 import { PublicFooter } from '@/components/public-footer';
 import { LandingNotification } from '@/components/landing/landing-notification';
 import { LandingSupportSection } from '@/components/landing/support-section';
+import { ReturningLearnerSection } from '@/components/landing/returning-learner-section';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 
@@ -392,7 +393,14 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
         </div>
       </section>
 
-      {/* Support & feedback how-to (below the modules) */}
+      {/* Returning EdApp learners — how sign-in works (below the modules) */}
+      <ReturningLearnerSection
+        accent="#059669"
+        signInHref={withInstitutionPath('/login', pathname)}
+        signUpHref={withInstitutionPath('/login?tab=signup', pathname)}
+      />
+
+      {/* Support & feedback how-to */}
       <LandingSupportSection
         coverImageUrl={SCAGO_COVER_IMAGE}
         accent={branding.primaryColor}

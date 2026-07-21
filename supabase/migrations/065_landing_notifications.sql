@@ -129,7 +129,7 @@ SELECT
   'The HCP E-Learning Program is back! 🎉',
   E'Thank you for your patience while we transitioned from EdApp to our new proprietary learning platform, purpose-built for this program.\n\nThe experience will feel largely the same, and your profile and progress have been transferred as faithfully as possible. As a precaution you may find yourself one lesson behind — module content has been rearranged, so lesson slides are no longer 1:1 with the old platform.\n\nIf you run into any issues or have feedback, please use the support tools inside the modules and on your dashboard.',
   'party',
-  NULL,
+  '#059669',
   true,
   'Sign in to continue learning',
   '/login',

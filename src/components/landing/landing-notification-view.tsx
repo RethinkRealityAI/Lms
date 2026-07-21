@@ -112,13 +112,21 @@ export function LandingNotificationView({
       initial={previewMode ? false : { opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative overflow-hidden rounded-[1.75rem] border shadow-[0_12px_40px_-12px_rgba(0,0,0,0.12)]"
-      style={{
-        borderColor: tint(accent, '33'),
-        background: `linear-gradient(135deg, ${tint(accent, '14')} 0%, #ffffff 60%)`,
-      }}
+      className="relative overflow-hidden rounded-[1.75rem] border border-white/50 bg-white/50 backdrop-blur-2xl shadow-[0_18px_55px_-18px_rgba(15,60,45,0.28)]"
       role="status"
     >
+      {/* Liquid-glass tint: soft accent wash + blurred colour blobs behind the frost */}
+      <div aria-hidden className="absolute inset-0 -z-10 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(135deg, ${tint(accent, '2e')} 0%, ${tint(accent, '10')} 45%, rgba(255,255,255,0.25) 100%)` }}
+        />
+        <div className="absolute -top-16 -right-8 w-56 h-56 rounded-full blur-3xl" style={{ backgroundColor: tint(accent, '3d') }} />
+        <div className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: tint(accent, '2a') }} />
+      </div>
+      {/* Glossy top highlight for the "liquid" sheen */}
+      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-white/70" />
+
       {/* Accent side rail */}
       <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: accent }} />
 
@@ -126,8 +134,7 @@ export function LandingNotificationView({
         {/* Icon / logo bubble */}
         {(Icon || showLogo) && (
           <div
-            className="shrink-0 mt-0.5 rounded-2xl p-3 shadow-sm"
-            style={{ backgroundColor: tint(accent, '1f') }}
+            className="shrink-0 mt-0.5 rounded-2xl p-3 bg-white/60 backdrop-blur-md border border-white/60 shadow-sm"
           >
             {showLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
