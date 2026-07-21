@@ -21,8 +21,14 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { PublicNav } from '@/components/public-nav';
 import { PublicFooter } from '@/components/public-footer';
+import { LandingNotification } from '@/components/landing/landing-notification';
+import { LandingSupportSection } from '@/components/landing/support-section';
+import { ReturningLearnerSection } from '@/components/landing/returning-learner-section';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
+
+/** Shared imagery between the landing hero and the support section cover. */
+const SCAGO_COVER_IMAGE = 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=2070';
 
 function GansidHero({ pathname }: { pathname: string }) {
   return (
@@ -387,6 +393,13 @@ function ScagoProgram({ pathname, branding }: { pathname: string; branding: Retu
         </div>
       </section>
 
+      {/* Support & feedback how-to */}
+      <LandingSupportSection
+        coverImageUrl={SCAGO_COVER_IMAGE}
+        accent={branding.primaryColor}
+        contactEmail={branding.contactEmail}
+      />
+
       {/* Contact section */}
       <section className="py-16 bg-white border-t border-slate-100">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -481,11 +494,18 @@ export default function Home() {
       {isScago ? (
         <>
           <ScagoHero pathname={pathname} branding={branding} />
+          <LandingNotification institutionSlug={institutionSlug} />
+          <ReturningLearnerSection
+            institutionSlug={institutionSlug}
+            signInHref={withInstitutionPath('/login', pathname)}
+            signUpHref={withInstitutionPath('/login?tab=signup', pathname)}
+          />
           <ScagoProgram pathname={pathname} branding={branding} />
         </>
       ) : (
         <>
           <GansidHero pathname={pathname} />
+          <LandingNotification institutionSlug={institutionSlug} />
           <GansidPrograms pathname={pathname} />
         </>
       )}
