@@ -25,6 +25,7 @@ export * from './events';
 export * from './admin-actions';
 export * from './email-templates';
 export * from './announcements';
+export * from './landing-notifications';
 export * from './survey-assignments';
 export * from './quizzes';
 export * from './memberships';
