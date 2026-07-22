@@ -21,7 +21,7 @@ import { buildLessonPages } from '@/lib/content/lesson-pages';
 import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
-import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
+import { computeNavState, findNextLesson, resolveInitialLesson } from '@/lib/utils/slide-navigation';
 import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ReportIssueDialog } from '@/components/report-issue-dialog';
@@ -883,20 +883,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
         if (lessonsData.length > 0 && !selectedLesson) {
           // Open the editor-requested lesson if provided; otherwise auto-resume at
-          // the first incomplete lesson. Only applies on initial load — user/embedded
-          // navigation afterwards is untouched.
-          const initial = initialLessonId
-            ? lessonsData.find(l => l.id === initialLessonId)
-            : lessonsData.find(l => !progressMap[l.id]?.completed);
-          // `initial` is undefined here in exactly two cases: the editor asked for a
-          // lesson that no longer exists (fall back to lesson 1, as before), or —
-          // when no initialLessonId was given — every lesson is already complete.
-          // The latter used to also fall back to lesson 1, silently dumping a
-          // student who'd finished the whole course back at the beginning; resume
-          // on the LAST lesson's completion slide instead (see landOnCompletionRef).
-          const allLessonsComplete = !initialLessonId && !initial;
-          if (allLessonsComplete) landOnCompletionRef.current = true;
-          setSelectedLesson(initial ?? (allLessonsComplete ? lessonsData[lessonsData.length - 1] : lessonsData[0]));
+          // the first incomplete lesson — or, when the whole course is already
+          // complete, the LAST lesson's completion slide (landOnCompletionRef).
+          // Only applies on initial load; user/embedded navigation is untouched.
+          // See resolveInitialLesson for the full precedence + the historic bug
+          // where "all complete" silently fell back to lesson 1.
+          const { lesson: initial, landOnCompletion } = resolveInitialLesson(
+            lessonsData,
+            (id) => !!progressMap[id]?.completed,
+            initialLessonId,
+          );
+          if (landOnCompletion) landOnCompletionRef.current = true;
+          if (initial) setSelectedLesson(initial);
         }
 
         const lessonIds = lessonsData.map(l => l.id);
