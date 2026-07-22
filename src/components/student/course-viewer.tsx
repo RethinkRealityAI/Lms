@@ -36,6 +36,7 @@ import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getMyCourseFeedback, getMyProgramFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
+import { getNextProgramCourse, type NextProgramCourse } from '@/lib/db/programs';
 import { getViewedSlideIds, markSlideViewed } from '@/lib/db/slide-progress';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
@@ -589,6 +590,10 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const navDirection = useRef<'forward' | 'backward'>('forward');
   // Guards the one-time jump to the editor-requested slide on initial load
   const appliedInitialSlideRef = useRef(false);
+  // Set when fetchData resumes on the LAST lesson because every lesson was
+  // already complete on initial load — consumed once that lesson's slides
+  // are built, to land on its completion slide instead of the title slide.
+  const landOnCompletionRef = useRef(false);
   // Pending cross-lesson navigation (embedded mode) consumed once slides rebuild
   const pendingNavigateRef = useRef<string | null>(null);
   // Reset sub-page when slide changes
@@ -625,6 +630,10 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [programFeedbackAnswers, setProgramFeedbackAnswers] = useState<SurveyAnswers>({});
   const [programFeedbackSubmitting, setProgramFeedbackSubmitting] = useState(false);
   const [programFeedbackSubmitted, setProgramFeedbackSubmitted] = useState(false);
+
+  // Next course in this course's program(s), so the completion slide can offer
+  // "Continue to next module" instead of only "Back to Dashboard".
+  const [nextProgramCourse, setNextProgramCourse] = useState<NextProgramCourse | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -874,13 +883,20 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
         if (lessonsData.length > 0 && !selectedLesson) {
           // Open the editor-requested lesson if provided; otherwise auto-resume at
-          // the first incomplete lesson (falls back to the first lesson when all
-          // are complete or no progress exists). Only applies on initial load —
-          // user/embedded navigation afterwards is untouched.
+          // the first incomplete lesson. Only applies on initial load — user/embedded
+          // navigation afterwards is untouched.
           const initial = initialLessonId
             ? lessonsData.find(l => l.id === initialLessonId)
             : lessonsData.find(l => !progressMap[l.id]?.completed);
-          setSelectedLesson(initial ?? lessonsData[0]);
+          // `initial` is undefined here in exactly two cases: the editor asked for a
+          // lesson that no longer exists (fall back to lesson 1, as before), or —
+          // when no initialLessonId was given — every lesson is already complete.
+          // The latter used to also fall back to lesson 1, silently dumping a
+          // student who'd finished the whole course back at the beginning; resume
+          // on the LAST lesson's completion slide instead (see landOnCompletionRef).
+          const allLessonsComplete = !initialLessonId && !initial;
+          if (allLessonsComplete) landOnCompletionRef.current = true;
+          setSelectedLesson(initial ?? (allLessonsComplete ? lessonsData[lessonsData.length - 1] : lessonsData[0]));
         }
 
         const lessonIds = lessonsData.map(l => l.id);
@@ -988,6 +1004,16 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       } catch (surveyErr) {
         // Survey resolution failures must never break completion — log and continue
         console.error('Survey resolution error (non-fatal):', surveyErr);
+      }
+
+      // Next course in this course's program(s) — powers the "Continue to next
+      // module" completion-slide action. Never blocks the viewer on failure.
+      if (user && !previewMode) {
+        try {
+          setNextProgramCourse(await getNextProgramCourse(supabase, courseId, user.id));
+        } catch (nextCourseErr) {
+          console.error('Next-program-course lookup failed (non-fatal):', nextCourseErr);
+        }
       }
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -1321,6 +1347,19 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       setCurrentSlide(idx);
     }
   }, [pageLoading, selectedLesson, currentSlides, initialLessonId, initialSlideId]);
+
+  // One-time jump to the completion slide when fetchData resumed on the last
+  // lesson because the whole course was already complete. Must wait for real
+  // slides to build (currentSlides.length > 1) so this doesn't fire on the
+  // synthesized single-slide placeholder during an earlier render pass.
+  useEffect(() => {
+    if (!landOnCompletionRef.current) return;
+    if (pageLoading) return;
+    if (!selectedLesson) return;
+    if (currentSlides.length <= 1) return;
+    landOnCompletionRef.current = false;
+    setCurrentSlide(currentSlides.length - 1);
+  }, [pageLoading, selectedLesson, currentSlides]);
 
   // Embedded device-frame: the editor center posts `preview-navigate` when the
   // admin selects a different slide, so the in-frame viewer follows the selection
@@ -2221,7 +2260,21 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
                     {/* Primary nav button */}
                     {isCompletionSlide ? (
-                      nextLesson ? (
+                      <>
+                      {/* Secondary "Back to Dashboard" — always reachable from the completion
+                          slide, even while a survey/next-lesson action is primary, so a student
+                          is never stranded with only one way forward. Omitted when the primary
+                          button below already IS "Back to Dashboard" (avoids a redundant pair). */}
+                      {(nextLesson || (surveyGatePendingUI && !previewMode) || (!nextLesson && !surveyGatePendingUI && nextProgramCourse)) && (
+                        <button
+                          onClick={() => router.push(withInstitutionPath('/student', pathname))}
+                          aria-label="Back to dashboard"
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
+                        >
+                          Dashboard
+                        </button>
+                      )}
+                      {nextLesson ? (
                         <button
                           /* Sanctioned forward path: only reachable once this lesson is complete,
                              so it advances directly and bypasses the sequential lock (which could
@@ -2242,6 +2295,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         >
                           Complete Module Survey <ChevronRight className="h-4 w-4" />
                         </button>
+                      ) : !previewMode && nextProgramCourse ? (
+                        /* Course (and any pending survey) done — offer the next module in the
+                           program instead of stranding the student at "Back to Dashboard". */
+                        <button
+                          onClick={() => router.push(withInstitutionPath(`/student/courses/${nextProgramCourse.courseId}`, pathname))}
+                          aria-label={`Continue to ${nextProgramCourse.courseTitle}`}
+                          title={`Continue to ${nextProgramCourse.courseTitle}`}
+                          className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors max-w-[14rem] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        >
+                          <span className="truncate">Continue: {nextProgramCourse.courseTitle}</span>
+                          <ChevronRight className="h-4 w-4 shrink-0" />
+                        </button>
                       ) : (
                         <button
                           onClick={() => router.push(withInstitutionPath('/student', pathname))}
@@ -2250,7 +2315,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         >
                           Back to Dashboard
                         </button>
-                      )
+                      )}
+                      </>
                     ) : isLastContentSlide ? (
                       <NavButtonWithHint
                         onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}

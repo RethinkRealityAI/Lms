@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { upsertCourseFeedbackResponse, getMyCourseFeedback } from '@/lib/db/course-feedback';
+import { getNextProgramCourse, type NextProgramCourse } from '@/lib/db/programs';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { CompletionSurveyForm } from '@/components/student/completion-survey-form';
@@ -39,9 +40,11 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   const [certGated, setCertGated] = useState(false);
   const [certIssueError, setCertIssueError] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
+  const [nextProgramCourse, setNextProgramCourse] = useState<NextProgramCourse | null>(null);
   const institutionSlug = useMemo(() => resolveInstitutionSlug(pathname), [pathname]);
 
   const backToCourse = withInstitutionPath(`/student/courses/${courseId}`, pathname);
+  const backToDashboard = withInstitutionPath('/student', pathname);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,6 +67,9 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
       setTemplateId(resolved.course?.templateId ?? null);
       if (existing) setAlreadyDone(true);
       setLoading(false);
+      getNextProgramCourse(supabase, courseId, user.id)
+        .then((next) => { if (!cancelled) setNextProgramCourse(next); })
+        .catch(() => {});
     })();
     return () => { cancelled = true; };
   }, [supabase, courseId, pathname, router]);
@@ -207,13 +213,29 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                     certificate will be issued there.
                   </div>
                 )}
-                <div>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {nextProgramCourse ? (
+                    <Link
+                      href={withInstitutionPath(`/student/courses/${nextProgramCourse.courseId}`, pathname)}
+                      className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
+                      style={{ backgroundColor: accent }}
+                    >
+                      Continue: {nextProgramCourse.courseTitle}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={backToCourse}
+                      className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
+                      style={{ backgroundColor: accent }}
+                    >
+                      Return to course
+                    </Link>
+                  )}
                   <Link
-                    href={backToCourse}
-                    className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
-                    style={{ backgroundColor: accent }}
+                    href={backToDashboard}
+                    className="inline-block rounded-lg px-5 py-2.5 font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   >
-                    Return to course
+                    Back to Dashboard
                   </Link>
                 </div>
               </div>
