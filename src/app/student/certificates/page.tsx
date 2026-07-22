@@ -57,6 +57,9 @@ export default function CertificatesPage() {
         `)
         .eq('user_id', user.id)
         .eq('institution_id', inst.id)
+        // Hidden = internal per-course certs issued only to drive a program's single
+        // certificate (migration 067); never shown to the student.
+        .eq('hidden', false)
         .order('issued_at', { ascending: false });
 
       if (error) {

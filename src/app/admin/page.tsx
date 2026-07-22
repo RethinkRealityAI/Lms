@@ -73,7 +73,8 @@ export default async function AdminPage() {
           .from('certificates')
           .select('id', { count: 'exact', head: true })
           .eq('institution_id', institutionId)
-          .is('revoked_at', null),
+          .is('revoked_at', null)
+          .eq('hidden', false), // exclude internal per-course certs (migration 067)
       ]);
       totalUsers = usersRes.count ?? 0;
       totalEnrollments = enrollmentsRes.count ?? 0;

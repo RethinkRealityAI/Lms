@@ -104,6 +104,14 @@ export interface Program {
   title: string;
   description: string | null;
   certificate_template_id: string | null;
+  /** Courses in this program unlock in order (migration 039). */
+  sequential?: boolean;
+  /**
+   * When true, per-course certificates are suppressed (issued internally/hidden)
+   * and the learner receives only the single program certificate on completing
+   * every course (migration 067). Default false = a certificate per course.
+   */
+  program_certificate_only?: boolean;
   created_at: string;
   updated_at: string;
 }

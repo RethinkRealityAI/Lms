@@ -17,9 +17,13 @@
 --   051 course_stats_view_accuracy — same quiz-source + revoked-cert fixes for
 --       the per-course view; fixed latent row-multiplication in the quiz join)
 --
+--   067 program_certificate_only — certificate counts also exclude internal
+--       hidden per-course certs (hidden = false), so certificate-only programs
+--       (SCAGO default) don't inflate the leaderboard / course-stats cert counts
+--
 -- Definition invariants (do not regress):
 --   * lesson counts join lessons WHERE deleted_at IS NULL
---   * certificate counts exclude revoked (revoked_at IS NULL)
+--   * certificate counts exclude revoked (revoked_at IS NULL) AND hidden (hidden = false)
 --   * quiz stats come from quiz_block_responses (inline quizzes), NOT the
 --     unused quiz_attempts table
 --   * both views run with security_invoker = true (RLS of the caller applies)
@@ -69,7 +73,7 @@ from users u
   left join (
     select certificates.user_id, count(*) as certificate_count
     from certificates
-    where certificates.revoked_at is null
+    where certificates.revoked_at is null and certificates.hidden = false
     group by certificates.user_id
   ) cert on cert.user_id = u.id
 where u.role = 'student'::text;
@@ -126,5 +130,5 @@ from courses c
   left join ( select course_reviews.course_id, count(*) as review_count, round(avg(course_reviews.rating), 1) as avg_rating
     from course_reviews group by course_reviews.course_id) r on r.course_id = c.id
   left join ( select certificates.course_id, count(*) as certificate_count
-    from certificates where certificates.revoked_at is null
+    from certificates where certificates.revoked_at is null and certificates.hidden = false
     group by certificates.course_id) cert on cert.course_id = c.id;
