@@ -4,6 +4,7 @@ import {
   getPrimaryButton,
   isNextBlocked,
   findNextLesson,
+  resolveInitialLesson,
   type SlideInfo,
 } from './slide-navigation';
 
@@ -291,6 +292,70 @@ describe('findNextLesson', () => {
     const two = [{ id: 'a' }, { id: 'b' }];
     expect(findNextLesson(two, 'a')).toEqual({ id: 'b' });
     expect(findNextLesson(two, 'b')).toBeNull();
+  });
+});
+
+// ── resolveInitialLesson ─────────────────────────────────────
+
+describe('resolveInitialLesson', () => {
+  const lessons = [
+    { id: 'lesson-1', title: 'Intro' },
+    { id: 'lesson-2', title: 'Advanced' },
+    { id: 'lesson-3', title: 'Summary' },
+  ];
+  const completedSet = (ids: string[]) => (id: string) => ids.includes(id);
+
+  it('returns null lesson for an empty course', () => {
+    const res = resolveInitialLesson([], () => false, null);
+    expect(res.lesson).toBeNull();
+    expect(res.landOnCompletion).toBe(false);
+  });
+
+  it('resumes at the first incomplete lesson', () => {
+    const res = resolveInitialLesson(lessons, completedSet(['lesson-1']), null);
+    expect(res.lesson).toEqual({ id: 'lesson-2', title: 'Advanced' });
+    expect(res.landOnCompletion).toBe(false);
+  });
+
+  it('opens the first lesson when nothing is complete yet', () => {
+    const res = resolveInitialLesson(lessons, completedSet([]), null);
+    expect(res.lesson).toEqual({ id: 'lesson-1', title: 'Intro' });
+    expect(res.landOnCompletion).toBe(false);
+  });
+
+  it('skips a mid-course completed lesson to the first still-incomplete one', () => {
+    // lesson-1 complete, lesson-2 incomplete, lesson-3 complete → resume lesson-2
+    const res = resolveInitialLesson(lessons, completedSet(['lesson-1', 'lesson-3']), null);
+    expect(res.lesson?.id).toBe('lesson-2');
+    expect(res.landOnCompletion).toBe(false);
+  });
+
+  // The regression this PR fixes: a fully-complete course must NOT fall back to
+  // lesson 1 — it lands on the LAST lesson's completion slide instead.
+  it('lands on the LAST lesson (completion) when every lesson is complete', () => {
+    const res = resolveInitialLesson(lessons, completedSet(['lesson-1', 'lesson-2', 'lesson-3']), null);
+    expect(res.lesson).toEqual({ id: 'lesson-3', title: 'Summary' });
+    expect(res.landOnCompletion).toBe(true);
+  });
+
+  it('honours an explicit initialLessonId even when that lesson is complete', () => {
+    const res = resolveInitialLesson(lessons, completedSet(['lesson-1', 'lesson-2', 'lesson-3']), 'lesson-2');
+    expect(res.lesson?.id).toBe('lesson-2');
+    // Explicit deep-link never triggers the land-on-completion resume behaviour.
+    expect(res.landOnCompletion).toBe(false);
+  });
+
+  it('falls back to the first lesson (never completion) when initialLessonId is missing', () => {
+    const res = resolveInitialLesson(lessons, completedSet(['lesson-1', 'lesson-2', 'lesson-3']), 'deleted-lesson');
+    expect(res.lesson?.id).toBe('lesson-1');
+    expect(res.landOnCompletion).toBe(false);
+  });
+
+  it('single-lesson complete course lands on that lesson with landOnCompletion', () => {
+    const one = [{ id: 'only' }];
+    const res = resolveInitialLesson(one, completedSet(['only']), null);
+    expect(res.lesson?.id).toBe('only');
+    expect(res.landOnCompletion).toBe(true);
   });
 });
 
