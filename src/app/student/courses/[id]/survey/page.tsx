@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { upsertCourseFeedbackResponse, getMyCourseFeedback } from '@/lib/db/course-feedback';
-import { isCourseCertificateSuppressed } from '@/lib/db/programs';
+import { isCourseCertificateSuppressed, getNextProgramCourse, type NextProgramCourse } from '@/lib/db/programs';
 import { celebrationCertId } from '@/lib/content/certificate-issuance';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
@@ -44,9 +44,11 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   // Program-certificate-only: this course issues no visible per-course cert; the
   // survey finishes the module rather than "getting your certificate" (migration 067).
   const [certSuppressed, setCertSuppressed] = useState(false);
+  const [nextProgramCourse, setNextProgramCourse] = useState<NextProgramCourse | null>(null);
   const institutionSlug = useMemo(() => resolveInstitutionSlug(pathname), [pathname]);
 
   const backToCourse = withInstitutionPath(`/student/courses/${courseId}`, pathname);
+  const backToDashboard = withInstitutionPath('/student', pathname);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +73,9 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
       setLoading(false);
       isCourseCertificateSuppressed(supabase, courseId)
         .then((s) => { if (!cancelled) setCertSuppressed(s); })
+        .catch(() => {});
+      getNextProgramCourse(supabase, courseId, user.id)
+        .then((next) => { if (!cancelled) setNextProgramCourse(next); })
         .catch(() => {});
     })();
     return () => { cancelled = true; };
@@ -225,13 +230,29 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                       : <>Your certificate isn&apos;t ready yet: {certIssueError} Head back to the module, make sure every required quiz is answered correctly, and return to the module-complete screen — your certificate will be issued there.</>}
                   </div>
                 )}
-                <div>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {nextProgramCourse ? (
+                    <Link
+                      href={withInstitutionPath(`/student/courses/${nextProgramCourse.courseId}`, pathname)}
+                      className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
+                      style={{ backgroundColor: accent }}
+                    >
+                      Continue: {nextProgramCourse.courseTitle}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={backToCourse}
+                      className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
+                      style={{ backgroundColor: accent }}
+                    >
+                      Return to course
+                    </Link>
+                  )}
                   <Link
-                    href={backToCourse}
-                    className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
-                    style={{ backgroundColor: accent }}
+                    href={backToDashboard}
+                    className="inline-block rounded-lg px-5 py-2.5 font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   >
-                    Return to course
+                    Back to Dashboard
                   </Link>
                 </div>
               </div>

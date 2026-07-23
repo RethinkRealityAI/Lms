@@ -172,6 +172,82 @@ export async function getProgramCompletionCounts(
   return counts;
 }
 
+export interface NextProgramCourse {
+  courseId: string;
+  courseTitle: string;
+  programId: string;
+  programTitle: string;
+}
+
+/**
+ * The next course after `courseId` in whichever program(s) contain it — used
+ * by the completion/survey pages to offer "Continue to next module" instead
+ * of stranding a student at "Back to Dashboard" once a course is finished.
+ * Only considers live (non-deleted) + published courses, matching what the
+ * student can actually navigate into. Certified courses are skipped (the
+ * student already holds a certificate for them) so a student who finished
+ * courses out of order still gets pointed at real remaining work. Returns
+ * the first match across the course's program memberships, or null if this
+ * course is the last (or only) one in every program it belongs to.
+ */
+export async function getNextProgramCourse(
+  supabase: SupabaseClient,
+  courseId: string,
+  userId: string,
+): Promise<NextProgramCourse | null> {
+  const { data: pcs, error: pcsErr } = await supabase
+    .from('program_courses')
+    .select('program_id, order_index, programs(title)')
+    .eq('course_id', courseId);
+  if (pcsErr) throw pcsErr;
+  if (!pcs || pcs.length === 0) return null;
+
+  const programIds = [...new Set(pcs.map((pc: any) => pc.program_id as string))];
+
+  const { data: allPcs, error: allErr } = await supabase
+    .from('program_courses')
+    .select('program_id, order_index, course:courses(id, title, is_published, deleted_at)')
+    .in('program_id', programIds)
+    .order('order_index', { ascending: true });
+  if (allErr) throw allErr;
+
+  const { data: certs, error: certErr } = await supabase
+    .from('certificates')
+    .select('course_id')
+    .eq('user_id', userId)
+    .is('revoked_at', null);
+  if (certErr) throw certErr;
+  const certified = new Set((certs ?? []).map((c: any) => c.course_id as string));
+
+  const normalized = (allPcs ?? []).map((row: any) => ({
+    program_id: row.program_id as string,
+    course: (Array.isArray(row.course) ? row.course[0] : row.course) ?? null,
+  }));
+
+  for (const pc of pcs as any[]) {
+    const programTitle = (Array.isArray(pc.programs) ? pc.programs[0] : pc.programs)?.title ?? 'Program';
+    const seq = normalized.filter(row => row.program_id === pc.program_id);
+    const myIdx = seq.findIndex(row => row.course?.id === courseId);
+    if (myIdx === -1) continue;
+
+    const next = seq.slice(myIdx + 1).find(row =>
+      row.course &&
+      row.course.deleted_at == null &&
+      row.course.is_published &&
+      !certified.has(row.course.id),
+    );
+    if (next?.course) {
+      return {
+        courseId: next.course.id,
+        courseTitle: next.course.title,
+        programId: pc.program_id,
+        programTitle,
+      };
+    }
+  }
+  return null;
+}
+
 export interface ProgramProgress extends ProgramWithCourses {
   completedCourseIds: string[];
   totalCourses: number;
