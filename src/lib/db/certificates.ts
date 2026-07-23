@@ -16,6 +16,9 @@ export async function getIssuedCertificates(
       awarder:users!certificates_awarded_by_fkey(full_name)
     `)
     .eq('institution_id', institutionId)
+    // Exclude internal per-course certs issued only to drive a program's single
+    // certificate (migration 067) — they aren't real awards to surface/count.
+    .eq('hidden', false)
     .order('issued_at', { ascending: false });
 
   if (error) throw error;
@@ -56,6 +59,8 @@ export async function getCertificateByNumber(
       template:certificate_templates!certificates_template_id_fkey(name)
     `)
     .eq('certificate_number', certificateNumber)
+    // Internal hidden per-course certs (migration 067) are never publicly verifiable.
+    .eq('hidden', false)
     .maybeSingle();
 
   if (error) throw error;
@@ -177,6 +182,7 @@ export async function getUserCertificates(
     `)
     .eq('user_id', userId)
     .is('revoked_at', null)
+    .eq('hidden', false) // exclude internal per-course certs (migration 067)
     .order('issued_at', { ascending: false });
 
   if (error) throw error;

@@ -40,6 +40,7 @@ export async function createProgram(
     description?: string | null;
     certificate_template_id?: string | null;
     sequential?: boolean;
+    program_certificate_only?: boolean;
   },
 ): Promise<Program> {
   const { data, error } = await supabase
@@ -50,6 +51,7 @@ export async function createProgram(
       description: input.description ?? null,
       certificate_template_id: input.certificate_template_id ?? null,
       sequential: input.sequential ?? false,
+      program_certificate_only: input.program_certificate_only ?? false,
     })
     .select('*')
     .single();
@@ -61,7 +63,8 @@ export async function updateProgram(
   supabase: SupabaseClient,
   institutionId: string,
   id: string,
-  changes: Partial<Pick<Program, 'title' | 'description' | 'certificate_template_id'>> & { sequential?: boolean },
+  changes: Partial<Pick<Program, 'title' | 'description' | 'certificate_template_id'>>
+    & { sequential?: boolean; program_certificate_only?: boolean },
 ): Promise<Program> {
   const { data, error } = await supabase
     .from('programs')
@@ -72,6 +75,29 @@ export async function updateProgram(
     .single();
   if (error) throw error;
   return data as Program;
+}
+
+/**
+ * True when the given course belongs to at least one program that suppresses
+ * per-course certificates (`program_certificate_only`). Drives the student
+ * viewer's completion-slide copy + celebration: a suppressed course shows
+ * "module complete" rather than promising a per-course certificate, and the
+ * program certificate (not the course one) is what gets celebrated. Read-only;
+ * fails closed (false) so a query error never hides GANSID's course certs.
+ */
+export async function isCourseCertificateSuppressed(
+  supabase: SupabaseClient,
+  courseId: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('program_courses')
+    .select('program:programs!inner(program_certificate_only)')
+    .eq('course_id', courseId);
+  if (error) throw error;
+  return (data ?? []).some((row: any) => {
+    const prog = Array.isArray(row.program) ? row.program[0] : row.program;
+    return prog?.program_certificate_only === true;
+  });
 }
 
 export async function deleteProgram(

@@ -10,7 +10,9 @@ import {
   backfillProgramCertificates, getProgramCompletionCounts,
 } from '@/lib/db/programs';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, GraduationCap, BookOpen, Award, X, GripVertical, Users, ListOrdered } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import { Plus, Pencil, Trash2, GraduationCap, BookOpen, Award, X, GripVertical, Users, ListOrdered, Medal } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -44,10 +46,14 @@ interface Draft {
   description: string;
   certificate_template_id: string | null;
   sequential: boolean;
+  program_certificate_only: boolean;
   courseIds: string[]; // ordered
 }
 
-const empty = (): Draft => ({ title: '', description: '', certificate_template_id: null, sequential: false, courseIds: [] });
+const empty = (programCertificateOnly = false): Draft => ({
+  title: '', description: '', certificate_template_id: null,
+  sequential: false, program_certificate_only: programCertificateOnly, courseIds: [],
+});
 
 // ── Sortable row for a selected course ───────────────────────────────────────
 function SortableCourseRow({ id, position, title, onRemove }: { id: string; position: number; title: string; onRemove: () => void }) {
@@ -79,6 +85,10 @@ function SortableCourseRow({ id, position, title, onRemove }: { id: string; posi
 
 export function ProgramsTab({ programs, courses, templates, institutionId, onChange }: Props) {
   const supabase = createClient();
+  const pathname = usePathname();
+  // New SCAGO programs default to a single program certificate (no per-course
+  // certs); GANSID keeps a certificate per course. Admins can flip it either way.
+  const defaultCertificateOnly = resolveInstitutionSlug(pathname) === 'scago';
   const [editing, setEditing] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
   const [completionCounts, setCompletionCounts] = useState<Record<string, number>>({});
@@ -108,13 +118,15 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
     setEditing(d => d ? { ...d, courseIds: arrayMove(d.courseIds, oldIndex, newIndex) } : d);
   }
 
-  function openNew() { setEditing(empty()); }
+  function openNew() { setEditing(empty(defaultCertificateOnly)); }
   function openEdit(p: ProgramWithCourses) {
     setEditing({
       id: p.id, title: p.title, description: p.description ?? '',
       certificate_template_id: p.certificate_template_id,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sequential: (p as any).sequential ?? false,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      program_certificate_only: (p as any).program_certificate_only ?? false,
       courseIds: p.courses.map(c => c.id),
     });
   }
@@ -131,6 +143,7 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
           title: editing.title.trim(), description: editing.description.trim() || null,
           certificate_template_id: editing.certificate_template_id,
           sequential: editing.sequential,
+          program_certificate_only: editing.program_certificate_only,
         });
       } else {
         const created = await createProgram(supabase, {
@@ -138,6 +151,7 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
           description: editing.description.trim() || null,
           certificate_template_id: editing.certificate_template_id,
           sequential: editing.sequential,
+          program_certificate_only: editing.program_certificate_only,
         });
         programId = created.id;
       }
@@ -234,6 +248,21 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
               />
               <span className="text-sm text-slate-700 font-medium">Courses must be completed in order</span>
               <span className="text-xs text-slate-400">(sequential program)</span>
+            </label>
+
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={editing.program_certificate_only}
+                onChange={e => setEditing({ ...editing, program_certificate_only: e.target.checked })}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-[#1E3A5F]"
+              />
+              <span>
+                <span className="text-sm text-slate-700 font-medium">Only award the final program certificate</span>
+                <span className="block text-xs text-slate-400">
+                  No per-course certificates — learners receive a single certificate once every course is complete.
+                </span>
+              </span>
             </label>
 
             <div>
@@ -337,6 +366,12 @@ export function ProgramsTab({ programs, courses, templates, institutionId, onCha
                     {Boolean((p as any).sequential) && (
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#1E3A5F]/10 text-[#1E3A5F] font-medium">
                         <ListOrdered className="w-3 h-3" /> Sequential
+                      </span>
+                    )}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {Boolean((p as any).program_certificate_only) && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-purple-50 text-purple-700 font-medium">
+                        <Medal className="w-3 h-3" /> Single certificate
                       </span>
                     )}
                   </div>

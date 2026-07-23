@@ -36,10 +36,11 @@ import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getMyCourseFeedback, getMyProgramFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
-import { getNextProgramCourse, type NextProgramCourse } from '@/lib/db/programs';
+import { getNextProgramCourse, isCourseCertificateSuppressed, type NextProgramCourse } from '@/lib/db/programs';
 import { getViewedSlideIds, markSlideViewed } from '@/lib/db/slide-progress';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
+import { celebrationCertId } from '@/lib/content/certificate-issuance';
 import { CertificateCelebration } from '@/components/certificates/certificate-celebration';
 import type { SurveyData, SurveyAnswers, SurveyAnswerValue, SurveyQuestion } from '@/lib/content/blocks/survey/schema';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
@@ -602,6 +603,11 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [showConfetti, setShowConfetti] = useState(false);
   // Certificate earned state — shown in congratulations modal
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
+  // Whether this course's per-course certificate is suppressed because it belongs
+  // to a program_certificate_only program (migration 067). When true, the
+  // completion slide shows module-complete copy instead of promising a course
+  // certificate; only the program certificate is surfaced (at program completion).
+  const [courseCertSuppressed, setCourseCertSuppressed] = useState(false);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
   // Interactive block completion (e.g. image gallery require-all-clicked) per lesson
@@ -1004,6 +1010,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         console.error('Survey resolution error (non-fatal):', surveyErr);
       }
 
+      // Program-certificate-only: does this course suppress its per-course cert?
+      // Fails closed (false) so GANSID course certs are never wrongly hidden.
+      try {
+        setCourseCertSuppressed(await isCourseCertificateSuppressed(supabase, courseId));
+      } catch (suppressErr) {
+        console.error('Course-cert suppression check failed (non-fatal):', suppressErr);
+      }
+
       // Next course in this course's program(s) — powers the "Continue to next
       // module" completion-slide action. Never blocks the viewer on failure.
       if (user && !previewMode) {
@@ -1067,28 +1081,34 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           // completion and resolves the template (course → institution default).
           const { data: certData, error: certError } = await supabase
             .rpc('issue_course_certificate', { p_course_id: courseId });
+          // celebrationCertId resolves WHICH cert to surface: the course cert
+          // normally, or — when the program is certificate-only — the program
+          // cert (null until the whole program is done, so suppressed courses
+          // celebrate nothing until the final one).
+          const celebrateId = celebrationCertId(certData);
           if (certError) {
             toast.error('Your certificate could not be issued', { description: certError.message });
-          } else if (certData?.certificate_id && !certData.already_issued) {
-            const certId = certData.certificate_id as string;
+          } else if (celebrateId && !certData.already_issued) {
             // Pre-generate PDF (fire-and-forget)
-            fetch(`/api/certificates/${certId}/pdf`).catch(() => {});
+            fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
             // Email the student their certificate (fire-and-forget; no-op if SMTP unconfigured)
             fetch('/api/notify/certificate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ certificateId: certId }),
+              body: JSON.stringify({ certificateId: celebrateId }),
             }).catch(() => {});
             // Reveal the actual certificate in the celebration overlay
-            const display = await fetchCertificateDisplay(supabase, certId);
+            const display = await fetchCertificateDisplay(supabase, celebrateId);
             setCelebration(
               display ?? {
-                certificateId: certId,
+                certificateId: celebrateId,
                 template: null,
                 data: {
                   student_name: '',
                   completion_date: '',
-                  certificate_number: certData.certificate_number ?? '',
+                  // A suppressed course cert's number must never surface; the
+                  // program cert's real number comes from the fetched display.
+                  certificate_number: certData.suppressed ? '' : (certData.certificate_number ?? ''),
                   institution_name: '',
                 },
                 courseTitle: course?.title ?? 'this course',
@@ -1646,14 +1666,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     certRetryFiredRef.current = true;
     (async () => {
       const { data: certData } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
-      if (certData?.certificate_id && !certData.already_issued) {
-        const certId = certData.certificate_id as string;
-        fetch(`/api/certificates/${certId}/pdf`).catch(() => {});
+      const celebrateId = celebrationCertId(certData);
+      if (celebrateId && !certData.already_issued) {
+        fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
         fetch('/api/notify/certificate', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ certificateId: certId }),
+          body: JSON.stringify({ certificateId: celebrateId }),
         }).catch(() => {});
-        const display = await fetchCertificateDisplay(supabase, certId);
+        const display = await fetchCertificateDisplay(supabase, celebrateId);
         if (display) setCelebration(display);
       }
     })();
@@ -2119,8 +2139,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           <h3 className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
                           {surveyGatePendingUI ? (
                             <p className="text-slate-600 mt-1.5 text-sm sm:text-base font-medium">
-                              To receive your certificate, please complete the module survey and click{' '}
-                              <span className="font-bold">Submit</span>.
+                              To {courseCertSuppressed ? 'finish this module' : 'receive your certificate'}, please
+                              complete the module survey and click <span className="font-bold">Submit</span>.
                             </p>
                           ) : (
                             <p className="text-slate-500 mt-1.5 text-sm sm:text-base">
@@ -2146,15 +2166,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                               Course survey complete — thank you!
                             </div>
                           ) : course?.completion_survey_required ? (
-                            /* REQUIRED survey — the certificate is gated on it, so make it unmissable */
+                            /* REQUIRED survey — completion is gated on it, so make it unmissable */
                             <div className="rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-5 text-center shadow-sm">
                               <div className="flex items-center justify-center gap-2 mb-1">
                                 <Award className="h-6 w-6 text-amber-500 shrink-0" />
-                                <p className="font-black text-slate-900">Your certificate is one step away</p>
+                                <p className="font-black text-slate-900">
+                                  {courseCertSuppressed ? 'One step to finish this module' : 'Your certificate is one step away'}
+                                </p>
                               </div>
                               <p className="text-sm text-slate-600 mt-1 mb-4">
-                                Module complete! To receive your certificate, please complete the module survey
-                                and click the <span className="font-bold">Submit</span> button.
+                                Module complete! To {courseCertSuppressed ? 'finish this module' : 'receive your certificate'},
+                                please complete the module survey and click the <span className="font-bold">Submit</span> button.
                               </p>
                               <Button
                                 disabled={previewMode}
