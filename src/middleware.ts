@@ -125,6 +125,7 @@ export async function middleware(request: NextRequest) {
     request: { headers: request.headers },
   });
 
+  try {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -268,6 +269,32 @@ export async function middleware(request: NextRequest) {
   }
 
   return applyInstitutionContext(response, selectedInstitution);
+  } catch (err) {
+    // This middleware runs as a Netlify Edge Function on EVERY matched route.
+    // If any Supabase call above throws — a cold-start network blip, a fresh
+    // edge instance without the NEXT_PUBLIC_SUPABASE_* env, or an upstream
+    // timeout on auth.getUser() — an unhandled rejection here crashes the whole
+    // edge function and Netlify serves its "This edge function has crashed /
+    // edge function invocation failed" page for the ENTIRE app.
+    //
+    // Fail OPEN instead: serve the request with tenant context applied and let
+    // the page-level layouts re-run their own auth/role checks (they already do,
+    // as a documented second layer). A dropped session check degrades to a
+    // normal login redirect at the layout — never a site-wide crash.
+    console.error("[middleware] unhandled error — failing open:", err);
+    if (institutionSlugInPath) {
+      return applyInstitutionContext(
+        NextResponse.rewrite(new URL(normalizedPath, request.url), {
+          request: { headers: request.headers },
+        }),
+        selectedInstitution
+      );
+    }
+    return applyInstitutionContext(
+      NextResponse.next({ request: { headers: request.headers } }),
+      selectedInstitution
+    );
+  }
 }
 
 export const config = {
