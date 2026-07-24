@@ -6,6 +6,32 @@ const DEFAULT_INSTITUTION_SLUG = "gansid";
 const SUPPORTED_INSTITUTION_SLUGS = new Set(["gansid", "scago"]);
 const ADMIN_ROLES = new Set(["platform_admin", "institution_admin", "instructor", "admin"]);
 
+// Cap for each Supabase network round-trip made from the edge middleware.
+// Typical getUser latency is single-digit ms; 3s is generous headroom while
+// still forcing a hung upstream to abort well before the edge function's own
+// invocation time limit (which Netlify reports as "edge function invocation
+// failed"). A timeout throws, which the fail-open catch turns into a normal
+// pass-through instead of a site-wide crash.
+const SUPABASE_EDGE_TIMEOUT_MS = 3000;
+
+/**
+ * Race a promise against a timeout so a slow/hung Supabase call can never hang
+ * the edge function until Netlify kills the whole invocation. On timeout it
+ * rejects; callers let that bubble to the middleware's fail-open handler.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`Supabase call timed out after ${ms}ms`)),
+      ms
+    );
+  });
+  return Promise.race([promise, timeout]).finally(() =>
+    clearTimeout(timer)
+  ) as Promise<T>;
+}
+
 /**
  * Read user role from the JWT token metadata (zero network cost).
  * Falls back to a single DB query only when metadata is missing.
@@ -125,9 +151,19 @@ export async function middleware(request: NextRequest) {
     request: { headers: request.headers },
   });
 
+  try {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Credentials absent on this edge instance. Never construct a client with
+    // undefined values — its first fetch would throw and crash the function.
+    // Bail to the fail-open handler and let the page-level layouts enforce auth.
+    throw new Error("missing NEXT_PUBLIC_SUPABASE_* env in edge runtime");
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       // SameSite=None;Secure so the refreshed auth cookie survives a cross-origin
       // iframe embed (must match the browser + server clients exactly).
@@ -151,7 +187,7 @@ export async function middleware(request: NextRequest) {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await withTimeout(supabase.auth.getUser(), SUPABASE_EDGE_TIMEOUT_MS);
 
   // --- Determine if this route needs a role check ---
   const needsRoleCheck =
@@ -164,7 +200,10 @@ export async function middleware(request: NextRequest) {
   let ownSlug: string | null = null;
   let mySlugs: string[] = [];
   if (user && needsRoleCheck) {
-    const info = await getUserAuthInfo(supabase, user);
+    const info = await withTimeout(
+      getUserAuthInfo(supabase, user),
+      SUPABASE_EDGE_TIMEOUT_MS
+    );
     role = info.role;
     ownSlug = info.slug;
     mySlugs = info.slugs;
@@ -268,6 +307,32 @@ export async function middleware(request: NextRequest) {
   }
 
   return applyInstitutionContext(response, selectedInstitution);
+  } catch (err) {
+    // This middleware runs as a Netlify Edge Function on EVERY matched route.
+    // If any Supabase call above throws — a cold-start network blip, a fresh
+    // edge instance without the NEXT_PUBLIC_SUPABASE_* env, or an upstream
+    // timeout on auth.getUser() — an unhandled rejection here crashes the whole
+    // edge function and Netlify serves its "This edge function has crashed /
+    // edge function invocation failed" page for the ENTIRE app.
+    //
+    // Fail OPEN instead: serve the request with tenant context applied and let
+    // the page-level layouts re-run their own auth/role checks (they already do,
+    // as a documented second layer). A dropped session check degrades to a
+    // normal login redirect at the layout — never a site-wide crash.
+    console.error("[middleware] unhandled error — failing open:", err);
+    if (institutionSlugInPath) {
+      return applyInstitutionContext(
+        NextResponse.rewrite(new URL(normalizedPath, request.url), {
+          request: { headers: request.headers },
+        }),
+        selectedInstitution
+      );
+    }
+    return applyInstitutionContext(
+      NextResponse.next({ request: { headers: request.headers } }),
+      selectedInstitution
+    );
+  }
 }
 
 export const config = {
