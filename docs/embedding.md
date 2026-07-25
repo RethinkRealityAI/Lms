@@ -168,22 +168,83 @@ Safari included, with no cookie hacks and no top-level break-out — because the
 iframe becomes **same-site** with the parent, so the auth cookies are no longer
 third-party.
 
-Setup (one-time):
+### Cutover runbook (do the steps IN THIS ORDER)
 
-1. **Netlify** → the `org-lms` site → Domain management → add a custom domain,
-   e.g. `learn.sicklecellanemia.ca`.
-2. **DNS** (on the Framer/registrar side for sicklecellanemia.ca): add the
-   record Netlify shows — typically a `CNAME` `learn` → `org-lms.netlify.app`
-   (or Netlify's provided target). Wait for it to verify + issue TLS.
-3. **Supabase** → Auth → URL Configuration: add
-   `https://learn.sicklecellanemia.ca/auth/callback` (and `/reset-password`) to
-   the redirect allow-list; set Site URL to `https://learn.sicklecellanemia.ca`.
-   Set `NEXT_PUBLIC_SITE_URL=https://learn.sicklecellanemia.ca` in Netlify env.
-4. **Embed** `https://learn.sicklecellanemia.ca/scago/student` instead of the
-   `*.netlify.app` URL.
+Facts established by inspection (2026-07-24), so nobody has to rediscover them:
+
+- **DNS for `sicklecellanemia.ca` is hosted at IONOS** — nameservers are
+  `ns10xx.ui-dns.{de,org,biz,com}`. It is NOT on Netlify DNS and NOT on Framer.
+  The record below is added in the **IONOS** control panel.
+- The apex (`sicklecellanemia.ca`) and `www` (CNAME → `sites.framer.app`) belong
+  to the **Framer** marketing site. **Do not touch either one.**
+- `learn.sicklecellanemia.ca` does not exist yet — clean slate, no conflict.
+- The LMS Netlify project is **`org-lms`** (`org-lms.netlify.app`).
+
+**Step 1 — DNS (IONOS).** Add ONE record:
+
+| Field | Value |
+|---|---|
+| Type | `CNAME` |
+| Host / name | `learn` |
+| Points to | `org-lms.netlify.app` |
+| TTL | 3600 (or 600 while testing) |
+
+Use a **CNAME**, never an A record — Netlify's edge IPs are load-balanced and
+change without notice, so a hardcoded A record eventually breaks.
+
+Do NOT delegate the domain's nameservers to Netlify DNS: the apex and `www`
+are Framer's, and moving NS would require re-creating every Framer record.
+External DNS + this one CNAME is the correct, low-risk setup.
+
+**Step 2 — Netlify.** `org-lms` → Domain management → add domain alias
+`learn.sicklecellanemia.ca`. Once the CNAME resolves, Netlify verifies it and
+auto-provisions the Let's Encrypt certificate (usually minutes).
+
+**Step 3 — Netlify env + REDEPLOY.** Set
+`NEXT_PUBLIC_SITE_URL=https://learn.sicklecellanemia.ca`.
+
+> **Gotcha that bites every time:** `NEXT_PUBLIC_*` values are inlined into the
+> bundle at **build** time. Changing the variable does nothing to the running
+> site until you trigger a **new deploy**. Set it, then redeploy.
+
+**Step 4 — Supabase** → Auth → URL Configuration. Set Site URL to
+`https://learn.sicklecellanemia.ca`, and **add** (do not replace) these to the
+redirect allow-list:
+
+- `https://learn.sicklecellanemia.ca/auth/callback`
+- `https://learn.sicklecellanemia.ca/reset-password`
+
+Keep the existing `*.netlify.app` entries until the new domain is confirmed
+working — confirmation/reset emails already sent point at the OLD origin, and
+removing it early dead-ends those users mid-signup.
+
+**Step 5 — Framer.** Point the embed iframe `src` at
+`https://learn.sicklecellanemia.ca/scago/student`.
+
+**Step 6 (after verifying).** Optionally set `learn.sicklecellanemia.ca` as the
+Netlify **primary domain** so `org-lms.netlify.app` 301s to it. Only after the
+embed is updated.
+
+**No application code change is required.** `/auth/callback` derives every
+redirect from `requestUrl.origin`, so it follows whatever domain serves it; the
+only origin-dependent value is `NEXT_PUBLIC_SITE_URL` (step 3).
 
 Now `www.sicklecellanemia.ca` (parent) and `learn.sicklecellanemia.ca` (iframe)
 share the registrable domain `sicklecellanemia.ca` → same-site → cookies are
 first-party → login persists in the iframe on every browser. With this in place,
 the `SameSite=None; Secure` setting is harmless (works same-site too) but no
 longer load-bearing, and Safari is no longer a problem.
+
+Note the distinction that makes this work: `SameSite` is evaluated against the
+**registrable domain** (eTLD+1), not the origin. `learn.` and `www.` are
+different *origins* but the same *site*, which is exactly why the third-party
+cookie restrictions (Safari ITP, Chrome's 3P-cookie phase-out) stop applying.
+
+**Optional later hardening — only after the cutover is verified.** Once every
+embed points at `learn.sicklecellanemia.ca`, `AUTH_COOKIE_OPTIONS`
+(`src/lib/supabase/cookie-options.ts`) can be tightened from `sameSite: 'none'`
+to `'lax'` for CSRF resistance, since same-site framing no longer needs `None`.
+Do NOT do this while any page still embeds the `*.netlify.app` origin — that
+embed is genuinely cross-site and `Lax` would silently break its login. The
+value is already centralised, so it is a one-line change that applies to the
+browser, server, and middleware clients together (they must always match).
