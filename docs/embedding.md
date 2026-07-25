@@ -333,3 +333,29 @@ Notes:
   `globals.css` relaxes `min-h-screen` so the document can collapse to its true
   content height. Without it the measurement just echoes the frame's current
   height and the embed can only ever grow.
+
+### Framer: the embed element must be AUTO height
+
+There is a nesting detail that defeats the auto-sizing if missed. Framer renders
+a custom HTML embed inside its **own** sandbox iframe, so the real structure is:
+
+```
+sicklecellanemia.ca  (top page)
+└─ Framer sandbox iframe          ← height controlled by the Framer element
+   └─ our HTML embed + script
+      └─ LMS iframe               ← height controlled by our script
+```
+
+Our script resizes the **inner** LMS iframe. If the Framer element itself is set
+to a FIXED height, the sandbox stays tall and the empty space simply moves
+outside our reach — the sign-in page ends up snug inside a still-oversized
+sandbox, which looks identical to the original bug.
+
+**So: set the Framer Embed element's height to `Auto` / `Fit Content`.** With
+that, the sandbox follows its content, our script sizes the inner frame, and the
+whole thing collapses to the page being shown.
+
+If Framer cannot auto-size the element in a given layout, fall back to a fixed
+height chosen for the LANDING page and rely on the sign-in page's top anchoring
+(§5, fix 1) so the form is still immediately visible — that degrades to "some
+empty space below short pages", never to "blank screen".
