@@ -59,8 +59,13 @@ export function LandingNotification({ institutionSlug }: { institutionSlug: stri
     setNotifications((prev) => prev.filter((x) => x.id !== n.id));
   };
 
+  // Positive top margin, never negative. This card renders directly beneath the
+  // hero/stats band and loads asynchronously, so pulling it upward made it
+  // overlap the section above once it appeared — on the SCAGO page it clipped
+  // the dark stats row on phones and tablets. Give it real breathing room at
+  // every breakpoint instead.
   return (
-    <section className="relative z-20 -mt-2 pb-2">
+    <section className="relative z-20 mt-10 sm:mt-12 mb-2">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         {notifications.map((n) => (
           <LandingNotificationView

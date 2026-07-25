@@ -165,11 +165,15 @@ export function LandingNotificationView({
                   onClick={handleLink(notification.cta_url)}
                   target={/^https?:\/\//i.test(notification.cta_url) ? '_blank' : undefined}
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-xl text-sm font-bold text-white shadow-lg active:scale-95 transition-all hover:opacity-90"
+                  // min-h rather than a fixed h-11: the label is admin-authored
+                  // and free-form ("Sign in to continue learning"), which wraps
+                  // to two or three lines in a narrow embedded iframe. A locked
+                  // height clipped the text straight through the middle.
+                  className="inline-flex items-center justify-center gap-2 min-h-11 py-2.5 px-6 rounded-xl text-sm font-bold text-white text-center leading-snug shadow-lg active:scale-95 transition-all hover:opacity-90"
                   style={{ backgroundColor: accent }}
                 >
                   {notification.cta_label}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </a>
               )}
               {notification.secondary_cta_label && notification.secondary_cta_url && (

@@ -124,10 +124,10 @@ export function LandingReturningView({ content, signInHref, signUpHref, previewM
                 <a
                   {...linkProps}
                   href={previewMode ? undefined : signUpHref}
-                  className="inline-flex items-center gap-2 h-11 px-5 rounded-xl text-sm font-bold text-white shadow-lg active:scale-95 transition-all hover:opacity-90"
+                  className="inline-flex items-center justify-center gap-2 min-h-11 py-2.5 px-5 rounded-xl text-sm font-bold text-white text-center leading-snug shadow-lg active:scale-95 transition-all hover:opacity-90"
                   style={{ backgroundColor: accent }}
                 >
-                  <UserPlus className="h-4 w-4" /> {content.signup_button}
+                  <UserPlus className="h-4 w-4 shrink-0" /> {content.signup_button}
                 </a>
               </div>
 
@@ -140,10 +140,10 @@ export function LandingReturningView({ content, signInHref, signUpHref, previewM
                 <a
                   {...linkProps}
                   href={previewMode ? undefined : signInHref}
-                  className="inline-flex items-center gap-2 h-11 px-5 rounded-xl text-sm font-bold border-2 transition-all hover:bg-white/60"
+                  className="inline-flex items-center justify-center gap-2 min-h-11 py-2.5 px-5 rounded-xl text-sm font-bold text-center leading-snug border-2 transition-all hover:bg-white/60"
                   style={{ borderColor: accent, color: accent }}
                 >
-                  <LogIn className="h-4 w-4" /> {content.signin_button}
+                  <LogIn className="h-4 w-4 shrink-0" /> {content.signin_button}
                 </a>
               </div>
             </div>

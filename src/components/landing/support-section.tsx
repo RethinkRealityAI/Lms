@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 /**
  * LandingSupportSection — the "how to get support" section on the public landing
  * page (rendered below the module list, id="support" so the notification banner's
@@ -82,8 +84,17 @@ export function LandingSupportSection({ coverImageUrl, accent = '#C8262A', conta
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cover header — same imagery as the learning experience */}
         <div className="relative rounded-[2rem] overflow-hidden mb-14 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.25)]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={coverImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          {/* Optimised rather than a raw <img>: the source art is a multi-megabyte
+              full-resolution PNG, and this is a decorative banner well below the
+              fold. next/image resizes it to the rendered width, serves WebP/AVIF
+              and lazy-loads it. */}
+          <Image
+            src={coverImageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 1024px) 100vw, 1152px"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
           <div className="relative z-10 p-8 sm:p-12 md:p-16 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 mb-5">
