@@ -8,16 +8,24 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, usePathname } from 'next/navigation';
 import { isAdminRole } from '@/lib/auth/roles';
-import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
+import { resolveInstitutionSlug, withInstitutionSlug } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 
 interface PublicNavProps {
   scrolled?: boolean;
   transparentInitially?: boolean;
   hideAuth?: boolean;
+  /**
+   * Tenant slug resolved on the SERVER. Pass this from a server component so the
+   * nav renders the right branding and links in the initial HTML — the cookie
+   * fallback below is unavailable during SSR and would otherwise resolve to the
+   * default institution, producing a hydration mismatch. Omit it on pages that
+   * are still client-resolved; behaviour there is unchanged.
+   */
+  institutionSlug?: string;
 }
 
-export function PublicNav({ scrolled: forcedScrolled, transparentInitially = true, hideAuth = false }: PublicNavProps) {
+export function PublicNav({ scrolled: forcedScrolled, transparentInitially = true, hideAuth = false, institutionSlug: institutionSlugProp }: PublicNavProps) {
   const [user, setUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
@@ -28,7 +36,9 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
   const supabase = createClient();
   const router = useRouter();
   const pathname = usePathname();
-  const institutionSlug = resolveInstitutionSlug(pathname);
+  // A server-provided slug wins: it is identical on the server and the client,
+  // so the nav hydrates cleanly. Without it we fall back to the cookie/pathname.
+  const institutionSlug = institutionSlugProp ?? resolveInstitutionSlug(pathname);
   const branding = getInstitutionBranding(institutionSlug);
   const isScago = institutionSlug === 'scago';
 
@@ -126,7 +136,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
     setUser(null);
     setUserRole(null);
     setMobileMenuOpen(false);
-    router.push(withInstitutionPath('/', pathname));
+    router.push(withInstitutionSlug('/', institutionSlug));
     router.refresh();
   };
 
@@ -151,7 +161,7 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
           : 'bg-white border-b border-slate-100 py-4'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <Link href={withInstitutionPath('/', pathname)} className="flex items-center gap-3 group">
+        <Link href={withInstitutionSlug('/', institutionSlug)} className="flex items-center gap-3 group">
           {isScago ? (
             <span className="text-lg font-black tracking-tight">
               <span className="text-[#C8262A]">SCAGO</span>
@@ -173,8 +183,8 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
         <div className="hidden md:flex items-center gap-8">
           {isScago ? null : (
             <>
-              <Link href={withInstitutionPath('/patient-organizations', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Patient Organizations</Link>
-              <Link href={withInstitutionPath('/clinicians', pathname)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Clinicians</Link>
+              <Link href={withInstitutionSlug('/patient-organizations', institutionSlug)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Patient Organizations</Link>
+              <Link href={withInstitutionSlug('/clinicians', institutionSlug)} className={`text-sm font-bold transition-colors ${scrolled || !transparentInitially ? 'text-slate-600 hover:text-[#DC2626]' : 'text-slate-300 hover:text-white'}`}>Clinicians</Link>
             </>
           )}
           
@@ -207,10 +217,10 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
           ) : !loading && !hideAuth ? (
             <div className="flex items-center gap-4">
               <Button variant="ghost" asChild className={`rounded-full font-bold px-6 transition-colors ${scrolled || !transparentInitially ? `text-slate-600 hover:text-[${isScago ? branding.accentColor : '#DC2626'}]` : 'text-slate-300 hover:text-white'}`}>
-                <Link href={withInstitutionPath('/login', pathname)}>Sign In</Link>
+                <Link href={withInstitutionSlug('/login', institutionSlug)}>Sign In</Link>
               </Button>
               <Button asChild className={`rounded-full px-6 font-bold shadow-lg transition-all transform hover:scale-105 ${isScago ? 'bg-[#C8262A] hover:bg-[#a01f22] shadow-red-100' : 'bg-[#DC2626] hover:bg-[#991B1B] shadow-red-100'}`}>
-                <Link href={withInstitutionPath('/login?tab=signup', pathname)}>Get Started</Link>
+                <Link href={withInstitutionSlug('/login?tab=signup', institutionSlug)}>Get Started</Link>
               </Button>
             </div>
           ) : null}
@@ -249,14 +259,14 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
             {isScago ? null : (
               <>
                 <Link
-                  href={withInstitutionPath('/patient-organizations', pathname)}
+                  href={withInstitutionSlug('/patient-organizations', institutionSlug)}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
                 >
                   Patient Organizations
                 </Link>
                 <Link
-                  href={withInstitutionPath('/clinicians', pathname)}
+                  href={withInstitutionSlug('/clinicians', institutionSlug)}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm font-bold text-slate-600 hover:text-[#DC2626] py-2"
                 >
@@ -286,10 +296,10 @@ export function PublicNav({ scrolled: forcedScrolled, transparentInitially = tru
               ) : !hideAuth ? (
                 <>
                   <Button asChild variant="outline" className="w-full rounded-xl font-bold">
-                    <Link href={withInstitutionPath('/login', pathname)} onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
+                    <Link href={withInstitutionSlug('/login', institutionSlug)} onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
                   </Button>
                   <Button asChild className={`w-full rounded-xl font-bold ${isScago ? 'bg-[#C8262A] hover:bg-[#a01f22]' : 'bg-[#DC2626] hover:bg-[#991B1B]'}`}>
-                    <Link href={withInstitutionPath('/login?tab=signup', pathname)} onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                    <Link href={withInstitutionSlug('/login?tab=signup', institutionSlug)} onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </>
               ) : null}

@@ -123,6 +123,22 @@ function applyInstitutionContext(
   return response;
 }
 
+/**
+ * Copy the incoming request headers and stamp the resolved tenant onto them.
+ *
+ * `applyInstitutionContext` above sets `x-institution-slug` on the RESPONSE,
+ * which the browser sees but server components do not — `headers()` reads the
+ * REQUEST. Without this, a server component's only source of tenant context is
+ * the cookie, which is absent on a visitor's very first request, so it silently
+ * falls back to the default institution and renders the wrong tenant's page.
+ * Stamping the request makes `getTenantSlug()` correct on the first paint.
+ */
+function requestHeadersWithSlug(request: NextRequest, slug: string): Headers {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-institution-slug", slug);
+  return requestHeaders;
+}
+
 export async function middleware(request: NextRequest) {
   const institutionSlugInPath = getInstitutionSlug(request.nextUrl.pathname);
   const institutionFromCookie = request.cookies.get("institution_slug")?.value?.toLowerCase();
@@ -148,7 +164,7 @@ export async function middleware(request: NextRequest) {
   }
 
   let response = NextResponse.next({
-    request: { headers: request.headers },
+    request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
   });
 
   try {
@@ -239,7 +255,7 @@ export async function middleware(request: NextRequest) {
     if (institutionSlugInPath) {
       return applyInstitutionContext(
         NextResponse.rewrite(new URL(normalizedPath, request.url), {
-          request: { headers: request.headers },
+          request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
         }),
         selectedInstitution
       );
@@ -272,7 +288,7 @@ export async function middleware(request: NextRequest) {
     if (institutionSlugInPath) {
       return applyInstitutionContext(
         NextResponse.rewrite(new URL(normalizedPath, request.url), {
-          request: { headers: request.headers },
+          request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
         }),
         selectedInstitution
       );
@@ -300,7 +316,7 @@ export async function middleware(request: NextRequest) {
   if (institutionSlugInPath) {
     return applyInstitutionContext(
       NextResponse.rewrite(new URL(normalizedPath, request.url), {
-        request: { headers: request.headers },
+        request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
       }),
       selectedInstitution
     );
@@ -323,13 +339,13 @@ export async function middleware(request: NextRequest) {
     if (institutionSlugInPath) {
       return applyInstitutionContext(
         NextResponse.rewrite(new URL(normalizedPath, request.url), {
-          request: { headers: request.headers },
+          request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
         }),
         selectedInstitution
       );
     }
     return applyInstitutionContext(
-      NextResponse.next({ request: { headers: request.headers } }),
+      NextResponse.next({ request: { headers: requestHeadersWithSlug(request, selectedInstitution) } }),
       selectedInstitution
     );
   }
