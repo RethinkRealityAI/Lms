@@ -203,11 +203,11 @@ function ScagoHero({ slug, branding }: { slug: string; branding: ReturnType<type
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
-            <img
-              src={branding.logoUrl}
-              alt={branding.fullName}
-              className="h-14 w-auto mb-8"
-            />
+            {/* No institution logo here on purpose. This page is embedded in an
+                iframe on the SCAGO site, which already shows the SCAGO logo in
+                its own header directly above — repeating it stacked three logos
+                down the screen on mobile. The nav wordmark is the only branding
+                the embed needs. */}
 
             {/* Accreditation is the strongest trust signal — lead with it */}
             <div className="inline-flex items-center gap-2 mb-7 pl-2 pr-4 py-1.5 rounded-full bg-white border border-[#C8262A]/15 shadow-sm">
@@ -274,7 +274,8 @@ function ScagoHero({ slug, branding }: { slug: string; branding: ReturnType<type
               <CoverImage
                 src={SCAGO_LANDING_IMAGES.hero}
                 alt="A physician explaining sickle cell care to a young patient"
-                loading="eager"
+                priority
+                sizes="(max-width: 1024px) 100vw, 45vw"
                 className="w-full aspect-[4/3]"
                 imgClassName="object-cover"
               />
@@ -523,6 +524,7 @@ function ScagoCurriculum({ slug }: { slug: string }) {
                 <CoverImage
                   src={mod.image}
                   alt={`${mod.title} — module cover`}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="w-full h-full"
                   imgClassName="object-cover group-hover:scale-[1.06] transition-transform duration-700"
                   fallback={<BookOpen className="h-10 w-10 text-white/40" />}
