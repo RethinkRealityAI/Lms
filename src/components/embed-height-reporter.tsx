@@ -94,8 +94,19 @@ export function EmbedHeightReporter() {
     };
   }, [pathname]);
 
-  // Tell the host a client-side navigation happened so it can scroll the frame
-  // back into view. Separate effect so it fires on every path change.
+  // Bring the top of the new page into view after an in-frame navigation.
+  //
+  // Navigating inside an iframe does not move the HOST page's scroll position,
+  // so someone who scrolls down the landing page and clicks "Enrol free" ends
+  // up looking at whatever part of the frame they were already on — usually
+  // blank space below the new, shorter page.
+  //
+  // Belt and braces, because we cannot count on the host cooperating:
+  //   1. postMessage, which a host running our snippet acts on precisely; and
+  //   2. scrollIntoView on our own top element. A scroll started inside a frame
+  //      walks up through ancestor scrolling boxes, so this nudges the host even
+  //      cross-origin. It is best-effort — browsers gate it on user activation,
+  //      which a link click satisfies — and harmless when it does nothing.
   useEffect(() => {
     let framed = false;
     try {
@@ -104,7 +115,22 @@ export function EmbedHeightReporter() {
       framed = true;
     }
     if (!framed) return;
+
     window.parent.postMessage({ type: NAVIGATE_MSG, path: pathname }, '*');
+
+    // Reset our own scroll first, then ask to be revealed in the host.
+    window.scrollTo(0, 0);
+    const id = window.setTimeout(() => {
+      const top = document.body?.firstElementChild;
+      if (top instanceof HTMLElement) {
+        try {
+          top.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        } catch {
+          /* older browsers: ignore */
+        }
+      }
+    }, 60);
+    return () => window.clearTimeout(id);
   }, [pathname]);
 
   return null;

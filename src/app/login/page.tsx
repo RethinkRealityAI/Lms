@@ -635,7 +635,11 @@ function LoginContent() {
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
-                className="rounded-xl font-bold data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
+                /* Must carry the same active BACKGROUND as the Sign In trigger.
+                   It previously set only `!text-white`, so when Sign Up was the
+                   active tab the label rendered white on the default white pill
+                   and the text disappeared entirely. */
+                className="rounded-xl font-bold data-[state=active]:!bg-[var(--brand)] data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
               >
                 Sign Up
               </TabsTrigger>
