@@ -498,10 +498,25 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-red-100 selection:text-red-900">
+    <div
+      className="min-h-screen flex flex-col selection:bg-red-100 selection:text-red-900"
+      /* The login page hardcoded a #2563EB blue throughout, so SCAGO's sign-in
+         showed a blue tab and blue links against its red brand. Expose the
+         institution accent as CSS variables and drive every accent off them —
+         class strings can't hold dynamic values, but arbitrary Tailwind values
+         can reference a variable. */
+      style={{ ['--brand' as any]: branding.primaryColor, ['--brand-strong' as any]: branding.secondaryColor }}
+    >
       <PublicNav transparentInitially={false} />
 
-      <div className="flex-1 flex items-center justify-center relative overflow-y-auto bg-white pt-16 pb-8">
+      {/* items-START, not items-center. This page is embedded in an iframe on the
+          SCAGO site, and inside an iframe `100vh` resolves to the IFRAME's height
+          — which the host sizes for the much taller landing page. Vertically
+          centring therefore pushed the sign-in card thousands of pixels down,
+          leaving a blank white screen unless the visitor happened to scroll.
+          Anchoring to the top keeps the form visible at any frame height, and
+          reads fine on a normal viewport too. */}
+      <div className="flex-1 flex items-start justify-center relative overflow-y-auto bg-white pt-16 pb-8">
         {/* Dynamic Background Elements */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div
@@ -614,15 +629,13 @@ function LoginContent() {
             <TabsList className="grid w-full grid-cols-2 mb-5 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200">
               <TabsTrigger
                 value="signin"
-                className="rounded-xl font-bold data-[state=active]:!bg-[#2563EB] data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
+                className="rounded-xl font-bold data-[state=active]:!bg-[var(--brand)] data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
               >
                 Sign In
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
                 className="rounded-xl font-bold data-[state=active]:!text-white data-[state=active]:shadow-sm transition-all"
-                style={{ ['--tw-bg-opacity' as any]: undefined }}
-                data-accent={branding.secondaryColor}
               >
                 Sign Up
               </TabsTrigger>
@@ -641,14 +654,14 @@ function LoginContent() {
                     Email Address
                   </Label>
                   <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB] transition-colors" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[var(--brand)] transition-colors" />
                     <Input
                       id="signin-email"
                       type="email"
                       placeholder={branding.emailPlaceholder}
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className={`pl-12 h-11 bg-white border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] transition-all font-medium ${errors.email ? 'border-red-500' : ''}`}
+                      className={`pl-12 h-11 bg-white border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[var(--brand)] transition-all font-medium ${errors.email ? 'border-red-500' : ''}`}
                     />
                   </div>
                   {errors.email && <p className="text-xs text-red-500 mt-1 font-bold">{errors.email}</p>}
@@ -662,20 +675,20 @@ function LoginContent() {
                     <button
                       type="button"
                       onClick={() => setShowForgotPassword(true)}
-                      className="text-xs font-bold text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
+                      className="text-xs font-bold text-[var(--brand)] hover:text-[var(--brand-strong)] transition-colors"
                     >
                       Forgot Password?
                     </button>
                   </div>
                   <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB] transition-colors" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[var(--brand)] transition-colors" />
                     <Input
                       id="signin-password"
                       type="password"
                       placeholder="••••••••"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className={`pl-12 h-11 bg-white border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] transition-all font-medium ${errors.password ? 'border-red-500' : ''}`}
+                      className={`pl-12 h-11 bg-white border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[var(--brand)] transition-all font-medium ${errors.password ? 'border-red-500' : ''}`}
                     />
                   </div>
                   {errors.password && <p className="text-xs text-red-500 mt-1 font-bold">{errors.password}</p>}
@@ -715,7 +728,7 @@ function LoginContent() {
                         <div className="flex gap-2">
                           <Button
                             type="submit"
-                            className="flex-1 h-12 text-sm font-bold bg-[#2563EB] hover:bg-[#1D4ED8] rounded-xl"
+                            className="flex-1 h-12 text-sm font-bold bg-[var(--brand)] hover:bg-[var(--brand-strong)] rounded-xl"
                             disabled={resetLoading}
                           >
                             {resetLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Send Reset Link'}

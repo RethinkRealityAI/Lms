@@ -757,3 +757,25 @@
 .content-list-viewer .rich-text-viewer a:hover {
   color: #1d4ed8;
 }
+/* ---------------------------------------------------------------------------
+   Embedded (iframe) mode — class added by EmbedHeightReporter when framed.
+
+   The host page sizes the frame from the height we report. Any `min-h-screen`
+   would make the document at least as tall as the frame it is already in, so
+   the measurement would just echo the current frame height and the embed could
+   only ever grow, never shrink. Relaxing the minimum while embedded lets the
+   document collapse to its real content height, which is what makes short
+   pages (sign-in above all) fit snugly instead of sitting in a tall white void.
+
+   Deliberately scoped to min-height only: fixed-height layouts such as the
+   course viewer's h-[calc(100vh-6rem)] are meant to fill the frame and are
+   already stable to measure.
+--------------------------------------------------------------------------- */
+html.lms-embedded,
+html.lms-embedded body {
+  height: auto;
+}
+
+html.lms-embedded .min-h-screen {
+  min-height: 0;
+}

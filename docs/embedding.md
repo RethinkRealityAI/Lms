@@ -248,3 +248,88 @@ Do NOT do this while any page still embeds the `*.netlify.app` origin — that
 embed is genuinely cross-site and `Lax` would silently break its login. The
 value is already centralised, so it is a one-line change that applies to the
 browser, server, and middleware clients together (they must always match).
+
+---
+
+## 5. Auto-sizing the embed (HTML embed + postMessage)
+
+**Problem this solves.** The host sized the iframe at a fixed height chosen for
+the (very tall) landing page. Inside an iframe `100vh` resolves to the IFRAME's
+height, so every shorter page was laid out in a viewport thousands of pixels
+tall. The sign-in page centred its card vertically and therefore rendered
+roughly halfway down a ~6000px frame — visitors saw a blank white screen and had
+no idea the form was below.
+
+Two independent fixes, both live:
+
+1. **The sign-in page anchors to the top** (`items-start`, not `items-center`),
+   so it is visible at any frame height even if the host never resizes.
+2. **The app reports its content height to the host** so the frame can size
+   itself per page. `src/components/embed-height-reporter.tsx` mounts in the
+   root layout and no-ops unless framed.
+
+### Messages the app posts to the host
+
+| `type` | Payload | Meaning |
+|---|---|---|
+| `lms-embed-height` | `{ height, path }` | Content height in px; set the iframe to this. |
+| `lms-embed-navigate` | `{ path }` | Client-side navigation happened; scroll the frame into view. |
+
+Both are posted to `window.parent` with `'*'` as the target origin (the height
+of a public page is not sensitive, and Framer nests the embed inside its own
+sandbox origin, which cannot be enumerated reliably).
+
+### Framer setup
+
+Use an **Embed / HTML** element (not a link) and paste the snippet below.
+`scrollIntoView` on navigate matters: navigating inside an iframe does not move
+the HOST page's scroll position, so someone who scrolls down the landing page
+and clicks "Sign in" would otherwise be left staring past a now-short frame.
+
+```html
+<div style="width:100%">
+  <iframe
+    id="scago-lms"
+    src="https://learn.sicklecellanemia.ca/scago"
+    title="SCAGO HCP E-Learning"
+    style="width:100%;border:0;display:block;height:1400px;transition:height .2s ease"
+    allow="clipboard-write; fullscreen"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+</div>
+<script>
+  (function () {
+    var LMS_ORIGIN = 'https://learn.sicklecellanemia.ca';
+    var frame = document.getElementById('scago-lms');
+    if (!frame) return;
+
+    window.addEventListener('message', function (event) {
+      // Only trust messages from the LMS itself.
+      if (event.origin !== LMS_ORIGIN) return;
+      var data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      if (data.type === 'lms-embed-height' && typeof data.height === 'number') {
+        // Floor guards against a transient 0 during navigation.
+        frame.style.height = Math.max(400, Math.round(data.height)) + 'px';
+      }
+
+      if (data.type === 'lms-embed-navigate') {
+        var top = frame.getBoundingClientRect().top;
+        // Only pull the page up if the frame has scrolled off the top.
+        if (top < 0) frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  })();
+</script>
+```
+
+Notes:
+- Keep a sensible `height` on the iframe as the pre-JS fallback; it is replaced
+  by the first height message within a few hundred milliseconds.
+- **Do not** set `scrolling="no"` — if the host script ever fails to load, the
+  frame must still be scrollable rather than trapping content.
+- The height reporter adds `lms-embedded` to `<html>`; a scoped rule in
+  `globals.css` relaxes `min-h-screen` so the document can collapse to its true
+  content height. Without it the measurement just echoes the frame's current
+  height and the embed can only ever grow.
