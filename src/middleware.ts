@@ -1,6 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/cookie-options";
+import {
+  REFERRAL_QUERY_PARAM,
+  isValidReferralCode,
+  normalizeReferralCode,
+} from "@/lib/referral/constants";
 
 const DEFAULT_INSTITUTION_SLUG = "gansid";
 const SUPPORTED_INSTITUTION_SLUGS = new Set(["gansid", "scago"]);
@@ -140,6 +145,33 @@ function requestHeadersWithSlug(request: NextRequest, slug: string): Headers {
 }
 
 export async function middleware(request: NextRequest) {
+  // --- Referral capture (migration 068) ---
+  // An ambassador may append ?ref=<code> to any tenant URL instead of using the
+  // short /r/<code> link. Bounce those through /r/<code> so BOTH entry points
+  // count a visit and set the cookie through exactly one code path — otherwise
+  // ?ref= links would silently attribute signups while never appearing in the
+  // "link opens" number, and the funnel would show conversions above 100%.
+  //
+  // This cannot loop: the ref param is stripped before being handed back as
+  // ?to=, and /r/:code is deliberately not in this middleware's matcher.
+  // GET only: a 307 preserves method and body, so bouncing a POST would replay
+  // it against /r/:code, which only serves GET.
+  const referralParam =
+    request.method === "GET"
+      ? request.nextUrl.searchParams.get(REFERRAL_QUERY_PARAM)
+      : null;
+  if (referralParam && isValidReferralCode(referralParam)) {
+    const cleaned = request.nextUrl.clone();
+    cleaned.searchParams.delete(REFERRAL_QUERY_PARAM);
+    const destination = `${cleaned.pathname}${cleaned.search}`;
+    const target = new URL(
+      `/r/${normalizeReferralCode(referralParam)}`,
+      request.url
+    );
+    target.searchParams.set("to", destination);
+    return NextResponse.redirect(target);
+  }
+
   const institutionSlugInPath = getInstitutionSlug(request.nextUrl.pathname);
   const institutionFromCookie = request.cookies.get("institution_slug")?.value?.toLowerCase();
   const selectedInstitution =

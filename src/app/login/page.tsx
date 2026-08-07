@@ -19,6 +19,7 @@ import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 import { logSignInEvent } from '@/lib/db/events';
 import { joinInstitution, signupPrecheck } from '@/lib/db/memberships';
+import { getReferralCodeFromCookie } from '@/lib/referral/constants';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -346,6 +347,12 @@ function LoginContent() {
         }
       }
 
+      // Ambassador attribution (migration 068). Read from the cookie the
+      // tracked link set; `handle_new_user` resolves it against live codes in
+      // THIS institution, so a stale or foreign code just attributes to nobody
+      // and never blocks the signup. Omitted entirely when absent.
+      const referralCode = getReferralCodeFromCookie();
+
       const { data, error } = await supabase.auth.signUp({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -354,6 +361,7 @@ function LoginContent() {
             role: formData.role,
             full_name: formData.fullName.trim(),
             institution_slug: currentSlug,
+            ...(referralCode ? { referral_code: referralCode } : {}),
           },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
         },

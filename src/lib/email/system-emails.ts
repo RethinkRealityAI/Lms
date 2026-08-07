@@ -105,6 +105,22 @@ export function legacyClaimInviteEmailVariables(input: {
   };
 }
 
+/** Standard variable set for the ambassador referral-link template. */
+export function referralLinkEmailVariables(input: {
+  recipientName: string | null;
+  referralLabel: string;
+  referralUrl: string;
+  reportUrl: string;
+}): Record<string, string> {
+  return {
+    recipientName: input.recipientName ? escapeHtml(input.recipientName) : '',
+    greeting: greetingForName(input.recipientName),
+    referralLabel: escapeHtml(input.referralLabel),
+    referralUrl: input.referralUrl,
+    reportUrl: input.reportUrl,
+  };
+}
+
 /** Standard variable set for the assignment template. */
 export function assignmentEmailVariables(input: {
   recipientName: string | null;
