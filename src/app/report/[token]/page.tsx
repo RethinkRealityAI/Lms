@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { getReferralReport, referralShareUrl } from '@/lib/db/referrals';
-import {
-  ReportDashboard,
-  RANGE_PRESETS,
-  type RangeKey,
-} from '@/components/referral/report-dashboard';
+import { ReportDashboard } from '@/components/referral/report-dashboard';
+// Range config comes from the shared (non-client) module: importing a value
+// from a 'use client' module into a server component yields a client-reference
+// proxy, not the value, which fails at build time.
+import { RANGE_PRESETS, type RangeKey } from '@/lib/referral/constants';
 
 /**
  * Public, token-gated outreach report: /report/<public_token>

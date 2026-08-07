@@ -12,6 +12,7 @@ import {
   SERIES_COLORS,
   FUNNEL_RAMP,
   hasMeaningfulConversion,
+  RANGE_PRESETS,
 } from './constants';
 
 describe('normalizeReferralCode', () => {
@@ -250,5 +251,28 @@ describe('hasMeaningfulConversion', () => {
   it('suppresses division by zero', () => {
     expect(hasMeaningfulConversion(2, 0, 0)).toBe(false);
     expect(hasMeaningfulConversion(3, 5, 0)).toBe(false);
+  });
+});
+
+describe('RANGE_PRESETS', () => {
+  it('lives in this shared module, not in the client dashboard component', () => {
+    // The server page parses ?range= at module scope. When this constant lived
+    // in the 'use client' dashboard, the server got a client-reference proxy
+    // instead of the array and `RANGE_PRESETS.map` threw during `next build`
+    // ("Failed to collect page data for /report/[token]"). Keeping it here — in
+    // a module with no 'use client' directive — is what makes it importable
+    // from both sides.
+    expect(Array.isArray(RANGE_PRESETS)).toBe(true);
+    expect(typeof RANGE_PRESETS.map).toBe('function');
+  });
+
+  it('offers the ranges the report page accepts, ending with all-time', () => {
+    expect(RANGE_PRESETS.map((r) => r.key)).toEqual(['30', '90', '365', 'all']);
+    for (const r of RANGE_PRESETS) expect(r.label.length).toBeGreaterThan(0);
+  });
+
+  it('has unique keys', () => {
+    const keys = RANGE_PRESETS.map((r) => r.key);
+    expect(new Set(keys).size).toBe(keys.length);
   });
 });

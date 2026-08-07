@@ -107,6 +107,26 @@ export function sanitizeLandingPath(
 }
 
 /* ------------------------------------------------------------------ */
+/* Report date range                                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Lives HERE, not in the dashboard component, because the server page needs it
+ * to parse `?range=` before rendering. A server component that imports a value
+ * from a `'use client'` module gets a client-reference proxy rather than the
+ * value, so `RANGE_PRESETS.map(...)` throws at build time
+ * ("RANGE_PRESETS.map is not a function" — a real production build failure).
+ */
+export const RANGE_PRESETS = [
+  { key: '30', label: 'Last 30 days' },
+  { key: '90', label: 'Last 90 days' },
+  { key: '365', label: 'Last 12 months' },
+  { key: 'all', label: 'All time' },
+] as const;
+
+export type RangeKey = (typeof RANGE_PRESETS)[number]['key'];
+
+/* ------------------------------------------------------------------ */
 /* Funnel                                                              */
 /* ------------------------------------------------------------------ */
 

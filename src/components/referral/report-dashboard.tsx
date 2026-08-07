@@ -11,20 +11,11 @@ import {
   Info,
   Loader2,
 } from 'lucide-react';
-import { FUNNEL_STEPS } from '@/lib/referral/constants';
+import { FUNNEL_STEPS, RANGE_PRESETS, type RangeKey } from '@/lib/referral/constants';
 import type { ReferralReport } from '@/lib/db/referrals';
 import { TimeSeriesChart, FunnelChart, BarList } from './report-charts';
 
 const fmt = new Intl.NumberFormat('en-CA');
-
-export const RANGE_PRESETS = [
-  { key: '30', label: 'Last 30 days' },
-  { key: '90', label: 'Last 90 days' },
-  { key: '365', label: 'Last 12 months' },
-  { key: 'all', label: 'All time' },
-] as const;
-
-export type RangeKey = (typeof RANGE_PRESETS)[number]['key'];
 
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—';
