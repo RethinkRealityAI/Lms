@@ -78,6 +78,10 @@ src/
     report-issue-dialog.tsx     # CLIENT — in-viewer red "Report issue" flag (issue pills + structured context → /api/feedback)
     feedback/support-widget.tsx # CLIENT — dashboard "Support" FAB (suggestion/issue/bug → /api/feedback)
     admin/feedback-card.tsx     # Admin Support-hub card: type/category/status pills + context deep-links (Page/Course/Lesson→editor)
+    admin/referrals-manager.tsx # CLIENT — referral link CRUD, QR download, copy/email links, token rotation
+    referral/
+      report-charts.tsx         # CLIENT — hand-rolled SVG time series / funnel / bar list (no chart dep)
+      report-dashboard.tsx      # CLIENT — public outreach report: KPIs, funnel, filters, print-to-PDF, CSV
     editor/              # Three-panel editor components
       course-editor-shell.tsx   # Editor root — loads course data, owns all CRUD handlers
       editor-toolbar.tsx        # Save/Undo/Redo/Preview/Publish toolbar
@@ -146,6 +150,10 @@ src/
       surveys.ts            # Survey response CRUD + analytics queries
       survey-templates.ts   # Reusable institution-scoped survey templates
       feedback.ts           # Unified feedback CRUD (list/status/delete) — powers the admin Support hub (migration 064)
+      referrals.ts          # Referral code CRUD + public report fetch + URL builders (migration 068)
+    referral/
+      constants.ts          # Referral cookie names, code format (mirrors the DB CHECK),
+                            #   funnel definition, VALIDATED chart palette — client+server safe
     canva/
       auth.ts               # Canva OAuth PKCE helpers, token refresh
       api.ts                # Canva REST API (designs, exports)
@@ -278,6 +286,7 @@ Legacy users: 2,868 imported from EdApp CSV.
 | 062 | slide_progress_and_sequential_lessons | **Per-slide progress + sequential lessons.** `slide_progress` table (one row per user+slide, `viewed_at`; RLS own-manage with institution-binding via `get_my_institution_ids()`, admin read) records each slide a learner has SEEN — the whole-lesson `progress` table still drives certificates, this is additive display/navigation state. The student progress bar is now SLIDE-granular (`viewed slides / total`, falls back to lesson-granular for slide-less legacy lessons) so it advances mid-lesson instead of sitting at 0% until a lesson finishes; the sidebar expands each lesson to its slides with viewed checkmarks + current-slide highlight and jump-to-slide. `courses.sequential_lessons` (default true) locks a lesson until the previous one is complete (a completed lesson is never locked; preview mode + the completion-slide "Next Lesson" button are exempt); toggle in the course settings modal (`get/setCourseSequentialLessons`). Helpers: `lib/db/slide-progress.ts` (`getViewedSlideIds`, `markSlideViewed`). Live-verified as dapo: slide_progress write/read under RLS isolates own rows; `sequential_lessons` defaulted true on all 25 courses. **Also fixes editor↔viewer block-order parity**: `sortBlocksByGrid` (gridY→gridX→order_index) in `buildLessonPages` makes the viewer order blocks the way the editor does (`slide-preview.tsx` sorts by grid, not order_index) — proven on the live "Vaso-occlusion" slide where order_index put the image last but gridY (editor) puts it 2nd. Gating fails OPEN when the progress fetch errors (a transient failure must never lock a learner out); locked lesson rows use `aria-disabled` (not native `disabled`, which would swallow the "complete the previous lesson" toast); sidebar jump-to-slide only targets ALREADY-VIEWED slides (revisit) so a forward jump can't skip a required quiz/interactive gate |
 | 063 | legacy_slide_accurate_partial_completion | `materialize_legacy_completions` mapped an EdApp course % onto lesson-`floor` (`floor(pct × lessons)`), but EdApp's % is CONTENT-based — so when early lessons are long, lesson-floor OVER-credited (measured: 64% of the 33 partial legacy rows over-credited by up to a full lesson). An over-credited lesson also grandfathers its quizzes (materialized completions are backdated before the quiz-enforcement cutoff), so the learner would skip quizzes they never took. Fix: for PARTIAL completions, complete only lessons whose published slides ALL fall within `floor(pct × total_published_slides)` — the lessons the learner fully covered — never over-crediting; the borderline lesson stays incomplete so they re-review it and take its quizzes. ≥95%/full path, enrollment, cert issuance, CME auto-request, backdating and idempotency UNCHANGED; falls back to lesson-floor for slide-less courses. Only future claims affected (0 currently-claimed users have a partial course). The new per-slide progress needs no legacy backfill: `isSlideViewed` counts a slide done if its lesson is complete, so materialized lessons light up automatically |
 | 064 | feedback_submissions | **Unified feedback system** replacing the flat, untyped `contact_submissions` (which stuffed course/lesson/slide context into the message body as a text blob). One typed table — `type` (contact/issue/suggestion/bug), `category` (pill slug), structured `context` jsonb (page_url, course_id/title, module_title, lesson_id/title, **slide_id** + slide_index, user_agent), `user_id`, `status` (new/in_progress/resolved) — backs all three free-text entry points: the public contact form, the in-viewer "Report issue" button (red filled flag + issue-category pills + auto-captured context), and the dashboard support FAB (`components/feedback/support-widget.tsx` — suggestion/issue/bug + optional related course). CME requests stay their own table, shown as a hub filter. RLS: public INSERT with a `user_id IS NULL OR user_id = auth.uid()` guard (no spoofing), institution-scoped admin read/update/delete (platform_admin exempt); the 2 existing contact rows backfilled as `type='contact'`. `/api/feedback` is the session-aware endpoint (derives user_id server-side, rate-limited, best-effort Resend email); `/api/contact` kept as a back-compat alias writing the same table. Admin **Support hub redesign** (`app/admin/support/page.tsx`): filter pills (All/Contact/Issues/Suggestions/Bugs/Certificate requests) + status filter + search + new-count badges; `FeedbackCard` renders type/category/status pills and CONTEXT AS DEEP LINKS — Page ↗, Course → admin course, and **Lesson/slide → opens the editor at that exact slide** via `?lesson=&slide=<slide_id>` (uses the real slide id, not the index). `updateFeedbackStatus` does `.select('id')` so an RLS-filtered 0-row write can't fail silently (Rule 25). Taxonomy single-source in `lib/content/feedback-taxonomy.ts`; CRUD in `lib/db/feedback.ts` |
+| 068 | referral_tracking | **Ambassador / regional referral tracking.** `referral_codes` (institution-scoped: `code` for the short `/r/<code>` link, `label`, optional `landing_path`, rotatable `public_token` for the report page, `is_active`, `archived_at`) + `referral_visits` (anonymous link-open counter — an opaque cookie `visitor_key` ONLY, no IP/user-agent/referer; unique on `(code, visitor_key, visit_day)` so it counts PEOPLE per day, not page loads) + `users.referral_code_id`/`referral_attributed_at`. `handle_new_user` v4 reads `referral_code` from signup metadata and resolves it WITHIN the signup institution against live codes only (stale/cross-tenant/garbage codes attribute to nobody and never fail the signup); `guard_referral_attribution` BEFORE UPDATE trigger makes attribution non-client-writable (the `users` self-update policy would otherwise let a learner write themselves into an ambassador's numbers). RPCs: `record_referral_visit` (anon-callable, resolves the tenant from the code when unnamed, refuses ambiguous codes, and treats a NULL visitor key as "resolve but do not count" — that is how link-preview crawlers are kept out of the numbers), `get_referral_report(token,from,to)` (anon-callable, TOKEN IS THE CREDENTIAL, aggregates only — never a name/email/per-person row), `admin_referral_overview`, `admin_rotate_referral_token`. Report uses COHORT framing: learners who joined in the window plus everything they have done since. Certificate counts are institution-scoped — under dual access (055) an unscoped join counted a SCAGO-referred learner's GANSID certificates in the SCAGO report (found by audit, verified live). Widens `email_templates_system_type_check` + seeds the `referral_link` system template. UI: public `/report/<token>` dashboard (hand-rolled SVG charts, date filters, print-to-PDF, CSV) and admin `/admin/referrals` (CRUD, QR download, copy/email links, token rotation) |
 
 ### RLS Pattern — CRITICAL
 
@@ -315,6 +324,8 @@ $$;
 Student URL for testing: `http://localhost:3001/gansid/student`
 SCAGO student URL: `http://localhost:3001/scago/student`
 SCAGO admin URL: `http://localhost:3001/scago/admin`
+
+**Tenant-free public routes** (deliberately outside the matcher and the `/[tenant]/` tree): `/r/<code>` (tracked referral link — resolves its own tenant from the code) and `/report/<token>` (public outreach report — names its own institution, so an external partner never needs to know a slug).
 
 **Supported tenant slugs:** `gansid`, `scago` (defined in `SUPPORTED_INSTITUTION_SLUGS`)
 **Admin dashboard filters courses by institution** via `getTenantContext()` — `/gansid/admin` shows GANSID courses, `/scago/admin` shows SCAGO courses.
@@ -700,6 +711,71 @@ Survey viewer receives course/lesson/block context from `CourseViewer` via `Bloc
 
 ---
 
+## Referral & Ambassador Tracking
+
+Regional ambassadors and partners get a tracked link plus their own live,
+anonymised results dashboard, so they can evaluate outreach without anyone
+exporting data by hand. Web analytics could only answer "how many clicked";
+the question asked is "how many of the providers I reached created an account
+and COMPLETED the modules" — which only this database can answer.
+
+### The two links per code
+
+| Link | Who gets it | What it does |
+|---|---|---|
+| `/r/<code>` | shared publicly by the ambassador | records one anonymous visit, sets the attribution cookie, forwards to the landing page |
+| `/report/<token>` | private to the ambassador's team | the live results dashboard. The unguessable token IS the credential — no login |
+
+`?ref=<code>` appended to any tenant URL also works: middleware bounces it
+through `/r/<code>?to=<original path>` so both entry points count a visit and
+set the cookie through one code path. It cannot loop (the ref param is stripped
+before being handed back, and `/r/:code` is not in the middleware matcher).
+
+### Attribution
+
+**Last-touch, 90-day cookie.** The most recent tracked link opened wins, so a
+stale link from a finished campaign cannot outrank the one that drove the
+signup. `getReferralCodeFromCookie()` (client) puts the code into the
+`supabase.auth.signUp` metadata; `handle_new_user` resolves it **within the
+signup institution, live codes only** and writes `users.referral_code_id`.
+A stale, paused, cross-tenant or malformed code attributes to nobody and never
+blocks the signup.
+
+Attribution is **not client-writable** — `guard_referral_attribution` reverts
+any non-admin UPDATE of `referral_code_id` (the `users` table has a self-update
+policy, so without it a learner could write themselves into an ambassador's
+numbers).
+
+### What the public report shows — and what it never shows
+
+Aggregates only: counts, module titles, self-reported roles. **Never** a name,
+email, or per-person row. Funnel: link opens → accounts created → started a
+module → finished a module → certificates earned, plus a daily series, module
+uptake, role breakdown, a table view, CSV export and print-to-PDF.
+
+Framing is **cohort**-based: learners who joined in the selected window, and
+everything they have done since (a pure events-in-window count would drop a
+learner who signed up in March and finished in May from both months).
+Consequence, handled explicitly in the UI: for a short range, accounts can
+exceed link opens (the open happened before the window), so the opens→accounts
+conversion is suppressed and a note explains it — see `hasMeaningfulConversion`.
+
+### Gotchas that are already handled
+
+- **Link-preview crawlers** (Slack/Teams/Outlook/WhatsApp/LinkedIn) fetch the URL the instant it is pasted. `/r/<code>` detects them and passes a NULL visitor key, which the RPC treats as "resolve but do not count".
+- **Open redirects** — `?to=` and `landing_path` are validated by `isSafeLandingPath` (rejects `//host`, absolute URLs, backslashes).
+- **Charts** use the validated palette in `lib/referral/constants.ts`; `niceTicks` guarantees the top tick ≥ max (a top tick below max silently clips the series).
+- **Archiving** a code kills its dashboard link and hides it from the admin list, but keeps historical attribution (archive, never delete — `ON DELETE SET NULL` would rewrite past reports).
+
+### Known limitation
+
+Only **new signups** are attributed. Someone who already had an account before
+the outreach reached them never appears, even if the outreach is why they came
+back. The report says this in its own footer.
+
+
+---
+
 ## Engineering Rules
 
 1. **No Supabase calls outside `lib/db/`** — partially enforced; `CourseViewer` is a known exception pending refactor.
@@ -729,7 +805,8 @@ Survey viewer receives course/lesson/block context from `CourseViewer` via `Bloc
 25. **Every client-side INSERT/UPDATE must have a verified RLS policy** — a missing UPDATE policy fails SILENTLY (0 rows updated, no error). After adding a client write path, prove the policy exists (the admin certificate revoke showed phantom success for exactly this reason — migration 053).
 26. **Certificates are never issued by client INSERT for students** — only via `issue_course_certificate`, `materialize_legacy_completions()`, or the admin award path (under the migration-053 policies). Revocation is a status change, never DELETE.
 27. **After touching sensitive flows** (quiz gating, completion, certificate lifecycle, admin reset, survey gating, enrollment/visibility, analytics counters, migrations/RLS), run the `qa-lms` agent protocol — `npx tsc --noEmit` + `npx vitest run` + `node scripts/audit-cert-attainability.mjs` (+ `audit-db-invariants.mjs` if present) — before pushing. See `docs/qa-playbook.md`.
-28. **Draft/publish workflow in the editor** — `slides.status` (`draft`|`published`) is the unit of publishing; students only see `published` (RLS). New content (new slides, duplicates) is created as **draft**. Editing published content (a slide's own fields, or any block on it) flips THAT slide to draft **instantly** (Draft badge appears on the edit), until the admin clicks Publish — implemented via a `store.subscribe` listener in `course-editor-shell.tsx` (set up after load) that calls the store's `markSlidesDraft()`. The draft decision uses **content-only** fingerprints — `fpBlockContent` excludes grid geometry (`gridX/Y/W/H`) and `fpSlideContent` excludes `status`/`order_index` — so auto-fit-height (slide-preview shrinks stored `gridH` to measured content on load), manual resize/move, publishing, and reordering never spuriously unpublish. **Undo/redo is exempt from the flip**: the store tags snapshot restores with a transient `isRestoring` flag (set in `restoreSnapshot`, cleared on the next `set` inside `undo`/`redo`) and the subscription early-returns when it's set — otherwise undoing an edit (which restores the slide's exact prior `published` status via the pre-edit snapshot) would be misread as a fresh edit and re-draft the slide. `markSlidesDraft` never pushes to the undo stack, so an edit's undo reverts content and status together. Publish (`publishCourse`) flips the whole course's live slides to published. Draft badges + the content-health chip make unpublished content impossible to miss (so draft-by-default is safe, not a "phantom draft"). Separately, the selective SAVE (`fpSlide`/`fpBlock`, full incl. grid) still persists layout tweaks.
+28. **Referral attribution is server-owned and institution-scoped** — it is written ONLY by `handle_new_user` from signup metadata, and the `guard_referral_attribution` trigger reverts any client attempt to change `users.referral_code_id`. Every figure derived from an attributed cohort must be filtered to the code's institution: under dual access (migration 055) one login spans institutions, so an unscoped join reports another tenant's activity in an ambassador's report. The public `/report/<token>` page must never gain a per-person field — the token is a bearer credential handed to people outside the organisation, and aggregates-only is what makes that safe.
+29. **Draft/publish workflow in the editor** — `slides.status` (`draft`|`published`) is the unit of publishing; students only see `published` (RLS). New content (new slides, duplicates) is created as **draft**. Editing published content (a slide's own fields, or any block on it) flips THAT slide to draft **instantly** (Draft badge appears on the edit), until the admin clicks Publish — implemented via a `store.subscribe` listener in `course-editor-shell.tsx` (set up after load) that calls the store's `markSlidesDraft()`. The draft decision uses **content-only** fingerprints — `fpBlockContent` excludes grid geometry (`gridX/Y/W/H`) and `fpSlideContent` excludes `status`/`order_index` — so auto-fit-height (slide-preview shrinks stored `gridH` to measured content on load), manual resize/move, publishing, and reordering never spuriously unpublish. **Undo/redo is exempt from the flip**: the store tags snapshot restores with a transient `isRestoring` flag (set in `restoreSnapshot`, cleared on the next `set` inside `undo`/`redo`) and the subscription early-returns when it's set — otherwise undoing an edit (which restores the slide's exact prior `published` status via the pre-edit snapshot) would be misread as a fresh edit and re-draft the slide. `markSlidesDraft` never pushes to the undo stack, so an edit's undo reverts content and status together. Publish (`publishCourse`) flips the whole course's live slides to published. Draft badges + the content-health chip make unpublished content impossible to miss (so draft-by-default is safe, not a "phantom draft"). Separately, the selective SAVE (`fpSlide`/`fpBlock`, full incl. grid) still persists layout tweaks.
 
 ---
 

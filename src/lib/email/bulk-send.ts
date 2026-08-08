@@ -7,6 +7,7 @@ import {
   certificateEmailVariables,
   assignmentEmailVariables,
   legacyClaimInviteEmailVariables,
+  referralLinkEmailVariables,
 } from './system-emails';
 import type { EmailSystemType } from '@/lib/db/email-templates';
 
@@ -52,6 +53,14 @@ function defaultSampleVariables(
       certificateNumber: `${slug}-SAMPLE-00001`,
       verifyUrl: `${origin}/verify/${slug}-SAMPLE-00001`,
       certificatesUrl: `${origin}/${institutionSlug}/student/certificates`,
+    });
+  }
+  if (type === 'referral_link') {
+    return referralLinkEmailVariables({
+      recipientName: 'Sample Ambassador',
+      referralLabel: 'Sample Region',
+      referralUrl: `${origin}/r/sample-region`,
+      reportUrl: `${origin}/report/sample-token`,
     });
   }
   if (type === 'legacy_claim_invite') {
