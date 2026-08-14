@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,6 +16,13 @@ import { User, Mail, Loader2, Save, Camera, ShieldCheck, Key, LogOut, BookOpen, 
 import type { User as UserType, CmeCertificateRequest } from '@/types';
 import { isAdminRole } from '@/lib/auth/roles';
 import { resolveInstitutionSlug } from '@/lib/tenant/path';
+import {
+  PROFESSION_SELECT_OPTIONS,
+  PROFESSION_OTHER_VALUE,
+  MAX_PROFESSION_LENGTH,
+  resolveProfession,
+  splitStoredProfession,
+} from '@/lib/profile/professions';
 import type { StudentProgress } from '@/lib/db/analytics';
 import {
   getMyCmeRequest,
@@ -47,6 +55,10 @@ export default function ProfilePage() {
     affiliation: '',
     country: '',
   });
+  // Profession is stored as one string in users.occupation; the form splits it
+  // into a select + optional free text (see lib/profile/professions).
+  const [professionChoice, setProfessionChoice] = useState('');
+  const [professionOther, setProfessionOther] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
@@ -77,6 +89,9 @@ export default function ProfilePage() {
           affiliation: data.affiliation || '',
           country: data.country || '',
         });
+        const split = splitStoredProfession(data.occupation);
+        setProfessionChoice(split.selection);
+        setProfessionOther(split.otherText);
       }
 
       // Resolve the ACTIVE portal institution (URL/cookie slug), not the user's primary —
@@ -208,6 +223,12 @@ export default function ProfilePage() {
       toast.error('Bio must be under 500 characters');
       return;
     }
+    // Picking "Other" and leaving the box empty would silently clear the
+    // profession, so catch it here rather than saving a blank.
+    if (professionChoice && !resolveProfession(professionChoice, professionOther)) {
+      toast.error('Please enter your profession');
+      return;
+    }
 
     setSaving(true);
 
@@ -218,7 +239,9 @@ export default function ProfilePage() {
           full_name: trimmedName,
           bio: formData.bio.trim(),
           avatar_url: formData.avatar_url,
-          occupation: formData.occupation.trim() || null,
+          // null only when nothing is selected — an incomplete "Other" is
+          // rejected before we get here.
+          occupation: resolveProfession(professionChoice, professionOther),
           affiliation: formData.affiliation.trim() || null,
           country: formData.country.trim() || null,
           updated_at: new Date().toISOString(),
@@ -477,19 +500,42 @@ export default function ProfilePage() {
 
             <div className="grid gap-6 md:grid-cols-3">
               <div className="space-y-1.5">
-                <Label htmlFor="occupation" className="text-xs font-black uppercase tracking-widest text-slate-400">Occupation</Label>
-                <div className="relative group">
-                  <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB]" />
-                  <Input
+                <Label htmlFor="occupation" className="text-xs font-black uppercase tracking-widest text-slate-400">Profession</Label>
+                <Select
+                  value={professionChoice}
+                  onValueChange={(v) => {
+                    setProfessionChoice(v);
+                    if (v !== PROFESSION_OTHER_VALUE) setProfessionOther('');
+                  }}
+                >
+                  <SelectTrigger
                     id="occupation"
-                    type="text"
-                    placeholder="e.g. Healthcare Professional"
-                    value={formData.occupation}
-                    onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-                    maxLength={100}
-                    className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
-                  />
-                </div>
+                    className="h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
+                  >
+                    <SelectValue placeholder="Select your profession" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROFESSION_SELECT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value} className="font-bold">
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {professionChoice === PROFESSION_OTHER_VALUE && (
+                  <div className="relative group pt-1.5">
+                    <Briefcase className="absolute left-4 top-[calc(50%+3px)] -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#2563EB]" />
+                    <Input
+                      id="occupation-other"
+                      type="text"
+                      placeholder="e.g. Community health worker"
+                      value={professionOther}
+                      onChange={(e) => setProfessionOther(e.target.value)}
+                      maxLength={MAX_PROFESSION_LENGTH}
+                      className="pl-11 h-11 bg-slate-50/50 border-slate-200 rounded-xl focus:ring-blue-100 focus:border-[#2563EB] font-bold text-slate-900"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1.5">

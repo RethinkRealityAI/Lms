@@ -13,19 +13,27 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PublicNav } from '@/components/public-nav';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { BookOpen, Loader2, Mail, Lock, User, CheckCircle2, Globe, MailCheck, ArrowRight, Award, Clock, BookOpenCheck } from 'lucide-react';
+import { BookOpen, Loader2, Mail, Lock, User, CheckCircle2, Globe, MailCheck, ArrowRight, Award, Clock, BookOpenCheck, Stethoscope } from 'lucide-react';
 import { isAdminRole, normalizeRole } from '@/lib/auth/roles';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 import { logSignInEvent } from '@/lib/db/events';
 import { joinInstitution, signupPrecheck } from '@/lib/db/memberships';
 import { getReferralCodeFromCookie } from '@/lib/referral/constants';
+import {
+  PROFESSION_SELECT_OPTIONS,
+  PROFESSION_OTHER_VALUE,
+  MAX_PROFESSION_LENGTH,
+  resolveProfession,
+} from '@/lib/profile/professions';
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+// Everyone who signs up is a learner. Instructors and admins are provisioned
+// separately (invite or role upgrade), so the form no longer asks.
 const signUpSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
@@ -34,17 +42,12 @@ const signUpSchema = z.object({
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Must contain at least one number'),
-  role: z.enum(['institution_admin', 'student']),
-  verificationCode: z.string().optional(),
-}).refine((data) => {
-  if (data.role === 'institution_admin' && !data.verificationCode) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Verification code is required for instructors",
-  path: ["verificationCode"],
-});
+  profession: z.string().min(1, 'Please tell us what you do'),
+  professionOther: z.string().optional(),
+}).refine(
+  (data) => resolveProfession(data.profession, data.professionOther) !== null,
+  { message: 'Please enter your profession', path: ['professionOther'] },
+);
 
 /** Map feature icon names to Lucide components */
 function FeatureIcon({ icon, className }: { icon: string; className?: string }) {
@@ -74,8 +77,8 @@ function LoginContent() {
     email: '',
     password: '',
     fullName: '',
-    role: 'student' as 'institution_admin' | 'student',
-    verificationCode: '',
+    profession: '',
+    professionOther: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
@@ -312,55 +315,33 @@ function LoginContent() {
         return;
       }
 
-      // Validate verification code for admin signup
-      if (formData.role === 'institution_admin') {
-        if (!formData.verificationCode || formData.verificationCode.trim() === '') {
-          setErrors({ verificationCode: 'Verification code is required for admin signup' });
-          setLoading(false);
-          return;
-        }
-
-        const { data: codeData, error: codeError } = await supabase
-          .from('verification_codes')
-          .select('*')
-          .eq('code', formData.verificationCode.trim())
-          .eq('role', 'admin')
-          .eq('is_active', true)
-          .single();
-
-        if (codeError || !codeData) {
-          setErrors({ verificationCode: 'Invalid verification code' });
-          setLoading(false);
-          return;
-        }
-
-        if (codeData.expires_at && new Date(codeData.expires_at) < new Date()) {
-          setErrors({ verificationCode: 'Verification code has expired' });
-          setLoading(false);
-          return;
-        }
-
-        if (codeData.current_uses >= codeData.max_uses) {
-          setErrors({ verificationCode: 'Verification code has reached its maximum usage' });
-          setLoading(false);
-          return;
-        }
-      }
-
       // Ambassador attribution (migration 068). Read from the cookie the
       // tracked link set; `handle_new_user` resolves it against live codes in
       // THIS institution, so a stale or foreign code just attributes to nobody
       // and never blocks the signup. Omitted entirely when absent.
       const referralCode = getReferralCodeFromCookie();
 
+      // Profession (migration 069). Zod already rejected an incomplete answer,
+      // so this resolves; the guard keeps a blank out of the metadata rather
+      // than trusting that.
+      const profession = resolveProfession(formData.profession, formData.professionOther);
+      if (!profession) {
+        setErrors({ professionOther: 'Please enter your profession' });
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
         options: {
           data: {
-            role: formData.role,
+            // Signup always creates a learner; instructors/admins are
+            // provisioned separately.
+            role: 'student',
             full_name: formData.fullName.trim(),
             institution_slug: currentSlug,
+            profession,
             ...(referralCode ? { referral_code: referralCode } : {}),
           },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
@@ -396,16 +377,6 @@ function LoginContent() {
         return;
       }
 
-      // Increment verification code usage for admin
-      if (formData.role === 'institution_admin' && formData.verificationCode) {
-        try {
-          await supabase.rpc('increment_code_usage', { p_code: formData.verificationCode.trim() });
-        } catch (rpcError) {
-          console.error('Failed to increment code usage:', rpcError);
-          // Don't fail signup if this fails, but log it
-        }
-      }
-
       // Ensure a membership row for this portal when the signup auto-confirmed (session
       // present → the client is now authenticated, so the auth.uid()-bound RPC works). If
       // email confirmation is required instead, the membership is created on first sign-in
@@ -426,7 +397,7 @@ function LoginContent() {
           icon: <CheckCircle2 className="h-5 w-5" />,
           duration: 3000,
         });
-        router.replace(withInstitutionPath(formData.role === 'institution_admin' ? '/admin' : '/student', pathname));
+        router.replace(withInstitutionPath('/student', pathname));
       } else {
         // Email verification required
         setVerificationEmail(formData.email.trim().toLowerCase());
@@ -790,48 +761,69 @@ function LoginContent() {
 
             <TabsContent value="signup" className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
               <form onSubmit={handleSignUp} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="signup-name" className="text-xs font-black uppercase tracking-widest text-slate-400">Full Name</Label>
-                    <div className="relative group">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#DC2626] transition-colors" />
-                      <Input
-                        id="signup-name"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="pl-11 h-11 bg-white border-slate-200 rounded-xl font-medium focus:ring-red-100 focus:border-[#DC2626]"
-                        placeholder="Dr. John Doe"
-                      />
-                    </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="signup-name" className="text-xs font-black uppercase tracking-widest text-slate-400">Full Name</Label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#DC2626] transition-colors" />
+                    <Input
+                      id="signup-name"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className={`pl-11 h-11 bg-white border-slate-200 rounded-xl font-medium focus:ring-red-100 focus:border-[#DC2626] ${errors.fullName ? 'border-red-500' : ''}`}
+                      placeholder="Dr. John Doe"
+                    />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-role" className="text-xs font-black uppercase tracking-widest text-slate-400">Role</Label>
-                    <Select value={formData.role} onValueChange={(v) => setFormData({ ...formData, role: v as 'institution_admin' | 'student' })}>
-                      <SelectTrigger className="h-11 bg-white border-slate-200 rounded-xl font-bold focus:ring-red-100 focus:border-[#DC2626]">
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="student" className="font-bold">Learner</SelectItem>
-                        <SelectItem value="institution_admin" className="font-bold">Instructor</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {errors.fullName && <p className="text-xs text-red-500 mt-1 font-bold">{errors.fullName}</p>}
                 </div>
 
-                {formData.role === 'institution_admin' && (
+                {/* Profession — required. Drives the "who did we reach" reporting
+                    that regional outreach is evaluated on. */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="signup-profession" className="text-xs font-black uppercase tracking-widest text-slate-400">I am a</Label>
+                  <Select
+                    value={formData.profession}
+                    onValueChange={(v) =>
+                      setFormData({
+                        ...formData,
+                        profession: v,
+                        // Drop any text typed under "Other" when moving to a preset,
+                        // so a stale value can never be submitted.
+                        professionOther: v === PROFESSION_OTHER_VALUE ? formData.professionOther : '',
+                      })
+                    }
+                  >
+                    <SelectTrigger
+                      id="signup-profession"
+                      className={`h-11 bg-white border-slate-200 rounded-xl font-bold focus:ring-red-100 focus:border-[#DC2626] ${errors.profession ? 'border-red-500' : ''}`}
+                    >
+                      <SelectValue placeholder="Select your profession" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROFESSION_SELECT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value} className="font-bold">
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.profession && <p className="text-xs text-red-500 mt-1 font-bold">{errors.profession}</p>}
+                </div>
+
+                {formData.profession === PROFESSION_OTHER_VALUE && (
                   <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <Label htmlFor="signup-code" className="text-xs font-black uppercase tracking-widest text-slate-400">Instructor Verification Code</Label>
+                    <Label htmlFor="signup-profession-other" className="text-xs font-black uppercase tracking-widest text-slate-400">Your profession</Label>
                     <div className="relative group">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#DC2626]" />
+                      <Stethoscope className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#DC2626] transition-colors" />
                       <Input
-                        id="signup-code"
-                        value={formData.verificationCode}
-                        onChange={(e) => setFormData({ ...formData, verificationCode: e.target.value })}
-                        className={`pl-11 h-11 bg-white border-slate-200 rounded-xl font-medium focus:ring-red-100 focus:border-[#DC2626] ${errors.verificationCode ? 'border-red-500' : ''}`}
-                        placeholder="Enter authorization code"
+                        id="signup-profession-other"
+                        value={formData.professionOther}
+                        maxLength={MAX_PROFESSION_LENGTH}
+                        onChange={(e) => setFormData({ ...formData, professionOther: e.target.value })}
+                        className={`pl-11 h-11 bg-white border-slate-200 rounded-xl font-medium focus:ring-red-100 focus:border-[#DC2626] ${errors.professionOther ? 'border-red-500' : ''}`}
+                        placeholder="e.g. Community health worker"
                       />
                     </div>
-                    {errors.verificationCode && <p className="text-xs text-red-500 mt-1 font-bold">{errors.verificationCode}</p>}
+                    {errors.professionOther && <p className="text-xs text-red-500 mt-1 font-bold">{errors.professionOther}</p>}
                   </div>
                 )}
 
@@ -982,8 +974,8 @@ function LoginContent() {
                   email: verificationEmail,
                   password: '',
                   fullName: '',
-                  role: 'student',
-                  verificationCode: '',
+                  profession: '',
+                  professionOther: '',
                 });
               }}
               className="w-full h-12 rounded-xl font-bold text-md shadow-xl shadow-blue-100 transition-all hover:scale-[1.02] active:scale-[0.98] gap-2"

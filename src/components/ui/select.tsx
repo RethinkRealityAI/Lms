@@ -114,7 +114,12 @@ const SelectContent = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "absolute top-full z-50 mt-2 min-w-[8rem] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 duration-100",
+        // Explicit background/border, NOT bg-popover: this Tailwind v4 setup
+        // defines --popover as a bare HSL triple but never maps --color-popover,
+        // so `bg-popover` resolved to nothing and every dropdown in the app
+        // rendered transparent — the options sat unreadably on top of whatever
+        // was behind them. Same trap as `bg-card` (see CLAUDE.md).
+        "absolute top-full z-50 mt-2 min-w-[8rem] w-full overflow-hidden rounded-md border border-slate-200 bg-white text-slate-900 shadow-lg animate-in fade-in-0 zoom-in-95 duration-100",
         className
       )}
       {...props}
@@ -148,8 +153,11 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
           setOpen(false)
         }}
         className={cn(
-          "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground transition-colors",
-          selectedValue === value && "bg-accent text-accent-foreground",
+          // Explicit hover/selected colours for the same reason as the panel
+          // above — `bg-accent` resolves to nothing here, which left the list
+          // with no hover feedback and no visible selected row.
+          "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm outline-none transition-colors hover:bg-slate-100 focus:bg-slate-100",
+          selectedValue === value && "bg-slate-100 font-semibold",
           className
         )}
         {...props}
