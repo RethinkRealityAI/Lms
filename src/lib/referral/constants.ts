@@ -131,7 +131,7 @@ export type RangeKey = (typeof RANGE_PRESETS)[number]['key'];
 /* ------------------------------------------------------------------ */
 
 export interface FunnelStep {
-  key: 'visits' | 'signups' | 'learners_started' | 'learners_completed' | 'certificates';
+  key: 'visits' | 'signups' | 'learners_started' | 'learners_completed' | 'learners_certificated';
   label: string;
   /** Plain-language definition shown on the public report, so an external
    *  reader never has to guess what a number counts. */
@@ -148,7 +148,7 @@ export interface FunnelStep {
  * windowed view — link opens are counted inside the window, while a signup in
  * the window may trace back to an open before it. So signups CAN exceed opens
  * for a short range, and the UI must not claim otherwise or print a >100%
- * conversion. See `isSupersetOfNext` below.
+ * conversion. See `hasMeaningfulConversion` below.
  */
 export const FUNNEL_STEPS: readonly FunnelStep[] = [
   {
@@ -172,9 +172,13 @@ export const FUNNEL_STEPS: readonly FunnelStep[] = [
     help: 'Of those accounts, how many completed every lesson in at least one module.',
   },
   {
-    key: 'certificates',
-    label: 'Certificates earned',
-    help: 'Certificates currently held by those learners. Revoked certificates are not counted.',
+    // PEOPLE holding a certificate, not the number of certificates: a learner
+    // who finishes three modules holds three, which would widen the funnel and
+    // print a conversion above 100%. The certificate TOTAL is shown as a stat
+    // tile and in the table, where that is the question being asked.
+    key: 'learners_certificated',
+    label: 'Earned a certificate',
+    help: 'Of those accounts, how many now hold at least one certificate. Revoked certificates are not counted.',
   },
 ] as const;
 

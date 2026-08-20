@@ -191,7 +191,7 @@ describe('funnel definition', () => {
     const keys = FUNNEL_STEPS.map((s) => s.key);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys[0]).toBe('visits');
-    expect(keys[keys.length - 1]).toBe('certificates');
+    expect(keys[keys.length - 1]).toBe('learners_certificated');
   });
 
   it('gives every step a plain-language definition for the public report', () => {

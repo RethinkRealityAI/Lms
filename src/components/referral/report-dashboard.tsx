@@ -87,6 +87,10 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
 
     lines.push([esc('Funnel stage'), esc('Count')].join(','));
     for (const d of funnelData) lines.push([esc(d.step.label), d.value].join(','));
+    // Totals that are NOT funnel stages because they count events, not people.
+    lines.push([esc('Module completions (total)'), totals.courses_completed].join(','));
+    lines.push([esc('Certificates issued (total)'), totals.certificates].join(','));
+    lines.push([esc('Lessons completed (total)'), totals.lessons_completed].join(','));
     lines.push('');
 
     lines.push([esc('Date'), esc('Link opens'), esc('Accounts created')].join(','));
@@ -109,7 +113,7 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
     a.download = `${report.code.code}-outreach-report-${report.range.to}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [report, funnelData, daily, courses, occupations]);
+  }, [report, totals, funnelData, daily, courses, occupations]);
 
   return (
     <div className="referral-report min-h-screen bg-slate-50 pb-16">
@@ -245,10 +249,15 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
               value={totals.learners_completed}
               caption={`${percent(totals.learners_completed, totals.signups)} of new accounts`}
             />
+            {/* The raw certificate COUNT belongs here — "how many certificates
+                has this outreach produced" is the question a tile answers. The
+                funnel below counts people instead, so that it cannot widen. */}
             <StatTile
               label="Certificates earned"
               value={totals.certificates}
-              caption={`${fmt.format(totals.lessons_completed)} lessons completed in total`}
+              caption={`held by ${fmt.format(totals.learners_certificated)} ${
+                totals.learners_certificated === 1 ? 'learner' : 'learners'
+              }`}
             />
           </div>
         </section>
@@ -366,6 +375,18 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
                   </td>
                   <td className="py-2 text-slate-600">
                     Total modules finished. One learner can finish several.
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <th scope="row" className="py-2 pr-4 text-left font-medium text-slate-800">
+                    Certificates issued
+                  </th>
+                  <td className="py-2 pr-4 text-right tabular-nums text-slate-900">
+                    {fmt.format(totals.certificates)}
+                  </td>
+                  <td className="py-2 text-slate-600">
+                    Total certificates held. One learner can hold several — the funnel row
+                    above counts the learners.
                   </td>
                 </tr>
                 <tr>

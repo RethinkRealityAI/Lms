@@ -52,6 +52,9 @@ export interface ReferralReportTotals {
   lessons_completed: number;
   courses_completed: number;
   learners_completed: number;
+  /** PEOPLE holding at least one live certificate — the funnel's last step. */
+  learners_certificated: number;
+  /** CERTIFICATES issued; one learner can hold several. */
   certificates: number;
 }
 
