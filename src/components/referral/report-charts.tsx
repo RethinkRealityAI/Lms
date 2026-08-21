@@ -1,6 +1,19 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import {
   SERIES_COLORS,
   FUNNEL_RAMP,
@@ -10,34 +23,38 @@ import {
 } from '@/lib/referral/constants';
 
 /**
- * Hand-rolled SVG charts for the referral report.
+ * Charts for the public outreach report, built on recharts (already a
+ * dependency — nothing new is pulled in for this page).
  *
- * No charting dependency on purpose: this page is public, is opened on hospital
- * wifi, and has to print cleanly to PDF. Inline SVG gives full control over the
- * print stylesheet and adds nothing to the bundle.
+ * Two rules survive from the hand-rolled version and must not be lost:
  *
- * Colours come from the validated palette in referral/constants — categorical
- * slots 1 & 2 for the two-series chart, the ordinal blue ramp for the funnel.
- * Do not substitute hexes by eye.
+ * 1. The y-axis top tick is computed by `niceTicks` and passed to recharts
+ *    explicitly. recharts' own axis is fine, but this keeps the ONE property
+ *    that matters under test: the top tick is always >= the largest value, so
+ *    the series can never be drawn outside the plot and silently clipped.
+ * 2. Colours come from the validated palette in referral/constants —
+ *    categorical slots 1 & 2 for the two-series chart, the ordinal blue ramp
+ *    for the funnel. Do not substitute hexes by eye.
  */
 
-/* ------------------------------------------------------------------ */
-/* Sizing                                                              */
-/* ------------------------------------------------------------------ */
+const fmt = new Intl.NumberFormat('en-CA');
 
 /**
- * Render at real pixel width so stroke widths and type never scale-distort.
+ * Measure the chart's own box so the horizontal charts can shrink their
+ * category gutter and label space on a phone.
  *
- * Starts at 0 and the caller renders no SVG until it has a real measurement.
- * A non-zero initial guess would paint an over-wide SVG that widens the very
- * element being measured, and the observer would then latch onto that inflated
- * width — the page ends up permanently wider than the viewport.
+ * Without this the funnel's 170px label gutter plus its 148px label margin eat
+ * a 390px screen entirely and every bar renders as a sliver — the chart looks
+ * broken exactly where most people open a link someone texted them.
+ *
+ * Starts at 0 and the caller renders nothing until measured: a non-zero guess
+ * would paint an over-wide chart that widens the very box being measured.
  */
-function useContainerWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
-  const ref = useRef<T | null>(null);
-  const [width, setWidth] = useState(0);
+function useChartWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
+  const ref = React.useRef<T | null>(null);
+  const [width, setWidth] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const update = () => setWidth(el.clientWidth);
@@ -49,6 +66,24 @@ function useContainerWidth<T extends HTMLElement>(): [React.RefObject<T | null>,
   }, []);
 
   return [ref, width];
+}
+
+/** Below this the label gutter is squeezed and secondary text is dropped. */
+const NARROW_CHART = 420;
+
+function formatDay(iso: string, withYear = false): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  return d.toLocaleDateString('en-CA', {
+    month: 'short',
+    day: 'numeric',
+    ...(withYear ? { year: 'numeric' } : {}),
+    timeZone: 'UTC',
+  });
+}
+
+/** Long labels have to fit a fixed axis gutter; the tooltip carries the full text. */
+function truncate(label: string, max: number): string {
+  return label.length <= max ? label : `${label.slice(0, max - 1).trimEnd()}…`;
 }
 
 /**
@@ -73,16 +108,57 @@ export function niceTicks(max: number, count = 4): number[] {
   return ticks;
 }
 
-const fmt = new Intl.NumberFormat('en-CA');
+/* ------------------------------------------------------------------ */
+/* Shared chrome                                                       */
+/* ------------------------------------------------------------------ */
 
-function formatDay(iso: string, withYear = false): string {
-  const d = new Date(`${iso}T00:00:00Z`);
-  return d.toLocaleDateString('en-CA', {
-    month: 'short',
-    day: 'numeric',
-    ...(withYear ? { year: 'numeric' } : {}),
-    timeZone: 'UTC',
-  });
+function TooltipShell({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="min-w-[10rem] rounded-xl border border-slate-200 bg-white p-3 shadow-[0_8px_30px_rgb(0,0,0,0.10)]">
+      <p className="mb-1.5 text-xs font-bold uppercase tracking-widest text-slate-400">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function TooltipRow({ color, label, value }: { color: string; label: string; value: number }) {
+  return (
+    <p className="flex items-center justify-between gap-5 text-sm text-slate-600">
+      <span className="flex items-center gap-1.5">
+        <span
+          aria-hidden
+          className="inline-block h-2 w-2 rounded-full"
+          style={{ backgroundColor: color }}
+        />
+        {label}
+      </span>
+      <span className="font-bold tabular-nums text-slate-900">{fmt.format(value)}</span>
+    </p>
+  );
+}
+
+function LegendKey({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+      <span
+        aria-hidden
+        className="inline-block h-2.5 w-2.5 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      {label}
+    </span>
+  );
+}
+
+function EmptyPlot({ message, height = 220 }: { message: string; height?: number }) {
+  return (
+    <div
+      className="flex items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60"
+      style={{ height }}
+    >
+      <p className="px-6 text-center text-sm text-slate-500">{message}</p>
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -135,235 +211,113 @@ export function bucketSeries(points: SeriesPoint[]): {
   };
 }
 
-interface TimeSeriesProps {
-  data: SeriesPoint[];
-  /** Rendered above the plot; also the accessible name. */
-  title: string;
+interface SeriesTooltipProps {
+  active?: boolean;
+  payload?: { payload: SeriesPoint }[];
 }
 
-export function TimeSeriesChart({ data, title }: TimeSeriesProps) {
-  const [ref, width] = useContainerWidth<HTMLDivElement>();
-  const [hover, setHover] = useState<number | null>(null);
+function SeriesTooltip({ active, payload }: SeriesTooltipProps) {
+  if (!active || !payload?.length) return null;
+  const p = payload[0].payload;
+  return (
+    <TooltipShell title={formatDay(p.day, true)}>
+      <TooltipRow color={SERIES_COLORS.signups} label="Accounts" value={p.signups} />
+      <TooltipRow color={SERIES_COLORS.visits} label="Opens" value={p.visits} />
+    </TooltipShell>
+  );
+}
 
+export function TimeSeriesChart({ data, title }: { data: SeriesPoint[]; title: string }) {
   const { points, granularity } = useMemo(() => bucketSeries(data), [data]);
 
-  const height = 260;
-  const pad = { top: 16, right: 56, bottom: 34, left: 44 };
-  const plotW = Math.max(40, width - pad.left - pad.right);
-  const plotH = height - pad.top - pad.bottom;
-
-  const maxValue = Math.max(1, ...points.map((p) => Math.max(p.visits, p.signups)));
-  const ticks = niceTicks(maxValue);
+  const ticks = useMemo(
+    () => niceTicks(Math.max(1, ...points.map((p) => Math.max(p.visits, p.signups)))),
+    [points],
+  );
   const yMax = ticks[ticks.length - 1];
-
-  const x = useCallback(
-    (i: number) => (points.length <= 1 ? plotW / 2 : (i / (points.length - 1)) * plotW),
-    [points.length, plotW],
-  );
-  const y = useCallback((v: number) => plotH - (v / yMax) * plotH, [plotH, yMax]);
-
-  const linePath = useCallback(
-    (key: 'visits' | 'signups') =>
-      points.map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(p[key])}`).join(' '),
-    [points, x, y],
-  );
-
-  const handleMove = useCallback(
-    (e: React.PointerEvent<SVGSVGElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const px = e.clientX - rect.left - pad.left;
-      if (points.length === 0) return;
-      const idx = Math.round((px / plotW) * (points.length - 1));
-      setHover(Math.min(points.length - 1, Math.max(0, idx)));
-    },
-    [plotW, points.length, pad.left],
-  );
-
-  if (points.length === 0) {
-    return <EmptyPlot title={title} message="No activity in this period yet." />;
-  }
-
-  const active = hover === null ? null : points[hover];
-  const last = points[points.length - 1];
 
   const granularityNote =
     granularity === 'day' ? 'per day' : granularity === 'week' ? 'per week' : 'per month';
 
   return (
-    <figure className="m-0" ref={ref}>
-      <figcaption className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-        <span className="text-xs text-slate-500">Totals {granularityNote}</span>
+    <figure className="m-0">
+      <figcaption className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h3 className="text-sm font-bold text-slate-900">{title}</h3>
+        <span className="text-xs font-medium text-slate-400">Totals {granularityNote}</span>
       </figcaption>
 
-      {/* Legend — always present for two series; identity is never colour-alone. */}
-      <div className="mb-2 flex items-center gap-4">
-        <LegendKey color={SERIES_COLORS.signups} label="Accounts created" />
-        <LegendKey color={SERIES_COLORS.visits} label="Link opens" />
-      </div>
-
-      {/* w-full + overflow-hidden: the measured box is driven by the layout,
-          never by the SVG it contains. Reserve the height so nothing jumps
-          between first paint and the first measurement. */}
-      <div className="relative w-full overflow-hidden" style={{ minHeight: height }}>
-        {width > 0 && (
-        <svg
-          width={width}
-          height={height}
-          role="img"
-          aria-label={`${title}. ${points.length} points ${granularityNote}.`}
-          onPointerMove={handleMove}
-          onPointerLeave={() => setHover(null)}
-          style={{ touchAction: 'pan-y' }}
-        >
-          <g transform={`translate(${pad.left},${pad.top})`}>
-            {/* Hairline gridlines — solid, one step off surface, recessive. */}
-            {ticks.map((t) => (
-              <g key={t}>
-                <line
-                  x1={0}
-                  x2={plotW}
-                  y1={y(t)}
-                  y2={y(t)}
-                  stroke={t === 0 ? CHART_INK.axis : CHART_INK.gridline}
-                  strokeWidth={1}
-                />
-                <text
-                  x={-10}
-                  y={y(t)}
-                  textAnchor="end"
-                  dominantBaseline="middle"
-                  fontSize={11}
-                  fill={CHART_INK.muted}
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  {fmt.format(t)}
-                </text>
-              </g>
-            ))}
-
-            {/* X labels: first, middle, last only — never one per point. */}
-            {[0, Math.floor((points.length - 1) / 2), points.length - 1]
-              .filter((v, i, a) => a.indexOf(v) === i && v >= 0)
-              .map((i) => (
-                <text
-                  key={i}
-                  x={x(i)}
-                  y={plotH + 20}
-                  textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
-                  fontSize={11}
-                  fill={CHART_INK.muted}
-                >
-                  {formatDay(points[i].day)}
-                </text>
-              ))}
-
-            {active && (
-              <line
-                x1={x(hover as number)}
-                x2={x(hover as number)}
-                y1={0}
-                y2={plotH}
-                stroke={CHART_INK.axis}
-                strokeWidth={1}
-              />
-            )}
-
-            <path
-              d={linePath('visits')}
-              fill="none"
-              stroke={SERIES_COLORS.visits}
-              strokeWidth={2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-            <path
-              d={linePath('signups')}
-              fill="none"
-              stroke={SERIES_COLORS.signups}
-              strokeWidth={2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-
-            {/* End markers with a 2px surface ring so they stay legible where
-                the two lines cross. */}
-            <EndMarker cx={x(points.length - 1)} cy={y(last.visits)} color={SERIES_COLORS.visits} />
-            <EndMarker cx={x(points.length - 1)} cy={y(last.signups)} color={SERIES_COLORS.signups} />
-
-            {active && hover !== null && (
-              <>
-                <EndMarker cx={x(hover)} cy={y(active.visits)} color={SERIES_COLORS.visits} />
-                <EndMarker cx={x(hover)} cy={y(active.signups)} color={SERIES_COLORS.signups} />
-              </>
-            )}
-          </g>
-        </svg>
-        )}
-
-        {active && hover !== null && (
-          <div
-            className="pointer-events-none absolute z-10 min-w-[9.5rem] rounded-lg border border-slate-200 bg-white p-2.5 text-xs shadow-lg"
-            style={{
-              left: Math.min(Math.max(pad.left + x(hover) - 76, 0), Math.max(0, width - 160)),
-              top: 4,
-            }}
-          >
-            <p className="mb-1.5 font-semibold text-slate-900">{formatDay(active.day, true)}</p>
-            <TooltipRow color={SERIES_COLORS.signups} label="Accounts" value={active.signups} />
-            <TooltipRow color={SERIES_COLORS.visits} label="Opens" value={active.visits} />
+      {points.length === 0 ? (
+        <EmptyPlot message="No activity in this period yet." />
+      ) : (
+        <>
+          {/* Identity is never colour-alone: the legend is always present. */}
+          <div className="mb-3 flex items-center gap-4">
+            <LegendKey color={SERIES_COLORS.signups} label="Accounts created" />
+            <LegendKey color={SERIES_COLORS.visits} label="Link opens" />
           </div>
-        )}
-      </div>
-    </figure>
-  );
-}
 
-function EndMarker({ cx, cy, color }: { cx: number; cy: number; color: string }) {
-  return (
-    <>
-      <circle cx={cx} cy={cy} r={6} fill={CHART_INK.surface} />
-      <circle cx={cx} cy={cy} r={4} fill={color} />
-    </>
-  );
-}
-
-function LegendKey({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="flex items-center gap-1.5 text-xs text-slate-600">
-      <span
-        aria-hidden
-        className="inline-block h-0.5 w-4 rounded-full"
-        style={{ backgroundColor: color }}
-      />
-      {label}
-    </span>
-  );
-}
-
-function TooltipRow({ color, label, value }: { color: string; label: string; value: number }) {
-  return (
-    <p className="flex items-center justify-between gap-4 text-slate-600">
-      <span className="flex items-center gap-1.5">
-        <span
-          aria-hidden
-          className="inline-block h-2 w-2 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-        {label}
-      </span>
-      <span className="font-semibold tabular-nums text-slate-900">{fmt.format(value)}</span>
-    </p>
-  );
-}
-
-function EmptyPlot({ title, message }: { title: string; message: string }) {
-  return (
-    <figure className="m-0">
-      <figcaption className="mb-1 text-sm font-semibold text-slate-900">{title}</figcaption>
-      <div className="flex h-[220px] items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/60">
-        <p className="text-sm text-slate-500">{message}</p>
-      </div>
+          {/* min-w-0 + w-full: ResponsiveContainer measures this box, so the
+              layout must drive its width and never the chart inside it. */}
+          <div className="w-full min-w-0">
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={points} margin={{ top: 8, right: 8, left: -14, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="referralSignups" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={SERIES_COLORS.signups} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={SERIES_COLORS.signups} stopOpacity={0.02} />
+                  </linearGradient>
+                  <linearGradient id="referralVisits" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={SERIES_COLORS.visits} stopOpacity={0.28} />
+                    <stop offset="100%" stopColor={SERIES_COLORS.visits} stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke={CHART_INK.gridline} />
+                <XAxis
+                  dataKey="day"
+                  tickFormatter={(v: string) => formatDay(v)}
+                  tick={{ fontSize: 11, fill: CHART_INK.muted }}
+                  tickLine={false}
+                  axisLine={{ stroke: CHART_INK.axis }}
+                  minTickGap={44}
+                  tickMargin={10}
+                />
+                <YAxis
+                  ticks={ticks}
+                  domain={[0, yMax]}
+                  allowDecimals={false}
+                  tick={{ fontSize: 11, fill: CHART_INK.muted }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={52}
+                  tickFormatter={(v: number) => fmt.format(v)}
+                />
+                <Tooltip
+                  content={<SeriesTooltip />}
+                  cursor={{ stroke: CHART_INK.axis, strokeWidth: 1 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="visits"
+                  name="Link opens"
+                  stroke={SERIES_COLORS.visits}
+                  strokeWidth={2}
+                  fill="url(#referralVisits)"
+                  activeDot={{ r: 4, strokeWidth: 2, stroke: CHART_INK.surface }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="signups"
+                  name="Accounts created"
+                  stroke={SERIES_COLORS.signups}
+                  strokeWidth={2}
+                  fill="url(#referralSignups)"
+                  activeDot={{ r: 4, strokeWidth: 2, stroke: CHART_INK.surface }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </>
+      )}
     </figure>
   );
 }
@@ -377,53 +331,156 @@ export interface FunnelDatum {
   value: number;
 }
 
+interface FunnelRow {
+  key: string;
+  label: string;
+  help: string;
+  value: number;
+  /** null when the two populations are not comparable — see hasMeaningfulConversion. */
+  conversion: number | null;
+  fill: string;
+}
+
+function FunnelTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: { payload: FunnelRow }[];
+}) {
+  if (!active || !payload?.length) return null;
+  const row = payload[0].payload;
+  return (
+    <TooltipShell title={row.label}>
+      <p className="text-2xl font-black leading-none text-slate-900">{fmt.format(row.value)}</p>
+      <p className="mt-1.5 max-w-[16rem] text-xs leading-snug text-slate-500">{row.help}</p>
+    </TooltipShell>
+  );
+}
+
 /**
- * Ordered stages get the ordinal ramp, not eight identities. Each row shows its
+ * Ordered stages get the ordinal ramp, not five identities. Each bar carries its
  * own value plus the conversion from the step above — the number an evaluation
  * report is actually built on.
  */
 export function FunnelChart({ data }: { data: FunnelDatum[] }) {
-  const max = Math.max(1, ...data.map((d) => d.value));
+  const rows: FunnelRow[] = useMemo(
+    () =>
+      data.map((d, i) => {
+        const previous = i === 0 ? 0 : data[i - 1].value;
+        return {
+          key: d.step.key,
+          label: d.step.label,
+          help: d.step.help,
+          value: d.value,
+          conversion: hasMeaningfulConversion(i, d.value, previous)
+            ? (d.value / previous) * 100
+            : null,
+          fill: FUNNEL_RAMP[Math.min(i, FUNNEL_RAMP.length - 1)],
+        };
+      }),
+    [data],
+  );
+
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  const [ref, width] = useChartWidth<HTMLDivElement>();
+  const narrow = width > 0 && width < NARROW_CHART;
 
   return (
-    <div className="space-y-3">
-      {data.map((d, i) => {
-        const previous = i === 0 ? 0 : data[i - 1].value;
-        const conversion = hasMeaningfulConversion(i, d.value, previous)
-          ? (d.value / previous) * 100
-          : null;
-        const widthPct = (d.value / max) * 100;
-
-        return (
-          <div key={d.step.key}>
-            <div className="mb-1 flex min-w-0 items-baseline justify-between gap-3">
-              <span className="min-w-0 text-sm font-medium text-slate-700" title={d.step.help}>
-                {d.step.label}
-              </span>
-              <span className="flex shrink-0 items-baseline gap-2">
-                {conversion !== null && (
-                  <span className="text-xs tabular-nums text-slate-500">
-                    {conversion.toFixed(0)}% of previous
-                  </span>
-                )}
-                <span className="text-sm font-bold tabular-nums text-slate-900">
-                  {fmt.format(d.value)}
-                </span>
-              </span>
-            </div>
-            <div className="h-5 w-full overflow-hidden rounded-sm bg-slate-100">
-              <div
-                className="h-full rounded-sm"
-                style={{
-                  width: `${Math.max(widthPct, d.value > 0 ? 1.5 : 0)}%`,
-                  backgroundColor: FUNNEL_RAMP[Math.min(i, FUNNEL_RAMP.length - 1)],
-                }}
+    <div className="w-full min-w-0" ref={ref}>
+      {width > 0 && (
+        <ResponsiveContainer width="100%" height={rows.length * (narrow ? 48 : 56) + 8}>
+          <BarChart
+            data={rows}
+            layout="vertical"
+            // Room on the right for the value (+ conversion) label, which sits
+            // outside the bar so a short bar never hides its own number. On a
+            // phone the conversion is dropped and the gutter shrinks, or the
+            // labels would leave no width at all for the bars themselves.
+            margin={{ top: 4, right: narrow ? 56 : 148, left: 0, bottom: 4 }}
+            barCategoryGap="28%"
+          >
+            <XAxis type="number" domain={[0, max]} hide />
+            <YAxis
+              type="category"
+              dataKey="label"
+              width={narrow ? 104 : 170}
+              tick={{ fontSize: narrow ? 11 : 12, fill: CHART_INK.textSecondary, fontWeight: 500 }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v: string) => truncate(v, narrow ? 16 : 22)}
+            />
+            <Tooltip content={<FunnelTooltip />} cursor={{ fill: 'rgba(15,23,42,0.04)' }} />
+            <Bar dataKey="value" radius={[4, 8, 8, 4]} isAnimationActive={false}>
+              {rows.map((r) => (
+                <Cell key={r.key} fill={r.fill} />
+              ))}
+              <LabelList
+                dataKey="value"
+                content={<FunnelValueLabel rows={rows} hideConversion={narrow} />}
               />
-            </div>
-          </div>
-        );
-      })}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+      {narrow && (
+        <p className="mt-2 text-xs text-slate-500">
+          {rows
+            .filter((r) => r.conversion !== null)
+            .map((r) => `${r.label}: ${r.conversion!.toFixed(0)}% of previous`)
+            .join(' · ')}
+        </p>
+      )}
     </div>
+  );
+}
+
+interface LabelProps {
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  height?: number | string;
+  index?: number;
+  rows?: FunnelRow[];
+  /** Narrow layouts print the conversions under the chart instead. */
+  hideConversion?: boolean;
+}
+
+/** Value in bold with the conversion beside it, drawn just past the bar end. */
+function FunnelValueLabel({ x, y, width, height, index, rows, hideConversion }: LabelProps) {
+  const row = rows?.[index ?? 0];
+  if (!row) return null;
+  const px = Number(x ?? 0) + Number(width ?? 0) + 10;
+  const py = Number(y ?? 0) + Number(height ?? 0) / 2;
+  const valueText = fmt.format(row.value);
+
+  return (
+    <g>
+      <text
+        x={px}
+        y={py}
+        dominantBaseline="central"
+        fontSize={14}
+        fontWeight={800}
+        fill={CHART_INK.textPrimary}
+        style={{ fontVariantNumeric: 'tabular-nums' }}
+      >
+        {valueText}
+      </text>
+      {row.conversion !== null && !hideConversion && (
+        <text
+          // Advance past the value text: ~9px per glyph at 14px/800 weight.
+          x={px + 8 + valueText.length * 9}
+          y={py}
+          dominantBaseline="central"
+          fontSize={11}
+          fill={CHART_INK.muted}
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
+          {row.conversion.toFixed(0)}% of previous
+        </text>
+      )}
+    </g>
   );
 }
 
@@ -434,8 +491,44 @@ export function FunnelChart({ data }: { data: FunnelDatum[] }) {
 export interface BarDatum {
   label: string;
   value: number;
-  /** Optional secondary value rendered as a caption (e.g. "4 completed"). */
-  note?: string;
+  /** Optional second series drawn beside the first (e.g. how many finished). */
+  secondary?: number;
+}
+
+interface BarListProps {
+  data: BarDatum[];
+  emptyMessage: string;
+  /** Accessible/tooltip name for the primary series. */
+  valueLabel: string;
+  /** Name for the optional second series; required when any datum has one. */
+  secondaryLabel?: string;
+  /** Bar colour for the primary series. Defaults to the categorical slot 1. */
+  color?: string;
+}
+
+function BarListTooltip({
+  active,
+  payload,
+  valueLabel,
+  secondaryLabel,
+  color,
+}: {
+  active?: boolean;
+  payload?: { payload: BarDatum }[];
+  valueLabel: string;
+  secondaryLabel?: string;
+  color: string;
+}) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <TooltipShell title={d.label}>
+      <TooltipRow color={color} label={valueLabel} value={d.value} />
+      {d.secondary !== undefined && secondaryLabel && (
+        <TooltipRow color={FUNNEL_RAMP[4]} label={secondaryLabel} value={d.secondary} />
+      )}
+    </TooltipShell>
+  );
 }
 
 /**
@@ -446,54 +539,102 @@ export function BarList({
   data,
   emptyMessage,
   valueLabel,
-}: {
-  data: BarDatum[];
-  emptyMessage: string;
-  valueLabel: string;
-}) {
-  if (data.length === 0) {
-    return (
-      <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
-        {emptyMessage}
-      </p>
-    );
-  }
+  secondaryLabel,
+  color = SERIES_COLORS.signups,
+}: BarListProps) {
+  const hasSecondary = data.some((d) => d.secondary !== undefined);
 
-  const max = Math.max(1, ...data.map((d) => d.value));
+  if (data.length === 0) return <EmptyPlot message={emptyMessage} />;
+
+  const rowHeight = hasSecondary ? 54 : 42;
+  const [ref, width] = useChartWidth<HTMLDivElement>();
+  const narrow = width > 0 && width < NARROW_CHART;
 
   return (
-    <ul className="space-y-2.5">
-      {data.map((d) => (
-        <li key={d.label}>
-          {/* min-w-0 on both the row and the truncating span: a flex item
-              defaults to min-width:auto and refuses to shrink below its content,
-              so without this a long module title pushes the whole page wide and
-              the document scrolls sideways on a phone. */}
-          <div className="mb-1 flex min-w-0 items-baseline justify-between gap-3">
-            <span className="min-w-0 truncate text-sm text-slate-700" title={d.label}>
-              {d.label}
-            </span>
-            <span className="shrink-0 text-sm font-semibold tabular-nums text-slate-900">
-              {fmt.format(d.value)}
-              <span className="sr-only"> {valueLabel}</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-3.5 flex-1 overflow-hidden rounded-sm bg-slate-100">
-              <div
-                className="h-full rounded-sm"
-                style={{
-                  width: `${Math.max((d.value / max) * 100, d.value > 0 ? 1.5 : 0)}%`,
-                  backgroundColor: SERIES_COLORS.signups,
-                }}
+    <div className="w-full min-w-0" ref={ref}>
+      {hasSecondary && secondaryLabel && (
+        <div className="mb-3 flex items-center gap-4">
+          <LegendKey color={color} label={valueLabel} />
+          <LegendKey color={FUNNEL_RAMP[4]} label={secondaryLabel} />
+        </div>
+      )}
+      {width === 0 ? (
+        <div style={{ height: data.length * rowHeight + 12 }} />
+      ) : (
+      <ResponsiveContainer width="100%" height={data.length * rowHeight + 12}>
+        <BarChart
+          data={data}
+          layout="vertical"
+          margin={{ top: 4, right: narrow ? 40 : 48, left: 0, bottom: 4 }}
+          barCategoryGap={hasSecondary ? '24%' : '30%'}
+        >
+          <XAxis type="number" hide />
+          <YAxis
+            type="category"
+            dataKey="label"
+            // A long module title cannot be allowed to eat the whole width on
+            // a phone — it truncates harder there, and the tooltip carries the
+            // full text either way.
+            width={narrow ? 116 : 190}
+            tick={{ fontSize: narrow ? 11 : 12, fill: CHART_INK.textSecondary }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(v: string) => truncate(v, narrow ? 18 : 26)}
+          />
+          <Tooltip
+            cursor={{ fill: 'rgba(15,23,42,0.04)' }}
+            content={
+              <BarListTooltip
+                valueLabel={valueLabel}
+                secondaryLabel={secondaryLabel}
+                color={color}
               />
-            </div>
-            {d.note && (
-              <span className="shrink-0 text-xs tabular-nums text-slate-500">{d.note}</span>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
+            }
+          />
+          <Bar
+            dataKey="value"
+            name={valueLabel}
+            fill={color}
+            radius={[4, 6, 6, 4]}
+            isAnimationActive={false}
+          >
+            <LabelList
+              dataKey="value"
+              position="right"
+              offset={8}
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                fill: CHART_INK.textPrimary,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+              formatter={(v: number) => fmt.format(v)}
+            />
+          </Bar>
+          {hasSecondary && (
+            <Bar
+              dataKey="secondary"
+              name={secondaryLabel}
+              fill={FUNNEL_RAMP[4]}
+              radius={[4, 6, 6, 4]}
+              isAnimationActive={false}
+            >
+              <LabelList
+                dataKey="secondary"
+                position="right"
+                offset={8}
+                style={{
+                  fontSize: 11,
+                  fill: CHART_INK.muted,
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+                formatter={(v: number) => fmt.format(v)}
+              />
+            </Bar>
+          )}
+        </BarChart>
+      </ResponsiveContainer>
+      )}
+    </div>
   );
 }
