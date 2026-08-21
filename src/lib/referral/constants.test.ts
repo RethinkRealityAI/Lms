@@ -13,6 +13,8 @@ import {
   FUNNEL_RAMP,
   hasMeaningfulConversion,
   RANGE_PRESETS,
+  getReferralSourceFromCookie,
+  REFERRAL_SOURCE_COOKIE,
 } from './constants';
 
 describe('normalizeReferralCode', () => {
@@ -191,7 +193,7 @@ describe('funnel definition', () => {
     const keys = FUNNEL_STEPS.map((s) => s.key);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys[0]).toBe('visits');
-    expect(keys[keys.length - 1]).toBe('certificates');
+    expect(keys[keys.length - 1]).toBe('learners_certificated');
   });
 
   it('gives every step a plain-language definition for the public report', () => {
@@ -274,5 +276,46 @@ describe('RANGE_PRESETS', () => {
   it('has unique keys', () => {
     const keys = RANGE_PRESETS.map((r) => r.key);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe('getReferralSourceFromCookie', () => {
+  afterEach(() => {
+    document.cookie = `${REFERRAL_SOURCE_COOKIE}=; max-age=0; path=/`;
+  });
+
+  it('parses a bare category', () => {
+    document.cookie = `${REFERRAL_SOURCE_COOKIE}=social`;
+    expect(getReferralSourceFromCookie()).toEqual({ category: 'social', campaign: null });
+  });
+
+  it('parses category|campaign', () => {
+    document.cookie = `${REFERRAL_SOURCE_COOKIE}=${encodeURIComponent('email|newsletter')}`;
+    expect(getReferralSourceFromCookie()).toEqual({ category: 'email', campaign: 'newsletter' });
+  });
+
+  it('rejects values that do not look like what the /r route writes', () => {
+    // The signup handler must never forward junk into the metadata; the
+    // trigger re-validates anyway, but the first gate is here.
+    for (const bad of ['<script>', 'SOCIAL', 'a', 'social|<x>', 'social|UPPER', '%%%']) {
+      document.cookie = `${REFERRAL_SOURCE_COOKIE}=${bad}`;
+      const out = getReferralSourceFromCookie();
+      if (bad.startsWith('social|')) {
+        expect(out.category).toBe('social');
+        expect(out.campaign).toBeNull();
+      } else {
+        expect(out.category, bad).toBeNull();
+      }
+      document.cookie = `${REFERRAL_SOURCE_COOKIE}=; max-age=0; path=/`;
+    }
+  });
+
+  it('returns nulls when the cookie is absent', () => {
+    expect(getReferralSourceFromCookie()).toEqual({ category: null, campaign: null });
+  });
+
+  it('never throws on malformed percent-encoding', () => {
+    document.cookie = `${REFERRAL_SOURCE_COOKIE}=%E0%A4%A`;
+    expect(() => getReferralSourceFromCookie()).not.toThrow();
   });
 });

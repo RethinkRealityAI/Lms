@@ -18,6 +18,8 @@ import {
   ExternalLink,
   Users,
   Loader2,
+  Tag,
+  ChevronDown,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -36,8 +38,26 @@ import {
   type ReferralCodeWithStats,
 } from '@/lib/db/referrals';
 import { isValidReferralCode, suggestReferralCode } from '@/lib/referral/constants';
+import { CAMPAIGN_SUGGESTIONS, normalizeCampaign } from '@/lib/referral/sources';
 
 const fmt = new Intl.NumberFormat('en-CA');
+
+/**
+ * Run the suggestions through the same normaliser the tracked-link route uses,
+ * so a tag an admin copies from here is byte-for-byte the tag that ends up on
+ * the report — a suggestion that normalised to something else would quietly
+ * split one placement across two rows.
+ */
+const CAMPAIGN_TAGS = CAMPAIGN_SUGGESTIONS.map((tag) => normalizeCampaign(tag)).filter(
+  (tag): tag is string => tag !== null,
+);
+
+/** Tag applied to the QR value — see QrDialog. */
+const QR_CAMPAIGN_TAG = 'qr';
+
+function taggedShareUrl(shareUrl: string, tag: string): string {
+  return `${shareUrl}?s=${tag}`;
+}
 
 interface Props {
   institutionId: string;
@@ -56,6 +76,9 @@ type FormState = {
   owner_name: string;
   owner_email: string;
   landing_path: string;
+  /** Kept as a string so the field can be empty ("not reported") as well as 0. */
+  outreach_reached: string;
+  outreach_note: string;
   is_active: boolean;
 };
 
@@ -67,6 +90,8 @@ const EMPTY_FORM: FormState = {
   owner_name: '',
   owner_email: '',
   landing_path: '',
+  outreach_reached: '',
+  outreach_note: '',
   is_active: true,
 };
 
@@ -102,6 +127,11 @@ export function ReferralsManager({
       owner_name: c.owner_name ?? '',
       owner_email: c.owner_email ?? '',
       landing_path: c.landing_path ?? '',
+      outreach_reached:
+        c.outreach_reached === null || c.outreach_reached === undefined
+          ? ''
+          : String(c.outreach_reached),
+      outreach_note: c.outreach_note ?? '',
       is_active: c.is_active,
     });
     setCodeEdited(true);
@@ -134,6 +164,16 @@ export function ReferralsManager({
       return;
     }
 
+    // The input only accepts digits, so anything unparseable here is a paste we
+    // deliberately drop rather than block on — the DB CHECK (0..1,000,000) is
+    // the real backstop.
+    const reachedRaw = form.outreach_reached.trim();
+    const reachedNum = reachedRaw === '' ? null : Number(reachedRaw);
+    const outreachReached =
+      reachedNum === null || !Number.isFinite(reachedNum) || reachedNum < 0
+        ? null
+        : Math.round(reachedNum);
+
     setSaving(true);
     try {
       const payload = {
@@ -143,6 +183,10 @@ export function ReferralsManager({
         owner_name: form.owner_name,
         owner_email: form.owner_email,
         landing_path: form.landing_path,
+        // Empty means "not reported" and must stay NULL — the report hides the
+        // conversion rate entirely rather than showing a rate against 0 reached.
+        outreach_reached: outreachReached,
+        outreach_note: form.outreach_note,
         is_active: form.is_active,
       };
 
@@ -369,6 +413,56 @@ export function ReferralsManager({
               </p>
             </div>
 
+            <div className="space-y-3 rounded-lg border border-slate-200 p-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Outreach</p>
+                <p className="text-xs text-slate-500">
+                  What the ambassador told you about the audience they addressed. Optional, and
+                  shown on their dashboard as self-reported.
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="ref-reached">People reached (optional)</Label>
+                <Input
+                  id="ref-reached"
+                  type="number"
+                  min={0}
+                  max={1000000}
+                  inputMode="numeric"
+                  value={form.outreach_reached}
+                  onChange={(e) =>
+                    // Keep only digits: a stray "-" or "e" would otherwise reach the
+                    // DB CHECK and fail the save with a database error message.
+                    setForm((f) => ({
+                      ...f,
+                      outreach_reached: e.target.value.replace(/[^0-9]/g, ''),
+                    }))
+                  }
+                  placeholder="e.g. 120"
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  The size of the audience they addressed — attendees at a presentation,
+                  recipients of a mailing. On the report it is labelled self-reported and turns
+                  accounts created into a real conversion rate. Leave blank to show nothing.
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="ref-reach-note">Note (optional)</Label>
+                <Input
+                  id="ref-reach-note"
+                  value={form.outreach_note}
+                  maxLength={200}
+                  onChange={(e) => setForm((f) => ({ ...f, outreach_note: e.target.value }))}
+                  placeholder="e.g. Grand rounds, Thunder Bay — June 2026"
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  Where that number came from, so the figure can be read in context.
+                </p>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
               <div>
                 <p className="text-sm font-medium text-slate-900">Active</p>
@@ -493,6 +587,8 @@ function ReferralCard({
         <CopyRow label="Their dashboard" value={reportUrl} icon={BarChart3} openable />
       </div>
 
+      <TaggedLinks shareUrl={shareUrl} />
+
       {!emailConfigured && (
         <p className="mt-2 text-xs text-slate-400">
           Email sending is not configured, so links must be copied and sent manually.
@@ -591,6 +687,51 @@ function CopyRow({
 }
 
 /* ------------------------------------------------------------------ */
+/* Tagged links                                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Collapsed by default: the plain link is the one people should reach for, and
+ * seven near-identical URLs on every card would bury it.
+ */
+function TaggedLinks({ shareUrl }: { shareUrl: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+      >
+        <Tag className="h-3.5 w-3.5" />
+        Tagged links
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+          <p className="text-xs text-slate-600">
+            Each tag shows up separately on the report, so you can see which placement worked.
+          </p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {CAMPAIGN_TAGS.map((tag) => (
+              <CopyRow
+                key={tag}
+                label={tag}
+                value={taggedShareUrl(shareUrl, tag)}
+                icon={Tag}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* QR                                                                  */
 /* ------------------------------------------------------------------ */
 
@@ -604,7 +745,9 @@ function QrDialog({
   onClose: () => void;
 }) {
   const holder = useRef<HTMLDivElement>(null);
-  const url = referralShareUrl(origin, code.code);
+  // Tagged: a scan sends no referrer, so an untagged QR is indistinguishable
+  // from a typed-in link and both disappear into the "direct" bucket.
+  const url = taggedShareUrl(referralShareUrl(origin, code.code), QR_CAMPAIGN_TAG);
 
   const download = () => {
     const canvas = holder.current?.querySelector('canvas');
@@ -627,6 +770,9 @@ function QrDialog({
           <QRCodeCanvas value={url} size={1024} level="M" marginSize={2} className="!h-52 !w-52" />
         </div>
         <p className="mt-3 break-all font-mono text-xs text-slate-500">{url}</p>
+        <p className="mt-1 text-xs text-slate-500">
+          QR scans are tagged so they appear as their own row on the report.
+        </p>
         <div className="mt-5 flex justify-center gap-2">
           <Button variant="outline" onClick={onClose}>
             Close

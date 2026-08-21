@@ -20,6 +20,8 @@ export interface ReferralCode {
   owner_name: string | null;
   owner_email: string | null;
   landing_path: string | null;
+  outreach_reached: number | null;
+  outreach_note: string | null;
   public_token: string;
   is_active: boolean;
   archived_at: string | null;
@@ -52,6 +54,9 @@ export interface ReferralReportTotals {
   lessons_completed: number;
   courses_completed: number;
   learners_completed: number;
+  /** PEOPLE holding at least one live certificate — the funnel's last step. */
+  learners_certificated: number;
+  /** CERTIFICATES issued; one learner can hold several. */
   certificates: number;
 }
 
@@ -72,6 +77,29 @@ export interface ReferralReportBreakdown {
   count: number;
 }
 
+/** One traffic channel (or campaign tag): distinct browsers that opened the
+ *  link this way, and accounts created carrying the tag. Opens use the same
+ *  unit as totals.visits; a browser arriving via two channels appears in
+ *  each, so the breakdown can sum slightly above the total. */
+export interface ReferralReportSource {
+  category: string;
+  opens: number;
+  signups: number;
+}
+
+export interface ReferralReportCampaign {
+  label: string;
+  opens: number;
+  signups: number;
+}
+
+/** What the k-anonymity floor kept off the named-referrer list. */
+export interface ReferralReportWithheld {
+  opens: number;
+  sites: number;
+  min_opens: number;
+}
+
 export interface ReferralReport {
   code: {
     code: string;
@@ -80,6 +108,10 @@ export interface ReferralReport {
     owner_name: string | null;
     is_active: boolean;
     created_at: string;
+    /** Ambassador-reported audience size — a denominator no log can recover.
+     *  Always labelled as self-reported wherever it is rendered. */
+    outreach_reached: number | null;
+    outreach_note: string | null;
   };
   institution: { name: string; slug: string };
   range: { from: string; to: string; is_all_time: boolean };
@@ -95,6 +127,11 @@ export interface ReferralReport {
   courses: ReferralReportCourse[];
   occupations: ReferralReportBreakdown[];
   countries: ReferralReportBreakdown[];
+  /** How people arrived (071). Absent on payloads cached before the migration. */
+  sources?: ReferralReportSource[];
+  referrers?: ReferralReportBreakdown[];
+  referrers_withheld?: ReferralReportWithheld;
+  campaigns?: ReferralReportCampaign[];
   lifetime: {
     visits: number;
     signups: number;
@@ -197,6 +234,8 @@ export interface ReferralCodeInput {
   owner_email?: string | null;
   landing_path?: string | null;
   is_active?: boolean;
+  outreach_reached?: number | null;
+  outreach_note?: string | null;
 }
 
 export async function createReferralCode(
@@ -216,6 +255,8 @@ export async function createReferralCode(
       owner_email: input.owner_email?.trim().toLowerCase() || null,
       landing_path: input.landing_path?.trim() || null,
       is_active: input.is_active ?? true,
+      outreach_reached: input.outreach_reached ?? null,
+      outreach_note: input.outreach_note?.trim() || null,
       created_by: createdBy ?? null,
     })
     .select('*')
@@ -239,6 +280,8 @@ export async function updateReferralCode(
   }
   if (input.landing_path !== undefined) patch.landing_path = input.landing_path?.trim() || null;
   if (input.is_active !== undefined) patch.is_active = input.is_active;
+  if (input.outreach_reached !== undefined) patch.outreach_reached = input.outreach_reached;
+  if (input.outreach_note !== undefined) patch.outreach_note = input.outreach_note?.trim() || null;
 
   // Rule 25: select back, so an RLS-filtered 0-row update can't report success.
   const { data, error } = await supabase

@@ -163,12 +163,20 @@ export async function middleware(request: NextRequest) {
   if (referralParam && isValidReferralCode(referralParam)) {
     const cleaned = request.nextUrl.clone();
     cleaned.searchParams.delete(REFERRAL_QUERY_PARAM);
+    // Campaign tags ride ALONG to /r/<code> (which records them) instead of
+    // into the landing URL — the landing page has no use for them, and leaving
+    // them there would make every shared/bookmarked URL carry stale tags.
+    const campaignTag =
+      cleaned.searchParams.get("s") ?? cleaned.searchParams.get("utm_source");
+    cleaned.searchParams.delete("s");
+    cleaned.searchParams.delete("utm_source");
     const destination = `${cleaned.pathname}${cleaned.search}`;
     const target = new URL(
       `/r/${normalizeReferralCode(referralParam)}`,
       request.url
     );
     target.searchParams.set("to", destination);
+    if (campaignTag) target.searchParams.set("s", campaignTag);
     return NextResponse.redirect(target);
   }
 

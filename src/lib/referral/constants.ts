@@ -29,6 +29,14 @@ export const REFERRAL_VISITOR_COOKIE_MAX_AGE_SECONDS = 400 * 24 * 60 * 60;
 export const REFERRAL_QUERY_PARAM = 'ref';
 
 /**
+ * Where the visitor came from, carried from the tracked-link open to the
+ * signup so the account can be tagged with the CHANNEL that produced it.
+ * Value shape: `<category>` or `<category>|<campaign>` — both halves already
+ * normalised by the /r route. Readable by JS for the same reason as lms_ref.
+ */
+export const REFERRAL_SOURCE_COOKIE = 'lms_ref_src';
+
+/**
  * Mirrors `referral_codes.code`'s CHECK constraint exactly. Lowercase, url-safe,
  * 3–40 chars, no leading/trailing hyphen — short enough to read aloud at a
  * conference and to sit under a QR code on a printed flyer.
@@ -86,6 +94,35 @@ export function getReferralCodeFromCookie(): string | null {
 }
 
 /**
+ * Read the source cookie set by the tracked link. Returns nulls rather than
+ * throwing for anything malformed — this runs inside the signup handler.
+ * The values are re-validated by `handle_new_user` before storage, so this
+ * parse only needs to be safe, not authoritative.
+ */
+export function getReferralSourceFromCookie(): {
+  category: string | null;
+  campaign: string | null;
+} {
+  const none = { category: null, campaign: null };
+  if (typeof document === 'undefined') return none;
+  const entry = document.cookie
+    .split('; ')
+    .find((c) => c.startsWith(`${REFERRAL_SOURCE_COOKIE}=`));
+  if (!entry) return none;
+  let raw = entry.slice(REFERRAL_SOURCE_COOKIE.length + 1);
+  try {
+    raw = decodeURIComponent(raw);
+  } catch {
+    // keep raw as-is
+  }
+  const [category, campaign] = raw.split('|');
+  return {
+    category: /^[a-z]{3,16}$/.test(category ?? '') ? category : null,
+    campaign: /^[a-z0-9][a-z0-9-]{1,31}$/.test(campaign ?? '') ? campaign : null,
+  };
+}
+
+/**
  * Only same-origin, non-protocol-relative paths may be used as a landing
  * destination — `//evil.com` and `https://evil.com` are both open redirects
  * that would let a referral link launder a phishing destination through our
@@ -131,7 +168,7 @@ export type RangeKey = (typeof RANGE_PRESETS)[number]['key'];
 /* ------------------------------------------------------------------ */
 
 export interface FunnelStep {
-  key: 'visits' | 'signups' | 'learners_started' | 'learners_completed' | 'certificates';
+  key: 'visits' | 'signups' | 'learners_started' | 'learners_completed' | 'learners_certificated';
   label: string;
   /** Plain-language definition shown on the public report, so an external
    *  reader never has to guess what a number counts. */
@@ -148,13 +185,13 @@ export interface FunnelStep {
  * windowed view — link opens are counted inside the window, while a signup in
  * the window may trace back to an open before it. So signups CAN exceed opens
  * for a short range, and the UI must not claim otherwise or print a >100%
- * conversion. See `isSupersetOfNext` below.
+ * conversion. See `hasMeaningfulConversion` below.
  */
 export const FUNNEL_STEPS: readonly FunnelStep[] = [
   {
     key: 'visits',
     label: 'Link opens',
-    help: 'People who opened the tracked link. Counted once per person per day.',
+    help: 'Browsers that opened the tracked link, each counted once for the whole period. Approximate: one person using two devices or browsers counts twice. Every stage below counts real accounts and is exact.',
   },
   {
     key: 'signups',
@@ -172,9 +209,13 @@ export const FUNNEL_STEPS: readonly FunnelStep[] = [
     help: 'Of those accounts, how many completed every lesson in at least one module.',
   },
   {
-    key: 'certificates',
-    label: 'Certificates earned',
-    help: 'Certificates currently held by those learners. Revoked certificates are not counted.',
+    // PEOPLE holding a certificate, not the number of certificates: a learner
+    // who finishes three modules holds three, which would widen the funnel and
+    // print a conversion above 100%. The certificate TOTAL is shown as a stat
+    // tile and in the table, where that is the question being asked.
+    key: 'learners_certificated',
+    label: 'Earned a certificate',
+    help: 'Of those accounts, how many now hold at least one certificate. Revoked certificates are not counted.',
   },
 ] as const;
 

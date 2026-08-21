@@ -19,7 +19,7 @@ import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/branding';
 import { logSignInEvent } from '@/lib/db/events';
 import { joinInstitution, signupPrecheck } from '@/lib/db/memberships';
-import { getReferralCodeFromCookie } from '@/lib/referral/constants';
+import { getReferralCodeFromCookie, getReferralSourceFromCookie } from '@/lib/referral/constants';
 import {
   PROFESSION_SELECT_OPTIONS,
   PROFESSION_OTHER_VALUE,
@@ -320,6 +320,10 @@ function LoginContent() {
       // THIS institution, so a stale or foreign code just attributes to nobody
       // and never blocks the signup. Omitted entirely when absent.
       const referralCode = getReferralCodeFromCookie();
+      // The channel that delivered them (migration 071) rides the same
+      // last-touch cookie window; the trigger ignores it unless the code
+      // itself resolves, so it can never tag an unattributed account.
+      const referralSource = getReferralSourceFromCookie();
 
       // Profession (migration 069). Zod already rejected an incomplete answer,
       // so this resolves; the guard keeps a blank out of the metadata rather
@@ -343,6 +347,12 @@ function LoginContent() {
             institution_slug: currentSlug,
             profession,
             ...(referralCode ? { referral_code: referralCode } : {}),
+            ...(referralCode && referralSource.category
+              ? { referral_source: referralSource.category }
+              : {}),
+            ...(referralCode && referralSource.campaign
+              ? { referral_campaign: referralSource.campaign }
+              : {}),
           },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
         },
