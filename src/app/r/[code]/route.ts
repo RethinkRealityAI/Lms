@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import {
   REFERRAL_COOKIE,
+  REFERRAL_SOURCE_COOKIE,
   REFERRAL_VISITOR_COOKIE,
   REFERRAL_COOKIE_MAX_AGE_SECONDS,
   REFERRAL_VISITOR_COOKIE_MAX_AGE_SECONDS,
@@ -9,6 +10,11 @@ import {
   normalizeReferralCode,
   isSafeLandingPath,
 } from '@/lib/referral/constants';
+import {
+  classifyReferrer,
+  normalizeCampaign,
+  CAMPAIGN_QUERY_PARAMS,
+} from '@/lib/referral/sources';
 
 /**
  * The tracked link an ambassador shares: /r/<code>
@@ -69,6 +75,18 @@ export async function GET(
   // the ref param by the middleware, so forwarding it cannot loop back here).
   const requestedTo = request.nextUrl.searchParams.get('to');
 
+  // Which channel delivered this person. Two signals, campaign tag first:
+  // the Referer header is absent for exactly the channels this audience uses
+  // most (desktop Outlook, printed QR codes, most messaging apps), so a tag
+  // the ambassador put on the link themselves is the stronger evidence.
+  // Only the HOST of the referrer is ever kept — never its path or query.
+  const source = classifyReferrer(request.headers.get('referer'), request.nextUrl.hostname);
+  let campaign: string | null = null;
+  for (const param of CAMPAIGN_QUERY_PARAMS) {
+    campaign = normalizeCampaign(request.nextUrl.searchParams.get(param));
+    if (campaign) break;
+  }
+
   let destination = '/';
   let resolved = false;
 
@@ -81,6 +99,9 @@ export async function GET(
       // passes a null key, which the RPC treats as a throwaway — see below.
       p_visitor_key: bot ? null : visitorKey,
       p_landing_path: request.nextUrl.pathname,
+      p_source_category: source.category,
+      p_referrer_host: source.host,
+      p_campaign: campaign,
     });
 
     if (!error && data && (data as { ok?: boolean }).ok) {
@@ -107,6 +128,21 @@ export async function GET(
   }
 
   const response = NextResponse.redirect(new URL(destination, origin));
+  const secure = origin.startsWith('https://');
+
+  if (!bot) {
+    // The visitor key is set even when resolution FAILED: a transient RPC
+    // error must not mint this browser a fresh identity on its next open,
+    // which would count one person twice. Server-only — nothing in the
+    // browser needs to read it.
+    response.cookies.set(REFERRAL_VISITOR_COOKIE, visitorKey, {
+      path: '/',
+      maxAge: REFERRAL_VISITOR_COOKIE_MAX_AGE_SECONDS,
+      sameSite: 'lax',
+      secure,
+      httpOnly: true,
+    });
+  }
 
   if (resolved && !bot) {
     // Readable by JS on purpose: the login page is a client component and reads
@@ -115,17 +151,23 @@ export async function GET(
       path: '/',
       maxAge: REFERRAL_COOKIE_MAX_AGE_SECONDS,
       sameSite: 'lax',
-      secure: origin.startsWith('https://'),
+      secure,
       httpOnly: false,
     });
-    // Server-only — nothing in the browser needs to read the visitor key.
-    response.cookies.set(REFERRAL_VISITOR_COOKIE, visitorKey, {
-      path: '/',
-      maxAge: REFERRAL_VISITOR_COOKIE_MAX_AGE_SECONDS,
-      sameSite: 'lax',
-      secure: origin.startsWith('https://'),
-      httpOnly: true,
-    });
+    // The channel rides the same last-touch window as the code: whichever
+    // tracked link wins attribution also supplies the channel, so the two can
+    // never describe different opens.
+    response.cookies.set(
+      REFERRAL_SOURCE_COOKIE,
+      campaign ? `${source.category}|${campaign}` : source.category,
+      {
+        path: '/',
+        maxAge: REFERRAL_COOKIE_MAX_AGE_SECONDS,
+        sameSite: 'lax',
+        secure,
+        httpOnly: false,
+      },
+    );
   }
 
   return response;

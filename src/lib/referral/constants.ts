@@ -29,6 +29,14 @@ export const REFERRAL_VISITOR_COOKIE_MAX_AGE_SECONDS = 400 * 24 * 60 * 60;
 export const REFERRAL_QUERY_PARAM = 'ref';
 
 /**
+ * Where the visitor came from, carried from the tracked-link open to the
+ * signup so the account can be tagged with the CHANNEL that produced it.
+ * Value shape: `<category>` or `<category>|<campaign>` — both halves already
+ * normalised by the /r route. Readable by JS for the same reason as lms_ref.
+ */
+export const REFERRAL_SOURCE_COOKIE = 'lms_ref_src';
+
+/**
  * Mirrors `referral_codes.code`'s CHECK constraint exactly. Lowercase, url-safe,
  * 3–40 chars, no leading/trailing hyphen — short enough to read aloud at a
  * conference and to sit under a QR code on a printed flyer.
@@ -83,6 +91,35 @@ export function getReferralCodeFromCookie(): string | null {
   }
   const code = normalizeReferralCode(decoded);
   return isValidReferralCode(code) ? code : null;
+}
+
+/**
+ * Read the source cookie set by the tracked link. Returns nulls rather than
+ * throwing for anything malformed — this runs inside the signup handler.
+ * The values are re-validated by `handle_new_user` before storage, so this
+ * parse only needs to be safe, not authoritative.
+ */
+export function getReferralSourceFromCookie(): {
+  category: string | null;
+  campaign: string | null;
+} {
+  const none = { category: null, campaign: null };
+  if (typeof document === 'undefined') return none;
+  const entry = document.cookie
+    .split('; ')
+    .find((c) => c.startsWith(`${REFERRAL_SOURCE_COOKIE}=`));
+  if (!entry) return none;
+  let raw = entry.slice(REFERRAL_SOURCE_COOKIE.length + 1);
+  try {
+    raw = decodeURIComponent(raw);
+  } catch {
+    // keep raw as-is
+  }
+  const [category, campaign] = raw.split('|');
+  return {
+    category: /^[a-z]{3,16}$/.test(category ?? '') ? category : null,
+    campaign: /^[a-z0-9][a-z0-9-]{1,31}$/.test(campaign ?? '') ? campaign : null,
+  };
 }
 
 /**
@@ -154,7 +191,7 @@ export const FUNNEL_STEPS: readonly FunnelStep[] = [
   {
     key: 'visits',
     label: 'Link opens',
-    help: 'People who opened the tracked link. Counted once per person per day.',
+    help: 'Browsers that opened the tracked link, each counted once for the whole period. Approximate: one person using two devices or browsers counts twice. Every stage below counts real accounts and is exact.',
   },
   {
     key: 'signups',
