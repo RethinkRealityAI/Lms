@@ -17,6 +17,7 @@ import {
   Award,
   TrendingUp,
   Users,
+  Compass,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -25,6 +26,7 @@ import {
   SERIES_COLORS,
   type RangeKey,
 } from '@/lib/referral/constants';
+import { SOURCE_CATEGORIES, sourceCategoryLabel } from '@/lib/referral/sources';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import type { ReferralReport } from '@/lib/db/referrals';
 import { TimeSeriesChart, FunnelChart, BarList } from './report-charts';
@@ -66,6 +68,32 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
   const { totals, lifetime, daily, courses, occupations } = report;
   // Older cached payloads may predate profile_stated; treat it as absent.
   const stated = report.profile_stated ?? { occupation: 0, country: 0, total: totals.signups };
+  // Arrival data landed with migration 071 — a payload generated before it has
+  // none of these keys at all, so every one is read defensively.
+  const referrers = report.referrers ?? [];
+  const campaigns = report.campaigns ?? [];
+  const withheld = report.referrers_withheld;
+
+  // Channels come back unordered and sparse. SOURCE_CATEGORIES is the READING
+  // order, not a size order: the known channels first and the "we could not
+  // tell" bucket last, so a large `direct` bar can never top the chart and be
+  // mistaken for a finding.
+  const channelRows = useMemo(() => {
+    const bySource = new Map((report.sources ?? []).map((s) => [s.category, s]));
+    return SOURCE_CATEGORIES.flatMap((meta) => {
+      const row = bySource.get(meta.key);
+      if (!row || (row.opens === 0 && row.signups === 0)) return [];
+      return [
+        {
+          key: meta.key,
+          label: sourceCategoryLabel(meta.key),
+          help: meta.help,
+          opens: row.opens,
+          signups: row.signups,
+        },
+      ];
+    });
+  }, [report.sources]);
 
   // Branding is resolved from the report's own institution — this page sits
   // outside the /[tenant]/ tree, so there is no slug in the path or cookie to
@@ -125,6 +153,18 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
 
     lines.push([esc('Profession'), esc('Accounts')].join(','));
     for (const o of occupations) lines.push([esc(o.label), o.count].join(','));
+    lines.push('');
+
+    lines.push([esc('Channel'), esc('Link opens'), esc('Accounts created')].join(','));
+    for (const c of channelRows) lines.push([esc(c.label), c.opens, c.signups].join(','));
+    lines.push('');
+
+    lines.push([esc('Referring site'), esc('Link opens')].join(','));
+    for (const r of referrers) lines.push([esc(r.label), r.count].join(','));
+    lines.push('');
+
+    lines.push([esc('Link tag'), esc('Link opens'), esc('Accounts created')].join(','));
+    for (const c of campaigns) lines.push([esc(c.label), c.opens, c.signups].join(','));
 
     const blob = new Blob([`﻿${lines.join('\n')}`], {
       type: 'text/csv;charset=utf-8;',
@@ -135,7 +175,7 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
     a.download = `${report.code.code}-outreach-report-${report.range.to}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [report, totals, funnelData, daily, courses, occupations]);
+  }, [report, totals, funnelData, daily, courses, occupations, channelRows, referrers, campaigns]);
 
   return (
     <div className="referral-report min-h-screen bg-slate-50 pb-16">
@@ -291,7 +331,7 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
               tint={SERIES_COLORS.visits}
               label="Link opens"
               value={totals.visits}
-              caption="Unique people, counted once per day"
+              caption="Browsers, each counted once — one person on two devices counts twice"
             />
             <StatTile
               icon={BookOpen}
@@ -327,9 +367,29 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
           <SectionHeading
             icon={UserPlus}
             title="From link open to certificate"
-            subtitle="Every stage counts people. Link opens are those that happened in this period; the stages below follow the accounts created in this period, however far they have since got."
+            subtitle="Link opens count browsers that opened the link in this period; every stage below counts people, following the accounts created in this period however far they have since got."
           />
           <FunnelChart data={funnelData} />
+          {/* The one denominator no log can recover: how many people were in
+              the room. It is worth showing precisely because nothing else on
+              this page can answer "of everyone we reached, how many joined" —
+              but it is a claim, not a measurement, so it says so on its face. */}
+          {typeof report.code.outreach_reached === 'number' && report.code.outreach_reached > 0 && (
+            <div
+              className="mt-4 rounded-xl p-3.5 text-sm leading-relaxed text-slate-700"
+              style={{ backgroundColor: `${branding.primaryColor}12` }}
+            >
+              <strong className="font-bold text-slate-900">
+                {fmt.format(totals.signups)} of ~{fmt.format(report.code.outreach_reached)} people
+                reached
+              </strong>{' '}
+              created an account ({percent(totals.signups, report.code.outreach_reached)}).{' '}
+              <span className="text-slate-500">
+                Audience size as reported by the programme team — self-reported, not measured
+                {report.code.outreach_note ? ` — ${report.code.outreach_note}` : ''}.
+              </span>
+            </div>
+          )}
           {/* Windowing makes these two populations disagree: a signup inside the
               period can trace back to a link open before it. Say so rather than
               letting the reader think a number is broken. */}
@@ -345,6 +405,77 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
         {/* ---------------- Time series ---------------- */}
         <section className={`p-6 ${CARD}`}>
           <TimeSeriesChart data={daily} title="Activity over time" />
+        </section>
+
+        {/* ---------------- How people arrived ---------------- */}
+        <section className={`p-6 ${CARD}`}>
+          <SectionHeading
+            icon={Compass}
+            title="How people arrived"
+            subtitle="Channels are read from the browser as the link is opened, plus any tag an ambassador adds to their own link. QR codes, printed links and desktop email apps report nothing at all, so they land in “Direct, QR or app” — that row is a mixture, not a single channel."
+          />
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* min-w-0 on both columns: a long referring host would otherwise
+                hold the grid open and scroll the page sideways on a phone. */}
+            <div className="min-w-0">
+              <h3 className="mb-3 text-sm font-bold text-slate-800">Channels</h3>
+              <BarList
+                valueLabel="Link opens"
+                secondaryLabel="Accounts created"
+                emptyMessage="No opens recorded yet since channel tracking was added."
+                data={channelRows.map((c) => ({
+                  label: c.label,
+                  value: c.opens,
+                  secondary: c.signups,
+                }))}
+              />
+            </div>
+
+            <div className="min-w-0 space-y-6">
+              <div className="min-w-0">
+                <h3 className="mb-3 text-sm font-bold text-slate-800">Referring sites</h3>
+                {/* Host only, never a path or query string — the identifying
+                    detail lives there and this page is handed to outsiders. */}
+                <BarList
+                  valueLabel="Link opens"
+                  color={branding.primaryColor}
+                  emptyMessage="No referring site has been named yet."
+                  data={referrers.map((r) => ({ label: r.label, value: r.count }))}
+                />
+                {withheld && withheld.opens > 0 && (
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                    + {fmt.format(withheld.opens)} opens from {fmt.format(withheld.sites)} smaller{' '}
+                    {withheld.sites === 1 ? 'site' : 'sites'} — sites with fewer than{' '}
+                    {fmt.format(withheld.min_opens)} opens aren&rsquo;t named, to avoid identifying
+                    an individual workplace.
+                  </p>
+                )}
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="mb-3 text-sm font-bold text-slate-800">Link tags</h3>
+                {campaigns.length > 0 ? (
+                  <BarList
+                    valueLabel="Link opens"
+                    secondaryLabel="Accounts created"
+                    emptyMessage="No tagged links yet."
+                    data={campaigns.map((c) => ({
+                      label: c.label,
+                      value: c.opens,
+                      secondary: c.signups,
+                    }))}
+                  />
+                ) : (
+                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-4 text-sm leading-relaxed text-slate-500">
+                    Add <span className="font-mono text-slate-700">?s=newsletter</span> to the end of
+                    your link — any short label works — and each place you share it is counted
+                    separately here. Tags work everywhere, including on printed links and QR codes
+                    where the browser reports nothing.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ---------------- Breakdowns ---------------- */}
@@ -453,8 +584,17 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
                   label="Lessons completed"
                   value={totals.lessons_completed}
                   help="Individual lessons finished across all modules."
-                  last
+                  last={channelRows.length === 0}
                 />
+                {channelRows.map((c, i) => (
+                  <TableRow
+                    key={c.key}
+                    label={`Arrived via ${c.label}`}
+                    value={c.opens}
+                    help={c.help}
+                    last={i === channelRows.length - 1}
+                  />
+                ))}
               </tbody>
             </table>
           </div>
