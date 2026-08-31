@@ -198,6 +198,56 @@ export const RANGE_PRESETS = [
 
 export type RangeKey = (typeof RANGE_PRESETS)[number]['key'];
 
+/**
+ * Calendar-month view: `?range=2026-08` selects August 2026.
+ *
+ * The presets are rolling windows ("last 30 days"); a programme team reporting
+ * monthly needs calendar months — "what did August produce" — which no rolling
+ * window answers. A month key rides the same `range` query param and resolves
+ * to that month's first and last day.
+ */
+export const MONTH_RANGE_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+export function isMonthRangeKey(raw: string | null | undefined): boolean {
+  return MONTH_RANGE_PATTERN.test(raw ?? '');
+}
+
+/** First and last day of the month, as YYYY-MM-DD. Null for a non-month key. */
+export function monthRangeBounds(key: string): { from: string; to: string } | null {
+  if (!isMonthRangeKey(key)) return null;
+  const [y, m] = key.split('-').map(Number);
+  // Day 0 of the next month = the last day of this one (UTC, no DST surprises).
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return { from: `${key}-01`, to: `${key}-${String(last).padStart(2, '0')}` };
+}
+
+/** "2026-08" -> "August 2026", for the picker and the range prose. */
+export function monthKeyLabel(key: string): string {
+  const bounds = monthRangeBounds(key);
+  if (!bounds) return key;
+  return new Date(`${bounds.from}T00:00:00Z`).toLocaleDateString('en-CA', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+/** The current month first, then the previous `count - 1` months. */
+export function listRecentMonthKeys(count = 12, now = new Date()): string[] {
+  const out: string[] = [];
+  let y = now.getUTCFullYear();
+  let m = now.getUTCMonth() + 1;
+  for (let i = 0; i < count; i++) {
+    out.push(`${y}-${String(m).padStart(2, '0')}`);
+    m -= 1;
+    if (m === 0) {
+      m = 12;
+      y -= 1;
+    }
+  }
+  return out;
+}
+
 /* ------------------------------------------------------------------ */
 /* Funnel                                                              */
 /* ------------------------------------------------------------------ */

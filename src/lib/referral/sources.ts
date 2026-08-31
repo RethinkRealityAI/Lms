@@ -284,13 +284,28 @@ export function normalizeCampaign(raw: string | null | undefined): string | null
   return value.length >= 2 ? value : null;
 }
 
-/** Suggested tags offered in the admin link builder. */
-export const CAMPAIGN_SUGGESTIONS = [
-  'newsletter',
-  'email',
-  'qr-poster',
-  'conference',
-  'linkedin',
-  'partner-site',
-  'presentation',
-] as const;
+/**
+ * The tag cheat sheet — shown on the ambassador's report page and used for the
+ * admin portal's ready-made tagged links.
+ *
+ * Every tag here MUST survive `normalizeCampaign` unchanged (tested), because
+ * these are copied verbatim onto links: a tag that normalised differently
+ * would silently split one placement across two report rows.
+ */
+export const CAMPAIGN_CHEAT_SHEET: ReadonlyArray<{ tag: string; use: string }> = [
+  { tag: 'newsletter', use: 'A link in your regular newsletter' },
+  { tag: 'email', use: 'A one-off email you send out' },
+  { tag: 'email-signature', use: 'The link under your email signature' },
+  { tag: 'linkedin', use: 'A LinkedIn post or message' },
+  { tag: 'facebook', use: 'A Facebook post or group' },
+  { tag: 'whatsapp', use: 'Shared in a WhatsApp chat or group' },
+  { tag: 'conference', use: 'Slides or handouts at a conference' },
+  { tag: 'presentation', use: 'Grand rounds or an in-service talk' },
+  { tag: 'qr-poster', use: 'A poster or flyer with a QR code' },
+  { tag: 'partner-site', use: "A partner organisation's website" },
+  { tag: 'staff-meeting', use: 'Shared at a staff or team meeting' },
+  { tag: 'text-message', use: 'Sent one-to-one by text or DM' },
+];
+
+/** Bare tags, for pickers that only need the values. */
+export const CAMPAIGN_SUGGESTIONS: readonly string[] = CAMPAIGN_CHEAT_SHEET.map((c) => c.tag);

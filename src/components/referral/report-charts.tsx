@@ -295,6 +295,10 @@ export function TimeSeriesChart({ data, title }: { data: SeriesPoint[]; title: s
                   content={<SeriesTooltip />}
                   cursor={{ stroke: CHART_INK.axis, strokeWidth: 1 }}
                 />
+                {/* No entrance animation: a resize or an immediate
+                    print-to-PDF can catch the series mid-animation and render
+                    the chart EMPTY — axes and gridlines but no data, on the
+                    page someone just exported for a funder. */}
                 <Area
                   type="monotone"
                   dataKey="visits"
@@ -302,6 +306,7 @@ export function TimeSeriesChart({ data, title }: { data: SeriesPoint[]; title: s
                   stroke={SERIES_COLORS.visits}
                   strokeWidth={2}
                   fill="url(#referralVisits)"
+                  isAnimationActive={false}
                   activeDot={{ r: 4, strokeWidth: 2, stroke: CHART_INK.surface }}
                 />
                 <Area
@@ -311,6 +316,7 @@ export function TimeSeriesChart({ data, title }: { data: SeriesPoint[]; title: s
                   stroke={SERIES_COLORS.signups}
                   strokeWidth={2}
                   fill="url(#referralSignups)"
+                  isAnimationActive={false}
                   activeDot={{ r: 4, strokeWidth: 2, stroke: CHART_INK.surface }}
                 />
               </AreaChart>
