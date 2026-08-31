@@ -21,8 +21,8 @@ import {
   Activity,
   Copy,
   Check,
-  ChevronDown,
   Tag,
+  X,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -137,8 +137,13 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
     [totals],
   );
 
+  const [shareOpen, setShareOpen] = React.useState(false);
+
+  // Copies the plain link immediately (the muscle-memory behaviour), then
+  // opens the cheat-sheet modal so the tagged variants are one click away.
   const copyLink = useCallback(() => {
     navigator.clipboard?.writeText(shareUrl);
+    setShareOpen(true);
   }, [shareUrl]);
 
   const downloadCsv = useCallback(() => {
@@ -205,6 +210,12 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
 
   return (
     <div className="referral-report min-h-screen bg-slate-50 pb-16">
+      <ShareLinksModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        shareUrl={shareUrl}
+        accent={branding.primaryColor}
+      />
       {/* ---------------- Branded header ---------------- */}
       <header
         className="relative overflow-hidden text-white"
@@ -526,7 +537,6 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
                     where the browser reports nothing.
                   </p>
                 )}
-                <TagCheatSheet shareUrl={shareUrl} />
               </div>
             </div>
           </div>
@@ -766,71 +776,144 @@ function MiniStat({ label, value }: { label: string; value: number }) {
 }
 
 /**
- * Ready-made tagged links plus the rule for inventing new ones — so an
- * ambassador never has to remember the syntax, only copy a row. Collapsed by
- * default and hidden from print: on paper the tags table above already shows
- * what was used.
+ * "Copy my link" opens this: the plain link on top (already on the clipboard),
+ * then every ready-made tagged variant, each one click to copy — so the
+ * cheat sheet is exactly where an ambassador is when they reach for the link.
  */
-function TagCheatSheet({ shareUrl }: { shareUrl: string }) {
-  const [open, setOpen] = React.useState(false);
+function ShareLinksModal({
+  open,
+  onClose,
+  shareUrl,
+  accent,
+}: {
+  open: boolean;
+  onClose: () => void;
+  shareUrl: string;
+  accent: string;
+}) {
   const [copied, setCopied] = React.useState<string | null>(null);
 
-  const copy = (tag: string) => {
-    navigator.clipboard?.writeText(`${shareUrl}?s=${tag}`);
-    setCopied(tag);
-    window.setTimeout(() => setCopied((c) => (c === tag ? null : c)), 1600);
+  // Esc closes, like any dialog.
+  React.useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const copy = (key: string, url: string) => {
+    navigator.clipboard?.writeText(url);
+    setCopied(key);
+    window.setTimeout(() => setCopied((c) => (c === key ? null : c)), 1600);
   };
 
-  return (
-    <div className="no-print mt-3">
+  const row = (key: string, url: string, title: string, subtitle?: string) => (
+    <li key={key} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-2.5">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-slate-800">{title}</p>
+        <p className="truncate font-mono text-xs text-slate-500" title={url}>
+          {url}
+        </p>
+        {subtitle && <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>}
+      </div>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+        onClick={() => copy(key, url)}
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+          copied === key
+            ? 'bg-emerald-50 text-emerald-700'
+            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+        }`}
       >
-        <Tag className="h-3.5 w-3.5" />
-        Tag cheat sheet
-        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+        {copied === key ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+        {copied === key ? 'Copied' : 'Copy'}
       </button>
+    </li>
+  );
 
-      {open && (
-        <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-          <p className="text-xs leading-relaxed text-slate-600">
-            Copy the link that matches where you are about to share it. Reuse the{' '}
-            <em>same</em> tag every time for the same kind of placement, so its numbers stay in
-            one row.
-          </p>
-          <ul className="mt-2.5 space-y-1.5">
-            {CAMPAIGN_CHEAT_SHEET.map(({ tag, use }) => (
-              <li key={tag} className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => copy(tag)}
-                  aria-label={`Copy link tagged ${tag}`}
-                  className="flex shrink-0 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
-                >
-                  {copied === tag ? (
-                    <Check className="h-3 w-3 text-emerald-600" />
-                  ) : (
-                    <Copy className="h-3 w-3 text-slate-400" />
-                  )}
-                  ?s={tag}
-                </button>
-                <span className="min-w-0 truncate text-xs text-slate-500" title={use}>
-                  {use}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-2.5 border-t border-slate-200 pt-2 text-xs leading-relaxed text-slate-500">
-            To make your own: add <span className="font-mono text-slate-700">?s=</span> and a short
-            label to the end of your link — lowercase letters, numbers and hyphens, 2–32
-            characters (e.g. <span className="font-mono text-slate-700">?s=spring-campaign</span>).
-            Anything else is simplified automatically.
-          </p>
+  return (
+    <div
+      className="no-print fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Your tracked links"
+      onClick={onClose}
+    >
+      <div
+        className="flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5">
+          <div>
+            <h2 className="text-lg font-black tracking-tight text-slate-900">Your tracked links</h2>
+            <p className="mt-0.5 text-sm text-slate-500">
+              The plain link is on your clipboard. Sharing it somewhere specific? Copy the matching
+              tagged link instead and that placement gets its own row under Link tags.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-      )}
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-5">
+          <ul className="space-y-2">
+            <li className="flex items-center gap-3 rounded-xl p-2.5 text-white" style={{ backgroundColor: accent }}>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-1.5 text-sm font-bold">
+                  <Link2 className="h-3.5 w-3.5" /> Your link
+                </p>
+                <p className="truncate font-mono text-xs text-white/80" title={shareUrl}>
+                  {shareUrl}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => copy('__base__', shareUrl)}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                  copied === '__base__'
+                    ? 'bg-white text-emerald-700'
+                    : 'bg-white/15 text-white hover:bg-white/25'
+                }`}
+              >
+                {copied === '__base__' ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+                {copied === '__base__' ? 'Copied' : 'Copy'}
+              </button>
+            </li>
+
+            <li className="flex items-center gap-2 pt-2">
+              <Tag className="h-3.5 w-3.5 text-slate-400" />
+              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                Tagged for each placement
+              </p>
+            </li>
+
+            {CAMPAIGN_CHEAT_SHEET.map(({ tag, use }) =>
+              row(tag, `${shareUrl}?s=${tag}`, use, undefined),
+            )}
+          </ul>
+        </div>
+
+        <p className="border-t border-slate-100 bg-slate-50/60 p-4 text-xs leading-relaxed text-slate-500">
+          Make your own tag: add <span className="font-mono text-slate-700">?s=</span> and a short
+          label — lowercase letters, numbers and hyphens, 2–32 characters (e.g.{' '}
+          <span className="font-mono text-slate-700">?s=spring-campaign</span>). Reuse the{' '}
+          <em>same</em> tag for the same kind of placement so its numbers stay in one row.
+        </p>
+      </div>
     </div>
   );
 }
