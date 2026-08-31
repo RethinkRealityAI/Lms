@@ -6,7 +6,7 @@ import { ReportDashboard } from '@/components/referral/report-dashboard';
 // Range config comes from the shared (non-client) module: importing a value
 // from a 'use client' module into a server component yields a client-reference
 // proxy, not the value, which fails at build time.
-import { RANGE_PRESETS, type RangeKey } from '@/lib/referral/constants';
+import { RANGE_PRESETS, resolvePublicOrigin, type RangeKey } from '@/lib/referral/constants';
 
 /**
  * Public, token-gated outreach report: /report/<public_token>
@@ -45,14 +45,15 @@ function resolveRange(raw: string | undefined): {
   return { key, from: fromDate.toISOString().slice(0, 10), to };
 }
 
+// The printed tracked-link URL is pinned to the canonical public domain in
+// production (resolvePublicOrigin) — an ambassador must never copy a
+// hosting-provider hostname off this page. The request host only matters as a
+// dev-time fallback.
 async function resolveOrigin(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
-  }
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3001';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
-  return `${proto}://${host}`;
+  return resolvePublicOrigin(`${proto}://${host}`);
 }
 
 export default async function ReferralReportPage({

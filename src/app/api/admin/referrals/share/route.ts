@@ -4,6 +4,7 @@ import { authorizeTenantAdmin } from '@/lib/email/admin-auth';
 import { isEmailConfigured, sendEmail } from '@/lib/email/mailer';
 import { renderSystemEmail, referralLinkEmailVariables } from '@/lib/email/system-emails';
 import { referralShareUrl, referralReportUrl } from '@/lib/db/referrals';
+import { resolvePublicOrigin } from '@/lib/referral/constants';
 
 /**
  * POST /api/admin/referrals/share
@@ -60,7 +61,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Referral code not found' }, { status: 404 });
     }
 
-    const origin = req.nextUrl.origin;
+    // Emailed links outlive the hosting: pin them to the canonical domain in
+    // production instead of the host this API request happened to arrive on.
+    const origin = resolvePublicOrigin(req.nextUrl.origin);
     const shareUrl = referralShareUrl(origin, code.code);
     const reportUrl = referralReportUrl(origin, code.public_token);
 

@@ -144,6 +144,41 @@ export function sanitizeLandingPath(
 }
 
 /* ------------------------------------------------------------------ */
+/* Canonical public origin                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The domain printed on everything an ambassador hands out.
+ *
+ * Share links, dashboard links and QR codes must NOT be built from whatever
+ * host happened to serve the page: an admin browsing the *.netlify.app host
+ * (or a deploy preview) would copy links carrying that hostname onto flyers
+ * and into emails, and those links break the day the app moves off Netlify.
+ * The custom domain is the stable identity; the hosting behind it is not.
+ *
+ * Deployment-wide by design — both institutions are served from this domain
+ * today. If a tenant ever gets its own domain, move this into
+ * `lib/tenant/branding.ts` and resolve it per institution.
+ */
+export const CANONICAL_PUBLIC_ORIGIN = 'https://learn.sicklecellanemia.ca';
+
+/**
+ * Origin for OUTWARD-FACING links (tracked links, report URLs, QR values).
+ *
+ * In production this is always the canonical domain, regardless of the serving
+ * host — that is the whole point. Outside production it defers to
+ * NEXT_PUBLIC_SITE_URL (localhost in dev) and then the request's own origin,
+ * so local testing never mints links that point at the live site.
+ */
+export function resolvePublicOrigin(requestOrigin?: string | null): string {
+  if (process.env.NODE_ENV === 'production') return CANONICAL_PUBLIC_ORIGIN;
+  const env = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
+  if (env) return env;
+  const req = requestOrigin?.replace(/\/$/, '');
+  return req || CANONICAL_PUBLIC_ORIGIN;
+}
+
+/* ------------------------------------------------------------------ */
 /* Report date range                                                   */
 /* ------------------------------------------------------------------ */
 
