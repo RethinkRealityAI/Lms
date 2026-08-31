@@ -4,17 +4,18 @@ import { getTenantContext } from '@/lib/tenant/server';
 import { listReferralCodesWithStats } from '@/lib/db/referrals';
 import { isEmailConfigured } from '@/lib/email/mailer';
 import { ReferralsManager } from '@/components/admin/referrals-manager';
+import { resolvePublicOrigin } from '@/lib/referral/constants';
 
 export const dynamic = 'force-dynamic';
 
+// Links copied from this page end up on flyers, in emails and inside QR codes,
+// so in production they are pinned to the canonical public domain rather than
+// whatever host is serving the admin session (resolvePublicOrigin).
 async function resolveOrigin(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
-  }
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3001';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
-  return `${proto}://${host}`;
+  return resolvePublicOrigin(`${proto}://${host}`);
 }
 
 export default async function AdminReferralsPage() {

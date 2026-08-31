@@ -1,5 +1,7 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
+  resolvePublicOrigin,
+  CANONICAL_PUBLIC_ORIGIN,
   REFERRAL_COOKIE,
   REFERRAL_CODE_PATTERN,
   isValidReferralCode,
@@ -317,5 +319,50 @@ describe('getReferralSourceFromCookie', () => {
   it('never throws on malformed percent-encoding', () => {
     document.cookie = `${REFERRAL_SOURCE_COOKIE}=%E0%A4%A`;
     expect(() => getReferralSourceFromCookie()).not.toThrow();
+  });
+});
+
+describe('resolvePublicOrigin', () => {
+  // vitest runs with NODE_ENV=test, so the default path is the non-production
+  // branch; the production branch is exercised via vi.stubEnv.
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('always returns the canonical domain in production, whatever served the page', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://org-lms.netlify.app');
+    for (const served of [
+      'https://org-lms.netlify.app',
+      'https://deploy-preview-20--org-lms.netlify.app',
+      'https://learn.sicklecellanemia.ca',
+      null,
+      undefined,
+    ]) {
+      expect(resolvePublicOrigin(served)).toBe(CANONICAL_PUBLIC_ORIGIN);
+    }
+  });
+
+  it('prefers NEXT_PUBLIC_SITE_URL outside production so dev links stay local', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3001/');
+    expect(resolvePublicOrigin('https://learn.sicklecellanemia.ca')).toBe('http://localhost:3001');
+  });
+
+  it('falls back to the request origin, then the canonical domain', () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '');
+    expect(resolvePublicOrigin('http://127.0.0.1:4000/')).toBe('http://127.0.0.1:4000');
+    expect(resolvePublicOrigin(null)).toBe(CANONICAL_PUBLIC_ORIGIN);
+  });
+
+  it('never returns a trailing slash — callers concatenate paths onto it', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    expect(resolvePublicOrigin('x').endsWith('/')).toBe(false);
+    expect(CANONICAL_PUBLIC_ORIGIN.endsWith('/')).toBe(false);
+  });
+
+  it('canonical domain is the real one — https, correct spelling, no hyphen typo', () => {
+    // The domain has been mistyped in conversation more than once
+    // ("learn-sickelcellanemia.ca"); this pins the true hostname.
+    expect(CANONICAL_PUBLIC_ORIGIN).toBe('https://learn.sicklecellanemia.ca');
   });
 });
