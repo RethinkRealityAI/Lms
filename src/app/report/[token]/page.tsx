@@ -6,7 +6,12 @@ import { ReportDashboard } from '@/components/referral/report-dashboard';
 // Range config comes from the shared (non-client) module: importing a value
 // from a 'use client' module into a server component yields a client-reference
 // proxy, not the value, which fails at build time.
-import { RANGE_PRESETS, resolvePublicOrigin, type RangeKey } from '@/lib/referral/constants';
+import {
+  RANGE_PRESETS,
+  resolvePublicOrigin,
+  isMonthRangeKey,
+  monthRangeBounds,
+} from '@/lib/referral/constants';
 
 /**
  * Public, token-gated outreach report: /report/<public_token>
@@ -31,11 +36,17 @@ export const metadata: Metadata = {
 const VALID_RANGES = new Set<string>(RANGE_PRESETS.map((r) => r.key));
 
 function resolveRange(raw: string | undefined): {
-  key: RangeKey;
+  key: string;
   from: string | null;
   to: string | null;
 } {
-  const key = (raw && VALID_RANGES.has(raw) ? raw : '90') as RangeKey;
+  // Calendar month: ?range=2026-08 — "what did August produce".
+  if (raw && isMonthRangeKey(raw)) {
+    const bounds = monthRangeBounds(raw);
+    if (bounds) return { key: raw, from: bounds.from, to: bounds.to };
+  }
+
+  const key = raw && VALID_RANGES.has(raw) ? raw : '90';
   if (key === 'all') return { key, from: null, to: null };
 
   const days = Number(key);

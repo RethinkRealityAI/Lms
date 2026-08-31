@@ -2,6 +2,10 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   resolvePublicOrigin,
   CANONICAL_PUBLIC_ORIGIN,
+  isMonthRangeKey,
+  monthRangeBounds,
+  monthKeyLabel,
+  listRecentMonthKeys,
   REFERRAL_COOKIE,
   REFERRAL_CODE_PATTERN,
   isValidReferralCode,
@@ -364,5 +368,42 @@ describe('resolvePublicOrigin', () => {
     // The domain has been mistyped in conversation more than once
     // ("learn-sickelcellanemia.ca"); this pins the true hostname.
     expect(CANONICAL_PUBLIC_ORIGIN).toBe('https://learn.sicklecellanemia.ca');
+  });
+});
+
+describe('month range keys', () => {
+  it('accepts YYYY-MM and rejects everything else', () => {
+    expect(isMonthRangeKey('2026-08')).toBe(true);
+    expect(isMonthRangeKey('2026-01')).toBe(true);
+    expect(isMonthRangeKey('2026-12')).toBe(true);
+    for (const bad of ['2026-13', '2026-00', '2026-8', '2026-08-01', 'all', '90', '', null, undefined]) {
+      expect(isMonthRangeKey(bad), String(bad)).toBe(false);
+    }
+  });
+
+  it('resolves a month to its first and last day', () => {
+    expect(monthRangeBounds('2026-08')).toEqual({ from: '2026-08-01', to: '2026-08-31' });
+    expect(monthRangeBounds('2026-02')).toEqual({ from: '2026-02-01', to: '2026-02-28' });
+    // Leap year — the classic off-by-one.
+    expect(monthRangeBounds('2028-02')).toEqual({ from: '2028-02-01', to: '2028-02-29' });
+    expect(monthRangeBounds('2026-04')).toEqual({ from: '2026-04-01', to: '2026-04-30' });
+    expect(monthRangeBounds('nope')).toBeNull();
+  });
+
+  it('labels a month for a human reader', () => {
+    expect(monthKeyLabel('2026-08')).toBe('August 2026');
+    expect(monthKeyLabel('2025-12')).toBe('December 2025');
+  });
+
+  it('lists the current month first, then walks backwards across a year boundary', () => {
+    const keys = listRecentMonthKeys(4, new Date('2026-02-15T12:00:00Z'));
+    expect(keys).toEqual(['2026-02', '2026-01', '2025-12', '2025-11']);
+  });
+
+  it('every listed key satisfies its own validator and resolves to bounds', () => {
+    for (const key of listRecentMonthKeys(24, new Date('2026-08-31T00:00:00Z'))) {
+      expect(isMonthRangeKey(key), key).toBe(true);
+      expect(monthRangeBounds(key), key).not.toBeNull();
+    }
   });
 });

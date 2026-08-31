@@ -123,6 +123,17 @@ export interface ReferralReport {
    * uses this to caption the gap instead of charting a "Not specified" bar.
    */
   profile_stated: { occupation: number; country: number; total: number };
+  /**
+   * What HAPPENED inside the selected dates, by anyone ever attributed to this
+   * code — the complement of the cohort-framed totals above (migration 072).
+   * Optional: payloads generated before 072 do not carry it.
+   */
+  period_activity?: {
+    active_learners: number;
+    lessons_completed: number;
+    modules_completed: number;
+    certificates_issued: number;
+  };
   daily: ReferralReportDay[];
   courses: ReferralReportCourse[];
   occupations: ReferralReportBreakdown[];

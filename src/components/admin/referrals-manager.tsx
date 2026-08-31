@@ -76,9 +76,6 @@ type FormState = {
   owner_name: string;
   owner_email: string;
   landing_path: string;
-  /** Kept as a string so the field can be empty ("not reported") as well as 0. */
-  outreach_reached: string;
-  outreach_note: string;
   is_active: boolean;
 };
 
@@ -90,8 +87,6 @@ const EMPTY_FORM: FormState = {
   owner_name: '',
   owner_email: '',
   landing_path: '',
-  outreach_reached: '',
-  outreach_note: '',
   is_active: true,
 };
 
@@ -127,11 +122,6 @@ export function ReferralsManager({
       owner_name: c.owner_name ?? '',
       owner_email: c.owner_email ?? '',
       landing_path: c.landing_path ?? '',
-      outreach_reached:
-        c.outreach_reached === null || c.outreach_reached === undefined
-          ? ''
-          : String(c.outreach_reached),
-      outreach_note: c.outreach_note ?? '',
       is_active: c.is_active,
     });
     setCodeEdited(true);
@@ -164,16 +154,6 @@ export function ReferralsManager({
       return;
     }
 
-    // The input only accepts digits, so anything unparseable here is a paste we
-    // deliberately drop rather than block on — the DB CHECK (0..1,000,000) is
-    // the real backstop.
-    const reachedRaw = form.outreach_reached.trim();
-    const reachedNum = reachedRaw === '' ? null : Number(reachedRaw);
-    const outreachReached =
-      reachedNum === null || !Number.isFinite(reachedNum) || reachedNum < 0
-        ? null
-        : Math.round(reachedNum);
-
     setSaving(true);
     try {
       const payload = {
@@ -183,10 +163,6 @@ export function ReferralsManager({
         owner_name: form.owner_name,
         owner_email: form.owner_email,
         landing_path: form.landing_path,
-        // Empty means "not reported" and must stay NULL — the report hides the
-        // conversion rate entirely rather than showing a rate against 0 reached.
-        outreach_reached: outreachReached,
-        outreach_note: form.outreach_note,
         is_active: form.is_active,
       };
 
@@ -411,56 +387,6 @@ export function ReferralsManager({
                 home page, or use e.g.{' '}
                 <span className="font-mono">/{institutionSlug}/clinicians</span>.
               </p>
-            </div>
-
-            <div className="space-y-3 rounded-lg border border-slate-200 p-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Outreach</p>
-                <p className="text-xs text-slate-500">
-                  What the ambassador told you about the audience they addressed. Optional, and
-                  shown on their dashboard as self-reported.
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="ref-reached">People reached (optional)</Label>
-                <Input
-                  id="ref-reached"
-                  type="number"
-                  min={0}
-                  max={1000000}
-                  inputMode="numeric"
-                  value={form.outreach_reached}
-                  onChange={(e) =>
-                    // Keep only digits: a stray "-" or "e" would otherwise reach the
-                    // DB CHECK and fail the save with a database error message.
-                    setForm((f) => ({
-                      ...f,
-                      outreach_reached: e.target.value.replace(/[^0-9]/g, ''),
-                    }))
-                  }
-                  placeholder="e.g. 120"
-                />
-                <p className="mt-1 text-xs text-slate-500">
-                  The size of the audience they addressed — attendees at a presentation,
-                  recipients of a mailing. On the report it is labelled self-reported and turns
-                  accounts created into a real conversion rate. Leave blank to show nothing.
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="ref-reach-note">Note (optional)</Label>
-                <Input
-                  id="ref-reach-note"
-                  value={form.outreach_note}
-                  maxLength={200}
-                  onChange={(e) => setForm((f) => ({ ...f, outreach_note: e.target.value }))}
-                  placeholder="e.g. Grand rounds, Thunder Bay — June 2026"
-                />
-                <p className="mt-1 text-xs text-slate-500">
-                  Where that number came from, so the figure can be read in context.
-                </p>
-              </div>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">

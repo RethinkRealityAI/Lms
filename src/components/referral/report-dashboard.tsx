@@ -18,15 +18,26 @@ import {
   TrendingUp,
   Users,
   Compass,
+  Activity,
+  Copy,
+  Check,
+  ChevronDown,
+  Tag,
   type LucideIcon,
 } from 'lucide-react';
 import {
   FUNNEL_STEPS,
   RANGE_PRESETS,
   SERIES_COLORS,
-  type RangeKey,
+  isMonthRangeKey,
+  monthKeyLabel,
+  listRecentMonthKeys,
 } from '@/lib/referral/constants';
-import { SOURCE_CATEGORIES, sourceCategoryLabel } from '@/lib/referral/sources';
+import {
+  SOURCE_CATEGORIES,
+  sourceCategoryLabel,
+  CAMPAIGN_CHEAT_SHEET,
+} from '@/lib/referral/sources';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import type { ReferralReport } from '@/lib/db/referrals';
 import { TimeSeriesChart, FunnelChart, BarList } from './report-charts';
@@ -54,7 +65,8 @@ const CARD = 'rounded-2xl border border-slate-100 bg-white shadow-[0_4px_20px_rg
 
 interface Props {
   report: ReferralReport;
-  activeRange: RangeKey;
+  /** A preset key ('30' | '90' | '365' | 'all') or a month key ('2026-08'). */
+  activeRange: string;
   /** Public URL of the tracked link, so the ambassador can copy it from here. */
   shareUrl: string;
 }
@@ -73,6 +85,13 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
   const referrers = report.referrers ?? [];
   const campaigns = report.campaigns ?? [];
   const withheld = report.referrers_withheld;
+  // Pre-072 payloads carry no period_activity; render zeros rather than throw.
+  const activity = report.period_activity ?? {
+    active_learners: 0,
+    lessons_completed: 0,
+    modules_completed: 0,
+    certificates_issued: 0,
+  };
 
   // Channels come back unordered and sparse. SOURCE_CATEGORIES is the READING
   // order, not a size order: the known channels first and the "we could not
@@ -101,7 +120,7 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
   const branding = getInstitutionBranding(report.institution.slug);
 
   const setRange = useCallback(
-    (key: RangeKey) => {
+    (key: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set('range', key);
       startTransition(() => router.replace(`${pathname}?${params.toString()}`));
@@ -143,6 +162,13 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
     lines.push([esc('Lessons completed (total)'), totals.lessons_completed].join(','));
     lines.push('');
 
+    lines.push([esc('Happened in period'), esc('Count')].join(','));
+    lines.push([esc('Active learners'), activity.active_learners].join(','));
+    lines.push([esc('Lessons completed in period'), activity.lessons_completed].join(','));
+    lines.push([esc('Modules completed in period'), activity.modules_completed].join(','));
+    lines.push([esc('Certificates issued in period'), activity.certificates_issued].join(','));
+    lines.push('');
+
     lines.push([esc('Date'), esc('Link opens'), esc('Accounts created')].join(','));
     for (const d of daily) lines.push([esc(d.day), d.visits, d.signups].join(','));
     lines.push('');
@@ -175,7 +201,7 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
     a.download = `${report.code.code}-outreach-report-${report.range.to}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [report, totals, funnelData, daily, courses, occupations, channelRows, referrers, campaigns]);
+  }, [report, totals, activity, funnelData, daily, courses, occupations, channelRows, referrers, campaigns]);
 
   return (
     <div className="referral-report min-h-screen bg-slate-50 pb-16">
@@ -280,6 +306,30 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
               {preset.label}
             </button>
           ))}
+          {/* Calendar months: the monthly-report view. Native select; explicit
+              bg-white because bg-popover is unmapped in this Tailwind setup. */}
+          <select
+            aria-label="View a calendar month"
+            value={isMonthRangeKey(activeRange) ? activeRange : ''}
+            onChange={(e) => e.target.value && setRange(e.target.value)}
+            className={`rounded-xl border px-3 py-1.5 text-sm font-semibold outline-none transition ${
+              isMonthRangeKey(activeRange)
+                ? 'border-transparent text-white shadow-sm'
+                : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-100'
+            }`}
+            style={
+              isMonthRangeKey(activeRange)
+                ? { backgroundColor: branding.primaryColor }
+                : undefined
+            }
+          >
+            <option value="">By month…</option>
+            {listRecentMonthKeys(12).map((key) => (
+              <option key={key} value={key}>
+                {monthKeyLabel(key)}
+              </option>
+            ))}
+          </select>
           {pending && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
         </section>
 
@@ -370,26 +420,6 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
             subtitle="Link opens count browsers that opened the link in this period; every stage below counts people, following the accounts created in this period however far they have since got."
           />
           <FunnelChart data={funnelData} />
-          {/* The one denominator no log can recover: how many people were in
-              the room. It is worth showing precisely because nothing else on
-              this page can answer "of everyone we reached, how many joined" —
-              but it is a claim, not a measurement, so it says so on its face. */}
-          {typeof report.code.outreach_reached === 'number' && report.code.outreach_reached > 0 && (
-            <div
-              className="mt-4 rounded-xl p-3.5 text-sm leading-relaxed text-slate-700"
-              style={{ backgroundColor: `${branding.primaryColor}12` }}
-            >
-              <strong className="font-bold text-slate-900">
-                {fmt.format(totals.signups)} of ~{fmt.format(report.code.outreach_reached)} people
-                reached
-              </strong>{' '}
-              created an account ({percent(totals.signups, report.code.outreach_reached)}).{' '}
-              <span className="text-slate-500">
-                Audience size as reported by the programme team — self-reported, not measured
-                {report.code.outreach_note ? ` — ${report.code.outreach_note}` : ''}.
-              </span>
-            </div>
-          )}
           {/* Windowing makes these two populations disagree: a signup inside the
               period can trace back to a link open before it. Say so rather than
               letting the reader think a number is broken. */}
@@ -400,6 +430,29 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
               <strong className="font-bold"> All time</strong> to see both from the beginning.
             </p>
           )}
+        </section>
+
+        {/* ---------------- Activity in this period ---------------- */}
+        {/* The complement of the cohort funnel above: the funnel follows the
+            people who JOINED in these dates, this card counts the learning
+            that HAPPENED in them — including by learners who joined earlier.
+            With a month selected, this is the monthly report. */}
+        <section className={`p-6 ${CARD}`}>
+          <SectionHeading
+            icon={Activity}
+            title={
+              isMonthRangeKey(activeRange)
+                ? `What happened in ${monthKeyLabel(activeRange)}`
+                : 'What happened in this period'
+            }
+            subtitle="Learning activity that took place inside the selected dates, by everyone who has ever joined through this link — including people who signed up before the period started."
+          />
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <MiniStat label="Active learners" value={activity.active_learners} />
+            <MiniStat label="Lessons completed" value={activity.lessons_completed} />
+            <MiniStat label="Modules completed" value={activity.modules_completed} />
+            <MiniStat label="Certificates issued" value={activity.certificates_issued} />
+          </div>
         </section>
 
         {/* ---------------- Time series ---------------- */}
@@ -473,6 +526,7 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
                     where the browser reports nothing.
                   </p>
                 )}
+                <TagCheatSheet shareUrl={shareUrl} />
               </div>
             </div>
           </div>
@@ -584,6 +638,21 @@ export function ReportDashboard({ report, activeRange, shareUrl }: Props) {
                   label="Lessons completed"
                   value={totals.lessons_completed}
                   help="Individual lessons finished across all modules."
+                />
+                <TableRow
+                  label="Active learners in period"
+                  value={activity.active_learners}
+                  help="Learners (whenever they joined) who completed at least one lesson inside the selected dates."
+                />
+                <TableRow
+                  label="Modules completed in period"
+                  value={activity.modules_completed}
+                  help="Modules whose final lesson was finished inside the selected dates."
+                />
+                <TableRow
+                  label="Certificates issued in period"
+                  value={activity.certificates_issued}
+                  help="Certificates issued inside the selected dates. Revoked certificates are not counted."
                   last={channelRows.length === 0}
                 />
                 {channelRows.map((c, i) => (
@@ -683,6 +752,85 @@ function StatTile({
         </span>
       </div>
       <p className="mt-2 text-xs font-medium text-slate-500">{caption}</p>
+    </div>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl bg-slate-50 p-4">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+      <p className="mt-1 text-2xl font-black leading-none text-slate-900">{fmt.format(value)}</p>
+    </div>
+  );
+}
+
+/**
+ * Ready-made tagged links plus the rule for inventing new ones — so an
+ * ambassador never has to remember the syntax, only copy a row. Collapsed by
+ * default and hidden from print: on paper the tags table above already shows
+ * what was used.
+ */
+function TagCheatSheet({ shareUrl }: { shareUrl: string }) {
+  const [open, setOpen] = React.useState(false);
+  const [copied, setCopied] = React.useState<string | null>(null);
+
+  const copy = (tag: string) => {
+    navigator.clipboard?.writeText(`${shareUrl}?s=${tag}`);
+    setCopied(tag);
+    window.setTimeout(() => setCopied((c) => (c === tag ? null : c)), 1600);
+  };
+
+  return (
+    <div className="no-print mt-3">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+      >
+        <Tag className="h-3.5 w-3.5" />
+        Tag cheat sheet
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+          <p className="text-xs leading-relaxed text-slate-600">
+            Copy the link that matches where you are about to share it. Reuse the{' '}
+            <em>same</em> tag every time for the same kind of placement, so its numbers stay in
+            one row.
+          </p>
+          <ul className="mt-2.5 space-y-1.5">
+            {CAMPAIGN_CHEAT_SHEET.map(({ tag, use }) => (
+              <li key={tag} className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => copy(tag)}
+                  aria-label={`Copy link tagged ${tag}`}
+                  className="flex shrink-0 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                >
+                  {copied === tag ? (
+                    <Check className="h-3 w-3 text-emerald-600" />
+                  ) : (
+                    <Copy className="h-3 w-3 text-slate-400" />
+                  )}
+                  ?s={tag}
+                </button>
+                <span className="min-w-0 truncate text-xs text-slate-500" title={use}>
+                  {use}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2.5 border-t border-slate-200 pt-2 text-xs leading-relaxed text-slate-500">
+            To make your own: add <span className="font-mono text-slate-700">?s=</span> and a short
+            label to the end of your link — lowercase letters, numbers and hyphens, 2–32
+            characters (e.g. <span className="font-mono text-slate-700">?s=spring-campaign</span>).
+            Anything else is simplified automatically.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
