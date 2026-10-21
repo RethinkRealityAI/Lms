@@ -341,8 +341,11 @@ function WordBankViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) {
 // Find-and-fix: every word is tappable. Tapping the WRONG word strikes it through
 // and reveals the correct word inline; tapping a correct word gives a gentle nudge.
 
+// Every word carries a dotted underline so it visibly reads as tappable. Without
+// it the passage looked like plain text with nothing to do — learners reported the
+// knowledge check as "empty" and could not find how to continue (support, Module 7).
 const STRIKE_WORD =
-  'rounded px-0.5 -mx-0.5 cursor-pointer transition-colors hover:bg-[color:var(--surface-chip-bg)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1';
+  'rounded px-0.5 -mx-0.5 cursor-pointer transition-colors underline decoration-dotted decoration-2 underline-offset-[6px] decoration-[color:var(--surface-text-subtle)] hover:bg-[color:var(--surface-chip-bg)] hover:decoration-solid focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1';
 
 function StrikeoutViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) {
   const text = data.text ?? '';
@@ -387,9 +390,16 @@ function StrikeoutViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) 
 
   return (
     <div className={cn(BLOCK_CONTENT_SHELL, 'gap-4')}>
-      <p className="text-sm font-semibold text-[color:var(--surface-text)]">
-        {data.instructions || 'Tap the incorrect word in each sentence to correct it.'}
-      </p>
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-[color:var(--surface-text)]">
+          {data.instructions || 'Tap the incorrect word in each sentence to correct it.'}
+        </p>
+        {!done && (
+          <p className="text-xs text-[color:var(--surface-text-muted)]">
+            Every underlined word can be tapped. Find the {total === 1 ? 'one that is' : `${total} that are`} wrong.
+          </p>
+        )}
+      </div>
 
       <p
         className="text-base sm:text-lg leading-loose whitespace-pre-wrap text-[color:var(--surface-text)]"
@@ -444,8 +454,10 @@ function StrikeoutViewer({ data, onComplete }: BlockViewerProps<FillBlankData>) 
       </p>
 
       <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-[color:var(--surface-text-subtle)]">
-          {revealed.size} of {total} corrected
+        <span className="text-xs font-semibold uppercase tracking-wide text-[color:var(--surface-text-subtle)]" aria-live="polite">
+          {nudge !== null && !done
+            ? 'That word is correct. Try another.'
+            : `${revealed.size} of ${total} corrected`}
         </span>
         {revealed.size > 0 && (
           <button
