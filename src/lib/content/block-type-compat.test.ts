@@ -47,6 +47,20 @@ describe('block-type-compat', () => {
       expect(result).not.toHaveProperty('title');
     });
 
+    it('callout (speech bubble) → rich_text: carries the bubble text, not the empty html', () => {
+      const result = transformBlockData('callout', 'rich_text', {
+        mode: 'speech_bubble', html: '<p></p>', bubble_text: "<p>I'm still in pain, what should I do?</p>", author_name: 'Patient',
+      });
+      expect(result.html).toBe("<p>I'm still in pain, what should I do?</p>");
+      expect(result).not.toHaveProperty('bubble_text');
+      expect(result).not.toHaveProperty('mode');
+    });
+
+    it('callout (speech bubble) with no bubble text → rich_text: falls back to html', () => {
+      const result = transformBlockData('callout', 'rich_text', { mode: 'speech_bubble', html: '<p>Body</p>', bubble_text: '  ' });
+      expect(result.html).toBe('<p>Body</p>');
+    });
+
     it('image_gallery → video: maps first image URL', () => {
       const result = transformBlockData('image_gallery', 'video', {
         images: [{ url: 'https://example.com/img.jpg' }, { url: 'https://example.com/img2.jpg' }],

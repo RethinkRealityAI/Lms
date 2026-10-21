@@ -227,14 +227,29 @@ function Lightbox({ images, index, onClose, onNavigate }: {
   const many = images.length > 1;
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-sm flex flex-col" onClick={onClose}>
-      <div className="flex items-center justify-between px-4 py-3 text-white/80 shrink-0" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-sm flex flex-col" onClick={onClose}
+      role="dialog" aria-modal="true" aria-label={img.alt || 'Enlarged image'}>
+      {/* Close affordances are deliberately redundant: learners reported that a
+          browser translation extension's floating button covered the top-right X,
+          trapping them in the enlarged image. So: a large labelled button (inset from
+          the corner), click anywhere outside the image, Escape, and a bottom Close. */}
+      <div className="flex items-center justify-between pl-4 pr-6 sm:pr-10 pt-4 pb-3 text-white/80 shrink-0" onClick={(e) => e.stopPropagation()}>
         <span className="text-sm font-medium tabular-nums">{many ? `${index + 1} / ${images.length}` : ''}</span>
-        <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition-colors" aria-label="Close">
+        <button
+          onClick={onClose}
+          className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-full bg-white/15 hover:bg-white/25 text-white text-sm font-semibold transition-colors"
+          aria-label="Close enlarged image"
+        >
           <X className="w-5 h-5" />
+          Close
         </button>
       </div>
-      <div className="relative flex-1 min-h-0 flex items-center justify-center px-4 sm:px-16" onClick={(e) => e.stopPropagation()}>
+      {/* Clicking the dark area around the image closes; clicks on the image or the
+          nav arrows do not (they stop propagation / aren't the container itself). */}
+      <div
+        className="relative flex-1 min-h-0 flex items-center justify-center px-4 sm:px-16"
+        onClick={(e) => { e.stopPropagation(); if (e.target === e.currentTarget) onClose(); }}
+      >
         {many && (
           <button onClick={prev} aria-label="Previous"
             className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10">
@@ -253,6 +268,14 @@ function Lightbox({ images, index, onClose, onNavigate }: {
         {img.caption && (
           <Caption text={img.caption} className="text-center text-sm text-white/80 max-w-2xl mx-auto [&_a]:text-white [&_a]:underline [&_p]:my-0.5" />
         )}
+        <div className="flex justify-center">
+          <button
+            onClick={onClose}
+            className="min-h-[44px] px-6 rounded-full bg-white text-slate-900 text-sm font-semibold shadow hover:bg-white/90 transition-colors"
+          >
+            Close and return to the lesson
+          </button>
+        </div>
         {many && (
           <div className="flex items-center justify-center gap-1.5 overflow-x-auto pb-1">
             {images.map((t, i) => (
@@ -301,10 +324,10 @@ function CardLightbox({ images, index, onClose, onNavigate }: {
           </span>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
             aria-label="Close"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
