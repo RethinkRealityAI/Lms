@@ -7,6 +7,8 @@ export const audioDataSchema = z.object({
   title: z.string().optional(),
   /** Optional caption / transcript note shown below the player. */
   caption: z.string().optional(),
+  /** Optional full transcript (plain text), hidden behind a toggle under the player. */
+  transcript: z.string().optional(),
   /** Optional credit / attribution line. */
   credit: z.string().optional(),
   /** Autoplay is off by default (browsers block it anyway). */

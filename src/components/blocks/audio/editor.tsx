@@ -58,6 +58,16 @@ export function AudioEditor({ data, onChange }: BlockEditorProps<AudioData>) {
         />
       </div>
       <div>
+        <label className={labelClass}>Transcript (optional)</label>
+        <textarea
+          value={data.transcript ?? ''}
+          placeholder="Full transcript. Learners open it with a Transcript button under the player."
+          rows={4}
+          onChange={(e) => onChange({ ...data, transcript: e.target.value || undefined })}
+          className={`${inputClass} resize-y`}
+        />
+      </div>
+      <div>
         <label className={labelClass}>Credit (optional)</label>
         <input
           type="text"

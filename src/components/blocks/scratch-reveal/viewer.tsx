@@ -138,7 +138,9 @@ export default function ScratchRevealViewer({ data, onComplete, context }: Block
       const text = before.text || 'Scratch here';
       ctx.fillStyle = before.text_color || '#FFFFFF';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = `800 ${Math.round(Math.min(canvas.width, canvas.height) / 9)}px Outfit, system-ui, sans-serif`;
+      // A very short cover (a single letter or icon-like label) would look lost at body size.
+      const coverDivisor = text.trim().length <= 3 ? 2.2 : 9;
+      ctx.font = `800 ${Math.round(Math.min(canvas.width, canvas.height) / coverDivisor)}px Outfit, system-ui, sans-serif`;
       // simple word-wrap
       const max = canvas.width * 0.86, words = text.split(' '), lines: string[] = [];
       let line = '';

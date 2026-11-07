@@ -2248,7 +2248,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           aria-label="Back to dashboard"
                           className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#0F172A] hover:bg-[#1e293b] rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                         >
-                          Back to Dashboard
+                          <span className="hidden sm:inline">Back to Dashboard</span>
+                          <span className="sm:hidden">Dashboard</span>
                         </button>
                       )
                     ) : isLastContentSlide ? (
@@ -2259,7 +2260,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         aria-label="Complete lesson"
                         className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#DC2626] hover:bg-[#991B1B] rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
                       >
-                        {navLabel || 'Complete Lesson'} <ChevronRight className="h-4 w-4" />
+                        {navLabel || (
+                          <>
+                            {/* Short on phones: the full label runs under the centred lesson-menu button. */}
+                            <span className="hidden sm:inline">Complete Lesson</span>
+                            <span className="sm:hidden">Complete</span>
+                          </>
+                        )}{' '}
+                        <ChevronRight className="h-4 w-4" />
                       </NavButtonWithHint>
                     ) : !isLastSlide ? (
                       <NavButtonWithHint
