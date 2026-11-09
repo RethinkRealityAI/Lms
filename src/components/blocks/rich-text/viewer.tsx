@@ -33,7 +33,24 @@ export default function RichTextViewer({ data }: BlockViewerProps<RichTextData>)
   return (
     <div
       className="rich-text-viewer prose max-w-none"
-      dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.html) }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(resolveRichTextHtml(data)) }}
     />
   );
+}
+
+/** Text with no visible characters (e.g. Tiptap's empty `<p></p>`). */
+function isBlankHtml(html: string): boolean {
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() === '';
+}
+
+/**
+ * The html to render. A rich_text block that carries callout speech-bubble data
+ * (bubble_text) with blank html — a callout mis-typed as rich_text — would render
+ * an empty box; show its bubble text instead so learners never see a blank block.
+ */
+export function resolveRichTextHtml(data: RichTextData): string {
+  const html = data.html ?? '';
+  const bubble = (data as { bubble_text?: unknown }).bubble_text;
+  if (isBlankHtml(html) && typeof bubble === 'string' && !isBlankHtml(bubble)) return bubble;
+  return html;
 }

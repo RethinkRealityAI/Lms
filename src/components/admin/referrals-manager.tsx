@@ -20,6 +20,9 @@ import {
   Loader2,
   Tag,
   ChevronDown,
+  GraduationCap,
+  BellRing,
+  Send,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -35,8 +38,16 @@ import {
   rotateReferralToken,
   referralShareUrl,
   referralReportUrl,
+  getReferralLearners,
   type ReferralCodeWithStats,
 } from '@/lib/db/referrals';
+import {
+  NOTICE_STATUS_LABEL,
+  REFERRAL_NOTIFY_MAX,
+  parseNotifyEmails,
+  referralLearnersCsv,
+  type ReferralLearnerRow,
+} from '@/lib/referral/completion-notices';
 import { isValidReferralCode, suggestReferralCode } from '@/lib/referral/constants';
 import { CAMPAIGN_SUGGESTIONS, normalizeCampaign } from '@/lib/referral/sources';
 
@@ -77,6 +88,8 @@ type FormState = {
   owner_email: string;
   landing_path: string;
   is_active: boolean;
+  /** Comma/new-line separated; parsed on save (migration 076). */
+  notify_emails: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -88,6 +101,7 @@ const EMPTY_FORM: FormState = {
   owner_email: '',
   landing_path: '',
   is_active: true,
+  notify_emails: '',
 };
 
 export function ReferralsManager({
@@ -106,6 +120,7 @@ export function ReferralsManager({
   const [codeEdited, setCodeEdited] = useState(false);
   const [qrFor, setQrFor] = useState<ReferralCodeWithStats | null>(null);
   const [shareFor, setShareFor] = useState<ReferralCodeWithStats | null>(null);
+  const [learnersFor, setLearnersFor] = useState<ReferralCodeWithStats | null>(null);
 
   const openCreate = () => {
     setForm(EMPTY_FORM);
@@ -123,6 +138,7 @@ export function ReferralsManager({
       owner_email: c.owner_email ?? '',
       landing_path: c.landing_path ?? '',
       is_active: c.is_active,
+      notify_emails: (c.completion_notify_emails ?? []).join(', '),
     });
     setCodeEdited(true);
     setFormOpen(true);
@@ -153,6 +169,15 @@ export function ReferralsManager({
       toast.error('Landing page must be a path starting with "/" (e.g. /scago/clinicians).');
       return;
     }
+    const notify = parseNotifyEmails(form.notify_emails);
+    if (notify.invalid.length > 0) {
+      toast.error(`Not a valid email address: ${notify.invalid.join(', ')}`);
+      return;
+    }
+    if (notify.emails.length > REFERRAL_NOTIFY_MAX) {
+      toast.error(`Up to ${REFERRAL_NOTIFY_MAX} completion email recipients per link.`);
+      return;
+    }
 
     setSaving(true);
     try {
@@ -164,6 +189,7 @@ export function ReferralsManager({
         owner_email: form.owner_email,
         landing_path: form.landing_path,
         is_active: form.is_active,
+        completion_notify_emails: notify.emails,
       };
 
       if (form.id) {
@@ -293,6 +319,7 @@ export function ReferralsManager({
               onRotate={() => rotate(c)}
               onQr={() => setQrFor(c)}
               onShare={() => setShareFor(c)}
+              onLearners={() => setLearnersFor(c)}
             />
           ))}
         </div>
@@ -389,6 +416,23 @@ export function ReferralsManager({
               </p>
             </div>
 
+            <div>
+              <Label htmlFor="ref-notify">Completion emails</Label>
+              <Textarea
+                id="ref-notify"
+                value={form.notify_emails}
+                onChange={(e) => setForm((f) => ({ ...f, notify_emails: e.target.value }))}
+                placeholder="you@example.org, partner@example.org"
+                rows={2}
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                When someone who signed up through this link completes the full program, these
+                people are emailed the learner&apos;s name, email and completion details (e.g. to send
+                a thank-you gift). Learners are told this when they sign up through the link. Leave
+                blank to turn off. Separate addresses with commas.
+              </p>
+            </div>
+
             <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
               <div>
                 <p className="text-sm font-medium text-slate-900">Active</p>
@@ -416,6 +460,13 @@ export function ReferralsManager({
       </Dialog>
 
       {qrFor && <QrDialog code={qrFor} origin={origin} onClose={() => setQrFor(null)} />}
+      {learnersFor && (
+        <LearnersDialog
+          code={learnersFor}
+          emailConfigured={emailConfigured}
+          onClose={() => setLearnersFor(null)}
+        />
+      )}
       {shareFor && (
         <ShareDialog
           code={shareFor}
@@ -441,6 +492,7 @@ function ReferralCard({
   onRotate,
   onQr,
   onShare,
+  onLearners,
 }: {
   code: ReferralCodeWithStats;
   origin: string;
@@ -450,6 +502,7 @@ function ReferralCard({
   onRotate: () => void;
   onQr: () => void;
   onShare: () => void;
+  onLearners: () => void;
 }) {
   const shareUrl = referralShareUrl(origin, code.code);
   const reportUrl = referralReportUrl(origin, code.public_token);
@@ -482,6 +535,10 @@ function ReferralCard({
         </div>
 
         <div className="flex shrink-0 gap-1">
+          <Button variant="outline" size="sm" onClick={onLearners} className="h-9 gap-1.5">
+            <GraduationCap className="h-4 w-4" />
+            Learners
+          </Button>
           <IconButton title="Edit" onClick={onEdit}>
             <Pencil className="h-4 w-4" />
           </IconButton>
@@ -507,6 +564,16 @@ function ReferralCard({
         <Stat label="Modules done" value={s.courses_completed} />
         <Stat label="Certificates" value={s.certificates} />
       </div>
+
+      {code.completion_notify_emails?.length > 0 && (
+        <p className="mt-3 flex items-start gap-1.5 text-xs text-slate-600">
+          <BellRing className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
+          <span>
+            Completion emails go to{' '}
+            <span className="font-medium text-slate-800">{code.completion_notify_emails.join(', ')}</span>
+          </span>
+        </p>
+      )}
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <CopyRow label="Sharing link" value={shareUrl} icon={Link2} openable />
@@ -798,6 +865,189 @@ function ShareDialog({
             {sending && <Loader2 className="h-4 w-4 animate-spin" />}
             <Mail className="h-4 w-4" /> Send
           </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Learners (migration 076) — admin-only, identifiable                 */
+/* ------------------------------------------------------------------ */
+
+const STATUS_STYLE: Record<string, string> = {
+  sent: 'bg-emerald-50 text-emerald-800',
+  pending: 'bg-sky-50 text-sky-800',
+  failed: 'bg-red-50 text-red-700',
+  not_queued: 'bg-amber-50 text-amber-800',
+  not_eligible: 'bg-slate-100 text-slate-600',
+};
+
+const shortDate = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
+
+function LearnersDialog({
+  code,
+  emailConfigured,
+  onClose,
+}: {
+  code: ReferralCodeWithStats;
+  emailConfigured: boolean;
+  onClose: () => void;
+}) {
+  const supabase = useMemo(() => createClient(), []);
+  const [rows, setRows] = useState<ReferralLearnerRow[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoadError(null);
+    try {
+      setRows(await getReferralLearners(supabase, code.id));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : 'Could not load learners');
+    }
+  }, [supabase, code.id]);
+
+  React.useEffect(() => {
+    void load();
+  }, [load]);
+
+  const completed = rows?.filter((r) => r.program_completed_at) ?? [];
+  const unsent = completed.filter((r) => r.notice_status !== 'sent');
+  const alertsOn = (code.completion_notify_emails?.length ?? 0) > 0;
+
+  const downloadCsv = () => {
+    if (!rows) return;
+    const blob = new Blob([referralLearnersCsv(rows)], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${code.code}-learners-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const sendNow = async () => {
+    setSending(true);
+    try {
+      const res = await fetch('/api/admin/referrals/notices', { method: 'POST' });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error ?? 'Send failed');
+      if (!body.emailConfigured) toast.error('Email sending is not configured on this site.');
+      else if (body.failed > 0) toast.error(`${body.sent} sent, ${body.failed} failed. Failed emails retry automatically.`);
+      else toast.success(body.sent > 0 ? `${body.sent} completion email${body.sent === 1 ? '' : 's'} sent` : 'Nothing waiting to send');
+      await load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Send failed');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+        <DialogTitle className="pr-6">Learners from {code.label}</DialogTitle>
+        <p className="mt-1 text-sm text-slate-600">
+          Everyone who created an account through this link. Contains personal information — for
+          your team and the contacts listed on this link only. Never share it through the public
+          dashboard.
+        </p>
+
+        {rows && (
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <Stat label="Signed up" value={rows.length} />
+            <Stat label="Completed program" value={completed.length} />
+            <Stat label="Completion emails sent" value={completed.length - unsent.length} />
+          </div>
+        )}
+
+        <p className="mt-3 text-xs text-slate-500">
+          {alertsOn
+            ? `Completion emails go to ${code.completion_notify_emails.join(', ')}.`
+            : 'Completion emails are off for this link. Turn them on with Edit → Completion emails.'}
+        </p>
+
+        <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+          {loadError ? (
+            <p className="p-4 text-sm text-red-700">{loadError}</p>
+          ) : !rows ? (
+            <div className="flex items-center gap-2 p-4 text-sm text-slate-500">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading learners…
+            </div>
+          ) : rows.length === 0 ? (
+            <p className="p-4 text-sm text-slate-500">No one has signed up through this link yet.</p>
+          ) : (
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-3 py-2 font-semibold">Learner</th>
+                  <th className="px-3 py-2 font-semibold">Profession</th>
+                  <th className="px-3 py-2 font-semibold">Tag</th>
+                  <th className="px-3 py-2 font-semibold">Signed up</th>
+                  <th className="px-3 py-2 font-semibold">Modules</th>
+                  <th className="px-3 py-2 font-semibold">Completed</th>
+                  <th className="px-3 py-2 font-semibold">Email</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {rows.map((r) => (
+                  <tr key={r.user_id}>
+                    <td className="px-3 py-2">
+                      <p className="font-medium text-slate-900">{r.full_name || '—'}</p>
+                      <p className="text-xs text-slate-500">{r.email}</p>
+                    </td>
+                    <td className="px-3 py-2 text-slate-700">{r.profession || '—'}</td>
+                    <td className="px-3 py-2 font-mono text-xs text-slate-600">{r.campaign || '—'}</td>
+                    <td className="px-3 py-2 tabular-nums text-slate-700">{shortDate(r.joined_at)}</td>
+                    <td className="px-3 py-2 tabular-nums text-slate-700">
+                      {r.modules_completed}/{r.modules_total}
+                    </td>
+                    <td className="px-3 py-2 tabular-nums text-slate-700">
+                      {r.program_completed_at ? shortDate(r.program_completed_at) : '—'}
+                    </td>
+                    <td className="px-3 py-2">
+                      <span
+                        className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[r.notice_status] ?? STATUS_STYLE.not_eligible}`}
+                      >
+                        {r.notice_status === 'not_queued' && !alertsOn
+                          ? 'Emails off'
+                          : NOTICE_STATUS_LABEL[r.notice_status] ?? r.notice_status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div className="mt-5 flex flex-wrap justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button variant="outline" onClick={downloadCsv} disabled={!rows || rows.length === 0} className="gap-1.5">
+            <Download className="h-4 w-4" />
+            Download CSV
+          </Button>
+          {alertsOn && (
+            <Button
+              onClick={sendNow}
+              disabled={sending || !emailConfigured || unsent.length === 0}
+              title={
+                !emailConfigured
+                  ? 'Email sending is not configured on this site'
+                  : unsent.length === 0
+                    ? 'Every completion has already been emailed'
+                    : undefined
+              }
+              className="gap-1.5"
+            >
+              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Send pending emails{unsent.length > 0 ? ` (${unsent.length})` : ''}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

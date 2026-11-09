@@ -20,6 +20,7 @@ import { getInstitutionBranding, type InstitutionBranding } from '@/lib/tenant/b
 import { logSignInEvent } from '@/lib/db/events';
 import { joinInstitution, signupPrecheck } from '@/lib/db/memberships';
 import { getReferralCodeFromCookie, getReferralSourceFromCookie } from '@/lib/referral/constants';
+import { getReferralSignupNotice } from '@/lib/db/referrals';
 import {
   PROFESSION_SELECT_OPTIONS,
   PROFESSION_OTHER_VALUE,
@@ -93,6 +94,22 @@ function LoginContent() {
   }, [pathname]);
 
   const isScago = branding.acronym === 'SCAGO';
+
+  // Referral completion sharing (migration 076): when the learner arrived through
+  // a partner's link that emails completions to the partner, say so up front.
+  const [referralPartner, setReferralPartner] = useState<string | null>(null);
+  useEffect(() => {
+    const code = getReferralCodeFromCookie();
+    if (!code) return;
+    let cancelled = false;
+    void getReferralSignupNotice(supabase, code, resolveInstitutionSlug(pathname) || 'gansid').then((label) => {
+      if (!cancelled) setReferralPartner(label);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   // Check for verification success or errors from callback
   useEffect(() => {
@@ -907,6 +924,14 @@ function LoginContent() {
                     </ul>
                   </div>
                 </div>
+
+                {referralPartner && (
+                  <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs leading-relaxed text-slate-600">
+                    You&apos;re signing up through <span className="font-bold text-slate-800">{referralPartner}</span>.
+                    When you complete the full program, we&apos;ll share your name, email and completion
+                    details with {referralPartner} so they can thank you, for example with a gift card.
+                  </p>
+                )}
 
                 <Button
                   type="submit"

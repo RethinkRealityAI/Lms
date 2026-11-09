@@ -41,6 +41,7 @@ import { getViewedSlideIds, markSlideViewed } from '@/lib/db/slide-progress';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
 import { celebrationCertId } from '@/lib/content/certificate-issuance';
+import { getMissingRequiredQuizzes, type MissingQuiz } from '@/lib/db/certificate-blockers';
 import { CertificateCelebration } from '@/components/certificates/certificate-celebration';
 import type { SurveyData, SurveyAnswers, SurveyAnswerValue, SurveyQuestion } from '@/lib/content/blocks/survey/schema';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
@@ -570,6 +571,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [lessonQuizzes, setLessonQuizzes] = useState<Record<string, boolean>>({});
   // Authenticated user id — cached so slide-progress writes/reads don't re-fetch getUser().
   const [userId, setUserId] = useState<string | null>(null);
+  // Required quizzes still blocking this learner's certificate (null = not checked).
+  // Filled only after issue_course_certificate refuses, so the completion slide can
+  // name each quiz and link to it instead of the RPC's bare "N remaining".
+  const [certBlockers, setCertBlockers] = useState<MissingQuiz[] | null>(null);
+  // False when a student deep link pointed at a lesson they haven't completed (ignored).
+  const honorInitialSlideRef = useRef(true);
+  const certBlockersRef = useRef<MissingQuiz[] | null>(null);
+  certBlockersRef.current = certBlockers;
   // Per-slide progress (migration 059): DB slide ids the learner has viewed in this course.
   const [viewedSlideIds, setViewedSlideIds] = useState<Set<string>>(new Set());
   // Which lessons are expanded in the sidebar to reveal their slide list.
@@ -894,10 +903,16 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           // Only applies on initial load; user/embedded navigation is untouched.
           // See resolveInitialLesson for the full precedence + the historic bug
           // where "all complete" silently fell back to lesson 1.
+          // A student deep link (e.g. "Go to quiz" from the survey page) may only open
+          // an ALREADY-COMPLETED lesson: those are fully revisitable, whereas honouring a
+          // link into an unfinished one would skip sequential locks and slide gates.
+          // Admin preview/embed keeps the unrestricted editor jump.
+          const deepLinkOk = previewMode || !initialLessonId || !!progressMap[initialLessonId]?.completed;
+          honorInitialSlideRef.current = deepLinkOk;
           const { lesson: initial, landOnCompletion } = resolveInitialLesson(
             lessonsData,
             (id) => !!progressMap[id]?.completed,
-            initialLessonId,
+            deepLinkOk ? initialLessonId : null,
           );
           if (landOnCompletion) landOnCompletionRef.current = true;
           if (initial) setSelectedLesson(initial);
@@ -1037,6 +1052,22 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // ---------------------------------------------------------------------------
   // Actions
   // ---------------------------------------------------------------------------
+  // Load which required quizzes block the certificate. Returns null on a failed read
+  // (unknown — never treated as "nothing missing").
+  const loadCertBlockers = useCallback(async (): Promise<MissingQuiz[] | null> => {
+    if (previewMode) return null;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    try {
+      const missing = await getMissingRequiredQuizzes(supabase, courseId, user.id);
+      setCertBlockers(missing);
+      return missing;
+    } catch (err) {
+      console.error('Could not load certificate blockers (non-fatal):', err);
+      return null;
+    }
+  }, [previewMode, supabase, courseId]);
+
   const handleMarkComplete = useCallback(async () => {
     if (!selectedLesson) return;
     // Redoing a completed lesson is a pure no-op: without this guard the upsert
@@ -1087,7 +1118,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           // celebrate nothing until the final one).
           const celebrateId = celebrationCertId(certData);
           if (certError) {
-            toast.error('Your certificate could not be issued', { description: certError.message });
+            // Name the blocking quizzes on the completion slide (with links) — the RPC
+            // message alone ("N remaining") left learners unable to find them.
+            const blockers = await loadCertBlockers();
+            toast.error('Your certificate could not be issued yet', {
+              description: blockers && blockers.length > 0
+                ? `${blockers.length === 1 ? 'One required quiz still needs' : `${blockers.length} required quizzes still need`} a correct answer. They're listed on this screen with a link to each.`
+                : certError.message,
+            });
           } else if (celebrateId && !certData.already_issued) {
             // Pre-generate PDF (fire-and-forget)
             fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
@@ -1131,7 +1169,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     } catch (err: any) {
       toast.error('Failed to mark lesson as complete', { description: err.message });
     }
-  }, [selectedLesson, progress, lessons, courseId, previewMode, course, feedbackTemplate, feedbackSubmitted]);
+  }, [selectedLesson, progress, lessons, courseId, previewMode, course, feedbackTemplate, feedbackSubmitted, loadCertBlockers]);
 
 
   const openReviewModal = async () => {
@@ -1347,6 +1385,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // consumes its one-shot guard, and never retries once real slides arrive.
   useEffect(() => {
     if (appliedInitialSlideRef.current) return;
+    if (!honorInitialSlideRef.current) return;
     if (pageLoading) return;
     if (!selectedLesson) return;
     if (initialLessonId && selectedLesson.id !== initialLessonId) return;
@@ -1465,6 +1504,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
   // Ref so blockContext (declared before goNext) can trigger slide advance from a block.
   const goNextRef = useRef<() => void>(() => {});
+  // Same pattern for the certificate retry handler (defined further down).
+  const quizPersistedRef = useRef<(blockId: string, isCorrect: boolean) => void>(() => {});
 
   const blockContext = React.useMemo<BlockViewerContext>(() => ({
     courseId,
@@ -1473,6 +1514,7 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     previewMode,
     theme: effectiveTheme,
     onAutoAdvance: () => goNextRef.current(),
+    onQuizPersisted: (blockId: string, isCorrect: boolean) => quizPersistedRef.current(blockId, isCorrect),
   }), [courseId, selectedLesson?.id, course?.institution_id, previewMode, effectiveTheme]);
 
   // Gating quiz ids come from getGatingQuizBlockIds (quiz-inline/validation):
@@ -1655,6 +1697,25 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   // issued cert — e.g. a learner who was stranded by a stale is_correct=false quiz
   // answer and has since re-answered it correctly. Fires once per ARRIVAL at the slide
   // (the ref resets on leaving), so leaving to fix a quiz and returning retries.
+  // Idempotent issuance attempt shared by the completion-slide self-heal and the
+  // "you just fixed the last blocking quiz" retry. Celebrates only a NEW cert; on a
+  // refusal it loads the named blockers so the completion slide can list them.
+  const issueAndCelebrate = useCallback(async () => {
+    const { data: certData, error: certError } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
+    if (certError) { await loadCertBlockers(); return; }
+    setCertBlockers([]);
+    const celebrateId = celebrationCertId(certData);
+    if (celebrateId && !certData.already_issued) {
+      fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
+      fetch('/api/notify/certificate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ certificateId: celebrateId }),
+      }).catch(() => {});
+      const display = await fetchCertificateDisplay(supabase, celebrateId);
+      if (display) setCelebration(display);
+    }
+  }, [supabase, courseId, loadCertBlockers]);
+
   const certRetryFiredRef = useRef(false);
   useEffect(() => {
     if (currentSlideData?.kind !== 'completion') { certRetryFiredRef.current = false; return; }
@@ -1664,20 +1725,41 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     const surveyPending = Boolean(course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted);
     if (!isFinalLesson || !allDone || surveyPending) return;
     certRetryFiredRef.current = true;
-    (async () => {
-      const { data: certData } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
-      const celebrateId = celebrationCertId(certData);
-      if (celebrateId && !certData.already_issued) {
-        fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
-        fetch('/api/notify/certificate', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ certificateId: celebrateId }),
-        }).catch(() => {});
-        const display = await fetchCertificateDisplay(supabase, celebrateId);
-        if (display) setCelebration(display);
+    void issueAndCelebrate();
+  }, [currentSlideData, celebration, previewMode, userId, selectedLesson?.id, lessons, progress, course, feedbackTemplate, feedbackSubmitted, issueAndCelebrate]);
+
+  // A blocking quiz was just answered correctly AND saved: re-check, and once nothing
+  // is left, issue the certificate right away — the learner no longer has to find
+  // their way back to the final completion slide (support: a learner fixed the quiz
+  // but only got the certificate two days later, on a chance revisit).
+  const certReadyRef = useRef(false);
+  certReadyRef.current = lessons.length > 0
+    && lessons.every(l => progress[l.id]?.completed)
+    && !(course?.completion_survey_required && feedbackTemplate && !feedbackSubmitted);
+  const handleQuizPersisted = useCallback((blockId: string, isCorrect: boolean) => {
+    if (!isCorrect || previewMode) return;
+    const blockers = certBlockersRef.current;
+    if (!blockers || !blockers.some(b => b.blockId === blockId)) {
+      // Blockers not loaded here (e.g. arrived via a "Go to quiz" link from the survey
+      // page): if the course is otherwise finished, just retry issuance. Idempotent —
+      // an existing certificate returns already_issued and nothing is shown.
+      if (blockers === null && certReadyRef.current) void issueAndCelebrate();
+      return;
+    }
+    void (async () => {
+      const remaining = await loadCertBlockers();
+      if (remaining === null) return;
+      if (remaining.length === 0) {
+        toast.success('That was the last one — finishing up…');
+        await issueAndCelebrate();
+      } else {
+        toast.success('Answer saved', {
+          description: `${remaining.length} more required ${remaining.length === 1 ? 'quiz' : 'quizzes'} to go.`,
+        });
       }
     })();
-  }, [currentSlideData, celebration, previewMode, userId, selectedLesson?.id, lessons, progress, course, feedbackTemplate, feedbackSubmitted, courseId, supabase]);
+  }, [loadCertBlockers, issueAndCelebrate, previewMode]);
+  quizPersistedRef.current = handleQuizPersisted;
 
   // Confetti when completion slide is first shown per lesson
   useEffect(() => {
@@ -2206,6 +2288,53 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                               </Button>
                             </div>
                           )}
+                        </div>
+                      )}
+
+                      {/* Certificate blocked by named quizzes — list each with a direct link.
+                          Answering one correctly re-checks and issues automatically
+                          (handleQuizPersisted), so the learner needn't come back here. */}
+                      {!previewMode && isLastLesson && !celebration && certBlockers && certBlockers.length > 0 && (
+                        <div className="w-full max-w-xl rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-5 shadow-sm" role="status">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Award className="h-6 w-6 text-amber-500 shrink-0" />
+                            <p className="font-black text-slate-900">
+                              {`${certBlockers.length === 1 ? 'One quiz' : `${certBlockers.length} quizzes`} to go ${courseCertSuppressed ? 'to finish this module' : 'before your certificate'}`}
+                            </p>
+                          </div>
+                          <p className="text-sm text-slate-600 mb-4">
+                            These required questions don&apos;t have a correct answer saved yet. Open each one and answer it
+                            again — {courseCertSuppressed ? 'the module is finished' : 'your certificate is issued'} automatically as soon as the last one is saved.
+                          </p>
+                          <ul className="space-y-2">
+                            {certBlockers.map((b) => {
+                              const lesson = lessons.find(l => l.id === b.lessonId);
+                              return (
+                                <li key={b.blockId} className="flex items-center justify-between gap-3 rounded-xl bg-white border border-amber-200 px-3 py-2.5">
+                                  <div className="min-w-0 text-sm">
+                                    <p className="font-semibold text-slate-900 truncate">
+                                      Lesson {b.lessonPosition + 1}: {b.lessonTitle}
+                                    </p>
+                                    {b.slideTitle && <p className="text-slate-500 truncate">Slide: {b.slideTitle}</p>}
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    disabled={!lesson}
+                                    onClick={() => {
+                                      if (!lesson) return;
+                                      if (b.slideId) jumpToSlide(lesson, b.slideId);
+                                      else selectLesson(lesson);
+                                    }}
+                                    style={{ backgroundColor: effectiveTheme.progressColor ?? '#1A3C6E' }}
+                                    className="shrink-0 font-bold text-white hover:opacity-90 min-h-[40px]"
+                                  >
+                                    Go to quiz
+                                    <ChevronRight className="ml-1 h-4 w-4" />
+                                  </Button>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         </div>
                       )}
 

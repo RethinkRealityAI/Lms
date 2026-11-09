@@ -22,6 +22,10 @@ import {
   surfaceOutlineButtonClass,
 } from '@/lib/content/block-surface-tokens';
 import { formatQuizText } from '@/lib/content/format-quiz-text';
+import { toast } from 'sonner';
+
+/** Per-quiz save chain (module scope: survives re-mounts as the learner moves between slides). */
+const persistQueue = new Map<string, Promise<void>>();
 
 /** Called by each sub-viewer at the moment correctness is determined. */
 type OnAnswered = (answer: unknown, isCorrect: boolean) => void;
@@ -35,24 +39,38 @@ export default function QuizInlineViewer({ data, block, context, onComplete }: B
   const questionType = data.question_type;
   const persistAnswer = useCallback<OnAnswered>((answer, isCorrect) => {
     if (!context || context.previewMode || context.editing) return;
-    const { courseId, lessonId, institutionId } = context;
+    const { courseId, lessonId, institutionId, onQuizPersisted } = context;
     if (!courseId || !lessonId || !institutionId || !blockId) return;
-    void (async () => {
+    // Saves for the same quiz run strictly one after another. Overlapping saves were
+    // a read-then-write race: a wrong re-attempt that read the row before a correct
+    // answer landed would overwrite it with is_correct=false — the learner passed on
+    // screen, but the certificate RPC (which trusts the DB) refused. Support found
+    // exactly this on four live learners.
+    const prior = persistQueue.get(blockId) ?? Promise.resolve();
+    const run = prior.catch(() => {}).then(async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: existing } = await supabase
-        .from('quiz_block_responses')
-        .select('attempt_count, is_correct')
-        .eq('block_id', blockId)
-        .eq('user_id', user.id)
-        .maybeSingle();
+      if (!user) throw new Error('signed-out');
       // Never DOWNGRADE a previously-correct answer to incorrect on a later re-attempt.
       // The lesson-completion gate (correctQuizBlocks) and the certificate treat
       // "answered correctly at least once" as satisfied and never revert; if the
       // persisted flag downgraded, a learner who passed then re-explored the quiz
       // would be silently blocked from their certificate (progress shows 100%, but
       // issue_course_certificate refuses on the stale is_correct=false).
+      let existing: { attempt_count: number | null; is_correct: boolean | null } | null = null;
+      for (let attempt = 0; ; attempt++) {
+        const { data, error } = await supabase
+          .from('quiz_block_responses')
+          .select('attempt_count, is_correct')
+          .eq('block_id', blockId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!error) { existing = data; break; }
+        // Can't see the stored answer. A correct answer is always safe to write; a
+        // wrong one might overwrite a stored pass, so skip it rather than risk that.
+        if (attempt >= 2) { if (!isCorrect) return; break; }
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
       const stickyCorrect = isCorrect || existing?.is_correct === true;
       const row = {
         institution_id: institutionId,
@@ -75,7 +93,21 @@ export default function QuizInlineViewer({ data, block, context, onComplete }: B
         if (attempt >= 2) throw error;
         await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
       }
-    })().catch(console.error);
+      onQuizPersisted?.(blockId, stickyCorrect);
+    });
+    persistQueue.set(blockId, run);
+    run.catch((err) => {
+      console.error(err);
+      // Only a lost CORRECT answer can cost the learner their certificate — say so,
+      // instead of failing silently and leaving them at "100% complete, no certificate".
+      if (isCorrect) {
+        toast.error('Your answer could not be saved', {
+          description: err instanceof Error && err.message === 'signed-out'
+            ? 'You appear to be signed out. Sign in again and re-answer this question.'
+            : 'Check your connection, then answer this question again so it counts toward your certificate.',
+        });
+      }
+    });
   }, [context, blockId, questionType]);
 
   if (data.question_type === 'swipe') {

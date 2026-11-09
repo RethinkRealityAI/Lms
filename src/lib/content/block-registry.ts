@@ -31,6 +31,9 @@ export interface BlockViewerContext {
   theme?: { accent: string; sliderAccent: string; chromeAccent: string | null; titleLogoUrl: string | null };
   /** Called by media blocks (e.g. video) when they want the viewer to advance to the next slide. */
   onAutoAdvance?: () => void;
+  /** Called by quiz blocks AFTER an answer is durably saved (isCorrect = the stored,
+   *  sticky value). Lets the viewer retry a certificate that was waiting on this quiz. */
+  onQuizPersisted?: (blockId: string, isCorrect: boolean) => void;
 }
 
 export interface BlockViewerProps<TData = Record<string, unknown>> {

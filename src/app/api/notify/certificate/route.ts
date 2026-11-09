@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { sendEmail, isEmailConfigured } from '@/lib/email/mailer';
 import { renderSystemEmail, certificateEmailVariables } from '@/lib/email/system-emails';
+import { flushReferralCompletionNotices } from '@/lib/referral/completion-notices.server';
 
 /**
  * POST { certificateId } — emails the certificate owner.
@@ -78,6 +79,15 @@ export async function POST(req: NextRequest) {
       html,
       institutionSlug: slug,
     });
+
+    // A program certificate may have queued a referral completion notice
+    // (migration 076 trigger). Send it now rather than waiting for the hourly
+    // sweep; failures stay queued for the sweep and never affect this response.
+    if (program && !course) {
+      await flushReferralCompletionNotices(service, { certificateId: cert.id }).catch((err) =>
+        console.error('[notify/certificate] referral notice flush failed', err),
+      );
+    }
     return NextResponse.json(result);
   } catch (err) {
     console.error('[notify/certificate]', err);

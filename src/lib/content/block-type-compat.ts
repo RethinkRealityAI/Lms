@@ -36,7 +36,12 @@ export function transformBlockData(
   if (fromType === 'rich_text' && toType === 'callout') {
     result = { html: data.html ?? '', variant: 'info', title: 'Note' };
   } else if (fromType === 'callout' && toType === 'rich_text') {
-    result = { html: data.html ?? '' };
+    // A speech-bubble callout keeps its message in bubble_text (html is usually
+    // empty). Copying only html silently blanked the block — live SCAGO slides
+    // showed empty boxes / "Your content here..." placeholders this way.
+    const html = typeof data.html === 'string' ? data.html : '';
+    const bubble = typeof data.bubble_text === 'string' ? data.bubble_text : '';
+    result = { html: data.mode === 'speech_bubble' && bubble.trim() ? bubble : html };
   } else if (fromType === 'image_gallery' && toType === 'video') {
     const images = (data.images as Array<{ url?: string }>) ?? [];
     result = { url: images[0]?.url ?? '', caption: '' };

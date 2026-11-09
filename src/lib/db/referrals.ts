@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { ReferralLearnerRow } from '@/lib/referral/completion-notices';
 
 /**
  * Referral tracking (migration 068).
@@ -22,6 +23,8 @@ export interface ReferralCode {
   landing_path: string | null;
   outreach_reached: number | null;
   outreach_note: string | null;
+  /** Migration 076: emailed (with the learner's name + email) on program completion. Empty = off. */
+  completion_notify_emails: string[];
   public_token: string;
   is_active: boolean;
   archived_at: string | null;
@@ -247,6 +250,7 @@ export interface ReferralCodeInput {
   is_active?: boolean;
   outreach_reached?: number | null;
   outreach_note?: string | null;
+  completion_notify_emails?: string[];
 }
 
 export async function createReferralCode(
@@ -268,6 +272,7 @@ export async function createReferralCode(
       is_active: input.is_active ?? true,
       outreach_reached: input.outreach_reached ?? null,
       outreach_note: input.outreach_note?.trim() || null,
+      completion_notify_emails: input.completion_notify_emails ?? [],
       created_by: createdBy ?? null,
     })
     .select('*')
@@ -293,6 +298,9 @@ export async function updateReferralCode(
   if (input.is_active !== undefined) patch.is_active = input.is_active;
   if (input.outreach_reached !== undefined) patch.outreach_reached = input.outreach_reached;
   if (input.outreach_note !== undefined) patch.outreach_note = input.outreach_note?.trim() || null;
+  if (input.completion_notify_emails !== undefined) {
+    patch.completion_notify_emails = input.completion_notify_emails;
+  }
 
   // Rule 25: select back, so an RLS-filtered 0-row update can't report success.
   const { data, error } = await supabase
@@ -342,6 +350,34 @@ export async function rotateReferralToken(
 /* ------------------------------------------------------------------ */
 
 /** The link an ambassador shares. Short on purpose — it goes on flyers. */
+/**
+ * Per-learner list for ONE referral code (migration 076, admin-only RPC,
+ * institution-scoped server-side). Identifiable — never feed this to the public
+ * /report page (rule 28).
+ */
+export async function getReferralLearners(
+  supabase: SupabaseClient,
+  codeId: string,
+): Promise<ReferralLearnerRow[]> {
+  const { data, error } = await supabase.rpc('admin_referral_learners', { p_code_id: codeId });
+  if (error) throw error;
+  return (data ?? []) as ReferralLearnerRow[];
+}
+
+/** Partner name to show at signup when this code shares completions (anon-callable). */
+export async function getReferralSignupNotice(
+  supabase: SupabaseClient,
+  code: string,
+  institutionSlug: string,
+): Promise<string | null> {
+  const { data, error } = await supabase.rpc('get_referral_signup_notice', {
+    p_code: code,
+    p_institution_slug: institutionSlug,
+  });
+  if (error) return null;
+  return typeof data === 'string' && data.trim() ? data : null;
+}
+
 export function referralShareUrl(origin: string, code: string): string {
   return `${origin.replace(/\/$/, '')}/r/${code}`;
 }

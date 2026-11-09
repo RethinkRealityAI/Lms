@@ -8,6 +8,7 @@ import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { upsertCourseFeedbackResponse, getMyCourseFeedback } from '@/lib/db/course-feedback';
 import { isCourseCertificateSuppressed, getNextProgramCourse, type NextProgramCourse } from '@/lib/db/programs';
 import { celebrationCertId } from '@/lib/content/certificate-issuance';
+import { getMissingRequiredQuizzes, type MissingQuiz } from '@/lib/db/certificate-blockers';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { CompletionSurveyForm } from '@/components/student/completion-survey-form';
@@ -40,6 +41,8 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   const [certNumber, setCertNumber] = useState<string | null>(null);
   const [certGated, setCertGated] = useState(false);
   const [certIssueError, setCertIssueError] = useState<string | null>(null);
+  // Required quizzes blocking the certificate, named + linked (null = unknown).
+  const [certBlockers, setCertBlockers] = useState<MissingQuiz[] | null>(null);
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
   // Program-certificate-only: this course issues no visible per-course cert; the
   // survey finishes the module rather than "getting your certificate" (migration 067).
@@ -98,8 +101,18 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
     }
     // The survey may have been gating course completion. If every lesson except
     // the final one is already complete, finalize the course now: mark the final
-    // lesson complete, then issue the certificate (server-verified). The RPC is a
-    // no-op if lessons still aren't all done, so this can't bypass content gating.
+    // lesson complete, then issue the certificate (server-verified).
+    // The final lesson is only marked complete when its own required quizzes are
+    // answered. Previously this wrote the progress row unconditionally — a learner
+    // who reached this page mid-lesson had the lesson marked done with its quizzes
+    // unanswered; the viewer then stopped gating it (completed lessons never re-gate)
+    // and the certificate was refused with nothing pointing them back (support, M4).
+    let missing: MissingQuiz[] | null = null;
+    try {
+      missing = await getMissingRequiredQuizzes(supabase, courseId, user.id);
+    } catch (err) {
+      console.error('Could not check required quizzes (non-fatal):', err);
+    }
     try {
       const { data: lessonRows } = await supabase
         .from('lessons')
@@ -117,7 +130,10 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
         const completed = new Set((progressRows ?? []).filter((p) => p.completed).map((p) => p.lesson_id));
         const finalLesson = lessonRows[lessonRows.length - 1];
         const othersComplete = lessonRows.slice(0, -1).every((l) => completed.has(l.id));
-        if (othersComplete && !completed.has(finalLesson.id)) {
+        // Unknown (read failed) keeps the previous behaviour; the certificate RPC
+        // still verifies every quiz server-side either way.
+        const finalLessonQuizzesDone = missing === null || !missing.some((m) => m.lessonId === finalLesson.id);
+        if (othersComplete && !completed.has(finalLesson.id) && finalLessonQuizzesDone) {
           await supabase.from('progress').upsert(
             [{ user_id: user.id, lesson_id: finalLesson.id, completed: true, completed_at: new Date().toISOString() }],
             { onConflict: 'user_id,lesson_id' },
@@ -135,6 +151,9 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
         // Surface it instead of silently stranding the learner at "100% complete,
         // no certificate, no explanation".
         setCertIssueError(certError.message || 'Your certificate could not be issued yet.');
+        try {
+          setCertBlockers(await getMissingRequiredQuizzes(supabase, courseId, user.id));
+        } catch { /* fall back to the RPC message alone */ }
       } else if (celebrateId) {
         // Only surface a certificate NUMBER for a real (non-suppressed) award.
         if (!certData.suppressed) setCertNumber(certData.certificate_number ?? null);
@@ -223,7 +242,39 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                     Module complete! Your program certificate will be issued once you finish every course in the program.
                   </div>
                 )}
-                {certIssueError && !certNumber && (
+                {certIssueError && !certNumber && certBlockers && certBlockers.length > 0 ? (
+                  <div className="mx-auto max-w-md rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-left text-sm text-amber-900">
+                    <p className="font-bold">
+                      {certSuppressed ? 'One step left to finish this module' : 'Your certificate is almost ready'}
+                    </p>
+                    <p className="mt-1">
+                      {certBlockers.length === 1
+                        ? 'One required question still needs a correct answer:'
+                        : `${certBlockers.length} required questions still need a correct answer:`}
+                    </p>
+                    <ul className="mt-2 space-y-1.5">
+                      {certBlockers.map((b) => (
+                        <li key={b.blockId}>
+                          <Link
+                            href={withInstitutionPath(
+                              `/student/courses/${courseId}?lesson=${b.lessonId}${b.slideId ? `&slide=${b.slideId}` : ''}`,
+                              pathname,
+                            )}
+                            className="font-semibold underline underline-offset-2"
+                            style={{ color: accent }}
+                          >
+                            Lesson {b.lessonPosition + 1}: {b.lessonTitle}{b.slideTitle ? ` — ${b.slideTitle}` : ''}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 text-amber-800">
+                      {certSuppressed
+                        ? 'Answer each one — the module finishes automatically once the last is saved.'
+                        : 'Answer each one — your certificate is issued automatically once the last is saved.'}
+                    </p>
+                  </div>
+                ) : certIssueError && !certNumber && (
                   <div className="mx-auto max-w-md rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm font-semibold text-amber-900">
                     {certSuppressed
                       ? <>This module isn&apos;t finished yet: {certIssueError} Head back to the module, answer every required quiz correctly, and return to the module-complete screen.</>
