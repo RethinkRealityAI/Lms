@@ -757,3 +757,84 @@
 .content-list-viewer .rich-text-viewer a:hover {
   color: #1d4ed8;
 }
+/* ---------------------------------------------------------------------------
+   Embedded (iframe) mode — class added by EmbedHeightReporter when framed.
+
+   The host page sizes the frame from the height we report. Any `min-h-screen`
+   would make the document at least as tall as the frame it is already in, so
+   the measurement would just echo the current frame height and the embed could
+   only ever grow, never shrink. Relaxing the minimum while embedded lets the
+   document collapse to its real content height, which is what makes short
+   pages (sign-in above all) fit snugly instead of sitting in a tall white void.
+
+   Deliberately scoped to min-height only: fixed-height layouts such as the
+   course viewer's h-[calc(100vh-6rem)] are meant to fill the frame and are
+   already stable to measure.
+--------------------------------------------------------------------------- */
+html.lms-embedded,
+html.lms-embedded body {
+  height: auto;
+}
+
+html.lms-embedded .min-h-screen {
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Referral outreach report (/report/<token>) — print / "Download PDF".
+
+   The report's "Download PDF" button calls window.print(); these rules are what
+   make the resulting PDF look like a document rather than a screenshot of an
+   app. Chrome, Edge and Safari all offer "Save as PDF" from that dialog, so
+   this covers export without shipping a second rendering path that could drift
+   out of sync with the page people actually look at.
+--------------------------------------------------------------------------- */
+@media print {
+  /* Charts and stat tiles are meaningless without their fills. */
+  .referral-report,
+  .referral-report * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Interactive chrome has no meaning on paper. */
+  .referral-report .no-print {
+    display: none !important;
+  }
+
+  .referral-report {
+    background: #ffffff !important;
+    padding-bottom: 0 !important;
+  }
+
+  .referral-report main {
+    max-width: none !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  .referral-report header {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  /* Keep a card and its heading together — a funnel split across a page break
+     is the fastest way to make a report look untrustworthy. */
+  .referral-report section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 14px;
+    box-shadow: none !important;
+  }
+
+  .referral-report table {
+    break-inside: auto;
+  }
+  .referral-report tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+}

@@ -121,6 +121,19 @@ export const SYSTEM_EMAIL_MERGE_TAGS: Record<string, { label: string; tags: stri
       'buttonColor',
     ],
   },
+  referral_link: {
+    label: 'Ambassador referral link',
+    tags: [
+      'recipientName',
+      'greeting',
+      'referralLabel',
+      'referralUrl',
+      'reportUrl',
+      'institutionName',
+      'primaryColor',
+      'buttonColor',
+    ],
+  },
   custom: {
     label: 'Custom broadcast',
     tags: [
@@ -179,5 +192,25 @@ export const DEFAULT_SYSTEM_TEMPLATES = {
   Create your account using this email address (<strong>{{recipientEmail}}</strong>) and your completed courses, progress, and certificates will be restored automatically — backdated to when you originally earned them.
 </p>
 <p style="margin:24px 0;"><a href="{{loginUrl}}" style="display:inline-block;padding:12px 28px;background-color:{{buttonColor}};color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;border-radius:8px;">Claim my account</a></p>`,
+  },
+  // Fallback for the stored 'referral_link' template (seeded in migration 068).
+  referral_link: {
+    slug: 'referral_link',
+    name: 'Ambassador referral link',
+    subject_template: 'Your {{institutionName}} outreach link for {{referralLabel}}',
+    body_html_template: `<h1 style="margin:0 0 16px;color:#0F172A;font-size:22px;">Your outreach link is ready</h1>
+<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:24px;">{{greeting}}</p>
+<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:24px;">
+  Here is your tracked link for <strong>{{referralLabel}}</strong>. Share it in emails, on your website, in presentations, or as a QR code on printed material.
+</p>
+<p style="margin:0 0 4px;color:#64748B;font-size:13px;">Your link</p>
+<p style="margin:0 0 20px;"><a href="{{referralUrl}}" style="color:{{primaryColor}};font-size:16px;font-weight:bold;word-break:break-all;">{{referralUrl}}</a></p>
+<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:24px;">
+  Anyone who signs up after opening it is counted toward your outreach, and you can watch the results on your own live dashboard.
+</p>
+<p style="margin:24px 0;"><a href="{{reportUrl}}" style="display:inline-block;padding:12px 28px;background-color:{{buttonColor}};color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;border-radius:8px;">Open my dashboard</a></p>
+<p style="margin:0;color:#94A3B8;font-size:12px;line-height:18px;">
+  The dashboard shows anonymised totals only — never the names or contact details of individual learners.
+</p>`,
   },
 } as const;

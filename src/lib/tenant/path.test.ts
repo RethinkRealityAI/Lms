@@ -5,8 +5,59 @@ import {
   withInstitutionPath,
   resolveInstitutionSlug,
   getInstitutionSlugFromCookie,
+  withInstitutionSlug,
   DEFAULT_INSTITUTION_SLUG,
 } from './path';
+
+describe('withInstitutionSlug', () => {
+  // The whole point of this helper is that it reads NOTHING from the ambient
+  // environment, so a server render and a client render agree byte for byte.
+  // If it ever starts consulting document.cookie or a pathname, the landing
+  // page silently regresses to a hydration mismatch.
+  it('prefixes a path with the given slug', () => {
+    expect(withInstitutionSlug('/login', 'scago')).toBe('/scago/login');
+    expect(withInstitutionSlug('/login', 'gansid')).toBe('/gansid/login');
+  });
+
+  it('maps root to the bare tenant path', () => {
+    expect(withInstitutionSlug('/', 'scago')).toBe('/scago');
+  });
+
+  it('normalises a path missing its leading slash', () => {
+    expect(withInstitutionSlug('login', 'scago')).toBe('/scago/login');
+  });
+
+  it('leaves an already-prefixed path untouched', () => {
+    expect(withInstitutionSlug('/scago/login', 'scago')).toBe('/scago/login');
+    expect(withInstitutionSlug('/gansid/login', 'scago')).toBe('/gansid/login');
+  });
+
+  it('preserves query strings', () => {
+    expect(withInstitutionSlug('/login?tab=signup', 'scago')).toBe(
+      '/scago/login?tab=signup'
+    );
+  });
+
+  it('lowercases the slug', () => {
+    expect(withInstitutionSlug('/login', 'SCAGO')).toBe('/scago/login');
+  });
+
+  it('falls back to the default slug for an unsupported one', () => {
+    expect(withInstitutionSlug('/login', 'nope')).toBe(
+      `/${DEFAULT_INSTITUTION_SLUG}/login`
+    );
+    expect(withInstitutionSlug('/login', '')).toBe(
+      `/${DEFAULT_INSTITUTION_SLUG}/login`
+    );
+  });
+
+  it('ignores the institution cookie entirely', () => {
+    document.cookie = 'institution_slug=gansid';
+    // A cookie saying "gansid" must not override an explicit "scago".
+    expect(withInstitutionSlug('/login', 'scago')).toBe('/scago/login');
+    document.cookie = 'institution_slug=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  });
+});
 
 describe('DEFAULT_INSTITUTION_SLUG', () => {
   it('is gansid', () => {

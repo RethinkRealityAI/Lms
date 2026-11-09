@@ -71,6 +71,16 @@ export default async function AdminLayout({
       icon: 'Megaphone',
     },
     {
+      href: '/admin/referrals',
+      label: 'Referrals',
+      icon: 'Link2',
+    },
+    {
+      href: '/admin/landing-notification',
+      label: 'Landing',
+      icon: 'Bell',
+    },
+    {
       href: '/admin/email',
       label: 'Email',
       icon: 'Mail',

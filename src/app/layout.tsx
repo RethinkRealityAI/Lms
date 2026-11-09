@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toast";
+import { EmbedHeightReporter } from "@/components/embed-height-reporter";
 import '@/lib/content/blocks/register-all';
 
 export const metadata: Metadata = {
@@ -31,6 +32,8 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
+          {/* No-ops unless this document is inside an iframe. */}
+          <EmbedHeightReporter />
         </ThemeProvider>
       </body>
     </html>

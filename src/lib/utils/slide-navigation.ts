@@ -153,3 +153,47 @@ export function findNextLesson<T extends { id: string }>(
   if (idx === -1) return null;
   return lessons[idx + 1] ?? null;
 }
+
+export interface InitialLessonResolution<T> {
+  /** The lesson the viewer should open on load, or null when there are no lessons. */
+  lesson: T | null;
+  /**
+   * True when every lesson is already complete (course finished) and no specific
+   * lesson was requested — the viewer should land on the LAST lesson's completion
+   * slide rather than the first lesson's title slide. Historically this case fell
+   * through to lessonsData[0], silently sending finished students back to lesson 1.
+   */
+  landOnCompletion: boolean;
+}
+
+/**
+ * Pick the lesson the course viewer should open on initial load, mirroring the
+ * "auto-resume" logic in course-viewer.tsx. Priority:
+ *
+ *   1. An explicitly requested lesson (`initialLessonId`, e.g. an editor deep-link).
+ *      If it no longer exists, fall back to the first lesson (never land-on-completion).
+ *   2. Otherwise, the first INCOMPLETE lesson (resume where the student left off).
+ *   3. Otherwise (all lessons complete): the LAST lesson, flagged to land on its
+ *      completion slide.
+ *
+ * @param completedLessonIds set/predicate of lesson ids the student has completed.
+ */
+export function resolveInitialLesson<T extends { id: string }>(
+  lessons: T[],
+  isCompleted: (lessonId: string) => boolean,
+  initialLessonId?: string | null,
+): InitialLessonResolution<T> {
+  if (lessons.length === 0) return { lesson: null, landOnCompletion: false };
+
+  if (initialLessonId) {
+    const requested = lessons.find(l => l.id === initialLessonId);
+    // Requested lesson missing (deleted since the link was made) → first lesson.
+    return { lesson: requested ?? lessons[0], landOnCompletion: false };
+  }
+
+  const firstIncomplete = lessons.find(l => !isCompleted(l.id));
+  if (firstIncomplete) return { lesson: firstIncomplete, landOnCompletion: false };
+
+  // Every lesson complete — resume on the last lesson's completion slide.
+  return { lesson: lessons[lessons.length - 1], landOnCompletion: true };
+}

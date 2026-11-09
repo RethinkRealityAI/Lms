@@ -24,6 +24,8 @@ import {
   MessageSquare,
   Mail,
   Megaphone,
+  Link2,
+  Bell,
   ClipboardList,
   type LucideIcon
 } from 'lucide-react';
@@ -42,6 +44,8 @@ const iconMap: Record<string, LucideIcon> = {
   MessageSquare,
   Mail,
   Megaphone,
+  Link2,
+  Bell,
   ClipboardList,
 };
 

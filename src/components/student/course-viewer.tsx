@@ -21,7 +21,7 @@ import { buildLessonPages } from '@/lib/content/lesson-pages';
 import dynamic from 'next/dynamic';
 import { TitleSlide } from '@/components/shared/title-slide';
 import { SlideContentArea } from '@/components/shared/slide-frame';
-import { computeNavState, findNextLesson } from '@/lib/utils/slide-navigation';
+import { computeNavState, findNextLesson, resolveInitialLesson } from '@/lib/utils/slide-navigation';
 import { splitBlocksIntoPages } from '@/lib/utils/split-blocks-into-pages';
 import { LessonNavbar } from '@/components/student/lesson-navbar';
 import { ReportIssueDialog } from '@/components/report-issue-dialog';
@@ -36,9 +36,11 @@ import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { resolveSlideBackgroundFit, slideBackgroundImageStyle } from '@/lib/content/slide-background';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getMyCourseFeedback, getMyProgramFeedback, upsertCourseFeedbackResponse } from '@/lib/db/course-feedback';
+import { getNextProgramCourse, isCourseCertificateSuppressed, type NextProgramCourse } from '@/lib/db/programs';
 import { getViewedSlideIds, markSlideViewed } from '@/lib/db/slide-progress';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { fetchCertificateDisplay, type CertificateDisplay } from '@/lib/content/certificate-display';
+import { celebrationCertId } from '@/lib/content/certificate-issuance';
 import { CertificateCelebration } from '@/components/certificates/certificate-celebration';
 import type { SurveyData, SurveyAnswers, SurveyAnswerValue, SurveyQuestion } from '@/lib/content/blocks/survey/schema';
 import type { SurveyTemplate } from '@/lib/db/survey-templates';
@@ -589,6 +591,10 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const navDirection = useRef<'forward' | 'backward'>('forward');
   // Guards the one-time jump to the editor-requested slide on initial load
   const appliedInitialSlideRef = useRef(false);
+  // Set when fetchData resumes on the LAST lesson because every lesson was
+  // already complete on initial load — consumed once that lesson's slides
+  // are built, to land on its completion slide instead of the title slide.
+  const landOnCompletionRef = useRef(false);
   // Pending cross-lesson navigation (embedded mode) consumed once slides rebuild
   const pendingNavigateRef = useRef<string | null>(null);
   // Reset sub-page when slide changes
@@ -597,6 +603,11 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [showConfetti, setShowConfetti] = useState(false);
   // Certificate earned state — shown in congratulations modal
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
+  // Whether this course's per-course certificate is suppressed because it belongs
+  // to a program_certificate_only program (migration 067). When true, the
+  // completion slide shows module-complete copy instead of promising a course
+  // certificate; only the program certificate is surfaced (at program completion).
+  const [courseCertSuppressed, setCourseCertSuppressed] = useState(false);
   // Inline quiz completion tracking — set of blockIds answered correctly per lesson
   const [correctQuizBlocks, setCorrectQuizBlocks] = useState<Record<string, Set<string>>>({});
   // Interactive block completion (e.g. image gallery require-all-clicked) per lesson
@@ -625,6 +636,10 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
   const [programFeedbackAnswers, setProgramFeedbackAnswers] = useState<SurveyAnswers>({});
   const [programFeedbackSubmitting, setProgramFeedbackSubmitting] = useState(false);
   const [programFeedbackSubmitted, setProgramFeedbackSubmitted] = useState(false);
+
+  // Next course in this course's program(s), so the completion slide can offer
+  // "Continue to next module" instead of only "Back to Dashboard".
+  const [nextProgramCourse, setNextProgramCourse] = useState<NextProgramCourse | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -874,13 +889,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
         if (lessonsData.length > 0 && !selectedLesson) {
           // Open the editor-requested lesson if provided; otherwise auto-resume at
-          // the first incomplete lesson (falls back to the first lesson when all
-          // are complete or no progress exists). Only applies on initial load —
-          // user/embedded navigation afterwards is untouched.
-          const initial = initialLessonId
-            ? lessonsData.find(l => l.id === initialLessonId)
-            : lessonsData.find(l => !progressMap[l.id]?.completed);
-          setSelectedLesson(initial ?? lessonsData[0]);
+          // the first incomplete lesson — or, when the whole course is already
+          // complete, the LAST lesson's completion slide (landOnCompletionRef).
+          // Only applies on initial load; user/embedded navigation is untouched.
+          // See resolveInitialLesson for the full precedence + the historic bug
+          // where "all complete" silently fell back to lesson 1.
+          const { lesson: initial, landOnCompletion } = resolveInitialLesson(
+            lessonsData,
+            (id) => !!progressMap[id]?.completed,
+            initialLessonId,
+          );
+          if (landOnCompletion) landOnCompletionRef.current = true;
+          if (initial) setSelectedLesson(initial);
         }
 
         const lessonIds = lessonsData.map(l => l.id);
@@ -989,6 +1009,24 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
         // Survey resolution failures must never break completion — log and continue
         console.error('Survey resolution error (non-fatal):', surveyErr);
       }
+
+      // Program-certificate-only: does this course suppress its per-course cert?
+      // Fails closed (false) so GANSID course certs are never wrongly hidden.
+      try {
+        setCourseCertSuppressed(await isCourseCertificateSuppressed(supabase, courseId));
+      } catch (suppressErr) {
+        console.error('Course-cert suppression check failed (non-fatal):', suppressErr);
+      }
+
+      // Next course in this course's program(s) — powers the "Continue to next
+      // module" completion-slide action. Never blocks the viewer on failure.
+      if (user && !previewMode) {
+        try {
+          setNextProgramCourse(await getNextProgramCourse(supabase, courseId, user.id));
+        } catch (nextCourseErr) {
+          console.error('Next-program-course lookup failed (non-fatal):', nextCourseErr);
+        }
+      }
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -1043,28 +1081,34 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
           // completion and resolves the template (course → institution default).
           const { data: certData, error: certError } = await supabase
             .rpc('issue_course_certificate', { p_course_id: courseId });
+          // celebrationCertId resolves WHICH cert to surface: the course cert
+          // normally, or — when the program is certificate-only — the program
+          // cert (null until the whole program is done, so suppressed courses
+          // celebrate nothing until the final one).
+          const celebrateId = celebrationCertId(certData);
           if (certError) {
             toast.error('Your certificate could not be issued', { description: certError.message });
-          } else if (certData?.certificate_id && !certData.already_issued) {
-            const certId = certData.certificate_id as string;
+          } else if (celebrateId && !certData.already_issued) {
             // Pre-generate PDF (fire-and-forget)
-            fetch(`/api/certificates/${certId}/pdf`).catch(() => {});
+            fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
             // Email the student their certificate (fire-and-forget; no-op if SMTP unconfigured)
             fetch('/api/notify/certificate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ certificateId: certId }),
+              body: JSON.stringify({ certificateId: celebrateId }),
             }).catch(() => {});
             // Reveal the actual certificate in the celebration overlay
-            const display = await fetchCertificateDisplay(supabase, certId);
+            const display = await fetchCertificateDisplay(supabase, celebrateId);
             setCelebration(
               display ?? {
-                certificateId: certId,
+                certificateId: celebrateId,
                 template: null,
                 data: {
                   student_name: '',
                   completion_date: '',
-                  certificate_number: certData.certificate_number ?? '',
+                  // A suppressed course cert's number must never surface; the
+                  // program cert's real number comes from the fetched display.
+                  certificate_number: certData.suppressed ? '' : (certData.certificate_number ?? ''),
                   institution_name: '',
                 },
                 courseTitle: course?.title ?? 'this course',
@@ -1321,6 +1365,19 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
       setCurrentSlide(idx);
     }
   }, [pageLoading, selectedLesson, currentSlides, initialLessonId, initialSlideId]);
+
+  // One-time jump to the completion slide when fetchData resumed on the last
+  // lesson because the whole course was already complete. Must wait for real
+  // slides to build (currentSlides.length > 1) so this doesn't fire on the
+  // synthesized single-slide placeholder during an earlier render pass.
+  useEffect(() => {
+    if (!landOnCompletionRef.current) return;
+    if (pageLoading) return;
+    if (!selectedLesson) return;
+    if (currentSlides.length <= 1) return;
+    landOnCompletionRef.current = false;
+    setCurrentSlide(currentSlides.length - 1);
+  }, [pageLoading, selectedLesson, currentSlides]);
 
   // Embedded device-frame: the editor center posts `preview-navigate` when the
   // admin selects a different slide, so the in-frame viewer follows the selection
@@ -1609,14 +1666,14 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
     certRetryFiredRef.current = true;
     (async () => {
       const { data: certData } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
-      if (certData?.certificate_id && !certData.already_issued) {
-        const certId = certData.certificate_id as string;
-        fetch(`/api/certificates/${certId}/pdf`).catch(() => {});
+      const celebrateId = celebrationCertId(certData);
+      if (celebrateId && !certData.already_issued) {
+        fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
         fetch('/api/notify/certificate', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ certificateId: certId }),
+          body: JSON.stringify({ certificateId: celebrateId }),
         }).catch(() => {});
-        const display = await fetchCertificateDisplay(supabase, certId);
+        const display = await fetchCertificateDisplay(supabase, celebrateId);
         if (display) setCelebration(display);
       }
     })();
@@ -2082,8 +2139,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           <h3 className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">{selectedLesson.title}</h3>
                           {surveyGatePendingUI ? (
                             <p className="text-slate-600 mt-1.5 text-sm sm:text-base font-medium">
-                              To receive your certificate, please complete the module survey and click{' '}
-                              <span className="font-bold">Submit</span>.
+                              To {courseCertSuppressed ? 'finish this module' : 'receive your certificate'}, please
+                              complete the module survey and click <span className="font-bold">Submit</span>.
                             </p>
                           ) : (
                             <p className="text-slate-500 mt-1.5 text-sm sm:text-base">
@@ -2109,15 +2166,17 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                               Course survey complete — thank you!
                             </div>
                           ) : course?.completion_survey_required ? (
-                            /* REQUIRED survey — the certificate is gated on it, so make it unmissable */
+                            /* REQUIRED survey — completion is gated on it, so make it unmissable */
                             <div className="rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-5 text-center shadow-sm">
                               <div className="flex items-center justify-center gap-2 mb-1">
                                 <Award className="h-6 w-6 text-amber-500 shrink-0" />
-                                <p className="font-black text-slate-900">Your certificate is one step away</p>
+                                <p className="font-black text-slate-900">
+                                  {courseCertSuppressed ? 'One step to finish this module' : 'Your certificate is one step away'}
+                                </p>
                               </div>
                               <p className="text-sm text-slate-600 mt-1 mb-4">
-                                Module complete! To receive your certificate, please complete the module survey
-                                and click the <span className="font-bold">Submit</span> button.
+                                Module complete! To {courseCertSuppressed ? 'finish this module' : 'receive your certificate'},
+                                please complete the module survey and click the <span className="font-bold">Submit</span> button.
                               </p>
                               <Button
                                 disabled={previewMode}
@@ -2221,7 +2280,21 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
 
                     {/* Primary nav button */}
                     {isCompletionSlide ? (
-                      nextLesson ? (
+                      <>
+                      {/* Secondary "Back to Dashboard" — always reachable from the completion
+                          slide, even while a survey/next-lesson action is primary, so a student
+                          is never stranded with only one way forward. Omitted when the primary
+                          button below already IS "Back to Dashboard" (avoids a redundant pair). */}
+                      {(nextLesson || (surveyGatePendingUI && !previewMode) || (!nextLesson && !surveyGatePendingUI && nextProgramCourse)) && (
+                        <button
+                          onClick={() => router.push(withInstitutionPath('/student', pathname))}
+                          aria-label="Back to dashboard"
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
+                        >
+                          Dashboard
+                        </button>
+                      )}
+                      {nextLesson ? (
                         <button
                           /* Sanctioned forward path: only reachable once this lesson is complete,
                              so it advances directly and bypasses the sequential lock (which could
@@ -2242,6 +2315,18 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                         >
                           Complete Module Survey <ChevronRight className="h-4 w-4" />
                         </button>
+                      ) : !previewMode && nextProgramCourse ? (
+                        /* Course (and any pending survey) done — offer the next module in the
+                           program instead of stranding the student at "Back to Dashboard". */
+                        <button
+                          onClick={() => router.push(withInstitutionPath(`/student/courses/${nextProgramCourse.courseId}`, pathname))}
+                          aria-label={`Continue to ${nextProgramCourse.courseTitle}`}
+                          title={`Continue to ${nextProgramCourse.courseTitle}`}
+                          className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold text-white bg-[#1E3A5F] hover:bg-[#162d4a] rounded-xl transition-colors max-w-[14rem] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                        >
+                          <span className="truncate">Continue: {nextProgramCourse.courseTitle}</span>
+                          <ChevronRight className="h-4 w-4 shrink-0" />
+                        </button>
                       ) : (
                         <button
                           onClick={() => router.push(withInstitutionPath('/student', pathname))}
@@ -2251,7 +2336,8 @@ export default function CourseViewer({ courseId, previewMode = false, initialLes
                           <span className="hidden sm:inline">Back to Dashboard</span>
                           <span className="sm:hidden">Dashboard</span>
                         </button>
-                      )
+                      )}
+                      </>
                     ) : isLastContentSlide ? (
                       <NavButtonWithHint
                         onClick={navUrl ? () => window.open(navUrl, '_blank') : goNext}

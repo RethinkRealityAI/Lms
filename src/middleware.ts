@@ -1,10 +1,41 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/cookie-options";
+import {
+  REFERRAL_QUERY_PARAM,
+  isValidReferralCode,
+  normalizeReferralCode,
+} from "@/lib/referral/constants";
 
 const DEFAULT_INSTITUTION_SLUG = "gansid";
 const SUPPORTED_INSTITUTION_SLUGS = new Set(["gansid", "scago"]);
 const ADMIN_ROLES = new Set(["platform_admin", "institution_admin", "instructor", "admin"]);
+
+// Cap for each Supabase network round-trip made from the edge middleware.
+// Typical getUser latency is single-digit ms; 3s is generous headroom while
+// still forcing a hung upstream to abort well before the edge function's own
+// invocation time limit (which Netlify reports as "edge function invocation
+// failed"). A timeout throws, which the fail-open catch turns into a normal
+// pass-through instead of a site-wide crash.
+const SUPABASE_EDGE_TIMEOUT_MS = 3000;
+
+/**
+ * Race a promise against a timeout so a slow/hung Supabase call can never hang
+ * the edge function until Netlify kills the whole invocation. On timeout it
+ * rejects; callers let that bubble to the middleware's fail-open handler.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`Supabase call timed out after ${ms}ms`)),
+      ms
+    );
+  });
+  return Promise.race([promise, timeout]).finally(() =>
+    clearTimeout(timer)
+  ) as Promise<T>;
+}
 
 /**
  * Read user role from the JWT token metadata (zero network cost).
@@ -97,7 +128,58 @@ function applyInstitutionContext(
   return response;
 }
 
+/**
+ * Copy the incoming request headers and stamp the resolved tenant onto them.
+ *
+ * `applyInstitutionContext` above sets `x-institution-slug` on the RESPONSE,
+ * which the browser sees but server components do not — `headers()` reads the
+ * REQUEST. Without this, a server component's only source of tenant context is
+ * the cookie, which is absent on a visitor's very first request, so it silently
+ * falls back to the default institution and renders the wrong tenant's page.
+ * Stamping the request makes `getTenantSlug()` correct on the first paint.
+ */
+function requestHeadersWithSlug(request: NextRequest, slug: string): Headers {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-institution-slug", slug);
+  return requestHeaders;
+}
+
 export async function middleware(request: NextRequest) {
+  // --- Referral capture (migration 068) ---
+  // An ambassador may append ?ref=<code> to any tenant URL instead of using the
+  // short /r/<code> link. Bounce those through /r/<code> so BOTH entry points
+  // count a visit and set the cookie through exactly one code path — otherwise
+  // ?ref= links would silently attribute signups while never appearing in the
+  // "link opens" number, and the funnel would show conversions above 100%.
+  //
+  // This cannot loop: the ref param is stripped before being handed back as
+  // ?to=, and /r/:code is deliberately not in this middleware's matcher.
+  // GET only: a 307 preserves method and body, so bouncing a POST would replay
+  // it against /r/:code, which only serves GET.
+  const referralParam =
+    request.method === "GET"
+      ? request.nextUrl.searchParams.get(REFERRAL_QUERY_PARAM)
+      : null;
+  if (referralParam && isValidReferralCode(referralParam)) {
+    const cleaned = request.nextUrl.clone();
+    cleaned.searchParams.delete(REFERRAL_QUERY_PARAM);
+    // Campaign tags ride ALONG to /r/<code> (which records them) instead of
+    // into the landing URL — the landing page has no use for them, and leaving
+    // them there would make every shared/bookmarked URL carry stale tags.
+    const campaignTag =
+      cleaned.searchParams.get("s") ?? cleaned.searchParams.get("utm_source");
+    cleaned.searchParams.delete("s");
+    cleaned.searchParams.delete("utm_source");
+    const destination = `${cleaned.pathname}${cleaned.search}`;
+    const target = new URL(
+      `/r/${normalizeReferralCode(referralParam)}`,
+      request.url
+    );
+    target.searchParams.set("to", destination);
+    if (campaignTag) target.searchParams.set("s", campaignTag);
+    return NextResponse.redirect(target);
+  }
+
   const institutionSlugInPath = getInstitutionSlug(request.nextUrl.pathname);
   const institutionFromCookie = request.cookies.get("institution_slug")?.value?.toLowerCase();
   const selectedInstitution =
@@ -122,12 +204,22 @@ export async function middleware(request: NextRequest) {
   }
 
   let response = NextResponse.next({
-    request: { headers: request.headers },
+    request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
   });
 
+  try {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Credentials absent on this edge instance. Never construct a client with
+    // undefined values — its first fetch would throw and crash the function.
+    // Bail to the fail-open handler and let the page-level layouts enforce auth.
+    throw new Error("missing NEXT_PUBLIC_SUPABASE_* env in edge runtime");
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       // SameSite=None;Secure so the refreshed auth cookie survives a cross-origin
       // iframe embed (must match the browser + server clients exactly).
@@ -151,7 +243,7 @@ export async function middleware(request: NextRequest) {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await withTimeout(supabase.auth.getUser(), SUPABASE_EDGE_TIMEOUT_MS);
 
   // --- Determine if this route needs a role check ---
   const needsRoleCheck =
@@ -164,7 +256,10 @@ export async function middleware(request: NextRequest) {
   let ownSlug: string | null = null;
   let mySlugs: string[] = [];
   if (user && needsRoleCheck) {
-    const info = await getUserAuthInfo(supabase, user);
+    const info = await withTimeout(
+      getUserAuthInfo(supabase, user),
+      SUPABASE_EDGE_TIMEOUT_MS
+    );
     role = info.role;
     ownSlug = info.slug;
     mySlugs = info.slugs;
@@ -200,7 +295,7 @@ export async function middleware(request: NextRequest) {
     if (institutionSlugInPath) {
       return applyInstitutionContext(
         NextResponse.rewrite(new URL(normalizedPath, request.url), {
-          request: { headers: request.headers },
+          request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
         }),
         selectedInstitution
       );
@@ -233,7 +328,7 @@ export async function middleware(request: NextRequest) {
     if (institutionSlugInPath) {
       return applyInstitutionContext(
         NextResponse.rewrite(new URL(normalizedPath, request.url), {
-          request: { headers: request.headers },
+          request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
         }),
         selectedInstitution
       );
@@ -261,13 +356,39 @@ export async function middleware(request: NextRequest) {
   if (institutionSlugInPath) {
     return applyInstitutionContext(
       NextResponse.rewrite(new URL(normalizedPath, request.url), {
-        request: { headers: request.headers },
+        request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
       }),
       selectedInstitution
     );
   }
 
   return applyInstitutionContext(response, selectedInstitution);
+  } catch (err) {
+    // This middleware runs as a Netlify Edge Function on EVERY matched route.
+    // If any Supabase call above throws — a cold-start network blip, a fresh
+    // edge instance without the NEXT_PUBLIC_SUPABASE_* env, or an upstream
+    // timeout on auth.getUser() — an unhandled rejection here crashes the whole
+    // edge function and Netlify serves its "This edge function has crashed /
+    // edge function invocation failed" page for the ENTIRE app.
+    //
+    // Fail OPEN instead: serve the request with tenant context applied and let
+    // the page-level layouts re-run their own auth/role checks (they already do,
+    // as a documented second layer). A dropped session check degrades to a
+    // normal login redirect at the layout — never a site-wide crash.
+    console.error("[middleware] unhandled error — failing open:", err);
+    if (institutionSlugInPath) {
+      return applyInstitutionContext(
+        NextResponse.rewrite(new URL(normalizedPath, request.url), {
+          request: { headers: requestHeadersWithSlug(request, selectedInstitution) },
+        }),
+        selectedInstitution
+      );
+    }
+    return applyInstitutionContext(
+      NextResponse.next({ request: { headers: requestHeadersWithSlug(request, selectedInstitution) } }),
+      selectedInstitution
+    );
+  }
 }
 
 export const config = {

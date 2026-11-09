@@ -168,22 +168,194 @@ Safari included, with no cookie hacks and no top-level break-out — because the
 iframe becomes **same-site** with the parent, so the auth cookies are no longer
 third-party.
 
-Setup (one-time):
+### Cutover runbook (do the steps IN THIS ORDER)
 
-1. **Netlify** → the `org-lms` site → Domain management → add a custom domain,
-   e.g. `learn.sicklecellanemia.ca`.
-2. **DNS** (on the Framer/registrar side for sicklecellanemia.ca): add the
-   record Netlify shows — typically a `CNAME` `learn` → `org-lms.netlify.app`
-   (or Netlify's provided target). Wait for it to verify + issue TLS.
-3. **Supabase** → Auth → URL Configuration: add
-   `https://learn.sicklecellanemia.ca/auth/callback` (and `/reset-password`) to
-   the redirect allow-list; set Site URL to `https://learn.sicklecellanemia.ca`.
-   Set `NEXT_PUBLIC_SITE_URL=https://learn.sicklecellanemia.ca` in Netlify env.
-4. **Embed** `https://learn.sicklecellanemia.ca/scago/student` instead of the
-   `*.netlify.app` URL.
+Facts established by inspection (2026-07-24), so nobody has to rediscover them:
+
+- **DNS for `sicklecellanemia.ca` is hosted at IONOS** — nameservers are
+  `ns10xx.ui-dns.{de,org,biz,com}`. It is NOT on Netlify DNS and NOT on Framer.
+  The record below is added in the **IONOS** control panel.
+- The apex (`sicklecellanemia.ca`) and `www` (CNAME → `sites.framer.app`) belong
+  to the **Framer** marketing site. **Do not touch either one.**
+- `learn.sicklecellanemia.ca` does not exist yet — clean slate, no conflict.
+- The LMS Netlify project is **`org-lms`** (`org-lms.netlify.app`).
+
+**Step 1 — DNS (IONOS).** Add ONE record:
+
+| Field | Value |
+|---|---|
+| Type | `CNAME` |
+| Host / name | `learn` |
+| Points to | `org-lms.netlify.app` |
+| TTL | 3600 (or 600 while testing) |
+
+Use a **CNAME**, never an A record — Netlify's edge IPs are load-balanced and
+change without notice, so a hardcoded A record eventually breaks.
+
+Do NOT delegate the domain's nameservers to Netlify DNS: the apex and `www`
+are Framer's, and moving NS would require re-creating every Framer record.
+External DNS + this one CNAME is the correct, low-risk setup.
+
+**Step 2 — Netlify.** `org-lms` → Domain management → add domain alias
+`learn.sicklecellanemia.ca`. Once the CNAME resolves, Netlify verifies it and
+auto-provisions the Let's Encrypt certificate (usually minutes).
+
+**Step 3 — Netlify env + REDEPLOY.** Set
+`NEXT_PUBLIC_SITE_URL=https://learn.sicklecellanemia.ca`.
+
+> **Gotcha that bites every time:** `NEXT_PUBLIC_*` values are inlined into the
+> bundle at **build** time. Changing the variable does nothing to the running
+> site until you trigger a **new deploy**. Set it, then redeploy.
+
+**Step 4 — Supabase** → Auth → URL Configuration. Set Site URL to
+`https://learn.sicklecellanemia.ca`, and **add** (do not replace) these to the
+redirect allow-list:
+
+- `https://learn.sicklecellanemia.ca/auth/callback`
+- `https://learn.sicklecellanemia.ca/reset-password`
+
+Keep the existing `*.netlify.app` entries until the new domain is confirmed
+working — confirmation/reset emails already sent point at the OLD origin, and
+removing it early dead-ends those users mid-signup.
+
+**Step 5 — Framer.** Point the embed iframe `src` at
+`https://learn.sicklecellanemia.ca/scago/student`.
+
+**Step 6 (after verifying).** Optionally set `learn.sicklecellanemia.ca` as the
+Netlify **primary domain** so `org-lms.netlify.app` 301s to it. Only after the
+embed is updated.
+
+**No application code change is required.** `/auth/callback` derives every
+redirect from `requestUrl.origin`, so it follows whatever domain serves it; the
+only origin-dependent value is `NEXT_PUBLIC_SITE_URL` (step 3).
 
 Now `www.sicklecellanemia.ca` (parent) and `learn.sicklecellanemia.ca` (iframe)
 share the registrable domain `sicklecellanemia.ca` → same-site → cookies are
 first-party → login persists in the iframe on every browser. With this in place,
 the `SameSite=None; Secure` setting is harmless (works same-site too) but no
 longer load-bearing, and Safari is no longer a problem.
+
+Note the distinction that makes this work: `SameSite` is evaluated against the
+**registrable domain** (eTLD+1), not the origin. `learn.` and `www.` are
+different *origins* but the same *site*, which is exactly why the third-party
+cookie restrictions (Safari ITP, Chrome's 3P-cookie phase-out) stop applying.
+
+**Optional later hardening — only after the cutover is verified.** Once every
+embed points at `learn.sicklecellanemia.ca`, `AUTH_COOKIE_OPTIONS`
+(`src/lib/supabase/cookie-options.ts`) can be tightened from `sameSite: 'none'`
+to `'lax'` for CSRF resistance, since same-site framing no longer needs `None`.
+Do NOT do this while any page still embeds the `*.netlify.app` origin — that
+embed is genuinely cross-site and `Lax` would silently break its login. The
+value is already centralised, so it is a one-line change that applies to the
+browser, server, and middleware clients together (they must always match).
+
+---
+
+## 5. Auto-sizing the embed (HTML embed + postMessage)
+
+**Problem this solves.** The host sized the iframe at a fixed height chosen for
+the (very tall) landing page. Inside an iframe `100vh` resolves to the IFRAME's
+height, so every shorter page was laid out in a viewport thousands of pixels
+tall. The sign-in page centred its card vertically and therefore rendered
+roughly halfway down a ~6000px frame — visitors saw a blank white screen and had
+no idea the form was below.
+
+Two independent fixes, both live:
+
+1. **The sign-in page anchors to the top** (`items-start`, not `items-center`),
+   so it is visible at any frame height even if the host never resizes.
+2. **The app reports its content height to the host** so the frame can size
+   itself per page. `src/components/embed-height-reporter.tsx` mounts in the
+   root layout and no-ops unless framed.
+
+### Messages the app posts to the host
+
+| `type` | Payload | Meaning |
+|---|---|---|
+| `lms-embed-height` | `{ height, path }` | Content height in px; set the iframe to this. |
+| `lms-embed-navigate` | `{ path }` | Client-side navigation happened; scroll the frame into view. |
+
+Both are posted to `window.parent` with `'*'` as the target origin (the height
+of a public page is not sensitive, and Framer nests the embed inside its own
+sandbox origin, which cannot be enumerated reliably).
+
+### Framer setup
+
+Use an **Embed / HTML** element (not a link) and paste the snippet below.
+`scrollIntoView` on navigate matters: navigating inside an iframe does not move
+the HOST page's scroll position, so someone who scrolls down the landing page
+and clicks "Sign in" would otherwise be left staring past a now-short frame.
+
+```html
+<div style="width:100%">
+  <iframe
+    id="scago-lms"
+    src="https://learn.sicklecellanemia.ca/scago"
+    title="SCAGO HCP E-Learning"
+    style="width:100%;border:0;display:block;height:1400px;transition:height .2s ease"
+    allow="clipboard-write; fullscreen"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+</div>
+<script>
+  (function () {
+    var LMS_ORIGIN = 'https://learn.sicklecellanemia.ca';
+    var frame = document.getElementById('scago-lms');
+    if (!frame) return;
+
+    window.addEventListener('message', function (event) {
+      // Only trust messages from the LMS itself.
+      if (event.origin !== LMS_ORIGIN) return;
+      var data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      if (data.type === 'lms-embed-height' && typeof data.height === 'number') {
+        // Floor guards against a transient 0 during navigation.
+        frame.style.height = Math.max(400, Math.round(data.height)) + 'px';
+      }
+
+      if (data.type === 'lms-embed-navigate') {
+        var top = frame.getBoundingClientRect().top;
+        // Only pull the page up if the frame has scrolled off the top.
+        if (top < 0) frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  })();
+</script>
+```
+
+Notes:
+- Keep a sensible `height` on the iframe as the pre-JS fallback; it is replaced
+  by the first height message within a few hundred milliseconds.
+- **Do not** set `scrolling="no"` — if the host script ever fails to load, the
+  frame must still be scrollable rather than trapping content.
+- The height reporter adds `lms-embedded` to `<html>`; a scoped rule in
+  `globals.css` relaxes `min-h-screen` so the document can collapse to its true
+  content height. Without it the measurement just echoes the frame's current
+  height and the embed can only ever grow.
+
+### Framer: the embed element must be AUTO height
+
+There is a nesting detail that defeats the auto-sizing if missed. Framer renders
+a custom HTML embed inside its **own** sandbox iframe, so the real structure is:
+
+```
+sicklecellanemia.ca  (top page)
+└─ Framer sandbox iframe          ← height controlled by the Framer element
+   └─ our HTML embed + script
+      └─ LMS iframe               ← height controlled by our script
+```
+
+Our script resizes the **inner** LMS iframe. If the Framer element itself is set
+to a FIXED height, the sandbox stays tall and the empty space simply moves
+outside our reach — the sign-in page ends up snug inside a still-oversized
+sandbox, which looks identical to the original bug.
+
+**So: set the Framer Embed element's height to `Auto` / `Fit Content`.** With
+that, the sandbox follows its content, our script sizes the inner frame, and the
+whole thing collapses to the page being shown.
+
+If Framer cannot auto-size the element in a given layout, fall back to a fixed
+height chosen for the LANDING page and rely on the sign-in page's top anchoring
+(§5, fix 1) so the form is still immediately visible — that degrades to "some
+empty space below short pages", never to "blank screen".

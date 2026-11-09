@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type EmailTemplateCategory = 'system' | 'custom';
-export type EmailSystemType = 'certificate' | 'assignment' | 'legacy_claim_invite';
+export type EmailSystemType = 'certificate' | 'assignment' | 'legacy_claim_invite' | 'referral_link';
 
 export interface EmailTemplate {
   id: string;

@@ -6,6 +6,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { resolveCompletionSurveys } from '@/lib/db/survey-assignments';
 import { upsertCourseFeedbackResponse, getMyCourseFeedback } from '@/lib/db/course-feedback';
+import { isCourseCertificateSuppressed, getNextProgramCourse, type NextProgramCourse } from '@/lib/db/programs';
+import { celebrationCertId } from '@/lib/content/certificate-issuance';
 import { resolveInstitutionSlug, withInstitutionPath } from '@/lib/tenant/path';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { CompletionSurveyForm } from '@/components/student/completion-survey-form';
@@ -39,9 +41,14 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
   const [certGated, setCertGated] = useState(false);
   const [certIssueError, setCertIssueError] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<CertificateDisplay | null>(null);
+  // Program-certificate-only: this course issues no visible per-course cert; the
+  // survey finishes the module rather than "getting your certificate" (migration 067).
+  const [certSuppressed, setCertSuppressed] = useState(false);
+  const [nextProgramCourse, setNextProgramCourse] = useState<NextProgramCourse | null>(null);
   const institutionSlug = useMemo(() => resolveInstitutionSlug(pathname), [pathname]);
 
   const backToCourse = withInstitutionPath(`/student/courses/${courseId}`, pathname);
+  const backToDashboard = withInstitutionPath('/student', pathname);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,6 +71,12 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
       setTemplateId(resolved.course?.templateId ?? null);
       if (existing) setAlreadyDone(true);
       setLoading(false);
+      isCourseCertificateSuppressed(supabase, courseId)
+        .then((s) => { if (!cancelled) setCertSuppressed(s); })
+        .catch(() => {});
+      getNextProgramCourse(supabase, courseId, user.id)
+        .then((next) => { if (!cancelled) setNextProgramCourse(next); })
+        .catch(() => {});
     })();
     return () => { cancelled = true; };
   }, [supabase, courseId, pathname, router]);
@@ -113,23 +126,28 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
       }
 
       const { data: certData, error: certError } = await supabase.rpc('issue_course_certificate', { p_course_id: courseId });
+      // celebrationCertId surfaces the course cert normally, or — for a
+      // certificate-only program — the program cert (null until the program is
+      // fully done, so a suppressed course shows no certificate here).
+      const celebrateId = celebrationCertId(certData);
       if (certError) {
         // The RPC refused (e.g. a required quiz still isn't answered correctly).
         // Surface it instead of silently stranding the learner at "100% complete,
         // no certificate, no explanation".
         setCertIssueError(certError.message || 'Your certificate could not be issued yet.');
-      } else if (certData?.certificate_id) {
-        setCertNumber(certData.certificate_number ?? null);
+      } else if (celebrateId) {
+        // Only surface a certificate NUMBER for a real (non-suppressed) award.
+        if (!certData.suppressed) setCertNumber(certData.certificate_number ?? null);
         if (!certData.already_issued) {
-          fetch(`/api/certificates/${certData.certificate_id}/pdf`).catch(() => {});
+          fetch(`/api/certificates/${celebrateId}/pdf`).catch(() => {});
           fetch('/api/notify/certificate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ certificateId: certData.certificate_id }),
+            body: JSON.stringify({ certificateId: celebrateId }),
           }).catch(() => {});
         }
         // Reveal the actual certificate in the celebration overlay
-        const display = await fetchCertificateDisplay(supabase, certData.certificate_id);
+        const display = await fetchCertificateDisplay(supabase, celebrateId);
         if (display) setCelebration(display);
       }
     } catch {
@@ -200,20 +218,41 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                     <Award className="h-4 w-4" /> Certificate issued — {certNumber}
                   </div>
                 )}
-                {certIssueError && !certNumber && (
-                  <div className="mx-auto max-w-md rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm font-semibold text-amber-900">
-                    Your certificate isn&apos;t ready yet: {certIssueError} Head back to the module, make sure
-                    every required quiz is answered correctly, and return to the module-complete screen — your
-                    certificate will be issued there.
+                {certSuppressed && !certIssueError && (
+                  <div className="mx-auto max-w-md rounded-xl bg-green-50 border border-green-200 px-4 py-2.5 text-sm font-semibold text-green-800">
+                    Module complete! Your program certificate will be issued once you finish every course in the program.
                   </div>
                 )}
-                <div>
+                {certIssueError && !certNumber && (
+                  <div className="mx-auto max-w-md rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm font-semibold text-amber-900">
+                    {certSuppressed
+                      ? <>This module isn&apos;t finished yet: {certIssueError} Head back to the module, answer every required quiz correctly, and return to the module-complete screen.</>
+                      : <>Your certificate isn&apos;t ready yet: {certIssueError} Head back to the module, make sure every required quiz is answered correctly, and return to the module-complete screen — your certificate will be issued there.</>}
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {nextProgramCourse ? (
+                    <Link
+                      href={withInstitutionPath(`/student/courses/${nextProgramCourse.courseId}`, pathname)}
+                      className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
+                      style={{ backgroundColor: accent }}
+                    >
+                      Continue: {nextProgramCourse.courseTitle}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={backToCourse}
+                      className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
+                      style={{ backgroundColor: accent }}
+                    >
+                      Return to course
+                    </Link>
+                  )}
                   <Link
-                    href={backToCourse}
-                    className="inline-block rounded-lg px-5 py-2.5 font-bold text-white"
-                    style={{ backgroundColor: accent }}
+                    href={backToDashboard}
+                    className="inline-block rounded-lg px-5 py-2.5 font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   >
-                    Return to course
+                    Back to Dashboard
                   </Link>
                 </div>
               </div>
@@ -223,15 +262,16 @@ export default function CourseSurveyPage({ params: paramsPromise }: { params: Pr
                   <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                     <Award className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                     <p className="text-sm font-semibold text-amber-900">
-                      Module complete — one last step! Submitting this survey finishes the module and
-                      issues your certificate.
+                      {certSuppressed
+                        ? 'Module complete — one last step! Submitting this survey finishes the module. Your certificate is awarded once every course in the program is complete.'
+                        : 'Module complete — one last step! Submitting this survey finishes the module and issues your certificate.'}
                     </p>
                   </div>
                 )}
                 <CompletionSurveyForm
                   surveyData={
                     certGated
-                      ? { ...template.data, submit_label: 'Submit Survey & Get Certificate' }
+                      ? { ...template.data, submit_label: certSuppressed ? 'Submit Survey & Finish Module' : 'Submit Survey & Get Certificate' }
                       : template.data
                   }
                   accent={accent}

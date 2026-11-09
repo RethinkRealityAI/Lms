@@ -36,6 +36,25 @@ export function resolveInstitutionSlug(pathname?: string | null): string {
   return getInstitutionSlugFromPath(pathname) || getInstitutionSlugFromCookie() || DEFAULT_INSTITUTION_SLUG;
 }
 
+/**
+ * Prefix a path with an EXPLICIT institution slug.
+ *
+ * Unlike `withInstitutionPath`, this reads nothing from the environment — no
+ * pathname, no cookie — so it returns the same string on the server and in the
+ * browser. Use it wherever the slug is already known (e.g. handed down from a
+ * server component): the cookie-based helpers resolve to the default slug
+ * during SSR because `document` does not exist, which produces server/client
+ * HTML that disagrees and a React hydration mismatch.
+ */
+export function withInstitutionSlug(path: string, slug: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const institutionSlug = isInstitutionSlug(slug) ? slug.toLowerCase() : DEFAULT_INSTITUTION_SLUG;
+
+  if (normalizedPath === "/") return `/${institutionSlug}`;
+  if (getInstitutionSlugFromPath(normalizedPath)) return normalizedPath;
+  return `/${institutionSlug}${normalizedPath}`;
+}
+
 export function withInstitutionPath(
   path: string,
   pathname?: string | null,
