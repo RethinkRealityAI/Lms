@@ -228,13 +228,13 @@ export default function ScratchRevealViewer({ data, onComplete, context }: Block
       <div className="w-full h-full flex flex-col">
         {prompt && <p className="text-sm font-medium text-center [color:inherit] opacity-90 px-4 pt-3 pb-1 shrink-0">{prompt}</p>}
         <div
-          className={cn('relative w-full overflow-hidden select-none', cardSizing)}
+          className={cn('@container/scratch relative w-full overflow-hidden select-none', cardSizing)}
           style={cardStyle}
         >
           {/* Show the cover so authors see what the learner starts with */}
           <Face face={before} fit={fit} />
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/55 text-white text-xs font-semibold backdrop-blur-sm">
-            <Hand className="w-3.5 h-3.5" /> Scratch-to-reveal · interactive in student view
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 w-max rounded-full bg-black/60 text-white text-xs font-semibold whitespace-nowrap">
+            <Hand className="w-3.5 h-3.5 shrink-0" /><span className="hidden @[16rem]/scratch:inline">Scratch-to-reveal · interactive in student view</span>
           </div>
         </div>
       </div>
@@ -248,7 +248,7 @@ export default function ScratchRevealViewer({ data, onComplete, context }: Block
       )}
       <div
         ref={wrapRef}
-        className={cn('relative w-full overflow-hidden select-none', cardSizing)}
+        className={cn('@container/scratch relative w-full overflow-hidden select-none', cardSizing)}
         style={cardStyle}
       >
         {/* Revealed base */}
@@ -268,8 +268,8 @@ export default function ScratchRevealViewer({ data, onComplete, context }: Block
 
         {/* Hint badge before any scratching */}
         {!revealed && !started && (
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/55 text-white text-xs font-semibold backdrop-blur-sm">
-            <Hand className="w-3.5 h-3.5" /> Scratch to reveal
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 w-max rounded-full bg-black/60 text-white text-xs font-semibold whitespace-nowrap">
+            <Hand className="w-3.5 h-3.5 shrink-0" aria-hidden /><span className="sr-only @[9rem]/scratch:not-sr-only whitespace-nowrap">Scratch to reveal</span>
           </div>
         )}
 
