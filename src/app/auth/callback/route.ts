@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { logSignInEvent } from '@/lib/db/events';
 import { getInstitutionSlugForHost } from '@/lib/tenant/branding';
+import { getRequestOrigin } from '@/lib/tenant/request-origin';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -9,6 +10,9 @@ const DEFAULT_INSTITUTION = 'gansid';
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
+  // The domain the learner is really on (request.url carries Netlify's primary
+  // domain), so redirects keep them on the domain holding their session.
+  const origin = getRequestOrigin(request);
   const code = requestUrl.searchParams.get('code');
   const error = requestUrl.searchParams.get('error');
   const error_description = requestUrl.searchParams.get('error_description');
@@ -19,7 +23,7 @@ export async function GET(request: NextRequest) {
   // else the default.
   const institutionSlug =
     request.cookies.get('institution_slug')?.value ||
-    getInstitutionSlugForHost(requestUrl.host) ||
+    getInstitutionSlugForHost(new URL(origin).host) ||
     DEFAULT_INSTITUTION;
 
   const loginUrl = `/${institutionSlug}/login`;
@@ -35,12 +39,12 @@ export async function GET(request: NextRequest) {
   if (error) {
     console.error('Auth callback error:', error, errorCode, error_description);
     if (errorCode === 'otp_expired' || /expired|invalid/i.test(error_description ?? '')) {
-      return NextResponse.redirect(new URL(linkExpired, requestUrl.origin));
+      return NextResponse.redirect(new URL(linkExpired, origin));
     }
     return NextResponse.redirect(
       new URL(
         `${loginUrl}?error=${encodeURIComponent(error_description || error)}`,
-        requestUrl.origin
+        origin
       )
     );
   }
@@ -54,7 +58,7 @@ export async function GET(request: NextRequest) {
 
       if (exchangeError) {
         console.error('Code exchange error:', exchangeError);
-        return NextResponse.redirect(new URL(linkExpired, requestUrl.origin));
+        return NextResponse.redirect(new URL(linkExpired, origin));
       }
 
       if (data.user) {
@@ -71,7 +75,7 @@ export async function GET(request: NextRequest) {
           return NextResponse.redirect(
             new URL(
               `${loginUrl}?error=${encodeURIComponent('Your account has been deactivated. Please contact your administrator.')}`,
-              requestUrl.origin
+              origin
             )
           );
         }
@@ -83,7 +87,7 @@ export async function GET(request: NextRequest) {
 
         // If an explicit next param was provided, honour it
         if (next && next !== loginUrl) {
-          return NextResponse.redirect(new URL(next, requestUrl.origin));
+          return NextResponse.redirect(new URL(next, origin));
         }
 
         const role = userData?.role || 'student';
@@ -101,19 +105,19 @@ export async function GET(request: NextRequest) {
           ? `/${targetSlug}/admin`
           : `/${targetSlug}/student`;
 
-        return NextResponse.redirect(new URL(destination, requestUrl.origin));
+        return NextResponse.redirect(new URL(destination, origin));
       }
     } catch (err) {
       console.error('Auth callback error:', err);
       return NextResponse.redirect(
         new URL(
           `${loginUrl}?error=${encodeURIComponent('An error occurred during verification. Please try again.')}`,
-          requestUrl.origin
+          origin
         )
       );
     }
   }
 
   // No code provided — redirect to login
-  return NextResponse.redirect(new URL(loginUrl, requestUrl.origin));
+  return NextResponse.redirect(new URL(loginUrl, origin));
 }
