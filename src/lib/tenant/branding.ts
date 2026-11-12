@@ -54,6 +54,10 @@ export interface InstitutionBranding {
    * e.g. a learner opening an email link in a different browser.
    */
   primaryHost: string;
+  /** Title shown beside the logo in platform emails. */
+  emailHeaderTitle: string;
+  /** Brand stripe across the top of platform emails: [hex colour, width %]. */
+  emailBrandBar: Array<[string, number]>;
 }
 
 const GANSID_BRANDING: InstitutionBranding = {
@@ -85,6 +89,8 @@ const GANSID_BRANDING: InstitutionBranding = {
   adminEmailPlaceholder: 'admin@inheritedblooddisorders.world',
   adminDescription: 'Secure faculty access for GANSID administrators.',
   primaryHost: 'org-lms.netlify.app',
+  emailHeaderTitle: 'GANSID Learning Portal',
+  emailBrandBar: [['#1A3C6E', 52], ['#0099CA', 22], ['#E87722', 14], ['#DC2626', 12]],
 };
 
 const SCAGO_BRANDING: InstitutionBranding = {
@@ -119,6 +125,8 @@ const SCAGO_BRANDING: InstitutionBranding = {
   adminEmailPlaceholder: 'admin@sicklecellanemia.ca',
   adminDescription: 'Secure faculty access for SCAGO administrators.',
   primaryHost: 'learn.sicklecellanemia.ca',
+  emailHeaderTitle: 'HCP Education Program',
+  emailBrandBar: [['#C8262A', 72], ['#1A1A1A', 18], ['#F0E7CC', 10]],
 };
 
 const BRANDING_MAP: Record<string, InstitutionBranding> = {

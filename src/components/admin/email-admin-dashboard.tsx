@@ -11,6 +11,8 @@ import {
 } from '@/lib/db/email-templates';
 import { getInstitutionBranding } from '@/lib/tenant/branding';
 import { SYSTEM_EMAIL_MERGE_TAGS } from '@/lib/email/render';
+import { parseNotifyEmails } from '@/lib/referral/completion-notices';
+import { MAX_EXTERNAL_RECIPIENTS } from '@/lib/email/limits';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,6 +96,8 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
   const [userSearch, setUserSearch] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
+  // People with no account (e.g. failed signups): pasted addresses.
+  const [externalEmailsInput, setExternalEmailsInput] = useState('');
   const [composeTemplateId, setComposeTemplateId] = useState('');
   const [customMessage, setCustomMessage] = useState('');
   const [testMode, setTestMode] = useState(true);
@@ -129,7 +133,11 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
     [allUsers, selectedUserIds],
   );
 
-  const recipientCount = selectedUserIds.size + selectedGroupIds.size;
+  const externalEmails = useMemo(() => parseNotifyEmails(externalEmailsInput), [externalEmailsInput]);
+  const externalTooMany = externalEmails.emails.length > MAX_EXTERNAL_RECIPIENTS;
+  const externalBlocked = externalEmails.invalid.length > 0 || externalTooMany;
+
+  const recipientCount = selectedUserIds.size + selectedGroupIds.size + externalEmails.emails.length;
 
   const loadTemplates = useCallback(async () => {
     setLoading(true);
@@ -295,6 +303,7 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
           templateId: composeTemplateId,
           userIds: [...selectedUserIds],
           groupIds: [...selectedGroupIds],
+          emails: externalEmails.emails,
           customMessage: composeTemplate?.category === 'custom' ? customMessage : undefined,
           testMode,
         }),
@@ -584,7 +593,7 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
                 <Button
                   className="w-full"
                   size="lg"
-                  disabled={sending || recipientCount === 0 || !smtpConfigured}
+                  disabled={sending || recipientCount === 0 || externalBlocked || !smtpConfigured}
                   onClick={() => setConfirmOpen(true)}
                 >
                   {sending ? (
@@ -597,6 +606,8 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
                       Send to {selectedUserIds.size} user{selectedUserIds.size === 1 ? '' : 's'}
                       {selectedGroupIds.size > 0 &&
                         ` + ${selectedGroupIds.size} group${selectedGroupIds.size === 1 ? '' : 's'}`}
+                      {externalEmails.emails.length > 0 &&
+                        ` + ${externalEmails.emails.length} address${externalEmails.emails.length === 1 ? '' : 'es'}`}
                     </>
                   )}
                 </Button>
@@ -666,6 +677,37 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
                     </label>
                   ))}
                 </div>
+                <div className="space-y-2 pt-2 border-t">
+                  <Label htmlFor="external-emails">Email addresses without an account</Label>
+                  <p className="text-xs text-muted-foreground">
+                    For people who haven&apos;t signed up yet, such as anyone whose signup failed. Separate
+                    with commas or new lines (max {MAX_EXTERNAL_RECIPIENTS}). Their greeting will read
+                    &ldquo;Hello,&rdquo;.
+                  </p>
+                  <Textarea
+                    id="external-emails"
+                    rows={3}
+                    value={externalEmailsInput}
+                    onChange={(e) => setExternalEmailsInput(e.target.value)}
+                    placeholder="name@example.com, other@hospital.ca"
+                    aria-invalid={externalBlocked}
+                  />
+                  {externalEmails.invalid.length > 0 && (
+                    <p className="text-xs font-medium text-red-600" role="alert">
+                      Not a valid email: {externalEmails.invalid.join(', ')}
+                    </p>
+                  )}
+                  {externalTooMany && (
+                    <p className="text-xs font-medium text-red-600" role="alert">
+                      Too many addresses — {MAX_EXTERNAL_RECIPIENTS} at most per send.
+                    </p>
+                  )}
+                  {externalEmails.emails.length > 0 && !externalBlocked && (
+                    <p className="text-xs text-muted-foreground">
+                      {externalEmails.emails.length} address{externalEmails.emails.length === 1 ? '' : 'es'} ready
+                    </p>
+                  )}
+                </div>
                 {groups.length > 0 && (
                   <div className="space-y-2 pt-2 border-t">
                     <Label>Groups (bulk)</Label>
@@ -704,6 +746,8 @@ export function EmailAdminDashboard({ institutionId, institutionSlug }: Props) {
               {selectedUserIds.size === 1 ? '' : 's'}
               {selectedGroupIds.size > 0 &&
                 ` plus ${selectedGroupIds.size} group${selectedGroupIds.size === 1 ? '' : 's'}`}
+              {externalEmails.emails.length > 0 &&
+                ` plus ${externalEmails.emails.length} email address${externalEmails.emails.length === 1 ? '' : 'es'}`}
               . {testMode && 'Subjects will be prefixed with [TEST].'}
             </DialogDescription>
           </DialogHeader>

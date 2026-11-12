@@ -12,6 +12,7 @@ import {
 import type { EmailSystemType } from '@/lib/db/email-templates';
 
 export const MAX_BULK_RECIPIENTS = 500;
+export { MAX_EXTERNAL_RECIPIENTS } from './limits';
 
 export interface EmailRecipient {
   id: string;
