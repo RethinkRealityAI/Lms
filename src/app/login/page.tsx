@@ -132,9 +132,10 @@ function LoginContent() {
       window.history.replaceState({}, '', withInstitutionPath('/login', pathname));
     } else if (notice === 'link_expired') {
       setSignupNotice(
-        "That link has already been used or has expired. If you just clicked it, your email is " +
-          "most likely already confirmed — sign in below. If sign-in says your email isn't " +
-          "confirmed yet, you can send yourself a new link from there.",
+        "That link has already been used or has expired. If it was a sign-up confirmation, your " +
+          "email is most likely already confirmed — sign in below. If sign-in says your email " +
+          "isn't confirmed yet, you can send yourself a new link from there. If it was a " +
+          "password reset, use \"Forgot Password?\" to get a new one.",
       );
       window.history.replaceState({}, '', withInstitutionPath('/login', pathname));
     } else if (error) {
