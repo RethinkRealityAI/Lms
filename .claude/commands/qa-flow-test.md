@@ -23,3 +23,12 @@ Run the full student completion-flow QA. This tests, as a REAL student (not admi
 ## Report
 
 Summarize as a pass/fail table per step, including the issued certificate number, and call out any step where messaging or gating deviated from the expected behavior above.
+
+## Email delivery check (`/qa-flow-test email`)
+
+When `$ARGUMENTS` starts with `email`, run this instead of the course flow. Use it after any change to signup/password-reset emails, the Supabase SMTP settings, email rate limits, or auth redirect URLs. It sends REAL email through the live mail server.
+
+1. **Send**: `node scripts/qa-flow-test.mjs email --to=<an inbox the user can read> --slug=scago --reset` (repeat with `--slug=gansid` when GANSID is affected). It signs up a fresh `+lmsqa<timestamp>` alias through the same public signup endpoint the website uses, then requests a password reset. Each line prints ✔ SENT or ✘ with the diagnosis: RATE LIMITED (hourly email cap) or MAIL SERVER ERROR (SMTP refused, e.g. a wrong password).
+2. **On ✘**: read the Supabase auth logs (`query_logs`, source `auth_logs`, `level = 'error'`) for the exact SMTP reply, then fix it in Supabase → Authentication → Emails → SMTP Settings or → Rate Limits.
+3. **Verify delivery** (Gmail connector if available, or ask the user): sender "HCP E-learning" <tech@sicklecellanemia.ca>, the right program's logo and colours, and the confirmation link returning to the portal's own domain (SCAGO → learn.sicklecellanemia.ca, GANSID → org-lms.netlify.app).
+4. **Cleanup (mandatory)**: `node scripts/qa-flow-test.mjs email-cleanup`. Without a service-role key it prints the SQL to run with Supabase MCP `execute_sql` (`delete from auth.users where email like '%+lmsqa%'`).
