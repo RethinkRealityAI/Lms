@@ -19,9 +19,19 @@ export async function GET(request: NextRequest) {
 
   const loginUrl = `/${institutionSlug}/login`;
 
+  // An expired or already-used email link. Very often the account IS confirmed:
+  // corporate mail scanners (e.g. Microsoft Safe Links) open the link before the
+  // person does and use it up. Send them to Sign In with a plain explanation
+  // instead of a raw "invalid or expired" error.
+  const linkExpired = `${loginUrl}?tab=signin&notice=link_expired`;
+  const errorCode = requestUrl.searchParams.get('error_code');
+
   // Handle error cases
   if (error) {
-    console.error('Auth callback error:', error, error_description);
+    console.error('Auth callback error:', error, errorCode, error_description);
+    if (errorCode === 'otp_expired' || /expired|invalid/i.test(error_description ?? '')) {
+      return NextResponse.redirect(new URL(linkExpired, requestUrl.origin));
+    }
     return NextResponse.redirect(
       new URL(
         `${loginUrl}?error=${encodeURIComponent(error_description || error)}`,
@@ -39,12 +49,7 @@ export async function GET(request: NextRequest) {
 
       if (exchangeError) {
         console.error('Code exchange error:', exchangeError);
-        return NextResponse.redirect(
-          new URL(
-            `${loginUrl}?error=${encodeURIComponent('Verification failed. The link may have expired — please request a new one.')}`,
-            requestUrl.origin
-          )
-        );
+        return NextResponse.redirect(new URL(linkExpired, requestUrl.origin));
       }
 
       if (data.user) {
