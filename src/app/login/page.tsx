@@ -74,6 +74,11 @@ function LoginContent() {
   // Friendly banner shown on the Sign In tab when an existing account is detected
   // during signup (dual access, migration 055).
   const [signupNotice, setSignupNotice] = useState<string | null>(null);
+  // Set when sign-in fails with "Email not confirmed": offers a fresh confirmation
+  // email. Without it, someone whose confirmation email never arrived (or whose
+  // link expired) was stuck — Sign Up says the account exists, Sign In says verify.
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
+  const [resendingConfirmation, setResendingConfirmation] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -116,6 +121,7 @@ function LoginContent() {
     const verified = searchParams.get('verified');
     const error = searchParams.get('error');
     const tab = searchParams.get('tab');
+    const notice = searchParams.get('notice');
 
     if (verified === 'true') {
       toast.success('Email verified successfully!', {
@@ -123,6 +129,14 @@ function LoginContent() {
         icon: <CheckCircle2 className="h-5 w-5" />,
       });
       // Clear the URL parameters
+      window.history.replaceState({}, '', withInstitutionPath('/login', pathname));
+    } else if (notice === 'link_expired') {
+      setSignupNotice(
+        "That link has already been used or has expired. If it was a sign-up confirmation, your " +
+          "email is most likely already confirmed — sign in below. If sign-in says your email " +
+          "isn't confirmed yet, you can send yourself a new link from there. If it was a " +
+          "password reset, use \"Forgot Password?\" to get a new one.",
+      );
       window.history.replaceState({}, '', withInstitutionPath('/login', pathname));
     } else if (error) {
       toast.error('Verification Error', {
@@ -165,6 +179,32 @@ function LoginContent() {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    if (!unconfirmedEmail) return;
+    setResendingConfirmation(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: unconfirmedEmail,
+        options: {
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      toast.success('Verification email sent', {
+        description: `Check ${unconfirmedEmail} (and your junk folder) for the new link. It expires in 1 hour.`,
+      });
+    } catch (err: any) {
+      toast.error('Could not send the verification email', {
+        description: /rate limit|too many/i.test(err?.message ?? '')
+          ? 'Too many emails were requested just now. Please wait a few minutes and try again.'
+          : err?.message || 'Please try again in a few minutes.',
+      });
+    } finally {
+      setResendingConfirmation(false);
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -182,7 +222,8 @@ function LoginContent() {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please check your credentials.');
         } else if (error.message.includes('Email not confirmed')) {
-          throw new Error('Please verify your email address before signing in. Check your inbox for the verification link.');
+          setUnconfirmedEmail(formData.email.trim().toLowerCase());
+          throw new Error('Please verify your email address before signing in. Check your inbox, or use the button below to get a new verification link.');
         } else if (error.message.includes('Too many requests')) {
           throw new Error('Too many login attempts. Please wait a few minutes before trying again.');
         }
@@ -656,6 +697,26 @@ function LoginContent() {
                 <div className="mb-4 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-3.5 animate-in fade-in slide-in-from-top-2 duration-300">
                   <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                   <p className="text-sm font-semibold text-green-800 leading-snug">{signupNotice}</p>
+                </div>
+              )}
+              {unconfirmedEmail && (
+                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3.5" role="status">
+                  <p className="text-sm font-semibold text-amber-900 leading-snug">
+                    Your email address hasn&apos;t been confirmed yet.
+                  </p>
+                  <p className="mt-1 text-sm text-amber-800 leading-snug">
+                    Didn&apos;t get the email, or the link expired? We can send a new one to {unconfirmedEmail}.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleResendConfirmation}
+                    disabled={resendingConfirmation}
+                    className="mt-3 h-10 rounded-xl border-amber-300 bg-white font-bold text-amber-900 hover:bg-amber-100"
+                  >
+                    {resendingConfirmation ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MailCheck className="mr-2 h-4 w-4" />}
+                    Resend verification email
+                  </Button>
                 </div>
               )}
               <form onSubmit={handleSignIn} className="space-y-4">
