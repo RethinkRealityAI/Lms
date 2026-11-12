@@ -30,3 +30,22 @@ describe('renderStoredEmailTemplate', () => {
     expect(html).toContain('Hi Sam,');
   });
 });
+
+describe('baseEmailLayout', () => {
+  it('uses each institution\'s own logo, title and contact', () => {
+    const scago = renderStoredEmailTemplate({
+      institutionSlug: 'scago', subjectTemplate: 's', bodyHtmlTemplate: '<p>x</p>', variables: {},
+    }).html;
+    expect(scago).toContain('scago-logo.png');
+    expect(scago).toContain('HCP Education Program');
+    expect(scago).toContain('hcp@sicklecellanemia.ca');
+    expect(scago).not.toContain('gansid-logo.png');
+
+    const gansid = renderStoredEmailTemplate({
+      institutionSlug: 'gansid', subjectTemplate: 's', bodyHtmlTemplate: '<p>x</p>', variables: {},
+    }).html;
+    expect(gansid).toContain('gansid-logo.png');
+    expect(gansid).toContain('#E87722');
+    expect(gansid).not.toContain('scago-logo.png');
+  });
+});

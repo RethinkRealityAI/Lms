@@ -19,35 +19,52 @@ export function greetingForName(recipientName: string | null | undefined): strin
   return safe ? `Hi ${escapeHtml(safe)},` : 'Hello,';
 }
 
+/**
+ * Shared shell for every platform email (certificates, assignments, custom
+ * broadcasts). Matches the Supabase auth email templates: brand stripe, real
+ * logo + platform title, flat colours. Table-based with inline styles so it
+ * renders in Gmail/Outlook; the <style> block only stacks the header on phones.
+ */
 export function baseEmailLayout(institutionSlug: string, bodyHtml: string): string {
   const branding = getInstitutionBranding(institutionSlug);
+  const font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const logoWidth = Math.min(180, branding.logoDimensions.width);
+  const logoHeight = Math.round((logoWidth * branding.logoDimensions.height) / branding.logoDimensions.width);
+  const bar = branding.emailBrandBar
+    .map(([color, pct]) => `<td width="${pct}%" height="6" style="height:6px;line-height:6px;font-size:0;background-color:${color};">&nbsp;</td>`)
+    .join('');
   return `<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background-color:#F1F5F9;font-family:Arial,Helvetica,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F1F5F9;padding:24px 0;">
-    <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-        <tr>
-          <td style="background-color:${branding.primaryColor};border-radius:12px 12px 0 0;padding:24px 32px;">
-            <span style="color:#FFFFFF;font-size:20px;font-weight:bold;letter-spacing:0.5px;">${escapeHtml(branding.name)} Learning</span>
-          </td>
-        </tr>
-        <tr>
-          <td style="background-color:#FFFFFF;padding:32px;">
-            ${bodyHtml}
-          </td>
-        </tr>
-        <tr>
-          <td style="background-color:#FFFFFF;border-radius:0 0 12px 12px;border-top:1px solid #E2E8F0;padding:20px 32px;">
-            <p style="margin:0;color:#94A3B8;font-size:12px;line-height:18px;">
-              ${escapeHtml(branding.copyright)}<br/>
-              Questions? Contact <a href="mailto:${branding.contactEmail}" style="color:${branding.primaryColor};">${branding.contactEmail}</a>
-            </p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<style>@media only screen and (max-width:480px){.hdr-logo,.hdr-title{display:block!important;width:100%!important;text-align:left!important;}.hdr-logo{padding:0 0 14px 0!important;}.hdr-title{border-left:0!important;border-top:1px solid #eef2f6!important;padding:14px 0 0 0!important;}}</style>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:${font};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f1f5f9" style="background-color:#f1f5f9;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+  <tr><td style="padding:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>${bar}</tr></table></td></tr>
+  <tr><td style="padding:24px 40px 22px;border-bottom:1px solid #eef2f6;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td class="hdr-logo" valign="middle" style="padding-right:16px;"><img src="${branding.logoUrl}" width="${logoWidth}" height="${logoHeight}" alt="${escapeHtml(branding.fullName)}" style="display:block;border:0;outline:none;width:${logoWidth}px;height:auto;"></td>
+      <td class="hdr-title" valign="middle" align="right" style="font-family:${font};border-left:1px solid #e2e8f0;padding-left:16px;">
+        <p style="margin:0 0 2px;font-size:11px;line-height:14px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap;color:${branding.primaryColor};">E-Learning Platform</p>
+        <p style="margin:0;font-size:16px;line-height:21px;font-weight:700;color:#0f172a;">${escapeHtml(branding.emailHeaderTitle)}</p>
+      </td>
+    </tr></table>
+  </td></tr>
+  <tr><td style="padding:32px 40px 24px;font-family:${font};font-size:16px;line-height:26px;color:#334155;">
+${bodyHtml}
+  </td></tr>
+  <tr><td style="padding:24px 40px 28px;background-color:#f8fafc;border-top:1px solid #eef2f6;font-family:${font};">
+    <p style="margin:0 0 6px;font-size:13px;line-height:20px;color:#475569;">Questions? Email <a href="mailto:${branding.contactEmail}" style="color:${branding.primaryColor};text-decoration:none;font-weight:600;">${branding.contactEmail}</a></p>
+    <p style="margin:0;font-size:12px;line-height:18px;color:#94a3b8;">${escapeHtml(branding.copyright)}</p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
 </body>
 </html>`;
 }
@@ -65,7 +82,7 @@ export function renderStoredEmailTemplate(input: RenderStoredTemplateInput): { s
   const branding = getInstitutionBranding(input.institutionSlug);
   const vars: Record<string, string> = {
     primaryColor: branding.primaryColor,
-    buttonColor: branding.secondaryColor,
+    buttonColor: branding.primaryColor,
     institutionName: branding.name,
     ...input.variables,
   };
