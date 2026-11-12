@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { logSignInEvent } from '@/lib/db/events';
+import { getInstitutionSlugForHost } from '@/lib/tenant/branding';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -13,9 +14,13 @@ export async function GET(request: NextRequest) {
   const error_description = requestUrl.searchParams.get('error_description');
   const next = requestUrl.searchParams.get('next');
 
-  // Derive the institution slug from the referrer cookie or default
+  // Derive the institution slug from the cookie, else from the domain (an email
+  // link opened in a browser that has never visited the portal has no cookie),
+  // else the default.
   const institutionSlug =
-    request.cookies.get('institution_slug')?.value || DEFAULT_INSTITUTION;
+    request.cookies.get('institution_slug')?.value ||
+    getInstitutionSlugForHost(requestUrl.host) ||
+    DEFAULT_INSTITUTION;
 
   const loginUrl = `/${institutionSlug}/login`;
 

@@ -74,3 +74,19 @@ describe('getInstitutionBranding', () => {
     expect(getInstitutionBranding('scago').features.length).toBeGreaterThan(0);
   });
 });
+
+describe('getInstitutionSlugForHost', () => {
+  it('maps each production domain to its institution', async () => {
+    const { getInstitutionSlugForHost } = await import('./branding');
+    expect(getInstitutionSlugForHost('learn.sicklecellanemia.ca')).toBe('scago');
+    expect(getInstitutionSlugForHost('org-lms.netlify.app')).toBe('gansid');
+    expect(getInstitutionSlugForHost('Learn.SickleCellAnemia.ca:443')).toBe('scago');
+  });
+
+  it('returns null for localhost, deploy previews and empty hosts', async () => {
+    const { getInstitutionSlugForHost } = await import('./branding');
+    expect(getInstitutionSlugForHost('localhost:3001')).toBeNull();
+    expect(getInstitutionSlugForHost('deploy-preview-26--org-lms.netlify.app')).toBeNull();
+    expect(getInstitutionSlugForHost(null)).toBeNull();
+  });
+});

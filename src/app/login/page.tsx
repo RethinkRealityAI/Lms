@@ -187,7 +187,7 @@ function LoginContent() {
         type: 'signup',
         email: unconfirmedEmail,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
+          emailRedirectTo: `${authRedirectOrigin()}/auth/callback`,
         },
       });
       if (error) throw error;
@@ -412,7 +412,7 @@ function LoginContent() {
               ? { referral_campaign: referralSource.campaign }
               : {}),
           },
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
+          emailRedirectTo: `${authRedirectOrigin()}/auth/callback`,
         },
       });
 
@@ -526,7 +526,7 @@ function LoginContent() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/reset-password`,
+        redirectTo: `${authRedirectOrigin()}/reset-password`,
       });
 
       if (error) throw error;
@@ -1085,6 +1085,18 @@ function LoginContent() {
       </Dialog>
     </div>
   );
+}
+
+/**
+ * Where auth email links (confirm, resend, reset) bring the learner back to:
+ * the domain they are on right now. Each portal lives on its own domain (SCAGO
+ * on learn.sicklecellanemia.ca, GANSID on org-lms.netlify.app), and the PKCE
+ * code in the link can only be exchanged in the browser + domain that asked for
+ * it — a single NEXT_PUBLIC_SITE_URL sent GANSID learners to the SCAGO domain,
+ * where the link could never complete.
+ */
+function authRedirectOrigin(): string {
+  return window.location.origin;
 }
 
 export default function LoginPage() {

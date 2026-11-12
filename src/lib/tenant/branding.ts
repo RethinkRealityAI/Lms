@@ -48,6 +48,12 @@ export interface InstitutionBranding {
   adminEmailPlaceholder: string;
   /** Admin portal description */
   adminDescription: string;
+  /**
+   * The production host this institution's learners use (no scheme). Used to
+   * infer the portal from the domain when no institution cookie is present —
+   * e.g. a learner opening an email link in a different browser.
+   */
+  primaryHost: string;
 }
 
 const GANSID_BRANDING: InstitutionBranding = {
@@ -78,6 +84,7 @@ const GANSID_BRANDING: InstitutionBranding = {
   emailPlaceholder: 'doctor@hospital.org',
   adminEmailPlaceholder: 'admin@inheritedblooddisorders.world',
   adminDescription: 'Secure faculty access for GANSID administrators.',
+  primaryHost: 'org-lms.netlify.app',
 };
 
 const SCAGO_BRANDING: InstitutionBranding = {
@@ -111,6 +118,7 @@ const SCAGO_BRANDING: InstitutionBranding = {
   emailPlaceholder: 'clinician@hospital.ca',
   adminEmailPlaceholder: 'admin@sicklecellanemia.ca',
   adminDescription: 'Secure faculty access for SCAGO administrators.',
+  primaryHost: 'learn.sicklecellanemia.ca',
 };
 
 const BRANDING_MAP: Record<string, InstitutionBranding> = {
@@ -125,6 +133,19 @@ const BRANDING_MAP: Record<string, InstitutionBranding> = {
 export function getInstitutionBranding(slug: string | null | undefined): InstitutionBranding {
   if (!slug) return GANSID_BRANDING;
   return BRANDING_MAP[slug.toLowerCase()] ?? GANSID_BRANDING;
+}
+
+/**
+ * The institution whose production domain this is, or null for any other host
+ * (localhost, deploy previews).
+ */
+export function getInstitutionSlugForHost(host: string | null | undefined): string | null {
+  if (!host) return null;
+  const h = host.toLowerCase().split(':')[0];
+  for (const [slug, b] of Object.entries(BRANDING_MAP)) {
+    if (b.primaryHost === h) return slug;
+  }
+  return null;
 }
 
 /**
