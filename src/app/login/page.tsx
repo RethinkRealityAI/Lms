@@ -150,6 +150,10 @@ function LoginContent() {
       setActiveTab('signup');
     } else if (tab === 'signin') {
       setActiveTab('signin');
+    } else if (tab === 'forgot') {
+      // From /reset-password's "Request a new reset link" button.
+      setActiveTab('signin');
+      setShowForgotPassword(true);
     }
   }, [searchParams]);
 
