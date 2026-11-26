@@ -6,6 +6,7 @@ import {
   isValidReferralCode,
   normalizeReferralCode,
 } from "@/lib/referral/constants";
+import { getInstitutionSlugForHost } from "@/lib/tenant/branding";
 
 const DEFAULT_INSTITUTION_SLUG = "gansid";
 const SUPPORTED_INSTITUTION_SLUGS = new Set(["gansid", "scago"]);
@@ -186,7 +187,13 @@ export async function middleware(request: NextRequest) {
     institutionSlugInPath ||
     (institutionFromCookie && SUPPORTED_INSTITUTION_SLUGS.has(institutionFromCookie)
       ? institutionFromCookie
-      : DEFAULT_INSTITUTION_SLUG);
+      : null) ||
+    // No cookie yet (an email link opened in a fresh browser): use the domain,
+    // so a SCAGO learner on learn.sicklecellanemia.ca isn't sent to GANSID.
+    getInstitutionSlugForHost(
+      (request.headers.get("x-forwarded-host") ?? request.nextUrl.host).split(",")[0].trim()
+    ) ||
+    DEFAULT_INSTITUTION_SLUG;
   const normalizedPath = institutionSlugInPath
     ? stripInstitutionSlug(request.nextUrl.pathname)
     : request.nextUrl.pathname;
@@ -198,9 +205,12 @@ export async function middleware(request: NextRequest) {
       normalizedPath === "/login" ||
       normalizedPath === "/reset-password")
   ) {
-    return NextResponse.redirect(
-      new URL(withInstitution(normalizedPath, selectedInstitution), request.url)
-    );
+    // Keep the query string: a password-reset email lands on
+    // /reset-password?code=... and dropping it here made every reset link
+    // "flash then disappear" (the page found no session and bounced to login).
+    const target = new URL(withInstitution(normalizedPath, selectedInstitution), request.url);
+    target.search = request.nextUrl.search;
+    return NextResponse.redirect(target);
   }
 
   let response = NextResponse.next({

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient, isServiceRoleConfigured } from '@/lib/supabase/service';
+import { getRequestOrigin } from '@/lib/tenant/request-origin';
 
 /**
  * Admin user actions that need the service-role auth API:
@@ -71,7 +72,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'User has no email' }, { status: 422 });
       }
       const { error: resetErr } = await service.auth.resetPasswordForEmail(target.email, {
-        redirectTo: `${req.nextUrl.origin}/auth/callback?next=/student/profile`,
+        // Straight to the reset form, on the domain the admin is using. This
+        // service-role client uses the implicit flow (tokens in the #hash), which
+        // a server route can't read, so the old /auth/callback target dropped the
+        // learner on Sign In without ever showing the new-password form.
+        redirectTo: `${getRequestOrigin(req)}/reset-password`,
       });
       if (resetErr) {
         return NextResponse.json({ error: resetErr.message }, { status: 500 });
